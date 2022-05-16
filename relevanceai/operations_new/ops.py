@@ -1,24 +1,25 @@
-
 from typing import Optional
 from relevanceai.dataset.write import Write
+
+
 class Operations(Write):
     def label(
         self,
         vector_field: str,
         label_documents,
         expanded=False,
-        max_number_of_labels: int=1,
-        similarity_metric: str="cosine",
+        max_number_of_labels: int = 1,
+        similarity_metric: str = "cosine",
         filters: Optional[list] = None,
-        chunksize: int=100,
-        similarity_threshold: float=0,
-        label_field: str="label",
-        label_vector_field="label_vector_"
+        chunksize: int = 100,
+        similarity_threshold: float = 0,
+        label_field: str = "label",
+        label_vector_field="label_vector_",
     ):
-        '''
+        """
         This function takes a list of documents and a list of labels, and for each document, it finds the
         most similar label and adds it to the document
-        
+
         Parameters
         ----------
         vector_field : str
@@ -42,22 +43,20 @@ class Operations(Write):
             The field in the document that will contain the label.
         label_vector_field, optional
             The field in the document that will contain the label vector.
-        
+
         Returns
         -------
             A list of documents
-        
-        '''
+
+        """
         from relevanceai.operations_new.label.ops import LabelOps
 
         ops = LabelOps()
         for documents in self.chunk_dataset(
-                select_fields=[vector_field],
-                filters=filters,
-                chunksize=chunksize
-            ):
+            select_fields=[vector_field], filters=filters, chunksize=chunksize
+        ):
             ops.run(
-                vector_field=vector_field, 
+                vector_field=vector_field,
                 documents=documents,
                 label_documents=label_documents,
                 expanded=expanded,
@@ -65,10 +64,9 @@ class Operations(Write):
                 similarity_metric=similarity_metric,
                 similarity_threshold=similarity_threshold,
                 label_field=label_field,
-                label_vector_field=label_vector_field
+                label_vector_field=label_vector_field,
             )
             self.upsert_documents(
                 documents,
-
             )
         return

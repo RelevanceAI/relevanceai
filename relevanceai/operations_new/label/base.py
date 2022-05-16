@@ -37,21 +37,21 @@ from doc_utils import DocUtils
 
 class LabelBase(DocUtils):
     def run(
-        self, 
+        self,
         vector_field: str,
-        documents, 
+        documents,
         label_documents,
-        expanded: bool=True,
-        max_number_of_labels: int=1,
-        similarity_metric: str="cosine",
-        similarity_threshold: float=0.1,
-        label_field="label", 
+        expanded: bool = True,
+        max_number_of_labels: int = 1,
+        similarity_metric: str = "cosine",
+        similarity_threshold: float = 0.1,
+        label_field="label",
         label_vector_field="label_vector_",
-        ):
-        '''
+    ):
+        """
         For each document, get the vector, match the vector against label vectors, store labels, return
         labelled documents
-        
+
         Parameters
         ----------
         vector_field : str
@@ -72,12 +72,12 @@ class LabelBase(DocUtils):
             the field in the label documents that contains the label
         label_vector_field, optional
             the field in the label documents that contains the vector
-        
+
         Returns
         -------
             A list of documents with the field "_label_" set to the list of labels
-        
-        '''
+
+        """
         # for each document
         # get vector
         # match vector against label vectors
@@ -92,8 +92,8 @@ class LabelBase(DocUtils):
                 vector,
                 label_field=label_field,
                 label_documents=label_documents,
-                expanded=expanded, 
-                label_vector_field=label_vector_field
+                expanded=expanded,
+                label_vector_field=label_vector_field,
             )
             # TODO: add inplace=True
             if expanded:
@@ -106,24 +106,26 @@ class LabelBase(DocUtils):
         self,
         vector,
         label_documents,
-        label_field: str="label",
-        expanded: bool=True,
-        label_vector_field: str="label_chunkvector_",
-        similarity_metric: str="cosine",
-        max_number_of_labels: int=1,
-        similarity_threshold: float=0.1,
+        label_field: str = "label",
+        expanded: bool = True,
+        label_vector_field: str = "label_chunkvector_",
+        similarity_metric: str = "cosine",
+        max_number_of_labels: int = 1,
+        similarity_threshold: float = 0.1,
     ):
         # perform cosine similarity
-        if similarity_metric == 'cosine':
+        if similarity_metric == "cosine":
             labels = self.cosine_similarity(
                 query_vector=vector,
                 vector_field=label_vector_field,
                 documents=label_documents,
                 max_number_of_labels=max_number_of_labels,
-                similarity_threshold=similarity_threshold
+                similarity_threshold=similarity_threshold,
             )
         else:
-            raise ValueError("Only cosine similarity metric is supported at the moment.")
+            raise ValueError(
+                "Only cosine similarity metric is supported at the moment."
+            )
 
         # for the label vectors
         if expanded:
@@ -131,23 +133,26 @@ class LabelBase(DocUtils):
         else:
             # get a list of labels
             return self.get_field_across_documents(label_field, labels)
-    
+
     def cosine_similarity(
-        self, 
-        query_vector, 
-        vector_field, 
+        self,
+        query_vector,
+        vector_field,
         documents,
         reverse=True,
         score_field: str = "_label_score",
-        max_number_of_labels: int=1,
-        similarity_threshold: float=0,
+        max_number_of_labels: int = 1,
+        similarity_threshold: float = 0,
     ):
         from scipy.spatial import distance
+
         sort_key = [
             1 - distance.cosine(i, query_vector)
             for i in self.get_field_across_documents(vector_field, documents)
         ]
         self.set_field_across_documents(score_field, sort_key, documents)
-        labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[:max_number_of_labels]
+        labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
+            :max_number_of_labels
+        ]
         # TODO: add similarity_threshold
         return labels

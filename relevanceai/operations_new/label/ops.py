@@ -9,4 +9,5 @@ class LabelOps(OperationsBase, LabelBase):
     """
     Label Operations
     """
+
     pass
