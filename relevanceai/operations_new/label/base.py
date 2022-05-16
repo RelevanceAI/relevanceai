@@ -31,12 +31,12 @@ Example
     # expanded=True
 
 """
-from typing import Callable, Dict, List, Optional
 from doc_utils import DocUtils
+from copy import deepcopy
 
 
 class LabelBase(DocUtils):
-    def run(
+    def run(  # type: ignore
         self,
         vector_field: str,
         documents,
@@ -151,7 +151,7 @@ class LabelBase(DocUtils):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
             :max_number_of_labels
         ]
-        labels = labels.copy()
+        labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in labels]
         # TODO: add similarity_threshold

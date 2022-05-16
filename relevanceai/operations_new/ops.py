@@ -7,7 +7,7 @@ class Operations(Write):
         self,
         vector_field: str,
         label_documents,
-        expanded=False,
+        expanded=True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
         filters: Optional[list] = None,
