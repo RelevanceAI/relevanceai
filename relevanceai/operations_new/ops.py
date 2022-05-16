@@ -55,7 +55,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=[vector_field], filters=filters, chunksize=chunksize
         ):
-            ops.run(
+            documents = ops.run(
                 vector_field=vector_field,
                 documents=documents,
                 label_documents=label_documents,
