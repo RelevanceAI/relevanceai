@@ -8,5 +8,4 @@ class LabelOps(BaseOps, LabelBase):
     """
     Label Operations
     """
-    def label(self):
-        raise NotImplementedError
+    pass

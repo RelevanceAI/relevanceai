@@ -1,20 +1,51 @@
 """
-Base operations for labels
+Labelling performs a vector search on the labels and fetches the closest
+max_number_of_labels.
+
+Example
+--------
+
+.. code-block::
+
+    ds = client.Dataset(...)
+    # label an entire dataset
+    ds.label(
+        vector_field="sample_1_vector_",
+        label_documents=[
+            {
+                "label": "value",
+                "price": 0.3,
+                "label_vector_": [1, 1, 1]
+            },
+            {
+                "label": "value-2",
+                "label_vector_": [2, 1, 1]
+            },
+        ],
+        expanded=True # stored as dict or list
+    )
+    # If missing "label", returns Error - labels missing `label` field
+    # writes loop to set `label` field
+
+    # If you want all values in a label document plus similarity, you need to set
+    # expanded=True
+
 """
 from typing import Callable, Dict, List, Optional
 from doc_utils import DocUtils
 
 class LabelBase(DocUtils):
-    def label_documents(
+    def run(
         self, 
         vector_field: str,
         documents, 
         label_documents,
-        max_number_of_labels: int=1,
         expanded: bool=True,
+        max_number_of_labels: int=1,
         similarity_metric: str="cosine",
         similarity_threshold: float=0.1,
-        label_field="label", label_vector_field="label_vector_",
+        label_field="label", 
+        label_vector_field="label_vector_",
         ):
         '''
         For each document, get the vector, match the vector against label vectors, store labels, return
@@ -64,7 +95,10 @@ class LabelBase(DocUtils):
                 label_vector_field=label_vector_field
             )
             # TODO: add inplace=True
-            self.set_field("_label_", documents[i], labels)
+            if expanded:
+                self.set_field("_labelchunk_", documents[i], labels)
+            else:
+                self.set_field("_label_", documents[i], labels)
         return documents
 
     def _get_nearest_labels(
@@ -73,15 +107,19 @@ class LabelBase(DocUtils):
         label_documents,
         label_field: str="label",
         expanded: bool=True,
-        label_vector_field: str="label_vector_",
+        label_vector_field: str="label_chunkvector_",
         similarity_metric: str="cosine",
+        max_number_of_labels: int=1,
+        similarity_threshold: float=0.1,
     ):
         # perform cosine similarity
         if similarity_metric == 'cosine':
             labels = self.cosine_similarity(
                 query_vector=vector,
                 vector_field=label_vector_field,
-                documents=label_documents
+                documents=label_documents,
+                max_number_of_labels=max_number_of_labels,
+                similarity_threshold=similarity_threshold
             )
         else:
             raise ValueError("Only cosine similarity metric is supported at the moment.")
@@ -90,7 +128,7 @@ class LabelBase(DocUtils):
         if expanded:
             return labels
         else:
-            # anticipate common mistakes
+            # get a list of labels
             return self.get_field_across_documents(label_field, labels)
     
     def cosine_similarity(
@@ -100,6 +138,8 @@ class LabelBase(DocUtils):
         documents,
         reverse=True,
         score_field: str = "_label_score",
+        max_number_of_labels: int=1,
+        similarity_threshold: float=0,
     ):
         from scipy.spatial import distance
         sort_key = [
@@ -107,4 +147,6 @@ class LabelBase(DocUtils):
             for i in self.get_field_across_documents(vector_field, documents)
         ]
         self.set_field_across_documents(score_field, sort_key, documents)
-        return sorted(documents, reverse=reverse, key=lambda x: x[score_field])
+        labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[:max_number_of_labels]
+        # TODO: add similarity_threshold
+        return labels
