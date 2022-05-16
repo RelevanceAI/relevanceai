@@ -34,6 +34,7 @@ Example
 from typing import Callable, Dict, List, Optional
 from doc_utils import DocUtils
 
+
 class LabelBase(DocUtils):
     def run(
         self, 
@@ -78,11 +79,11 @@ class LabelBase(DocUtils):
         
         '''
         # for each document
-        # get vector 
-        # match vector against label vectors 
+        # get vector
+        # match vector against label vectors
         # store labels
         # return labelled documents
-        
+
         # Get all vectors
         vectors = self.get_field_across_documents(vector_field, documents)
         for i, vector in enumerate(vectors):

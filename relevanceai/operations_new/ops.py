@@ -49,6 +49,7 @@ class Operations(Write):
         
         '''
         from relevanceai.operations_new.label.ops import LabelOps
+
         ops = LabelOps()
         for documents in self.chunk_dataset(
                 select_fields=[vector_field],
