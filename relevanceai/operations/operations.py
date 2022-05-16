@@ -971,7 +971,7 @@ class Operations(Write, IO):
 
         """
         # The model can also be trained using this method
-        from relevanceai.operations.text_finetuning import GPLOps
+        from relevanceai.operations.text.finetuning import GPLOps
 
         ops = GPLOps.from_dataset(dataset=self)
         return ops.run(dataset=self, text_field=text_field, title_field=title_field)
@@ -1016,7 +1016,7 @@ class Operations(Write, IO):
 
         """
         # The model can also be trained using this method
-        from relevanceai.operations.text_finetuning import (
+        from relevanceai.operations.text.finetuning import (
             SupervisedTripleLossFinetuneOps,
         )
 
