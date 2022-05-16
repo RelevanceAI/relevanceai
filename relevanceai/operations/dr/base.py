@@ -33,6 +33,21 @@ class DimReductionBase(LoguruLogger, DocUtils):
         raise NotImplementedError
 
     def transform_documents(self, vector_fields: List[str], documents: List[Dict]):
+        """It takes a list of documents, and a list of fields in those documents that contain vectors, and
+        returns a list of vectors that are the concatenation of the vectors in the fields
+
+        Parameters
+        ----------
+        vector_fields : List[str]
+            List[str]
+        documents : List[Dict]
+            List[Dict]
+
+        Returns
+        -------
+            The transformed vectors
+
+        """
         vectors = np.array(
             self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip"
@@ -42,6 +57,22 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.transform(vectors)
 
     def fit_documents(self, vector_fields: List[str], documents: List[Dict]):
+        """
+        This function takes a list of documents and a list of fields in those documents that contain
+        vectors, and returns a fitted model
+
+        Parameters
+        ----------
+        vector_fields : List[str]
+            List[str]
+        documents : List[Dict]
+            List[Dict]
+
+        Returns
+        -------
+            The fit_documents method returns the fitted model.
+
+        """
         vectors = np.array(
             self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip"
@@ -51,6 +82,18 @@ class DimReductionBase(LoguruLogger, DocUtils):
         return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
+        """
+        It takes a vector field name and an alias and returns a string that is the name of the vector
+        field in the DataRobot model
+
+        Parameters
+        ----------
+        vector_field : str
+            The name of the vector field in the table.
+        alias : str
+            The alias of the table that the vector field is in.
+
+        """
         return ".".join(
             [
                 "_dr_",
