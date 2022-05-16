@@ -397,7 +397,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             alias=self.alias,
         )
 
-    def _insert_cluster_metadata(
+    def _insert_metadata(
         self, dataset_id: str, vector_fields: List[str], centroid_documents: List[Dict]
     ):
         metadata = self.datasets.metadata(dataset_id=dataset_id)
@@ -552,7 +552,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             centroid_documents=centroid_documents,
         )
         print("Inserting Metadata...")
-        self._insert_cluster_metadata(
+        self._insert_metadata(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,
