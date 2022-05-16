@@ -96,10 +96,7 @@ class LabelBase(DocUtils):
                 label_vector_field=label_vector_field,
             )
             # TODO: add inplace=True
-            if expanded:
-                self.set_field("_labelchunk_", documents[i], labels)
-            else:
-                self.set_field("_label_", documents[i], labels)
+            self.set_field("_label_", documents[i], labels)
         return documents
 
     def _get_nearest_labels(
@@ -154,5 +151,8 @@ class LabelBase(DocUtils):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
             :max_number_of_labels
         ]
+        labels = labels.copy()
+        # remove labels from labels
+        [l.pop(vector_field) for l in labels]
         # TODO: add similarity_threshold
         return labels
