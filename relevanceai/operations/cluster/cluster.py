@@ -13,7 +13,7 @@ from relevanceai.constants import (
     ModelNotSupportedError,
     CLUSTER_APP_LINK,
 )
-from relevanceai.operations.cluster.models.summarizer import TransformersLMSummarizer
+from relevanceai.operations.cluster._unused.summarizer import TransformersLMSummarizer
 
 from relevanceai.operations.cluster.utils import ClusterUtils
 
@@ -301,7 +301,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
                 model = HDBSCAN(**self.cluster_config)
 
             elif model in "communitydetection":
-                from relevanceai.operations.cluster.algorithms import CommunityDetection
+                from relevanceai.operations.cluster.models import CommunityDetection
 
                 model = CommunityDetection(**self.cluster_config)
 

@@ -1,278 +1,131 @@
-import traceback
+import numpy as np
 
-from tqdm import tqdm
-
-from collections import defaultdict
-from typing import Optional
-
-from relevanceai.dataset.write.write import Write
-
-from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.logger import FileLogger
+from relevanceai.constants import MissingPackageError
 
 
-class CommunityDetection(Write):
-    pass
+class CommunityDetection:
+    def __init__(
+        self,
+        threshold=0.75,
+        min_community_size=10,
+        init_max_size=1000,
+        gpu=False,
+    ):
 
+        self.gpu = gpu
+        self.threshold = threshold
+        self.min_community_size = min_community_size
+        self.init_max_size = init_max_size
 
-#     @track
-#     def community_detection(
-#         self,
-#         field: str,
-#         model=None,
-#         retrieval_kwargs: Optional[dict] = None,
-#         encode_kwargs: Optional[dict] = None,
-#         threshold: float = 0.75,
-#         min_community_size: int = 3,
-#         init_max_size: int = 1000,
-#         update_chunksize: int = 100,
-#         alias: str = "community-detection",
-#         log_file: str = "logs.txt",
-#         cluster_field: str = "_cluster_",
-#     ):
-#         """
-#         Performs community detection on a text field.
+    def __call__(self, *args, **kwargs):
+        return self.fit_predict(*args, **kwargs)
 
-#         Parameters
-#         ----------
-#         field: str
-#             The field over which to find communities. Must be of type "text"
-#             or "vector".
+    def fit_predict(self, vectors):
+        if self.gpu:
+            communities = self.community_detection_gpu(vectors)
+        else:
+            communities = self.community_detection_cpu(vectors)
 
-#         model
-#             A model for computing sentence embeddings.
+        labels = [-1 for _ in range(vectors.shape[0])]
+        for cluster_index, community in enumerate(communities):
+            for index in community:
+                labels[index] = cluster_index
 
-#         retrieval_kwargs: Optional[dict]
-#             Keyword arguments for `get_documents` call. See respective
-#             details for argument details.
+        return np.array(labels)
 
-#         encode_kwargs: Optional[dict]
-#             Keyword arguments for the provide model's `encode` call. See
-#             respective method for argument details.
+    def cosine(self, embeddings):
+        """
+        effecient cosine sim
+        """
+        similarity = np.dot(embeddings, embeddings.T)
+        square_mag = np.diag(similarity)
+        inv_square_mag = 1 / square_mag
+        inv_square_mag[np.isinf(inv_square_mag)] = 0
+        inv_mag = np.sqrt(inv_square_mag)
+        cosine = similarity * inv_mag
+        cosine = cosine.T * inv_mag
+        return cosine
 
-#         threshold: float
-#             A lower limit of similarity that determines whether two embeddings
-#             are similar or not.
+    def topk(self, embeddings, k):
+        """
+        numpy topk
+        """
+        if len(embeddings.shape) == 1:
+            embeddings = embeddings.reshape(1, -1)
+        indices = embeddings.argpartition(-k, axis=1)[:, -k:]
+        indices = np.flip(indices, 1)
 
-#         min_community_size: int
-#             The minimum size of a community. Only communities that are larger
-#             than this value are returned, and the first element of each
-#             community is treated as the central point.
+        values = np.flip(
+            np.sort(embeddings[np.indices(indices.shape)[0], indices], 1), 1
+        )
+        # TODO: optimise this somehow
+        indices = np.array(
+            [
+                [embeddings[col_index].tolist().index(v) for v in row]
+                for col_index, row in enumerate(values.tolist())
+            ]
+        )
+        return values, indices
 
-#         init_max_size: int
-#             The maximum size of a community. If the corpus is larger than this
-#             value, that is set to the maximum size.
+    def community_detection_cpu(self, embeddings):
+        self.init_max_size = min(self.init_max_size, len(embeddings))
+        cos_scores = self.cosine(embeddings)
+        top_k_values, _ = self.topk(cos_scores, k=self.min_community_size)
 
-#         Example
-#         -------
+        extracted_communities = []
+        for i in range(len(top_k_values)):
+            if top_k_values[i][-1] >= self.threshold:
+                new_cluster = []
 
-#         .. code-block::
+                top_val_large, top_idx_large = self.topk(
+                    cos_scores[i], k=self.init_max_size
+                )
+                top_idx_large = top_idx_large.flatten().tolist()
+                top_val_large = top_val_large.flatten().tolist()
 
-#             from relevanceai import Client
+                if top_val_large[-1] < self.threshold:
+                    for idx, val in zip(top_idx_large, top_val_large):
+                        if val < self.threshold:
+                            break
 
-#             client = Client()
+                        new_cluster.append(idx)
+                else:
+                    for idx, val in enumerate(cos_scores[i].tolist()):
+                        if val >= self.threshold:
+                            new_cluster.append(idx)
 
-#             ds = client.Dataset("sample_dataset_id")
+                extracted_communities.append(new_cluster)
 
-#             communities = ds.community_detection("sample_text_field")
+        extracted_communities = sorted(
+            extracted_communities, key=lambda x: len(x), reverse=True
+        )
 
-#         """
-#         if field in self.schema:
-#             if not (self.schema[field] == "text" or field.endswith("_vector_")):
-#                 raise ValueError("The field must be a 'text' type or a vector")
-#         else:
-#             raise ValueError(f"{field} does not exist in the dataset")
+        unique_communities = []
+        extracted_ids = set()
 
-#         try:
-#             with FileLogger(log_file):
-# from sentence_transformers.util import community_detection
-#         except ModuleNotFoundError:
-#             raise ModuleNotFoundError(
-#                 "community_detection function not found. "
-#                 "Please install sentence-transformers with `python -m "
-#                 "pip install -U sentence-transformers` to install "
-#                 "community_detection."
-#             )
+        for community in extracted_communities:
+            add_cluster = True
+            for idx in community:
+                if idx in extracted_ids:
+                    add_cluster = False
+                    break
 
-#         field_type = "text" if self.schema[field] == "text" else "vector"
+            if add_cluster:
+                unique_communities.append(community)
+                for idx in community:
+                    extracted_ids.add(idx)
 
-#         retrieval_kwargs = {} if retrieval_kwargs is None else retrieval_kwargs
-#         encode_kwargs = {} if encode_kwargs is None else encode_kwargs
+        print(f"There were {len(unique_communities)} communities found.")
+        return unique_communities
 
-#         if model is None and field_type == "text":
-#             from sentence_transformers import SentenceTransformer
-
-#             model = SentenceTransformer("all-MiniLM-L6-v2")
-#             # encode defaults:
-#             #  batch_size: int = 32
-#             #  show_progress_bar: bool = None
-#             #  output_value: str = 'sentence_embedding'
-#             #  convert_to_numpy: bool = True
-#             #  convert_to_Tensor: bool = False
-#             #  device: str = None
-#             #  normalize_embeddings: bool = False
-
-#         print("Retrieving documents...")
-#         documents = self.get_all_documents(
-#             select_fields=[field],
-#             filters=[
-#                 {
-#                     "field": field,
-#                     "filter_type": "exists",
-#                     "condition": "==",
-#                     "condition_value": " ",
-#                 }
-#             ],
-#             **{
-#                 key: value
-#                 for key, value in retrieval_kwargs.items()
-#                 if key != "select_fields"
-#             },
-#         )
-#         print("Documents retrieved.")
-
-#         # lists (i.e. vectors) are unhashable therefore handled by converting
-#         # them into tuples.
-#         if field_type == "vector":
-#             for document in documents:
-#                 try:
-#                     value = tuple(self.get_field(field, document))
-#                     self.set_field(field, document, value)
-#                 except KeyError:
-#                     # If a document is missing a vector, ignore
-#                     continue
-
-#         # Keep track of the fields. Since two documents could have the same
-#         # field, use a list to keep track of multiples
-#         element_ids = defaultdict(list)
-
-#         # remove duplicates
-#         elements = set()
-#         for document in documents:
-#             try:
-#                 element = self.get_field(field, document)
-#             except Exception as e:
-#                 # It could be that a document does not have a field or a
-#                 # a vector that other documents in the Dataset has. In that
-#                 # case, ignore.
-#                 traceback.print_exc()
-#                 continue
-#             elements.add(element)
-#             element_ids[element].append(document["_id"])
-
-#         # Storing a mapping like this is fine because when the values are
-#         # made a list below, they will be a list in the same order as inserted
-#         # in the dictionary.
-#         element_map = {}
-#         ids_map = {}
-#         for i, element in enumerate(elements):
-#             element_map[i] = element
-#             ids_map[i] = element_ids[element]
-
-#         if field_type == "text":
-#             print("Encoding the corpus...")
-#             embeddings = model.encode(
-#                 sentences=list(element_map.values()),
-#                 **{
-#                     key: value
-#                     for key, value in encode_kwargs.items()
-#                     if key != "sentences"
-#                 },
-#             )
-#             print("Encoding complete.")
-#         else:
-#             from numpy import array
-
-#             embeddings = array(list(element_map.values()))
-
-#         print("Community detection started...")
-#         init_max_size = min(init_max_size, embeddings.shape[0])
-#         clusters = community_detection(
-#             embeddings=embeddings,
-#             threshold=threshold,
-#             min_community_size=min_community_size,
-#             init_max_size=init_max_size,
-#         )
-#         print(f"Detected {len(clusters)} communities.")
-
-#         # TODO: add centroids for community detection
-
-#         print("Updating documents...")
-#         community_documents = []
-#         centroids: List[dict] = []
-#         for i, cluster in enumerate(tqdm(clusters)):
-#             ids = []
-#             centroid = cluster[0]
-#             centroids.append(
-#                 {
-#                     "_id": ids_map[centroid][0],  # choose the first ID as centroid
-#                     "centroid_vector_": embeddings[centroid].tolist(),
-#                 }
-#             )
-#             for member in cluster:
-#                 ids.extend(ids_map[member])
-#             # During initial construction update_where did not accept dict
-#             # values as valid updates.
-#             # self.datasets.documents.update_where(
-#             #    self.dataset_id,
-#             #    update={
-#             #        "_cluster_": {field: {"community-detection": f"community-{i+1}"}}
-#             #    },
-#             #    filters=[
-#             #        {
-#             #            "field": "ids",
-#             #            "filter_type": "ids",
-#             #            "condition": "==",
-#             #            "condition_value": ids,
-#             #        }
-#             #    ],
-#             # )
-#             for id in ids:
-#                 community_documents.append(
-#                     {
-#                         "_id": id,
-#                         cluster_field: {field: {alias: f"cluster-{i+1}"}},
-#                     }
-#                 )
-
-#             # During initial construction update_where did not accept dict
-#             # values as valid updates.
-#             with FileLogger(log_file):
-#                 result = self.datasets.documents.update_where(
-#                     self.dataset_id,
-#                     update={"_cluster_": {field: {alias: f"cluster-{i+1}"}}},
-#                     filters=[
-#                         {
-#                             "field": "ids",
-#                             "filter_type": "ids",
-#                             "condition": "==",
-#                             "condition_value": ids,
-#                         }
-#                     ],
-#                 )
-#                 print(result)
-
-#         print(
-#             "Build your clustering app here: "
-#             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
-#         )
-#         # Return a ClusterOps object
-
-#         from relevanceai.workflows.cluster_ops.ops import ClusterOps
-
-#         cluster_ops: ClusterOps = ClusterOps(
-#             # model=model,
-#             alias=alias,
-#             dataset_id=self.dataset_id,
-#             vector_fields=[field],
-#             cluster_field=cluster_field,
-#             project=self.project,
-#             api_key=self.api_key,
-#             firebase_uid=self.firebase_uid,
-#             verbose=False,
-#         )
-#         print("Creating centroids...")
-#         with FileLogger(log_file):
-#             result = cluster_ops.insert_centroid_documents(centroids)
-#         print("✅ Uploaded centroids.")
-#         return cluster_ops
+    def community_detection_gpu(self, embeddings):
+        try:
+            from sentence_transformers.util import community_detection
+        except ModuleNotFoundError:
+            raise MissingPackageError("sentence-transformers")
+        return community_detection(
+            embeddings,
+            self.threshold,
+            self.min_community_size,
+            self.init_max_size,
+        )
