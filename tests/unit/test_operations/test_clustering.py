@@ -63,9 +63,40 @@ class TestClusterOps:
         assert f"_cluster_.{vector_field}" in schema
         assert f"_cluster_.{vector_field}.{alias}" in schema
 
-    @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
-        assert False
+        n_clusters = 10
+        clusterer = test_client.ClusterOps(
+            alias="new_clustering",
+            model=MiniBatchKMeans(n_clusters=n_clusters),
+        )
+        clusterer.run(
+            dataset_id=test_dataset.dataset_id,
+            vector_fields=["sample_1_vector_"],
+        )
+        cluster_ids = ["cluster-0", "cluster-6"]
+        closests = clusterer.list_closest(
+            dataset_id=test_dataset.dataset_id,
+            vector_field="sample_1_vector_",
+            cluster_ids=cluster_ids,
+        )["results"]
+
+        assert len(closests) == len(cluster_ids)
+
+        clusterer = test_client.ClusterOps(
+            alias="new_clustering",
+            model="kmeans",
+            n_clusters=n_clusters,
+        )
+        clusterer.run(
+            dataset_id=test_dataset.dataset_id,
+            vector_fields=["sample_1_vector_"],
+        )
+        closests = clusterer.list_closest(
+            dataset_id=test_dataset.dataset_id,
+            vector_field="sample_1_vector_",
+        )["results"]
+
+        assert len(closests) == n_clusters
 
     @pytest.mark.skip(NOT_IMPLEMENTED)
     def test_list_furthest(self, test_client: Client, test_dataset: Dataset):
