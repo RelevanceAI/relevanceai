@@ -31,7 +31,7 @@ class Operations(Write):
         """
         from relevanceai.operations_new.vectorize.text.ops import VectorizeTextOps
 
-        models = ["all-MiniLM-L6-v2"]
+        models = ["all-mpnet-base-v2"] if models is None else models
 
         ops = VectorizeTextOps(fields=fields, models=models)
         for documents in self.chunk_dataset(
