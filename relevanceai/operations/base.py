@@ -68,7 +68,7 @@ class BaseOps:
 
     def _check_vector_fields(self, vector_fields:List[str]):
         if len(vector_fields) == 0:
-            raise ValueError("You have inputed a vector fields of length 0") #we can add a optional behaviour to use all vectors here.
+            raise ValueError("Please select at least 1 vector field") #we can add a optional behaviour to use all vectors here.
         if isinstance(vector_fields,str):
             return [vector_fields]
         else:
