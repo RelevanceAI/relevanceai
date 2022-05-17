@@ -2,6 +2,7 @@
 """
 import pytest
 from relevanceai import Client
+from relevanceai import mock_documents
 from tests.globals.constants import (
     SAMPLE_DATASET_DATASET_PREFIX,
     generate_random_label,
@@ -18,7 +19,6 @@ def random_vector(vector_length: int = 5):
 
 @pytest.fixture
 def test_label_ds(test_client: Client):
-    from relevanceai import mock_documents
 
     dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_label")
     dataset.insert_documents(
@@ -46,6 +46,7 @@ class TestLabelOps:
         # TODO: Test for expanded = True and False
         # Test for differnet label documents (is an intuitive error returned)
         docs = ops.run(
+            documents=mock_documents(100),
             vector_field="sample_1_vector_",
             label_documents=label_documents,
             expanded=True,
