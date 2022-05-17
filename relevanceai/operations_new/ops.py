@@ -1,8 +1,30 @@
 from typing import Any, Dict, List, Optional
 from relevanceai.dataset.write import Write
+from datetime import datetime
 
 
 class Operations(Write):
+    def store_operation_metadata(self, operation: str, values: str):
+        """
+        Store metadata about operators
+        {
+            "_operationhistory_": {
+                "1-1-1-17-2-3": {
+                    "operation": "vector", "model_name": "miniLm"
+                },
+            }
+        }
+
+        """
+        print("Storing operation metadata...")
+        timestamp = str(datetime.now().timestamp()).replace(".", "-")
+        metadata = {
+            "_operationhistory_": {
+                timestamp: {"operation": operation, "parameters": values}
+            }
+        }
+        return self.upsert_metadata(metadata)
+
     def vectorize_text(
         self,
         fields: List[str],
@@ -41,7 +63,10 @@ class Operations(Write):
             self.upsert_documents(
                 updated_documents,
             )
-
+        self.store_operation_metadata(
+            operation="vectorize_text",
+            values=str({"fields": fields, "models": models, "filters": filters}),
+        )
         return
 
     def vectorize_image(
@@ -81,6 +106,10 @@ class Operations(Write):
                 updated_documents,
             )
 
+        self.store_operation_metadata(
+            operation="vectorize_image",
+            values=str({"fields": fields, "models": models, "filters": filters}),
+        )
         return
 
     def label(
@@ -116,4 +145,22 @@ class Operations(Write):
             self.upsert_documents(
                 updated_documents,
             )
+
+        self.store_operation_metadata(
+            operation="vectorize_image",
+            values=str(
+                {
+                    "vector_fields": vector_fields,
+                    "label_documents": label_documents,
+                    "expanded": expanded,
+                    "max_number_of_labels": max_number_of_labels,
+                    "similarity_metric": similarity_metric,
+                    "filters": filters,
+                    "chunksize": chunksize,
+                    "similarity_threshold": similarity_threshold,
+                    "label_field": label_field,
+                    "label_vector_field": label_vector_field,
+                }
+            ),
+        )
         return
