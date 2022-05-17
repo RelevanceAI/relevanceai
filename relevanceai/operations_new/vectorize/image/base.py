@@ -6,6 +6,12 @@ from relevanceai.operations_new.vectorize.models.base import ModelBase
 
 class VectorizeImageBase(VectorizeBase):
 
+    CLIP_MODELS: Dict[str, Dict[str, int]] = {
+        "clip": {
+            "vector_length": 512,
+        }
+    }
+
     TFHUB_MODELS: Dict[str, Dict[str, int]] = {
         "https://tfhub.dev/google/bit/s-r50x1/1": {
             "vector_length": 2048,
@@ -140,6 +146,19 @@ class VectorizeImageBase(VectorizeBase):
                     url=model,
                     vector_length=vector_length,
                     image_dimensions=image_dimensions,
+                )
+
+                return model
+
+            if model in self.CLIP_MODELS:
+                from relevanceai.operations_new.vectorize.models.image.clip import (
+                    ClipImage2Vec,
+                )
+
+                vector_length = self.CLIP_MODELS[model]["vector_length"]
+                model = ClipImage2Vec(
+                    url=model,
+                    vector_length=vector_length,
                 )
 
                 return model
