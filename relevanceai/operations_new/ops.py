@@ -151,7 +151,6 @@ class Operations(Write):
             values=str(
                 {
                     "vector_fields": vector_fields,
-                    "label_documents": label_documents,
                     "expanded": expanded,
                     "max_number_of_labels": max_number_of_labels,
                     "similarity_metric": similarity_metric,
@@ -160,6 +159,7 @@ class Operations(Write):
                     "similarity_threshold": similarity_threshold,
                     "label_field": label_field,
                     "label_vector_field": label_vector_field,
+                    "label_documents": label_documents,
                 }
             ),
         )
