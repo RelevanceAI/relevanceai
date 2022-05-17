@@ -25,7 +25,7 @@ class Operations(Write, IO):
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        include_cluster_report: bool = True,
+        include_cluster_report: bool = False,
         **kwargs,
     ):
         """
