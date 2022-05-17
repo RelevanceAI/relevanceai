@@ -74,4 +74,10 @@ class MLStripper(HTMLParser):
         self.text.write(d)
 
     def get_data(self):
-        return self.text.getvalue()
+        return (
+            self.text.getvalue()
+            .replace("\r", "")
+            .replace("\n", "")
+            .replace("\t", " ")
+            .strip()
+        )
