@@ -4,6 +4,47 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+## What's Changed
+* support stuff by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/590
+* Feature/fix datasets by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/592
+* V2.0.0 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/576
+* V2.0.1 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/643
+* V2.0.2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/653
+* V2.1.0 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/664
+* V2.1.0 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/671
+* V2.1.1 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/685
+* V2.1.2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/701
+* V2.1.3 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/703
+* V2.1.4 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/710
+* V2.1.5 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/721
+* V2.1.6 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/728
+* V2.1.8 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/731
+* fix the auth header by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/732
+* fix n_clusters by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/735
+* fix analyze sentiment by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/736
+* Distance Matrix data stored in metatdata by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/738
+* Bad Regex for dataset_id by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/693
+* changed default algo and n_clusters by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/737
+* default allLM-mini distillroberta from sentence transformers by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/739
+* rounding cluster report to 3 decimals by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/741
+* Smart Typechecking by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/740
+* Feature/small refactor by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/742
+* Add clear cache and cache info  by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/747
+* hotfix/sdk 361 sub clustering breaks for small parent by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/748
+* Feature/remove unnecessary service endpoints by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/750
+* migrate to after_id in docs by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/752
+* Revert "Feature/remove unnecessary service endpoints" by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/754
+* Move DocUtils to Main Package by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/753
+* Readthedocs Feedback & Update by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/746
+* Feature/fix error by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/755
+* added request log debugging with env var by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/745
+* Feature/update chunksearch guides by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/756
+* Add merge cluster endpoint by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/757
+* Feature/cluster metadata by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/744
+
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v2.1.8...v2.2.0    
+
 v2.1.0
 -----------
 

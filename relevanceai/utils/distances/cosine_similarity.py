@@ -22,7 +22,7 @@ def cosine_similarity_matrix(a, b, decimal=None):
     cosine = cosine.T * inv_mag
     cosine[cosine > 0.9999] = 1
     if decimal:
-        dist = np.around(cosine, decimal)
+        cosine = np.around(cosine, decimal)
     return cosine.tolist()
 
 
