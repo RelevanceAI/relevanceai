@@ -1,8 +1,88 @@
-from typing import Optional
+from typing import Any, Dict, List, Optional
 from relevanceai.dataset.write import Write
 
 
 class Operations(Write):
+    def vectorize_text(
+        self,
+        fields: List[str],
+        models: Optional[List[Any]] = None,
+        filters: Optional[List[Dict[str, Any]]] = None,
+        chunksize: int = 100,
+    ):
+        """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
+        the VectorizeOps function on the documents in the database
+
+        Parameters
+        ----------
+        fields : List[str]
+            List[str]
+        models : List[Any]
+            List[Any]
+        filters : List[Dict[str, Any]]
+            List[Dict[str, Any]]
+        chunksize : int, optional
+            int = 100,
+
+        Returns
+        -------
+            Nothing
+
+        """
+        from relevanceai.operations_new.vectorize.text.ops import VectorizeTextOps
+
+        models = ["all-MiniLM-L6-v2"]
+
+        ops = VectorizeTextOps(fields=fields, models=models)
+        for documents in self.chunk_dataset(
+            select_fields=fields, filters=filters, chunksize=chunksize
+        ):
+            updated_documents = ops.run(documents)
+            self.upsert_documents(
+                updated_documents,
+            )
+
+        return
+
+    def vectorize_image(
+        self,
+        fields: List[str],
+        models: List[Any],
+        filters: Optional[List[Dict[str, Any]]] = None,
+        chunksize: int = 100,
+    ):
+        """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
+        the VectorizeOps function on the documents in the database
+
+        Parameters
+        ----------
+        fields : List[str]
+            List[str]
+        models : List[Any]
+            List[Any]
+        filters : List[Dict[str, Any]]
+            List[Dict[str, Any]]
+        chunksize : int, optional
+            int = 100,
+
+        Returns
+        -------
+            Nothing
+
+        """
+        from relevanceai.operations_new.vectorize.image.ops import VectorizeImageOps
+
+        ops = VectorizeImageOps(fields=fields, models=models)
+        for documents in self.chunk_dataset(
+            select_fields=fields, filters=filters, chunksize=chunksize
+        ):
+            updated_documents = ops.run(documents)
+            self.upsert_documents(
+                updated_documents,
+            )
+
+        return
+
     def label(
         self,
         vector_field: str,
@@ -55,7 +135,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=[vector_field], filters=filters, chunksize=chunksize
         ):
-            ops.run(
+            updated_documents = ops.run(
                 vector_field=vector_field,
                 documents=documents,
                 label_documents=label_documents,
@@ -67,6 +147,6 @@ class Operations(Write):
                 label_vector_field=label_vector_field,
             )
             self.upsert_documents(
-                documents,
+                updated_documents,
             )
         return

@@ -6,9 +6,14 @@ from relevanceai.utils import DocUtils
 
 
 class ModelBase(DocUtils):
-    @staticmethod
-    def vector_name(field):
-        return field + "_vector_"
+    model_name: str
+
+    def _get_model_name(self, url):
+        model_name = "_".join(url.split("/google/")[-1].split("/")[:-1])
+        return model_name
+
+    def vector_name(self, field):
+        return f"{field}_{self.model_name}_vector_"
 
     @abstractmethod
     def encode(self, *args, **kwargs):

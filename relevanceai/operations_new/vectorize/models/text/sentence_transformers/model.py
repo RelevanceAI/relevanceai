@@ -5,11 +5,12 @@ from relevanceai.utils.decorators.vectors import catch_errors
 
 
 class SentenceTransformer2Vec(ModelBase):
-    def __init__(self, model, vector_length):
+    def __init__(self, model, vector_length, model_name):
         from sentence_transformers import SentenceTransformer
 
         self.model: SentenceTransformer = model
         self.vector_length: int = vector_length
+        self.model_name = model_name
 
     @catch_errors
     def encode(self, text: str) -> List[float]:
