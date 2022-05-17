@@ -87,21 +87,26 @@ class MLStripper(HTMLParser):
             .strip()
         )
 
+    def clean(self, text):
+        self.reset()
+        self.handle_data(text)
+        return self.get_data()
+
 
 class CleanTextOps(OperationsBase):
     """
     Clean text operations
     """
 
-    stripper = MLStripper()
-
     def clean_text(self, text):
         """
         Clean the text of the individuals
         """
-        text = BaseTextProcessing.normalize_text(text, lower=False, remove_punct=False)
-        self.stripper.handle_data(text)
-        return self.stripper.get_data()
+        text = BaseTextProcessing.normalize_text(
+            text, lower=False, remove_punct=False, remove_digit=False
+        )
+        stripper = MLStripper()
+        return stripper.clean(text)
 
     def clean_text_document(
         self, text_field, document, output_field: str = "_cleantext_"
