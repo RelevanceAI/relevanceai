@@ -24,6 +24,7 @@ class Operations(Write, IO):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        filters: Optional[list] = None,
         include_cluster_report: bool = True,
         **kwargs,
     ):
@@ -75,6 +76,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
+            filters=filters,
         )
         if alias is None:
             alias = ops.alias
@@ -88,8 +90,9 @@ class Operations(Write, IO):
         self,
         alias: str,
         vector_fields: List[str],
-        model: Any = "umap",
+        model: Any = "pca",
         n_components: int = 3,
+        filters: Optional[list] = None,
         **kwargs,
     ):
         """
@@ -115,7 +118,7 @@ class Operations(Write, IO):
             ds.reduce_dims(
                 alias="sample",
                 vector_fields=["sample_1_vector_"],
-                model="umap"
+                model="pca"
             )
 
         """
@@ -131,6 +134,7 @@ class Operations(Write, IO):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
+            filters=filters,
         )
 
     dimensionality_reduction = reduce_dims

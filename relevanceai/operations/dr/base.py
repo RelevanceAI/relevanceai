@@ -4,6 +4,7 @@ from abc import abstractmethod
 import pandas as pd
 import numpy as np
 import json
+import gc
 
 from doc_utils import DocUtils
 
@@ -32,14 +33,22 @@ class DimReductionBase(LoguruLogger, DocUtils):
     def transform(self, *args, **kw):
         raise NotImplementedError
 
-    def transform_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(vector_field, documents)
-        return self.transform(documents)
-
-    def fit_documents(self, vector_field: str, documents: List[Dict]):
-        vectors = self.get_field_across_documents(
-            vector_field, documents, missing_treatment="skip"
+    def transform_documents(self, vector_fields: List[str], documents: List[Dict]):
+        vectors = np.array(
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
+            )
         )
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
+        return self.transform(vectors)
+
+    def fit_documents(self, vector_fields: List[str], documents: List[Dict]):
+        vectors = np.array(
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
+            )
+        )
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
         return self.fit(vectors)
 
     def get_dr_vector_field_name(self, vector_field: str, alias: str):
@@ -53,7 +62,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
 
     def fit_transform_documents(
         self,
-        vector_field: str,
+        vector_fields: List[str],
         documents: List[Dict],
         alias: str,
         exclude_original_vectors: bool = True,
@@ -82,20 +91,108 @@ class DimReductionBase(LoguruLogger, DocUtils):
             A list of documents with the original vector field and the new vector field.
 
         """
-        documents = list(self.filter_docs_for_fields([vector_field], documents))
+
+        documents = list(self.filter_docs_for_fields(vector_fields, documents))
         vectors = np.array(
-            self.get_field_across_documents(
-                vector_field, documents, missing_treatment="skip"
+            self.get_fields_across_documents(
+                vector_fields, documents, missing_treatment="skip"
             )
         )
+        vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])  # hacky fix
         dr_vectors = self.fit_transform(vectors, dims=dims)
-        dr_vector_field_name = self.get_dr_vector_field_name(vector_field, alias)
-        self.set_field_across_documents(dr_vector_field_name, dr_vectors, documents)
+        del vectors  # free more memory, mainly for memory edgecases
+        gc.collect()
+
         if exclude_original_vectors:
-            dr_docs = self.subset_documents(["_id", dr_vector_field_name], documents)
-        return dr_docs
+            dr_docs = [{"_id": d["_id"]} for d in documents]
+            self.set_field_across_documents(alias, dr_vectors, dr_docs)
+            return dr_docs
+        else:
+            self.set_field_across_documents(alias, dr_vectors, documents)
+        return documents
 
 
+class PCA(DimReductionBase):
+    def fit(self, vectors: np.ndarray, dims: int = 3, *args, **kw):
+        from sklearn.decomposition import PCA as SKLEARN_PCA
+
+        pca = SKLEARN_PCA(n_components=min(dims, vectors.shape[1]))
+        return pca.fit(vectors)
+
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["pca"],
+        dims: int = 3,
+    ) -> np.ndarray:
+        from sklearn.decomposition import PCA as SKLEARN_PCA
+
+        self.logger.debug(f"{dr_args}")
+        vector_length = len(vectors[0])
+        pca = SKLEARN_PCA(n_components=min(dims, vector_length), **dr_args)
+        return pca.fit_transform(vectors)
+
+
+class TSNE(DimReductionBase):
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["tsne"],
+        dims: int = 3,
+    ) -> np.ndarray:
+        from sklearn.decomposition import PCA
+        from sklearn.manifold import TSNE
+
+        pca = PCA(n_components=min(10, vectors.shape[1]))
+        data_pca = pca.fit_transform(vectors)
+        self.logger.debug(f"{dr_args}")
+        tsne = TSNE(n_components=dims, **dr_args)
+        return tsne.fit_transform(data_pca)
+
+
+class UMAP(DimReductionBase):
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["umap"],
+        dims: int = 3,
+    ) -> np.ndarray:
+        try:
+            from umap import UMAP
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall umap\n \
+                pip install -U relevanceai[umap]"
+            )
+        self.logger.debug(f"{dr_args}")
+        umap = UMAP(n_components=dims, **dr_args)
+        return umap.fit_transform(vectors)
+
+
+class Ivis(DimReductionBase):
+    def fit_transform(
+        self,
+        vectors: np.ndarray,
+        dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["ivis"],
+        dims: int = 3,
+    ) -> np.ndarray:
+        try:
+            from ivis import Ivis
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                f"{e}\nInstall ivis\n \
+                CPU: pip install -U ivis-cpu\n \
+                GPU: pip install -U ivis-gpu"
+            )
+        self.logger.debug(f"{dr_args}")
+        ivis = Ivis(embedding_dims=dims, **dr_args)
+        if ivis.batch_size > vectors.shape[0]:
+            ivis.batch_size = vectors.shape[0]
+        vectors_dr = ivis.fit(vectors).transform(vectors)
+        return vectors_dr
+
+
+# this is mainly for plots
 class DimReduction(_Base, DimReductionBase):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
