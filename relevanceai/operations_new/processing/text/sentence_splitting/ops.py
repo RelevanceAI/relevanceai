@@ -25,7 +25,7 @@ class SentenceSplitterOps(OperationsBase):
         t = self.get_field(text_field, document)
         split_text = self.split_text(t)
         # Format the split text into documents
-        split_text_value = [{text_field: s} for s in split_text]
+        split_text_value = [{text_field: s} for s in split_text if s.strip() != ""]
         self.set_field(output_field, document, split_text_value)
         return document
 
