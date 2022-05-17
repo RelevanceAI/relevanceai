@@ -489,7 +489,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         filters: Optional[list] = None,
         show_progress_bar: bool = True,
         verbose: bool = True,
-        include_cluster_report: bool = True,
+        include_cluster_report: bool = False,
         report_name: str = "cluster-report",
     ) -> None:
         """
