@@ -1,21 +1,26 @@
+"""
+Clean HTML
+"""
 import string
 import warnings
-from relevanceai.constants.warning import Warning
-
+from copy import deepcopy
+from relevanceai.operations_new.base import OperationBase
+from relevanceai.utils import MissingPackageError
 from typing import List, Optional
 from collections import Counter
-
 from html.parser import HTMLParser
 from io import StringIO
 
 
 class BaseTextProcessing:
+    """Base text processing"""
+
     @staticmethod
     def normalize_text(
         txt: str,
-        lower: bool = False,
-        remove_digit: bool = False,
-        remove_punct: bool = False,
+        lower: bool = True,
+        remove_digit: bool = True,
+        remove_punct: bool = True,
     ) -> str:
         """
         * Lower-casing
@@ -76,8 +81,59 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return (
             self.text.getvalue()
-            .replace("\r", " ")
-            .replace("\n", " ")
+            .replace("\r", "")
+            .replace("\n", "")
             .replace("\t", " ")
             .strip()
         )
+
+    def clean(self, text):
+        self.reset()
+        self.handle_data(text)
+        return self.get_data()
+
+
+class CleanTextOps(OperationBase):
+    """
+    Clean text operations
+    """
+
+    def clean_text(self, text):
+        """
+        Clean the text of the individuals
+        """
+        text = BaseTextProcessing.normalize_text(
+            text, lower=False, remove_punct=False, remove_digit=False
+        )
+        stripper = MLStripper()
+        return stripper.clean(text)
+
+    def clean_text_document(
+        self, text_field, document, output_field: str = "_cleantext_"
+    ):
+        """
+        Split a text field and store it in other values
+        """
+        t = self.get_field(text_field, document)
+        clean_text = self.clean_text(t)
+        # Format the split text into documents
+        self.set_field(output_field + "." + text_field, document, clean_text)
+        return document
+
+    def run(
+        self,
+        text_field,
+        documents,
+        inplace: bool = True,
+        output_field: str = "_cleantext_",
+    ):
+        if not inplace:
+            documents = deepcopy(documents)
+        # TODO; switch to something faster than list comprehension
+        [
+            self.clean_text_document(
+                text_field=text_field, document=document, output_field=output_field
+            )
+            for document in documents
+        ]
+        return documents

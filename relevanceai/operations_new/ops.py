@@ -269,3 +269,50 @@ class Operations(Write):
             ),
         )
         return
+
+    def split_sentences(
+        self,
+        text_fields: List[str],
+        output_field="_splittextchunk_",
+        language: str = "en",
+    ):
+        """
+        This function splits the text in the `text_field` into sentences and stores the sentences in
+        the `output_field`
+
+        Parameters
+        ----------
+        text_field : str
+            The field in the documents that contains the text to be split into sentences.
+        output_field, optional
+            The name of the field that will contain the split sentences.
+        language : str, optional
+            The language of the text. This is used to determine the sentence splitting rules.
+
+        """
+        from relevanceai.operations_new.processing.text.sentence_splitting.ops import (
+            SentenceSplitterOps,
+        )
+
+        ops = SentenceSplitterOps(language=language)
+        for c in self.chunk_dataset(select_fields=text_fields):
+            for text_field in text_fields:
+                c = ops.run(
+                    text_field=text_field,
+                    documents=c,
+                    inplace=True,
+                    output_field=output_field,
+                )
+            self.upsert_documents(c)
+
+        self.store_operation_metadata(
+            operation="sentence_splitting",
+            values=str(
+                {
+                    "text_field": text_field,
+                    "output_field": output_field,
+                    "language": language,
+                }
+            ),
+        )
+        return
