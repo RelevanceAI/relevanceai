@@ -29,9 +29,11 @@ class Operations(Write):
     def dim_reduction(
         self,
         fields: List[str],
-        models: Optional[List[Any]] = None,
+        dims: int,
+        model: Optional[Any] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
         chunksize: int = 100,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -54,9 +56,14 @@ class Operations(Write):
         """
         from relevanceai.operations_new.dr.ops import DimReductionOps
 
-        models = ["pca"] if models is None else models
+        model = "pca" if model is None else model
 
-        ops = DimReductionOps(fields=fields, models=models)
+        ops = DimReductionOps(
+            fields=fields,
+            dims=dims,
+            model=model,
+            **kwargs,
+        )
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
@@ -70,7 +77,7 @@ class Operations(Write):
             values=str(
                 {
                     "fields": fields,
-                    "models": models,
+                    "models": model,
                     "filters": filters,
                 }
             ),

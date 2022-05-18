@@ -1,35 +1,23 @@
 from abc import abstractmethod
-from typing import List, Dict, Any
+from typing import Any
+
 from relevanceai.utils import DocUtils
 
 
 class DimReductionModelBase(DocUtils):
     model_name: str
 
-    def _get_model_name(self, url):
-        model_name = "_".join(url.split("/google/")[-1].split("/")[:-1])
-        return model_name
-
     def vector_name(self, field):
         return f"{field}_{self.model_name}_vector_"
 
     @abstractmethod
-    def encode(self, *args, **kwargs):
-        pass
+    def fit(self, *args, **kwargs) -> None:
+        raise NotImplementedError
 
     @abstractmethod
-    def bulk_encode(self, *args, **kwargs):
-        pass
+    def fit_predict(self, *args, **kwargs) -> Any:
+        raise NotImplementedError
 
-    def encode_documents(self, documents: List[Dict[str, Any]], fields: List[str]):
-        for field in fields:
-            values = self.get_field_across_documents(field=field, docs=documents)
-            vectors = self.bulk_encode(values)
-
-            self.set_field_across_documents(
-                field=self.vector_name(field),
-                values=vectors,
-                docs=documents,
-            )
-
-        return documents
+    @abstractmethod
+    def fit_transform(self, *args, **kwargs) -> Any:
+        raise NotImplementedError
