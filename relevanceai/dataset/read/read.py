@@ -237,7 +237,7 @@ class Read(Statistics):
         )
 
     def _repr_html_(self):
-        documents = self.get_documents()
+        documents = self.get_documents(include_after_id=False)
         documents = [
             {
                 "_id": document["_id"],
