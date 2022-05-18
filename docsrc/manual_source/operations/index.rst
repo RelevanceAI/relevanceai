@@ -13,4 +13,5 @@ Operations
     search
     label
     question_answer
+    split_sentences
     Finetuning <finetuning/index>
