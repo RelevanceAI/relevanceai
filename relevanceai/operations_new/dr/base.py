@@ -29,22 +29,22 @@ class DimReductionBase(OperationBase):
     ) -> DimReductionModelBase:
         if isinstance(model, str):
             if model == "pca":
-                from relevanceai.operations_new.dr.models import PCAModel
+                from relevanceai.operations_new.dr.models.pca import PCAModel
 
                 model = PCAModel(dims, **kwargs)
 
             elif model == "ivis":
-                from relevanceai.operations_new.dr.models import IvisModel
+                from relevanceai.operations_new.dr.models.ivis import IvisModel
 
                 model = IvisModel(dims, **kwargs)
 
             elif model == "umap":
-                from relevanceai.operations_new.dr.models import UMAPModel
+                from relevanceai.operations_new.dr.models.umap import UMAPModel
 
                 model = UMAPModel(dims, **kwargs)
 
             elif model == "tsne":
-                from relevanceai.operations_new.dr.models import TSNEModel
+                from relevanceai.operations_new.dr.models.tsne import TSNEModel
 
                 model = TSNEModel(dims, **kwargs)
 
