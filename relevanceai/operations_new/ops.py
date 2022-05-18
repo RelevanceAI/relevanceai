@@ -23,6 +23,7 @@ class Operations(Write):
                 timestamp: {"operation": operation, "parameters": values}
             }
         }
+        # Gets metadata and appends to the operation history
         return self.upsert_metadata(metadata)
 
     def vectorize_text(

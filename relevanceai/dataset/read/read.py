@@ -1,13 +1,14 @@
 """
 All read operations for Dataset
 """
+import collections
 import re
 import math
 import warnings
 import pandas as pd
 
 from tqdm.auto import tqdm
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Mapping
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 
@@ -21,6 +22,35 @@ from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.constants.constants import MAX_CACHESIZE
 from relevanceai.constants.warning import Warning
+
+
+def update_nested_dictionary(d: dict, u: Union[dict, Mapping]):
+    """ "If the value is a dictionary, recursively call update_nested_dictionary on it, otherwise just set
+    the value."
+
+    The function takes two dictionaries as arguments, d and u. It iterates over the key-value pairs in
+    u, and for each pair, it checks if the value is a dictionary. If it is, it calls
+    update_nested_dictionary on the value and the corresponding value in d. If the value is not a
+    dictionary, it just sets the value in d to the value in u
+
+    Parameters
+    ----------
+    d : dict
+        The dictionary to update
+    u : dict
+        the dictionary
+
+    Returns
+    -------
+        A dictionary with the updated values.
+
+    """
+    for k, v in u.items():
+        if isinstance(v, collections.Mapping):
+            d[k] = update_nested_dictionary(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 
 class Read(Statistics):
@@ -647,7 +677,7 @@ class Read(Statistics):
     def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
         original_metadata: dict = self.get_metadata()
-        original_metadata.update(metadata)
+        update_nested_dictionary(original_metadata, metadata)
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
             print("✅ You have successfully inserted metadata.")
