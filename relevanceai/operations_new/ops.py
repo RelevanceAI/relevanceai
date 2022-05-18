@@ -29,7 +29,7 @@ class Operations(Write):
     def reduce_dims(
         self,
         vector_fields: List[str],
-        dims: int,
+        dims: int = 3,
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
