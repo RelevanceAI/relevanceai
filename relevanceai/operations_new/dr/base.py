@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 
 from relevanceai.operations_new.base import OperationBase
-from relevanceai.operations_new.dim_reduction.models.base import DimReductionModelBase
+from relevanceai.operations_new.dr.models.base import DimReductionModelBase
 
 
 class DimReductionBase(OperationBase):

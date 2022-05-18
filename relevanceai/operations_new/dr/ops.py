@@ -1,5 +1,5 @@
 from relevanceai.operations_new.base import OperationBase
-from relevanceai.operations_new.dim_reduction.base import DimReductionBase
+from relevanceai.operations_new.dr.base import DimReductionBase
 
 
 class DimReductionOps(DimReductionBase, OperationBase):

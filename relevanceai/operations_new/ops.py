@@ -52,7 +52,7 @@ class Operations(Write):
             Nothing is being returned.
 
         """
-        from relevanceai.operations_new.dim_reduction.ops import DimReductionOps
+        from relevanceai.operations_new.dr.ops import DimReductionOps
 
         models = ["pca"] if models is None else models
 
@@ -65,6 +65,16 @@ class Operations(Write):
                 updated_documents,
             )
 
+        self.store_operation_metadata(
+            operation="vectorize_text",
+            values=str(
+                {
+                    "fields": fields,
+                    "models": models,
+                    "filters": filters,
+                }
+            ),
+        )
         return
 
     def vectorize_text(
@@ -105,9 +115,16 @@ class Operations(Write):
             self.upsert_documents(
                 updated_documents,
             )
+
         self.store_operation_metadata(
             operation="vectorize_text",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+            values=str(
+                {
+                    "fields": fields,
+                    "models": models,
+                    "filters": filters,
+                }
+            ),
         )
         return
 
@@ -150,14 +167,20 @@ class Operations(Write):
 
         self.store_operation_metadata(
             operation="vectorize_image",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+            values=str(
+                {
+                    "fields": fields,
+                    "models": models,
+                    "filters": filters,
+                }
+            ),
         )
         return
 
     def label(
         self,
         vector_fields: List[str],
-        label_documents,
+        label_documents: List[Any],
         expanded=True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
@@ -167,18 +190,18 @@ class Operations(Write):
         label_field: str = "label",
         label_vector_field="label_vector_",
     ):
-        """This function takes a list of documents, a list of labels, and a list of vector fields, and
-        returns a list of documents with the labels added to the documents
+        """This function takes a list of documents, a list of vector fields, and a list of label documents,
+        and then it labels the documents with the label documents
 
         Parameters
         ----------
         vector_fields : List[str]
             List[str]
-        label_documents
-            A list of documents that contain the labels.
+        label_documents : List[Any]
+            List[Any]
         expanded, optional
-            If True, the label_vector_field will be a list of vectors, one for each label. If False, the
-        label_vector_field will be a single vector, the sum of all the label vectors.
+            If True, the label_vector_field will be a list of vectors. If False, the label_vector_field
+        will be a single vector.
         max_number_of_labels : int, optional
             int = 1,
         similarity_metric : str, optional
@@ -192,13 +215,14 @@ class Operations(Write):
         label_field : str, optional
             The name of the field that will contain the label.
         label_vector_field, optional
-            The field that will contain the label vector.
+            The field that will be added to the documents that contain the label vector.
 
         Returns
         -------
             The return value is a list of documents.
 
         """
+
         from relevanceai.operations_new.label.ops import LabelOps
 
         ops = LabelOps()
