@@ -10,6 +10,7 @@ class TFHubText2Vec(ModelBase):
 
         self.model: Any = hub.load(url)
         self.vector_length: int = vector_length
+        self.model_name = self._get_model_name(url)
 
     @catch_errors
     def encode(self, text: str) -> List[float]:

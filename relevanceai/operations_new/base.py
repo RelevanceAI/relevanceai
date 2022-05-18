@@ -10,6 +10,8 @@ from relevanceai.utils import DocUtils
 
 
 class OperationsBase(DocUtils):
+    """Contains API-related functions"""
+
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """This function is called when an instance of the class is called
 
