@@ -79,9 +79,13 @@ class TestDatasetSeries:
     def test_all(self):
         assert False
 
-    @pytest.mark.skip(reason=NOT_IMPLEMENTED)
-    def test_apply(self):
-        assert False
+    def test_apply(self, test_dataset: Dataset):
+        before = test_dataset["sample_1_value"].values
+        test_dataset["sample_1_value"].apply(
+            lambda x: x + 1, output_field="sample_1_value"
+        )
+        after = test_dataset["sample_1_value"].values
+        assert ((before + 1) == after).mean()
 
     def test_bulk_apply(self, test_dataset: Dataset):
         def bulk_func(documents):
