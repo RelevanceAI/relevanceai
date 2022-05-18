@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Optional, Union
 
 from relevanceai.operations_new.base import OperationBase
 from relevanceai.operations_new.dr.models.base import DimReductionModelBase
@@ -11,13 +11,15 @@ class DimReductionBase(OperationBase):
 
     def __init__(
         self,
-        fields: List[str],
+        vector_fields: List[str],
+        alias: Union[str, None],
         model: Union[str, DimReductionModelBase],
         dims: int,
         **kwargs: Dict[str, Any],
     ):
-        self.fields = fields
+        self.vector_fields = vector_fields
         self.model = self._get_model(model, dims, **kwargs)
+        self.alias = alias
 
     def _get_model(
         self,
@@ -69,7 +71,7 @@ class DimReductionBase(OperationBase):
         updated_documents = documents
 
         for model in self.models:
-            for vector_field in self.fields:
+            for vector_field in self.vector_fields:
                 vectors = self.get_field_across_documents(
                     field=vector_field, docs=documents
                 )
@@ -81,7 +83,11 @@ class DimReductionBase(OperationBase):
 
         # removes unnecessary info for updated_where
         updated_documents = [
-            {key: value for key, value in document.items() if key not in self.fields}
+            {
+                key: value
+                for key, value in document.items()
+                if key not in self.vector_fields
+            }
             for document in updated_documents
         ]
 

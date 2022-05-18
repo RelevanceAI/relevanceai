@@ -26,11 +26,12 @@ class Operations(Write):
         # Gets metadata and appends to the operation history
         return self.upsert_metadata(metadata)
 
-    def dim_reduction(
+    def reduce_dims(
         self,
-        fields: List[str],
+        vector_fields: List[str],
         dims: int,
         model: Optional[Any] = None,
+        alias: Optional[str] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
         chunksize: int = 100,
         **kwargs,
@@ -59,13 +60,14 @@ class Operations(Write):
         model = "pca" if model is None else model
 
         ops = DimReductionOps(
-            fields=fields,
+            vector_fields=vector_fields,
             dims=dims,
             model=model,
+            alias=alias,
             **kwargs,
         )
         for documents in self.chunk_dataset(
-            select_fields=fields, filters=filters, chunksize=chunksize
+            select_fields=vector_fields, filters=filters, chunksize=chunksize
         ):
             updated_documents = ops.run(documents)
             self.upsert_documents(
@@ -76,9 +78,11 @@ class Operations(Write):
             operation="vectorize_text",
             values=str(
                 {
-                    "fields": fields,
+                    "vector_fields": vector_fields,
+                    "dims": dims,
                     "models": model,
                     "filters": filters,
+                    "alias": alias,
                 }
             ),
         )
