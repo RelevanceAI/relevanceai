@@ -13,10 +13,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         credentials: Credentials,
         n_components: int,
         model: Any,
+        vector_fields: List[str],
         dr_field: str = "_dr_",
         verbose: bool = True,
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List] = None,
         alias: Optional[str] = None,
     ):
         from relevanceai.operations.dr.models import PCA, TSNE, UMAP, Ivis
@@ -80,8 +80,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def fit(
         self,
+        vector_fields: List[str],
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -166,8 +166,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def run(
         self,
+        vector_fields: List[str],
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         show_progress_bar: bool = True,

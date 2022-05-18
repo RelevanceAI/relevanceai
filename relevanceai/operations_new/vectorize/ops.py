@@ -1,10 +1,7 @@
 from typing import Any, List
 
-from relevanceai.operations_new.vectorize.base import VectorizeBase
+from relevanceai.operations_new.vectorize.base import VectorizeOperationBase
 
 
-class VectorizeOps(VectorizeBase):
-    def __init__(self, fields: List[str], models: List[Any]):
-
-        self.fields = fields
-        self.models = [self._get_model(model) for model in models]
+class VectorizeOperation(VectorizeOperationBase):
+    pass

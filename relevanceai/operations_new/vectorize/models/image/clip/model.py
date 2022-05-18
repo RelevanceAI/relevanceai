@@ -3,7 +3,7 @@ import requests
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 
-from relevanceai.operations_new.vectorize.models.base import ModelBase
+from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
 
 try:
@@ -20,7 +20,7 @@ except:
     traceback.print_exc()
 
 
-class ClipImage2Vec(ModelBase):
+class ClipImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, context_length=77):
 
         self.context_length = context_length

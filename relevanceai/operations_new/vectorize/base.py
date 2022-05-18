@@ -2,14 +2,18 @@ from typing import List, Dict, Any
 
 from abc import abstractmethod
 
-from relevanceai.operations_new.vectorize.models.base import ModelBase
-from relevanceai.operations_new.base import OperationsBase
+from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
+from relevanceai.operations_new.base import OperationBase
 
 
-class VectorizeBase(OperationsBase):
+class VectorizeOperationBase(OperationBase):
 
-    models: List[ModelBase]
+    models: List[VectorizeModelBase]
     fields: List[str]
+
+    def __init__(self, fields: List[str], models: List[Any]):
+        self.fields = fields
+        self.models = [self._get_model(model) for model in models]
 
     @abstractmethod
     def _get_model(self, *args, **kwargs):

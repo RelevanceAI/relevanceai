@@ -1,7 +1,7 @@
 """
 Base class for operations.
 """
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 from relevanceai.client.helpers import (
     Credentials,
     process_token,
@@ -70,8 +70,10 @@ class BaseOps:
         if vector_fields is None:
             raise ValueError("Vector fields cannot be None. Please set vector_fields=")
         if len(vector_fields) == 0:
-            raise ValueError("Please select at least 1 vector field") #we can add a optional behaviour to use all vectors here.
-        if isinstance(vector_fields,str):
+            raise ValueError(
+                "Please select at least 1 vector field"
+            )  # we can add a optional behaviour to use all vectors here.
+        if isinstance(vector_fields, str):
             return [vector_fields]
         else:
             new_vector_fields = []

@@ -1,10 +1,10 @@
 from typing import List
 
-from relevanceai.operations_new.vectorize.models.base import ModelBase
+from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
 
 
-class SentenceTransformer2Vec(ModelBase):
+class SentenceTransformer2Vec(VectorizeModelBase):
     def __init__(self, model, vector_length, model_name):
         from sentence_transformers import SentenceTransformer
 

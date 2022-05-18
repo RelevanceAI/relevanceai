@@ -3,13 +3,13 @@ Base Operations Class
 """
 
 
-from typing import Any
+from typing import Any, Dict, List
 from abc import abstractmethod
 
 from relevanceai.utils import DocUtils
 
 
-class OperationsBase(DocUtils):
+class OperationBase(DocUtils):
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """This function is called when an instance of the class is called
 
@@ -24,6 +24,6 @@ class OperationsBase(DocUtils):
         self.run(*args, **kwargs)
 
     @abstractmethod
-    def run(self, *args, **kwargs):
+    def run(self, *args, **kwargs) -> List[Dict[str, Any]]:
         """The function is an abstract method that raises a NotImplementedError if it is not implemented"""
         raise NotImplementedError
