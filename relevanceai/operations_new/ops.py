@@ -126,6 +126,34 @@ class Operations(Write):
         label_field: str = "label",
         label_vector_field="label_vector_",
     ):
+        """
+        This function takes a list of documents and a list of labels, and adds the labels to the documents
+
+        Parameters
+        ----------
+        vector_fields : List[str]
+            The name of the vector field to use for the label operation.
+        label_documents
+            A list of documents that contain the labels.
+        expanded, optional
+            If True, the label field will be a list of labels. If False, the label field will be a single
+        label.
+        max_number_of_labels : int, optional
+            The maximum number of labels to return for each document.
+        similarity_metric : str, optional
+            The metric used to calculate the similarity between the document and the label.
+        filters : Optional[list]
+            A list of filters to apply to the documents.
+        chunksize : int, optional
+            The number of documents to process at a time.
+        similarity_threshold : float, optional
+            float = 0,
+        label_field : str, optional
+            The name of the field that will contain the label.
+        label_vector_field, optional
+            The field where the label vector will be stored.
+
+        """
         from relevanceai.operations_new.label.ops import LabelOps
 
         ops = LabelOps()
