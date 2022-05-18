@@ -29,9 +29,6 @@ class SentenceSplitterOps(OperationsBase):
         self.set_field(output_field, document, split_text_value)
         return document
 
-    def __call__(self, *args, **kwargs):
-        return self.run(*args, **kwargs)
-
     def run(
         self,
         text_field,
