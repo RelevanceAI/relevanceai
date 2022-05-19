@@ -98,6 +98,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         )  # type: ignore
 
         self.model_name = None
+        self.verbose = verbose
 
         if model is None:
             model = "kmeans"
@@ -195,7 +196,8 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
             Warning.MISSING_ALIAS.format(alias=alias)
 
-        print(f"The alias is `{alias.lower()}`.")
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
 
     def _get_package(self, model):

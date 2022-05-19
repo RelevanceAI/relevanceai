@@ -70,6 +70,7 @@ class Operations(Write, IO):
             model=model,
             alias=alias,
             vector_fields=vector_fields,
+            verbose=False,
             **kwargs,
         )
         ops(
@@ -656,21 +657,6 @@ class Operations(Write, IO):
     ):
         from relevanceai.operations.cluster import SubClusterOps
 
-        if cluster_ids is not None:
-            cluster_id_filters = [
-                {
-                    "field": f"_cluster_.{'.'.join(vector_fields)}.{alias}",
-                    "filter_type": "exact_match",
-                    "condition": "==",
-                    "condition_value": c_id,
-                }
-                for c_id in cluster_ids
-            ]
-            if filters is None:
-                filters = cluster_id_filters
-            else:
-                filters += cluster_id_filters
-
         ops = SubClusterOps(
             model=model,
             credentials=self.credentials,
@@ -686,6 +672,7 @@ class Operations(Write, IO):
             vector_fields=vector_fields,
             filters=filters,
             min_parent_cluster_size=min_parent_cluster_size,
+            cluster_ids=cluster_ids,
         )
 
     @track
