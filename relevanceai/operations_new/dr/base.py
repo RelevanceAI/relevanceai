@@ -8,6 +8,7 @@ class DimReductionBase(OperationBase):
 
     model: DimReductionModelBase
     fields: List[str]
+    alias: Union[str, None]
 
     def __init__(
         self,
@@ -31,22 +32,38 @@ class DimReductionBase(OperationBase):
             if model == "pca":
                 from relevanceai.operations_new.dr.models.pca import PCAModel
 
-                model = PCAModel(dims, **kwargs)
+                model = PCAModel(
+                    dims=dims,
+                    alias=self.alias,
+                    **kwargs,
+                )
 
             elif model == "ivis":
                 from relevanceai.operations_new.dr.models.ivis import IvisModel
 
-                model = IvisModel(dims, **kwargs)
+                model = IvisModel(
+                    dims=dims,
+                    alias=self.alias,
+                    **kwargs,
+                )
 
             elif model == "umap":
                 from relevanceai.operations_new.dr.models.umap import UMAPModel
 
-                model = UMAPModel(dims, **kwargs)
+                model = UMAPModel(
+                    dims=dims,
+                    alias=self.alias,
+                    **kwargs,
+                )
 
             elif model == "tsne":
                 from relevanceai.operations_new.dr.models.tsne import TSNEModel
 
-                model = TSNEModel(dims, **kwargs)
+                model = TSNEModel(
+                    dims=dims,
+                    alias=self.alias,
+                    **kwargs,
+                )
 
             else:
                 raise ValueError(
