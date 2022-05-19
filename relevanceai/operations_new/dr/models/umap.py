@@ -14,9 +14,15 @@ except ModuleNotFoundError as e:
 
 
 class UMAPModel(DimReductionModelBase):
-    def __init__(self, dims, **kwargs):
+    def __init__(
+        self,
+        dims: int,
+        alias: Union[str, None],
+        **kwargs,
+    ):
         self.model = UMAP(n_components=dims, **kwargs)
         self.model_name = "umap"
+        self.alias = alias
 
     def fit(
         self,

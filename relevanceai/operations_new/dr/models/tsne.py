@@ -8,9 +8,15 @@ from tsne import TSNE
 
 
 class TSNEModel(DimReductionModelBase):
-    def __init__(self, dims, **kwargs):
+    def __init__(
+        self,
+        dims: int,
+        alias: Union[str, None],
+        **kwargs,
+    ):
         self.model = TSNE(n_components=dims, **kwargs)
         self.model_name = "tsne"
+        self.alias = alias
 
     def fit(
         self,

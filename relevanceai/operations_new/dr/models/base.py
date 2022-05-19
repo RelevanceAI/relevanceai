@@ -13,7 +13,8 @@ class DimReductionModelBase(DocUtils):
         if isinstance(self.alias, str):
             return self.alias
         else:
-            return f"{field}_{self.model_name}_vector_"
+
+            return f"{self.model_name}_{field}"
 
     @abstractmethod
     def fit(self, *args, **kwargs) -> None:

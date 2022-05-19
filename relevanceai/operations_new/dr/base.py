@@ -19,13 +19,19 @@ class DimReductionBase(OperationBase):
         **kwargs: Dict[str, Any],
     ):
         self.vector_fields = vector_fields
-        self.model = self._get_model(model, dims, **kwargs)
         self.alias = alias
+        self.model = self._get_model(
+            model=model,
+            dims=dims,
+            alias=alias,
+            **kwargs,
+        )
 
     def _get_model(
         self,
         model: Union[str, DimReductionModelBase],
         dims: int,
+        alias: Union[str, None],
         **kwargs,
     ) -> DimReductionModelBase:
         if isinstance(model, str):
@@ -34,7 +40,7 @@ class DimReductionBase(OperationBase):
 
                 model = PCAModel(
                     dims=dims,
-                    alias=self.alias,
+                    alias=alias,
                     **kwargs,
                 )
 
@@ -43,7 +49,7 @@ class DimReductionBase(OperationBase):
 
                 model = IvisModel(
                     dims=dims,
-                    alias=self.alias,
+                    alias=alias,
                     **kwargs,
                 )
 
@@ -52,7 +58,7 @@ class DimReductionBase(OperationBase):
 
                 model = UMAPModel(
                     dims=dims,
-                    alias=self.alias,
+                    alias=alias,
                     **kwargs,
                 )
 
@@ -61,7 +67,7 @@ class DimReductionBase(OperationBase):
 
                 model = TSNEModel(
                     dims=dims,
-                    alias=self.alias,
+                    alias=alias,
                     **kwargs,
                 )
 

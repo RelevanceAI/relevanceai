@@ -8,7 +8,12 @@ from sklearn.decomposition import PCA
 
 
 class PCAModel(DimReductionModelBase):
-    def __init__(self, dims, alias, **kwargs):
+    def __init__(
+        self,
+        dims: int,
+        alias: Union[str, None],
+        **kwargs,
+    ):
         self.model = PCA(n_components=dims, **kwargs)
         self.model_name = "pca"
         self.alias = alias

@@ -15,9 +15,15 @@ except ModuleNotFoundError as e:
 
 
 class IvisModel(DimReductionModelBase):
-    def __init__(self, dims, **kwargs):
+    def __init__(
+        self,
+        dims: int,
+        alias: Union[str, None],
+        **kwargs,
+    ):
         self.model = Ivis(embedding_dims=dims, **kwargs)
         self.model_name = "ivis"
+        self.alias = alias
 
     def fit(
         self,
