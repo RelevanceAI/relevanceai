@@ -52,8 +52,21 @@ class VectorizeTextBase(VectorizeBase):
 
                 return model
 
-            else:
-                raise ValueError("Model not a valid model string")
+            else:  # assume model is sentence transformer model
+                from relevanceai.operations_new.vectorize.models.text.sentence_transformers import (
+                    SentenceTransformer2Vec,
+                )
+                from sentence_transformers import SentenceTransformer
+
+                vector_length = None
+
+                model = SentenceTransformer2Vec(
+                    model=SentenceTransformer(model),
+                    vector_length=vector_length,
+                    model_name=model,
+                )
+
+                return model
 
         elif isinstance(model, ModelBase):
             return model
