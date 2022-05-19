@@ -13,5 +13,5 @@ def test_reduce_dimensions(test_dataset: Dataset):
         alias=alias,
     )
 
-    dr_vector_name = f"_dr_.{alias}.{vector_field}"
+    dr_vector_name = f"{alias}_vector_"
     assert dr_vector_name in test_dataset.schema
