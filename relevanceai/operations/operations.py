@@ -650,21 +650,26 @@ class Operations(Write, IO):
         vector_fields,
         parent_field,
         filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
         min_parent_cluster_size: Optional[int] = None,
         **kwargs,
     ):
-        """
-        Subcluster
-
-        Parameters
-        -------------
-
-        min_parent_cluster_size: Optional[int]
-            The minium number of cluster data points for it to cluster on.
-            If Less than, then it doesn't work.
-
-        """
         from relevanceai.operations.cluster import SubClusterOps
+
+        if cluster_ids is not None:
+            cluster_id_filters = [
+                {
+                    "field": f"_cluster_.{'.'.join(vector_fields)}.{alias}",
+                    "filter_type": "exact_match",
+                    "condition": "==",
+                    "condition_value": c_id,
+                }
+                for c_id in cluster_ids
+            ]
+            if filters is None:
+                filters = cluster_id_filters
+            else:
+                filters += cluster_id_filters
 
         ops = SubClusterOps(
             model=model,
