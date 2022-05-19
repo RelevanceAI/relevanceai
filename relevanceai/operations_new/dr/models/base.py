@@ -11,7 +11,7 @@ class DimReductionModelBase(DocUtils):
 
     def vector_name(self, field):
         if isinstance(self.alias, str):
-            return self.alias
+            return f"{self.alias}_vector_"
         else:
 
             return f"{self.model_name}_{field}"
