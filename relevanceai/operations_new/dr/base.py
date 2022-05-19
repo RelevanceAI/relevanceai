@@ -6,7 +6,7 @@ from relevanceai.operations_new.dr.models.base import DimReductionModelBase
 
 class DimReductionBase(OperationBase):
 
-    models: List[DimReductionModelBase]
+    model: DimReductionModelBase
     fields: List[str]
 
     def __init__(
@@ -70,16 +70,15 @@ class DimReductionBase(OperationBase):
 
         updated_documents = documents
 
-        for model in self.models:
-            for vector_field in self.vector_fields:
-                vectors = self.get_field_across_documents(
-                    field=vector_field, docs=documents
-                )
-                reduced_vectors = model.fit_transform(vectors)
-                reduced_vector_name = model.vector_name(vector_field)
-                self.set_field_across_documents(
-                    field=reduced_vector_name, values=reduced_vectors, docs=documents
-                )
+        for vector_field in self.vector_fields:
+            vectors = self.get_field_across_documents(
+                field=vector_field, docs=documents
+            )
+            reduced_vectors = self.model.fit_transform(vectors)
+            reduced_vector_name = self.model.vector_name(vector_field)
+            self.set_field_across_documents(
+                field=reduced_vector_name, values=reduced_vectors, docs=documents
+            )
 
         # removes unnecessary info for updated_where
         updated_documents = [
