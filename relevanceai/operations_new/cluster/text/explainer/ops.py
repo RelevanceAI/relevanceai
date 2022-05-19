@@ -1,15 +1,4 @@
 """
-Operation for explaining text clusters well
-
-
-.. code-block::
-
-    from relevanceai import Client
-    client = Client()
-    cluster_ops = client.ClusterOps(...)
-    cluster_ops.explain_text_clusters(
-        text_field=[]
-    )
 
 """
 from tqdm.auto import tqdm
@@ -34,9 +23,9 @@ class TextClusterExplainerOps(BaseExplainer, OperationsBase):  # type: ignore
         highlight_output_field="_explain_",
     ):
 
-        """For each cluster, we explain the closest documents to the centroid, and then highlight the most
-        important words in the centroid
-        and then for the centroid, we analyse what makes it similar to the second most similar document
+        """
+        For each cluster, we explain the closest documents to the centroid, and then highlight the most
+        important words in the centroid and then for the centroid, we analyse what makes it similar to the second most similar document
 
         Parameters
         ----------
@@ -52,7 +41,16 @@ class TextClusterExplainerOps(BaseExplainer, OperationsBase):  # type: ignore
         highlight_output_field, optional
             The field that will be added to the document with the highlighted text.
 
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+
         """
+        # TODO:
+        # Make this supported with cluster_ops.explain_text_clusters()
+
         # For each centroid, explains the closest n_closest to the centroids
         # Then highlights why the centroid is similar to the second most similar one
         # List the closest

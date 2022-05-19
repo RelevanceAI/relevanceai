@@ -1,4 +1,4 @@
-from typing import Any, Set, Dict, List, Optional, Tuple, Union
+from typing import Any, Set, Dict, List, Optional, Tuple, Union, Callable
 
 import numpy as np
 import pandas as pd
@@ -1447,3 +1447,50 @@ class ClusterOps(ClusterWriteOps):
         )
 
         return {"results": cluster_summary}
+
+    def _check_attrs(self):
+        if not hasattr(self, "vector_fields"):
+            raise ValueError("set vector_fields=")
+        if not hasattr(self, "alias"):
+            raise ValueError("Set alias=")
+
+    def explain_text_cluster_ops(
+        self,
+        text_field: str,
+        encode_fn: Callable,
+        n_closest: int = 5,
+        highlight_output_field: str = "_explain_",
+    ):
+        """
+        Explain text cluster ops.
+
+        .. code-block::
+
+            def encode():
+                return [...]
+            # encode function needs to return a list
+            cluster_ops.explain_text_cluster_ops(
+                text_field="...",
+                encode_fn=encode
+            )
+
+        """
+        self._check_attrs()
+
+        from relevanceai.operations_new.cluster.text.explainer.ops import (
+            TextClusterExplainerOps,
+        )
+
+        ops = TextClusterExplainerOps(
+            credentials=self.credentials,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
+        return ops.explain_clusters(
+            text_field=text_field,
+            encode_fn=encode_fn,
+            n_closest=n_closest,
+            highlight_output_field=highlight_output_field,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+        )
