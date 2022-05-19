@@ -54,7 +54,14 @@ class Operations(Write):
         """
         from relevanceai.operations_new.vectorize.text.ops import VectorizeTextOps
 
-        models = ["all-mpnet-base-v2"] if models is None else models
+        models = (
+            [
+                # "princeton-nlp/sup-simcse-roberta-large"
+                "all-mpnet-base-v2"
+            ]
+            if models is None
+            else models
+        )
 
         ops = VectorizeTextOps(fields=fields, models=models)
         for documents in self.chunk_dataset(
