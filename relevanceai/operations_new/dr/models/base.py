@@ -1,11 +1,11 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from typing import Any, Union
 
 from relevanceai.utils import DocUtils
 
 
-class DimReductionModelBase(DocUtils):
+class DimReductionModelBase(ABC, DocUtils):
     model_name: str
     alias: Union[str, None]
 
@@ -16,12 +16,7 @@ class DimReductionModelBase(DocUtils):
 
             return f"{self.model_name}_{field}"
 
-    @abstractmethod
     def fit(self, *args, **kwargs) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def fit_predict(self, *args, **kwargs) -> Any:
         raise NotImplementedError
 
     @abstractmethod

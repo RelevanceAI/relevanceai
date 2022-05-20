@@ -6,7 +6,7 @@ from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.operations_new.base import OperationBase
 
 
-class VectorizeOperationBase(OperationBase):
+class VectorizeBase(OperationBase):
 
     models: List[VectorizeModelBase]
     fields: List[str]

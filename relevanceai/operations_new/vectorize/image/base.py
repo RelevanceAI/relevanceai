@@ -1,11 +1,11 @@
 from typing import Dict, List, Any
 
-from relevanceai.operations_new.vectorize.base import VectorizeOperationBase
+from relevanceai.operations_new.vectorize.base import VectorizeBase
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.operations_new.vectorize.models.image.mappings import *
 
 
-class VectorizeImageBase(VectorizeOperationBase):
+class VectorizeImageBase(VectorizeBase):
     def _get_model(self, model: Any) -> VectorizeModelBase:
         """If the model is a string, then check if it's in the TFHUB_MODELS dictionary. If it is, then
         return a TFHubImage2Vec object. If it's not, then raise a ValueError

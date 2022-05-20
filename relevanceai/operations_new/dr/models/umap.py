@@ -1,4 +1,5 @@
 from typing import List, Union
+from importlib_metadata import PackageNotFoundError
 
 import numpy as np
 
@@ -7,10 +8,7 @@ from relevanceai.operations_new.dr.models.base import DimReductionModelBase
 try:
     from umap import UMAP
 except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(
-        f"{e}\nInstall umap\n \
-        pip install -U relevanceai[umap]"
-    )
+    raise PackageNotFoundError("model")
 
 
 class UMAPModel(DimReductionModelBase):

@@ -218,7 +218,7 @@ class Operations(Write):
         similarity_metric : str, optional
             str = "cosine",
         filters : Optional[list]
-            Optional[list] = None,
+            A list of filters to apply to the documents.
         chunksize : int, optional
             The number of documents to process at a time.
         similarity_threshold : float, optional

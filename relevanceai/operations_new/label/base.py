@@ -37,7 +37,7 @@ from typing import Any, Dict, List
 from relevanceai.operations_new.base import OperationBase
 
 
-class LabelOperationBase(OperationBase):
+class LabelBase(OperationBase):
     def run(  # type: ignore
         self,
         vector_field: str,
