@@ -9,7 +9,7 @@ class OperationsAPILogger:
 
 
 class OperationsAPIBase(APIClient, OperationBase, OperationsAPILogger):
-    def run_for(self, dataset: Dataset, **kwargs):
+    def run_on(self, dataset: Dataset, **kwargs):
         for documents in dataset.chunk_dataset():
             documents = self.run(documents=documents, **kwargs)
             dataset.upsert_documents(documents)
