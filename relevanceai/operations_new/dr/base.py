@@ -27,6 +27,10 @@ class DimReductionBase(OperationBase):
             **kwargs,
         )
 
+    @property
+    def name(self):
+        return "dimensionality_reduction"
+
     def _get_model(
         self,
         model: Union[str, DimReductionModelBase],

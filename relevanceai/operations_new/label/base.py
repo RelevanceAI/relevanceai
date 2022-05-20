@@ -101,6 +101,10 @@ class LabelBase(OperationBase):
             self.set_field("_label_", documents[i], labels)
         return documents
 
+    @property
+    def name(self):
+        return "labelling"
+
     def _get_nearest_labels(
         self,
         vector,

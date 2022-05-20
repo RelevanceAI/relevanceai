@@ -11,9 +11,13 @@ class VectorizeBase(OperationBase):
     models: List[VectorizeModelBase]
     fields: List[str]
 
-    def __init__(self, fields: List[str], models: List[Any]):
+    def __init__(self, fields: List[str], models: List[VectorizeModelBase]):
         self.fields = fields
         self.models = [self._get_model(model) for model in models]
+
+    @property
+    def name(self):
+        return "vectorizing"
 
     @abstractmethod
     def _get_model(self, *args, **kwargs):

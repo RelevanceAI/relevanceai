@@ -13,6 +13,11 @@ class OperationBase(ABC, DocUtils):
         self.run(*args, **kwargs)
 
     @abstractmethod
+    @property
+    def name(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
     def run(self, *args, **kwargs) -> List[Dict[str, Any]]:
         """The function is an abstract method that raises a NotImplementedError if it is not implemented"""
         raise NotImplementedError
