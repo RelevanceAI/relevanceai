@@ -1,10 +1,16 @@
-from bdb import effective
+from relevanceai._api.api_client import (
+    APIClient,
+)  # this needs to be replace by below in dr PR
+
+# from relevanceai.operations_new.apibase import OperationsAPIClient
+
+
 from relevanceai.constants.errors import MissingClusterError
-from relevanceai._api.api_client import APIClient
 from typing import Callable, Dict, Any, Set, List
+from relevanceai.operations_new.cluster.base import ClusterBase
 
 
-class ClusterOps(APIClient):
+class ClusterOps(ClusterBase, APIClient):
     """
     Cluster-related functionalities
     """
@@ -47,6 +53,22 @@ class ClusterOps(APIClient):
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
         Internal function for operations
+
+        It takes a cluster_id, a field, an output dictionary, and a function, and then it gets all the
+        documents in the cluster, gets the field across all the documents, and then applies the function
+        to the field
+
+        Parameters
+        ----------
+        cluster_id : str
+            str, field: str, output: dict, func: Callable
+        field : str
+            the field you want to get the value for
+        output : dict
+            dict
+        func : Callable
+            Callable
+
         """
         cluster_field = self._get_cluster_field_name()
         # TODO; change this to fetch all documents
@@ -205,8 +227,3 @@ class ClusterOps(APIClient):
             centroid_documents=centroid_vectors,
         )
         return centroid_vectors
-
-    def run(self, *args, **kwargs):
-        # Running operations
-
-        pass
