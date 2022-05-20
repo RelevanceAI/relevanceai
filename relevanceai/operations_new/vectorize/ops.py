@@ -1,7 +1,7 @@
-from typing import Any, List
-
+from tkinter import N
+from relevanceai.operations_new.apibase import OperationsAPIBase
 from relevanceai.operations_new.vectorize.base import VectorizeBase
 
 
-class VectorizeOperation(VectorizeBase):
+class VectorizeOps(VectorizeBase, OperationsAPIBase):
     pass
