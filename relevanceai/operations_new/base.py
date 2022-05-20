@@ -12,8 +12,8 @@ class OperationBase(ABC, DocUtils):
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         self.run(*args, **kwargs)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def name(self) -> str:
         raise NotImplementedError
 
