@@ -64,6 +64,7 @@ class Operations(Write):
             n_components=n_components,
             model=model,
             alias=alias,
+            credentials=self.credentials,
             **kwargs,
         )
         for documents in self.chunk_dataset(
@@ -118,7 +119,12 @@ class Operations(Write):
 
         models = ["all-mpnet-base-v2"] if models is None else models
 
-        ops = VectorizeTextOps(fields=fields, models=models)
+        ops = VectorizeTextOps(
+            fields=fields,
+            models=models,
+            credentials=self.credentials,
+        )
+
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
@@ -236,7 +242,10 @@ class Operations(Write):
 
         from relevanceai.operations_new.label.ops import LabelOps
 
-        ops = LabelOps()
+        ops = LabelOps(
+            credentials=self.credentials,
+        )
+
         for documents in self.chunk_dataset(
             select_fields=vector_fields, filters=filters, chunksize=chunksize
         ):
@@ -298,7 +307,11 @@ class Operations(Write):
             SentenceSplitterOps,
         )
 
-        ops = SentenceSplitterOps(language=language)
+        ops = SentenceSplitterOps(
+            language=language,
+            credentials=self.credentials,
+        )
+
         for c in self.chunk_dataset(select_fields=text_fields):
             for text_field in text_fields:
                 c = ops.run(

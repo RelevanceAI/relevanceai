@@ -3,5 +3,5 @@ from relevanceai.operations_new.apibase import OperationsAPIBase
 from relevanceai.operations_new.vectorize.base import VectorizeBase
 
 
-class VectorizeOps(VectorizeBase, OperationsAPIBase):
+class VectorizeOps(OperationsAPIBase, VectorizeBase):
     pass
