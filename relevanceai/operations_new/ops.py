@@ -29,7 +29,7 @@ class Operations(Write):
     def reduce_dims(
         self,
         vector_fields: List[str],
-        dims: int = 3,
+        n_components: int = 3,
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
@@ -61,7 +61,7 @@ class Operations(Write):
 
         ops = DimReductionOps(
             vector_fields=vector_fields,
-            dims=dims,
+            n_components=n_components,
             model=model,
             alias=alias,
             **kwargs,
@@ -79,7 +79,7 @@ class Operations(Write):
             values=str(
                 {
                     "vector_fields": vector_fields,
-                    "dims": dims,
+                    "n_components": n_components,
                     "models": model,
                     "filters": filters,
                     "alias": alias,

@@ -10,11 +10,11 @@ from sklearn.decomposition import PCA
 class PCAModel(DimReductionModelBase):
     def __init__(
         self,
-        dims: int,
+        n_components: int,
         alias: Union[str, None],
         **kwargs,
     ):
-        self.model = PCA(n_components=dims, **kwargs)
+        self.model = PCA(n_components=n_components, **kwargs)
         self.model_name = "pca"
         self.alias = alias
 

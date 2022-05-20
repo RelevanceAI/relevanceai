@@ -10,11 +10,11 @@ from tsne import TSNE
 class TSNEModel(DimReductionModelBase):
     def __init__(
         self,
-        dims: int,
+        n_components: int,
         alias: Union[str, None],
         **kwargs,
     ):
-        self.model = TSNE(n_components=dims, **kwargs)
+        self.model = TSNE(n_components=n_components, **kwargs)
         self.model_name = "tsne"
         self.alias = alias
 

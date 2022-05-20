@@ -15,14 +15,14 @@ class DimReductionBase(OperationBase):
         vector_fields: List[str],
         alias: Union[str, None],
         model: Union[str, DimReductionModelBase],
-        dims: int,
+        n_components: int,
         **kwargs: Dict[str, Any],
     ):
         self.vector_fields = vector_fields
         self.alias = alias
         self.model = self._get_model(
             model=model,
-            dims=dims,
+            n_components=n_components,
             alias=alias,
             **kwargs,
         )
@@ -34,7 +34,7 @@ class DimReductionBase(OperationBase):
     def _get_model(
         self,
         model: Union[str, DimReductionModelBase],
-        dims: int,
+        n_components: int,
         alias: Union[str, None],
         **kwargs,
     ) -> DimReductionModelBase:
@@ -43,7 +43,7 @@ class DimReductionBase(OperationBase):
                 from relevanceai.operations_new.dr.models.pca import PCAModel
 
                 model = PCAModel(
-                    dims=dims,
+                    n_components=n_components,
                     alias=alias,
                     **kwargs,
                 )
@@ -52,7 +52,7 @@ class DimReductionBase(OperationBase):
                 from relevanceai.operations_new.dr.models.ivis import IvisModel
 
                 model = IvisModel(
-                    dims=dims,
+                    n_components=n_components,
                     alias=alias,
                     **kwargs,
                 )
@@ -61,7 +61,7 @@ class DimReductionBase(OperationBase):
                 from relevanceai.operations_new.dr.models.umap import UMAPModel
 
                 model = UMAPModel(
-                    dims=dims,
+                    n_components=n_components,
                     alias=alias,
                     **kwargs,
                 )
@@ -70,7 +70,7 @@ class DimReductionBase(OperationBase):
                 from relevanceai.operations_new.dr.models.tsne import TSNEModel
 
                 model = TSNEModel(
-                    dims=dims,
+                    n_components=n_components,
                     alias=alias,
                     **kwargs,
                 )
