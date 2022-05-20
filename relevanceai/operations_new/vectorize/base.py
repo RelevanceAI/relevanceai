@@ -44,7 +44,11 @@ class VectorizeBase(OperationBase):
 
         # removes unnecessary info for updated_where
         updated_documents = [
-            {key: value for key, value in document.items() if key not in self.fields}
+            {
+                key: value
+                for key, value in document.items()
+                if key in self.fields or key == "_id"
+            }
             for document in updated_documents
         ]
 

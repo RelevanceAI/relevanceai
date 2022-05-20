@@ -65,6 +65,7 @@ class TestClusterOps:
 
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
         n_clusters = 10
+
         clusterer = test_client.ClusterOps(
             alias="new_clustering",
             model=MiniBatchKMeans(n_clusters=n_clusters),
@@ -73,27 +74,41 @@ class TestClusterOps:
             dataset_id=test_dataset.dataset_id,
             vector_fields=["sample_1_vector_"],
         )
-        cluster_ids = ["cluster-0", "cluster-6"]
+        cluster_ids = ["cluster-0", "cluster-6", "cluster-3"]
         closests = clusterer.list_closest(
             dataset_id=test_dataset.dataset_id,
             vector_field="sample_1_vector_",
             cluster_ids=cluster_ids,
+            alias="new_clustering",
+            approx=0,
+            sum_fields=True,
+            page_size=10,
+            centroid_vector_fields=["sample_1_vector_"],
+            include_vector=False,
+            include_count=False,
+            similarity_metric="l1",
+            select_fields=["_id"],
         )["results"]
 
-        assert len(closests) == len(cluster_ids)
+        for id in cluster_ids:
+            assert id in closests
 
         clusterer = test_client.ClusterOps(
-            alias="new_clustering",
+            alias="new_clustering_2",
             model="kmeans",
             n_clusters=n_clusters,
         )
         clusterer.run(
             dataset_id=test_dataset.dataset_id,
-            vector_fields=["sample_1_vector_"],
+            vector_fields=["sample_2_vector_"],
         )
         closests = clusterer.list_closest(
             dataset_id=test_dataset.dataset_id,
-            vector_field="sample_1_vector_",
+            vector_field="sample_2_vector_",
+            centroid_vector_fields=["sample_2_vector_"],
+            similarity_metric="cosine",
+            select_fields=["_id"],
+            include_vector=True,
         )["results"]
 
         assert len(closests) == n_clusters
