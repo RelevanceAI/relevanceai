@@ -677,7 +677,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             X = np.array(vectors)
             return X.mean(axis=0)
 
-        centroid_vectors = self._operate_across_clusters(
+        centroid_vectors = self.operate_across_clusters(
             field=self.vector_fields[0], func=calculate_centroid
         )
 

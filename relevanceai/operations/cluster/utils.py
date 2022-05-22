@@ -349,7 +349,7 @@ class ClusterUtils(APIClient, DocUtils):
             for label, prev_cluster_label in zip(labels, prev_cluster_labels)
         ]
 
-    def _operate_across_clusters(self, field: str, func: Callable):
+    def operate_across_clusters(self, field: str, func: Callable):
         output: Dict[str, Any] = dict()
         for cluster_id in self.list_cluster_ids():
             self._operate(cluster_id=cluster_id, field=field, output=output, func=func)

@@ -63,6 +63,7 @@ class Operations(Write, IO):
             possible parameters for different models, simply check how
             the cluster models are instantiated.
         """
+        # TODO: move this over to operations_new
         from relevanceai.operations.cluster import ClusterOps
 
         ops = ClusterOps(

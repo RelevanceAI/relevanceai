@@ -93,10 +93,45 @@ class ClusterOps(ClusterBase, APIClient):
         arr = self.get_field_across_documents(field, documents["documents"])
         output[cluster_id] = func(arr)
 
-    def _operate_across_clusters(self, field: str, func: Callable):
+    def operate_across_clusters(self, field: str, func: Callable):
         output: Dict[str, Any] = dict()
         for cluster_id in self.list_cluster_ids():
             self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
+        return output
+
+    def operate_on_closest(
+        self,
+        field: str,
+        func: Callable,
+        cluster_ids: Optional[list] = None,
+        approx: int = 0,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[list] = None,
+    ):
+        """Operate on the closest documents to the cluster"""
+        # Operate on the closest
+        closest = self.list_closest(
+            select_fields=[field],
+            cluster_ids=cluster_ids,
+            approx=approx,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+        )
+        # For the closest, we want to operate on the results
+        output = {}
+        # loop through clusters to generate summaries on the closest ones
+        if "results" not in closest:
+            raise ValueError(
+                "You did not retrieve closest properly. Please check that this is the case."
+            )
+        for cluster, cluster_results in closest["results"].items():
+            output[cluster] = func(
+                self.get_field_across_documents(field, cluster_results["results"])
+            )
         return output
 
     def list_cluster_ids(
@@ -205,7 +240,7 @@ class ClusterOps(ClusterBase, APIClient):
             X = np.array(vectors)
             return X.mean(axis=0)
 
-        centroid_vectors = self._operate_across_clusters(
+        centroid_vectors = self.operate_across_clusters(
             field=self.vector_fields[0], func=calculate_centroid
         )
 
@@ -371,9 +406,44 @@ class ClusterOps(ClusterBase, APIClient):
             cluster_properties_filter=cluster_properties_filter,
         )
 
-    def explain_text_clusters(self, text_field: str, n_closest: int = 5):
+    def explain_text_clusters(
+        self,
+        text_field,
+        encode_fn,
+        n_closest: int = 5,
+        highlight_output_field="_explain_",
+    ):
+        """
+        It takes a text field and a function that encodes the text field into a vector.
+        It then returns the top n closest vectors to each cluster centroid.
+
+        Parameters
+        ----------
+        text_field
+            The field in the dataset that contains the text to be explained.
+        encode_fn
+            This is the function that will be used to encode the text.
+        n_closest : int, optional
+            The number of closest documents to each cluster to return.
+        highlight_output_field, optional
+            The name of the field that will be added to the output dataset.
+
+        Returns
+        -------
+            A new dataset with the same data as the original dataset, but with a new field called _explain_
+
+        """
         from relevanceai.operations_new.cluster.text.explainer.ops import (
             TextClusterExplainerOps,
         )
 
         ops = TextClusterExplainerOps()
+        return ops.explain_clusters(
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+            text_field=text_field,
+            encode_fn=encode_fn,
+            n_closest=n_closest,
+            highlight_output_field=highlight_output_field,
+        )
