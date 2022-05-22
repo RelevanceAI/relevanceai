@@ -16,7 +16,7 @@ class DimReductionBase(OperationBase):
         alias: Union[str, None],
         model: Union[str, DimReductionModelBase],
         n_components: int,
-        **kwargs: Dict[str, Any],
+        **kwargs,
     ):
         self.vector_fields = vector_fields
         self.alias = alias
