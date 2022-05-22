@@ -7,4 +7,6 @@ class DimReductionOps(DimReductionBase, OperationsAPIBase):
     API related Functionality for Operation
     """
 
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        OperationsAPIBase.__init__(*args, **kwargs)
