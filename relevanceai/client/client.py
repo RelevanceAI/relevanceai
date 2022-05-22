@@ -20,6 +20,7 @@ If you need to change your token, simply run:
 """
 import os
 import re
+from tkinter import Label
 import uuid
 import getpass
 import pandas as pd
@@ -42,9 +43,10 @@ from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 from relevanceai.utils.config_mixin import ConfigMixin
 from relevanceai.client.cache import CacheMixin
+from relevanceai.client.operators import Operators
 
 
-class Client(APIClient, ConfigMixin, CacheMixin):
+class Client(APIClient, ConfigMixin, CacheMixin, Operators):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -276,24 +278,6 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         return ClusterOps(
             credentials=self.credentials,
             model=model,
-            **kwargs,
-        )
-
-    @track
-    def ClusterVizOps(
-        self,
-        vector_fields: List[str],
-        alias: str,
-        dataset_id: str,
-        **kwargs,
-    ):
-        from relevanceai.operations.viz import ClusterVizOps
-
-        return ClusterVizOps(
-            credentials=self.credentials,
-            vector_fields=vector_fields,
-            alias=alias,
-            dataset_id=dataset_id,
             **kwargs,
         )
 

@@ -8,11 +8,11 @@ from skimage import transform
 
 import numpy as np
 
-from relevanceai.operations_new.vectorize.models.base import ModelBase
+from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
 
 
-class TFHubImage2Vec(ModelBase):
+class TFHubImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, image_dimensions: Optional[int] = None):
         import tensorflow_hub as hub
 

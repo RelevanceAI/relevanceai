@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from relevanceai.utils import DocUtils
 
 
-class ModelBase(DocUtils):
+class VectorizeModelBase(DocUtils):
     model_name: str
 
     def _get_model_name(self, url):
