@@ -31,11 +31,13 @@ Example
     # expanded=True
 
 """
-from doc_utils import DocUtils
 from copy import deepcopy
+from typing import Any, Dict, List
+
+from relevanceai.operations_new.base import OperationBase
 
 
-class LabelBase(DocUtils):
+class LabelBase(OperationBase):
     def run(  # type: ignore
         self,
         vector_field: str,
@@ -47,7 +49,7 @@ class LabelBase(DocUtils):
         similarity_threshold: float = 0.1,
         label_field="label",
         label_vector_field="label_vector_",
-    ):
+    ) -> List[Dict[str, Any]]:
         """
         For each document, get the vector, match the vector against label vectors, store labels, return
         labelled documents
@@ -98,6 +100,10 @@ class LabelBase(DocUtils):
             # TODO: add inplace=True
             self.set_field("_label_", documents[i], labels)
         return documents
+
+    @property
+    def name(self):
+        return "labelling"
 
     def _get_nearest_labels(
         self,

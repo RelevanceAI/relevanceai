@@ -1,31 +1,23 @@
 """
 Base Operations Class
 """
+from abc import ABC, abstractmethod
 
-
-from typing import Any
-from abc import abstractmethod
+from typing import Any, Dict, List
 
 from relevanceai.utils import DocUtils
 
 
-class OperationsBase(DocUtils):
-    """Contains API-related functions"""
-
+class OperationBase(ABC, DocUtils):
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        """This function is called when an instance of the class is called
-
-        Parameters
-        ----------
-         : Any
-            param func: The function to be decorated.
-         : Any
-            param func: The function to be decorated.
-
-        """
         self.run(*args, **kwargs)
 
+    @property
     @abstractmethod
-    def run(self, *args, **kwargs):
+    def name(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def run(self, *args, **kwargs) -> List[Dict[str, Any]]:
         """The function is an abstract method that raises a NotImplementedError if it is not implemented"""
         raise NotImplementedError

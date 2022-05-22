@@ -13,10 +13,10 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         credentials: Credentials,
         n_components: int,
         model: Any,
+        vector_fields: List[str],
         dr_field: str = "_dr_",
         verbose: bool = True,
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List] = None,
         alias: Optional[str] = None,
     ):
         from relevanceai.operations.dr.models import PCA, TSNE, UMAP, Ivis
@@ -41,20 +41,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
         self.alias = alias
-        if vector_fields:
-            self._create_vector_name(vector_fields)
 
         super().__init__(credentials)
-
-    def _create_vector_name(self, vector_fields):
-        if len(vector_fields) > 0:
-            self.vector_name = (
-                "-".join([f.replace("_vector_", "") for f in vector_fields])
-                + "_vector_"
-            )
-        else:
-            self.vector_name = vector_fields[0]
-        return self.vector_name
 
     def _insert_metadata(
         self,
@@ -70,9 +58,6 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             "params" : other_parameters_used
         }
         """
-        if not hasattr(self, "vector_name"):
-            self._create_vector_name(vector_fields)
-
         if dataset_id is None:
             dataset_id = self.dataset_id
         if alias is None:
@@ -85,7 +70,7 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
             if "_dr_" not in metadata:
                 metadata["_dr_"] = {}
-            metadata["_dr_"][self.vector_name] = {
+            metadata["_dr_"][alias] = {
                 "alias": alias,
                 "vector_fields": vector_fields,
                 "n_components": self.n_components,
@@ -95,8 +80,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def fit(
         self,
+        vector_fields: List[str],
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         show_progress_bar: bool = True,
@@ -125,18 +110,25 @@ class ReduceDimensionsOps(APIClient, BaseOps):
         filters = [] if filters is None else filters
         if dataset_id is None:
             dataset_id = self.dataset_id
+
         if vector_fields is None:
-            vector_fields = self.vector_fields
+            vector_fields = self._check_vector_fields(self.vector_fields)
+        vector_fields = self._check_vector_fields(vector_fields)
+
         if alias is None:
-            alias = self.alias
-        if not hasattr(self, "vector_name"):
-            self._create_vector_name(vector_fields)
+            alias = self._create_alias(self.alias, vector_fields)
+        alias = self._create_alias(alias, vector_fields)
+
+        # check if alias == any vector fields
+        for vector_field in vector_fields:
+            if alias == vector_field:
+                raise ValueError(
+                    "Your alias is same as one of the vector_field. Relevance does not support overriding an existing vector field with a lower dimension vector."
+                )
 
         print("Retrieving all documents...")
-        from relevanceai.utils.filter_helper import create_filter
 
-        if vector_fields is None:
-            raise ValueError("Vector fields cannot be None. Please set vector_fields=")
+        from relevanceai.utils.filter_helper import create_filter
 
         for vector_field in vector_fields:
             filters += create_filter(vector_field, filter_type="exists")
@@ -154,7 +146,6 @@ class ReduceDimensionsOps(APIClient, BaseOps):
             documents=documents,
             alias=alias,  # type: ignore
             dims=self.n_components,
-            vector_name=self.vector_name,
         )
 
         print("Updating dataset with reduced vectors...")
@@ -175,8 +166,8 @@ class ReduceDimensionsOps(APIClient, BaseOps):
 
     def run(
         self,
+        vector_fields: List[str],
         dataset_id: Optional[str] = None,
-        vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         show_progress_bar: bool = True,

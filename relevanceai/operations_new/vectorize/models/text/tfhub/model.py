@@ -1,10 +1,10 @@
 from typing import List, Any
 
-from relevanceai.operations_new.vectorize.models.base import ModelBase
+from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
 
 
-class TFHubText2Vec(ModelBase):
+class TFHubText2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length):
         import tensorflow_hub as hub
 

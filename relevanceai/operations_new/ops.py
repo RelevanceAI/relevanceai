@@ -26,6 +26,69 @@ class Operations(Write):
         # Gets metadata and appends to the operation history
         return self.upsert_metadata(metadata)
 
+    def reduce_dims(
+        self,
+        vector_fields: List[str],
+        n_components: int = 3,
+        model: Optional[Any] = None,
+        alias: Optional[str] = None,
+        filters: Optional[List[Dict[str, Any]]] = None,
+        chunksize: int = 100,
+        **kwargs,
+    ):
+        """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
+        the DimReductionOps class on the documents in the dataset
+
+        Parameters
+        ----------
+        fields : List[str]
+            List[str]
+        models : Optional[List[Any]]
+            List[Any] = None,
+        filters : Optional[List[Dict[str, Any]]]
+            A list of dictionaries, each dictionary containing a filter.
+        chunksize : int, optional
+            The number of documents to process at a time.
+
+        Returns
+        -------
+            Nothing is being returned.
+
+        """
+        from relevanceai.operations_new.dr.ops import DimReductionOps
+
+        model = "pca" if model is None else model
+
+        ops = DimReductionOps(
+            vector_fields=vector_fields,
+            n_components=n_components,
+            model=model,
+            alias=alias,
+            credentials=self.credentials,
+            **kwargs,
+        )
+        for documents in self.chunk_dataset(
+            select_fields=vector_fields, filters=filters, chunksize=chunksize
+        ):
+            updated_documents = ops.run(documents)
+            self.upsert_documents(
+                updated_documents,
+            )
+
+        self.store_operation_metadata(
+            operation="vectorize_text",
+            values=str(
+                {
+                    "vector_fields": vector_fields,
+                    "n_components": n_components,
+                    "models": model,
+                    "filters": filters,
+                    "alias": alias,
+                }
+            ),
+        )
+        return
+
     def vectorize_text(
         self,
         fields: List[str],
@@ -56,7 +119,12 @@ class Operations(Write):
 
         models = ["all-mpnet-base-v2"] if models is None else models
 
-        ops = VectorizeTextOps(fields=fields, models=models)
+        ops = VectorizeTextOps(
+            fields=fields,
+            models=models,
+            credentials=self.credentials,
+        )
+
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
@@ -64,9 +132,16 @@ class Operations(Write):
             self.upsert_documents(
                 updated_documents,
             )
+
         self.store_operation_metadata(
             operation="vectorize_text",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+            values=str(
+                {
+                    "fields": fields,
+                    "models": models,
+                    "filters": filters,
+                }
+            ),
         )
         return
 
@@ -109,14 +184,20 @@ class Operations(Write):
 
         self.store_operation_metadata(
             operation="vectorize_image",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+            values=str(
+                {
+                    "fields": fields,
+                    "models": models,
+                    "filters": filters,
+                }
+            ),
         )
         return
 
     def label(
         self,
         vector_fields: List[str],
-        label_documents,
+        label_documents: List[Any],
         expanded=True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
@@ -126,22 +207,22 @@ class Operations(Write):
         label_field: str = "label",
         label_vector_field="label_vector_",
     ):
-        """
-        This function takes a list of documents and a list of labels, and adds the labels to the documents
+        """This function takes a list of documents, a list of vector fields, and a list of label documents,
+        and then it labels the documents with the label documents
 
         Parameters
         ----------
         vector_fields : List[str]
-            The name of the vector field to use for the label operation.
-        label_documents
-            A list of documents that contain the labels.
+            List[str]
+        label_documents : List[Any]
+            List[Any]
         expanded, optional
-            If True, the label field will be a list of labels. If False, the label field will be a single
-        label.
+            If True, the label_vector_field will be a list of vectors. If False, the label_vector_field
+        will be a single vector.
         max_number_of_labels : int, optional
-            The maximum number of labels to return for each document.
+            int = 1,
         similarity_metric : str, optional
-            The metric used to calculate the similarity between the document and the label.
+            str = "cosine",
         filters : Optional[list]
             A list of filters to apply to the documents.
         chunksize : int, optional
@@ -151,12 +232,20 @@ class Operations(Write):
         label_field : str, optional
             The name of the field that will contain the label.
         label_vector_field, optional
-            The field where the label vector will be stored.
+            The field that will be added to the documents that contain the label vector.
+
+        Returns
+        -------
+            The return value is a list of documents.
 
         """
+
         from relevanceai.operations_new.label.ops import LabelOps
 
-        ops = LabelOps()
+        ops = LabelOps(
+            credentials=self.credentials,
+        )
+
         for documents in self.chunk_dataset(
             select_fields=vector_fields, filters=filters, chunksize=chunksize
         ):
@@ -218,7 +307,11 @@ class Operations(Write):
             SentenceSplitterOps,
         )
 
-        ops = SentenceSplitterOps(language=language)
+        ops = SentenceSplitterOps(
+            language=language,
+            credentials=self.credentials,
+        )
+
         for c in self.chunk_dataset(select_fields=text_fields):
             for text_field in text_fields:
                 c = ops.run(
