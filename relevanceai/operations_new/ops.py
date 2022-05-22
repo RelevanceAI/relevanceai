@@ -156,7 +156,7 @@ class Operations(Write):
         """
         from relevanceai.operations_new.label.ops import LabelOps
 
-        ops = LabelOps()
+        ops = LabelOps(self.credentials)
         for documents in self.chunk_dataset(
             select_fields=vector_fields, filters=filters, chunksize=chunksize
         ):

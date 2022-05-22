@@ -2,12 +2,10 @@ from relevanceai._api.api_client import (
     APIClient,
 )  # this needs to be replace by below in dr PR
 
-# from relevanceai.operations_new.apibase import OperationsAPIClient
-
-
 from relevanceai.constants.errors import MissingClusterError
-from typing import Callable, Dict, Any, Set, List
+from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations_new.cluster.base import ClusterBase
+from typing import Callable, Dict, Any, Set, List, Optional
 
 
 class ClusterOps(ClusterBase, APIClient):
@@ -105,7 +103,6 @@ class ClusterOps(ClusterBase, APIClient):
         self,
         alias: str = None,
         minimum_cluster_size: int = 3,
-        dataset_id: str = None,
         num_clusters: int = 1000,
     ):
         """
@@ -129,8 +126,6 @@ class ClusterOps(ClusterBase, APIClient):
             The alias to use for clustering
         minimum_cluster_size: int
             The minimum size of the clusters
-        dataset_id: str
-            The dataset ID
         num_clusters: int
             The number of clusters
 
@@ -168,14 +163,13 @@ class ClusterOps(ClusterBase, APIClient):
 
     def _insert_centroids(
         self,
-        dataset_id: str,
-        vector_fields: List[str],
-        centroid_documents: List[Dict[str, Any]],
+        centroid_documents,
     ) -> None:
+        # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
         self.datasets.cluster.centroids.insert(
-            dataset_id=dataset_id,
+            dataset_id=self.dataset_id,
             cluster_centers=centroid_documents,
-            vector_fields=vector_fields,
+            vector_fields=self.vector_fields,
             alias=self.alias,
         )
 
@@ -222,8 +216,157 @@ class ClusterOps(ClusterBase, APIClient):
                 for k, v in centroid_vectors.items()
             ]
         self._insert_centroids(
-            dataset_id=self.dataset_id,
-            vector_fields=[self.vector_fields[0]],
             centroid_documents=centroid_vectors,
         )
         return centroid_vectors
+
+    def list_closest(
+        self,
+        cluster_ids: Optional[list] = None,
+        select_fields: Optional[List] = None,
+        approx: int = 0,
+        page_size: int = 1,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[list] = None,
+        facets: Optional[list] = None,
+        include_vector: bool = False,
+        cluster_properties_filters: Optional[Dict] = None,
+        include_count: bool = False,
+        include_facets: bool = False,
+        verbose: bool = False,
+    ):
+        """
+        List of documents closest from the center.
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_fields: list
+            The vector fields where a clustering task runs
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        centroid_vector_fields: list
+            Vector fields stored
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        cluster_properties_filter: dict
+            Filter if clusters with certain characteristics should be hidden in results
+        """
+        return self.datasets.cluster.centroids.list_closest_to_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+            select_fields=select_fields,
+            approx=approx,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            facets=facets,
+            include_vector=include_vector,
+            include_count=include_count,
+            include_facets=include_facets,
+            cluster_properties_filter=cluster_properties_filters,
+            verbose=verbose,
+        )
+
+    @track
+    def furthest(
+        self,
+        cluster_ids: Optional[List] = None,
+        centroid_vector_fields: Optional[List] = None,
+        select_fields: Optional[List] = None,
+        approx: int = 0,
+        sum_fields: bool = True,
+        page_size: int = 3,
+        page: int = 1,
+        similarity_metric: str = "cosine",
+        filters: Optional[List] = None,
+        # facets: List = [],
+        min_score: int = 0,
+        include_vector: bool = False,
+        include_count: bool = True,
+        cluster_properties_filter: Optional[Dict] = {},
+    ):
+        """
+        List documents furthest from the center.
+
+        Parameters
+        ----------
+        dataset_id: string
+            Unique name of dataset
+        vector_fields: list
+            The vector field where a clustering task was run.
+        cluster_ids: list
+            Any of the cluster ids
+        alias: string
+            Alias is used to name a cluster
+        select_fields: list
+            Fields to include in the search results, empty array/list means all fields
+        approx: int
+            Used for approximate search to speed up search. The higher the number, faster the search but potentially less accurate
+        sum_fields: bool
+            Whether to sum the multiple vectors similarity search score as 1 or seperate
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        similarity_metric: string
+            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
+        filters: list
+            Query for filtering the search results
+        facets: list
+            Fields to include in the facets, if [] then all
+        min_score: int
+            Minimum score for similarity metric
+        include_vectors: bool
+            Include vectors in the search results
+        include_count: bool
+            Include the total count of results in the search results
+        include_facets: bool
+            Include facets in the search results
+        """
+        return self.datasets.cluster.centroids.list_furthest_from_center(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+            centroid_vector_fields=centroid_vector_fields,
+            select_fields=select_fields,
+            approx=approx,
+            sum_fields=sum_fields,
+            page_size=page_size,
+            page=page,
+            similarity_metric=similarity_metric,
+            filters=filters,
+            min_score=min_score,
+            include_vector=include_vector,
+            include_count=include_count,
+            cluster_properties_filter=cluster_properties_filter,
+        )
