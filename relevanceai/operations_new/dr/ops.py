@@ -7,7 +7,8 @@ class DimReductionOps(DimReductionBase, OperationsAPIBase):
     API related Functionality for Operation
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, model, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model = self._get_model(model)
         for k, v in kwargs.items():
             setattr(self, k, v)
