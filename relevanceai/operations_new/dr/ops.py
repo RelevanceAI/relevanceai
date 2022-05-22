@@ -8,7 +8,7 @@ class DimReductionOps(DimReductionBase, OperationsAPIBase):
     """
 
     def __init__(self, model, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(model=model, *args, **kwargs)
         self.model = self._get_model(model)
         for k, v in kwargs.items():
             setattr(self, k, v)
