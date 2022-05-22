@@ -16,16 +16,21 @@ class DimReductionBase(OperationBase):
         alias: Union[str, None],
         model: Union[str, DimReductionModelBase],
         n_components: int,
+        model_kwargs: Optional[dict] = None,
         **kwargs,
     ):
         self.vector_fields = vector_fields
         self.alias = alias
+        if model_kwargs is None:
+            model_kwargs = {}
         self.model = self._get_model(
             model=model,
             n_components=n_components,
             alias=alias,
-            **kwargs,
+            **model_kwargs,
         )
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     @property
     def name(self):
