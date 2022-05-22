@@ -1,9 +1,11 @@
 from typing import Any, Dict, List, Optional
 from relevanceai.dataset.write import Write
 from datetime import datetime
+from relevanceai.utils.decorators.analytics import track
 
 
 class Operations(Write):
+    @track
     def store_operation_metadata(self, operation: str, values: str):
         """
         Store metadata about operators
@@ -26,6 +28,7 @@ class Operations(Write):
         # Gets metadata and appends to the operation history
         return self.upsert_metadata(metadata)
 
+    @track
     def reduce_dims(
         self,
         vector_fields: List[str],
@@ -89,6 +92,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def vectorize_text(
         self,
         fields: List[str],
@@ -145,6 +149,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def vectorize_image(
         self,
         fields: List[str],
@@ -194,6 +199,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def label(
         self,
         vector_fields: List[str],
@@ -283,6 +289,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def split_sentences(
         self,
         text_fields: List[str],
@@ -333,3 +340,112 @@ class Operations(Write):
             ),
         )
         return
+
+    @track
+    def cluster(
+        self,
+        model: Any = None,
+        alias: Optional[str] = None,
+        vector_fields: List[str] = None,
+        filters: Optional[list] = None,
+        include_cluster_report: bool = True,
+        **kwargs,
+    ):
+        """
+        Run clustering on your dataset.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from sklearn.cluster import KMeans
+            model = KMeans()
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.cluster(
+                model=model, vector_fields=["sample_vector_"],
+                alias="kmeans-8"
+            )
+
+        Parameters
+        ------------
+
+        model: Union[str, Any]
+            Any K-Means model
+        vector_fields: List[str]
+            A list of possible vector fields
+        alias: str
+            The alias to be used to store your model
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
+        """
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        ops = ClusterOps(
+            credentials=self.credentials,
+            model=model,
+            alias=alias,  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
+            verbose=False,
+            **kwargs,
+        )
+        ops(
+            dataset_id=self.dataset_id,
+            vector_fields=vector_fields,
+            include_cluster_report=include_cluster_report,
+            filters=filters,
+        )
+        if alias is None:
+            alias = ops.alias
+
+        print(
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
+        )
+
+        self.store_operation_metadata(
+            operation="sentence_splitting",
+            values=str(
+                {
+                    "model": model,
+                    "vector_fields": vector_fields,
+                    "alias": alias,
+                    "filters": filters,
+                    "include_cluster_report": include_cluster_report,
+                }
+            ),
+        )
+
+        return ops
+
+    def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
+        if alias is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = (
+                    self.n_clusters
+                    if self.n_clusters is not None
+                    else self.model.n_clusters
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            elif hasattr(self.model, "k"):
+                n_clusters = (
+                    self.n_clusters if self.n_clusters is not None else self.model.k
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            else:
+                alias = self.model_name
+
+            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
+
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+        return alias.lower()

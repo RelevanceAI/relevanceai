@@ -15,6 +15,7 @@ class ClusterBase(OperationBase, ABC):
 
     @abstractmethod
     def _get_model(self, *args, **kwargs):
+        # TODO: change this from abstract to an actual get_model
         raise NotImplementedError
 
     def run(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

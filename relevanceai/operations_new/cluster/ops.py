@@ -6,6 +6,7 @@ from relevanceai.constants.errors import MissingClusterError
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations_new.cluster.base import ClusterBase
 from typing import Callable, Dict, Any, Set, List, Optional
+from relevanceai.constants import Warning
 
 
 class ClusterOps(ClusterBase, APIClient):
@@ -20,6 +21,7 @@ class ClusterOps(ClusterBase, APIClient):
         vector_fields: list,
         alias: str,
         cluster_field: str = "_cluster_",
+        verbose: bool = False,
         *args,
         **kwargs,
     ):
@@ -30,6 +32,7 @@ class ClusterOps(ClusterBase, APIClient):
         self.vector_fields = vector_fields
         self.alias = alias
         self.cluster_field = cluster_field
+        self.verbose = verbose
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -377,3 +380,29 @@ class ClusterOps(ClusterBase, APIClient):
         )
 
         ops = TextClusterExplainerOps()
+
+    def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
+        if alias is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = (
+                    self.n_clusters
+                    if self.n_clusters is not None
+                    else self.model.n_clusters
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            elif hasattr(self.model, "k"):
+                n_clusters = (
+                    self.n_clusters if self.n_clusters is not None else self.model.k
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            else:
+                alias = self.model_name
+
+            Warning.MISSING_ALIAS.format(alias=alias)
+
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+        return alias.lower()
