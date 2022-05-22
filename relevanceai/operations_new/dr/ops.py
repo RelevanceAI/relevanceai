@@ -9,4 +9,4 @@ class DimReductionOps(DimReductionBase, OperationsAPIBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        OperationsAPIBase.__init__(*args, **kwargs)
+        super(OperationsAPIBase).__init__(*args, **kwargs)
