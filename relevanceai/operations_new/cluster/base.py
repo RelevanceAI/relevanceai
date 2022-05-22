@@ -2,21 +2,63 @@
 Base class for clustering
 """
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import List, Dict, Any
-
 from relevanceai.operations_new.cluster.models.base import ModelBase
 from relevanceai.operations_new.base import OperationBase
 
 
 class ClusterBase(OperationBase, ABC):
 
-    models: List[ModelBase]
-    fields: List[str]
+    model: ModelBase
 
-    @abstractmethod
-    def _get_model(self, *args, **kwargs):
+    def __init__(
+        self, vector_fields: List[str], alias: str, model: Any, model_kwargs, **kwargs
+    ):
+
+        self.vector_fields = vector_fields
+        self.alias = alias
+
+        if model_kwargs is None:
+            model_kwargs = {}
+        self.model = self._get_model(
+            model=model,
+        )
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def _get_model(self, model):
         # TODO: change this from abstract to an actual get_model
+        from relevanceai.operations_new.cluster.models.base import ModelBase
+
+        if isinstance(model, str):
+            return self._get_model_from_string(model)
+
+        elif isinstance(model, ModelBase):
+            return model
         raise NotImplementedError
+
+    def normalize_model_name(self, model):
+        if isinstance(model, str):
+            return model.lower().replace("-", "").replace("_", "")
+        return model
+
+    def _get_model_from_string(self, model: str, *args, **kwargs):
+        model = self.normalize_model_name(model)
+        if model == "kmeans":
+            from relevanceai.operations_new.cluster.models.sklearn.kmeans import (
+                KMeansModel,
+            )
+
+            model = KMeansModel(*args, **kwargs)
+            return model
+        elif model == "communitydetection":
+            raise NotImplementedError("Community detection not supported yet")
+        raise ValueError("Model not supported.")
+
+    @property
+    def name(self):
+        return "cluster"
 
     def run(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """It takes a list of documents, and for each document, it runs the document through each of the
@@ -33,20 +75,31 @@ class ClusterBase(OperationBase, ABC):
 
         """
 
-        updated_documents = documents
+        updated_documents = deepcopy(documents)
 
-        for model in self.models:
-            updated_documents = model.predict_documents(
-                documents=updated_documents,
-                fields=self.fields,
+        labels = self.model.fit_predict_documents(
+            vector_fields=self.vector_fields,
+            documents=updated_documents,
+        )
+        # Get the cluster field name
+        if self.alias is None:
+            cluster_field_name = (
+                "_cluster_." + ".".join(self.vector_fields) + "." + self.model.name
             )
+
+        else:
+            cluster_field_name = (
+                "_cluster_." + ".".join(self.vector_fields) + "." + self.alias
+            )
+
+        self.set_field_across_documents(cluster_field_name, labels, updated_documents)
 
         # removes unnecessary info for updated_where
         updated_documents = [
             {
                 key: value
                 for key, value in document.items()
-                if key in self.fields or key == "_id"
+                if key not in self.vector_fields or key == "_id"
             }
             for document in updated_documents
         ]

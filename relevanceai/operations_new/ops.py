@@ -36,7 +36,7 @@ class Operations(Write):
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        chunksize: int = 1000,
         **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
@@ -70,13 +70,13 @@ class Operations(Write):
             credentials=self.credentials,
             **kwargs,
         )
-        for documents in self.chunk_dataset(
-            select_fields=vector_fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
+        documents = self.get_all_documents(
+            chunksize=chunksize, select_fields=vector_fields, filters=filters
+        )
+        updated_documents = ops.run(documents)
+        self.upsert_documents(
+            updated_documents,
+        )
 
         self.store_operation_metadata(
             operation="vectorize_text",
@@ -394,14 +394,16 @@ class Operations(Write):
             vector_fields=vector_fields,  # type: ignore
             verbose=False,
             credentials=self.credentials,
+            dataset_id=self.dataset_id,
             **kwargs,
         )
+        documents = self.get_all_documents(filters=filters, select_fields=vector_fields)
+
         ops(
-            dataset_id=self.dataset_id,
-            vector_fields=vector_fields,
-            include_cluster_report=include_cluster_report,
-            filters=filters,
+            documents,
         )
+
+        # Create the cluster report
         if alias is None:
             alias = ops.alias
 

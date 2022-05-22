@@ -10,10 +10,9 @@ class DimReductionModelBase(ABC, DocUtils):
     alias: Union[str, None]
 
     def vector_name(self, field):
-        if isinstance(self.alias, str):
+        if self.alias is not None:
             return f"{self.alias}_vector_"
         else:
-
             return f"{self.model_name}_{field}"
 
     def fit(self, *args, **kwargs) -> None:

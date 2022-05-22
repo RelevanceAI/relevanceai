@@ -22,6 +22,8 @@ class ClusterOps(ClusterBase, APIClient):
         alias: str,
         cluster_field: str = "_cluster_",
         verbose: bool = False,
+        model_kwargs=None,
+        *args,
         **kwargs,
     ):
         """
@@ -35,6 +37,15 @@ class ClusterOps(ClusterBase, APIClient):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
+        super().__init__(
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            cluster_field=cluster_field,
+            verbose=verbose,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
 
     def _get_cluster_field_name(self, alias: str = None):
         if alias is None:

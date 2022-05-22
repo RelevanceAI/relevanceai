@@ -10,8 +10,13 @@ from sklearn.base import ClusterMixin
 class SklearnModelBase(ClusterMixin, ModelBase):
     """Sklearn model base"""
 
-    def fit_predict(self, *args, **kwargs) -> List:
-        return super().fit_predict(*args, **kwargs)
+    model: ClusterMixin
 
-    def predict_documents(self, documents: Union[List, DocumentList]) -> DocumentList:
-        pass
+    def fit_predict(self, *args, **kwargs) -> List:
+        return self.model.fit_predict(*args, **kwargs)
+
+    def fit(self, *args, **kwargs) -> List:
+        return self.model.fit(*args, **kwargs)
+
+    def predict(self, *args, **kwargs) -> List:
+        raise self.model.predict(*args, **kwargs)
