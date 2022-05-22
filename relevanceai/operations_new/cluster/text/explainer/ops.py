@@ -4,17 +4,16 @@
 from tqdm.auto import tqdm
 from typing import Optional
 from relevanceai.operations_new.cluster.text.explainer.base import BaseExplainer
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.apibase import OperationAPIBase
 
 
-class TextClusterExplainerOps(BaseExplainer, OperationBase):  # type: ignore
+class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    from relevanceai.operations.cluster import ClusterOps
-
     def explain_clusters(
         self,
+        dataset_id: str,
         vector_fields: list,
         alias: str,
         text_field,
@@ -29,8 +28,6 @@ class TextClusterExplainerOps(BaseExplainer, OperationBase):  # type: ignore
 
         Parameters
         ----------
-        cluster_ops : ClusterOps
-            ClusterOps,
         text_field
             The field that contains the text to explain
         encode_fn
@@ -55,8 +52,13 @@ class TextClusterExplainerOps(BaseExplainer, OperationBase):  # type: ignore
         # Then highlights why the centroid is similar to the second most similar one
         # List the closest
 
-        cluster_ops = self.ClusterOps(
-            credentials=self.credentials, vector_fields=vector_fields, alias=alias
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        cluster_ops = ClusterOps(
+            credentials=self.credentials,
+            vector_fields=vector_fields,
+            alias=alias,
+            dataset_id=dataset_id,
         )
         closest = cluster_ops.closest(
             page_size=n_closest, select_fields=[text_field], verbose=False

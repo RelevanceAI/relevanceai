@@ -8,7 +8,7 @@ class OperationsAPILogger:
     pass
 
 
-class OperationsAPIBase(APIClient, OperationBase, OperationsAPILogger):
+class OperationAPIBase(APIClient, OperationBase, OperationsAPILogger):
     def run_on(self, dataset: Dataset, **kwargs):
         for documents in dataset.chunk_dataset():
             documents = self.run(documents=documents, **kwargs)

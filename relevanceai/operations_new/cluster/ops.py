@@ -19,7 +19,7 @@ class ClusterOps(ClusterBase, APIClient):
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        cluster_field: str,
+        cluster_field: str = "_cluster_",
         *args,
         **kwargs,
     ):
@@ -370,3 +370,10 @@ class ClusterOps(ClusterBase, APIClient):
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
         )
+
+    def explain_text_clusters(self, text_field: str, n_closest: int = 5):
+        from relevanceai.operations_new.cluster.text.explainer.ops import (
+            TextClusterExplainerOps,
+        )
+
+        ops = TextClusterExplainerOps()
