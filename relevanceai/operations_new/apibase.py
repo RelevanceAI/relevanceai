@@ -19,3 +19,16 @@ class OperationAPIBase(APIClient, OperationBase, OperationsAPILogger):
             values=str(kwargs),
         )
         return
+
+    @classmethod
+    def from_credentials(self, *args, **kwargs):
+        """
+        .. code-block::
+
+            ClusterOps.from_dataset()
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def from_dataset(self, *args, **kwargs):
+        raise NotImplementedError

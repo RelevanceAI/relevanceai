@@ -389,11 +389,11 @@ class Operations(Write):
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
         ops = ClusterOps(
-            credentials=self.credentials,
             model=model,
             alias=alias,  # type: ignore
             vector_fields=vector_fields,  # type: ignore
             verbose=False,
+            credentials=self.credentials,
             **kwargs,
         )
         ops(
@@ -410,7 +410,7 @@ class Operations(Write):
         )
 
         self.store_operation_metadata(
-            operation="sentence_splitting",
+            operation="cluster",
             values=str(
                 {
                     "model": model,

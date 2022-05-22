@@ -22,7 +22,6 @@ class ClusterOps(ClusterBase, APIClient):
         alias: str,
         cluster_field: str = "_cluster_",
         verbose: bool = False,
-        *args,
         **kwargs,
     ):
         """
