@@ -38,7 +38,7 @@ def label_documents():
 
 
 class TestLabelOps:
-    def test_label_ops(test_client: Client, label_documents):
+    def test_label_ops(self, test_client: Client, label_documents):
         # Add testing for label ops
         from relevanceai.operations_new.label import LabelOps
 
