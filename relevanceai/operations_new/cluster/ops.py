@@ -297,7 +297,7 @@ class ClusterOps(ClusterBase, APIClient):
         )
 
     @track
-    def furthest(
+    def list_furthest(
         self,
         cluster_ids: Optional[List] = None,
         centroid_vector_fields: Optional[List] = None,
