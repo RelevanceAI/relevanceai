@@ -44,7 +44,10 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
 
             from relevanceai import Client
             client = Client()
-
+            cluster_ops.explain_text_clusters(
+                text_field="sample_1_label",
+                encode_fn=encode
+            )
 
         """
         # TODO:

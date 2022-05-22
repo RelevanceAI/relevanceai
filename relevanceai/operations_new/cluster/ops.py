@@ -424,6 +424,13 @@ class ClusterOps(OperationAPIBase, ClusterBase):
         It takes a text field and a function that encodes the text field into a vector.
         It then returns the top n closest vectors to each cluster centroid.
 
+        .. code-block::
+
+            def encode(X):
+                return [1, 2, 1]
+
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn=encode)
+
         Parameters
         ----------
         text_field
