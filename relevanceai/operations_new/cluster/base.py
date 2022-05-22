@@ -13,10 +13,6 @@ class ClusterBase(OperationBase, ABC):
     models: List[ModelBase]
     fields: List[str]
 
-    @abstractmethod
-    def _get_model(self, *args, **kwargs):
-        raise NotImplementedError
-
     def run(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.

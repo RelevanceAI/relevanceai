@@ -5,10 +5,11 @@ from relevanceai._api.api_client import (
 from relevanceai.constants.errors import MissingClusterError
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.apibase import OperationAPIBase
 from typing import Callable, Dict, Any, Set, List, Optional
 
 
-class ClusterOps(ClusterBase, APIClient):
+class ClusterOps(OperationAPIBase, ClusterBase):
     """
     Cluster-related functionalities
     """
@@ -33,6 +34,12 @@ class ClusterOps(ClusterBase, APIClient):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def name(self):
+        return "cluster"
 
     def _get_cluster_field_name(self, alias: str = None):
         if alias is None:
@@ -437,7 +444,7 @@ class ClusterOps(ClusterBase, APIClient):
             TextClusterExplainerOps,
         )
 
-        ops = TextClusterExplainerOps()
+        ops = TextClusterExplainerOps(credentials=self.credentials)
         return ops.explain_clusters(
             dataset_id=self.dataset_id,
             alias=self.alias,

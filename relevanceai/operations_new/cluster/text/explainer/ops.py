@@ -5,6 +5,7 @@ from tqdm.auto import tqdm
 from typing import Optional
 from relevanceai.operations_new.cluster.text.explainer.base import BaseExplainer
 from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 
 
 class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
@@ -19,7 +20,8 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
         text_field,
         encode_fn,
         n_closest: int = 5,
-        highlight_output_field="_explain_",
+        highlight_output_field: str = "_explain_",
+        cluster_properties_filters: Optional[dict] = None,
     ):
 
         """
@@ -51,6 +53,9 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
         # For each centroid, explains the closest n_closest to the centroids
         # Then highlights why the centroid is similar to the second most similar one
         # List the closest
+        cluster_properties_filters = (
+            {} if cluster_properties_filters is None else cluster_properties_filters
+        )
 
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
@@ -60,8 +65,11 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             alias=alias,
             dataset_id=dataset_id,
         )
-        closest = cluster_ops.closest(
-            page_size=n_closest, select_fields=[text_field], verbose=False
+        closest = cluster_ops.list_closest(
+            page_size=n_closest,
+            select_fields=[text_field],
+            verbose=False,
+            cluster_properties_filters=cluster_properties_filters,
         )
         # For the results in closest, we explain a text field
         # Flatten the closest
@@ -99,3 +107,11 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         return closest
+
+    def run(self, documents: DocumentList):
+        # Not useful but having just for sake of abstractmethod - potentially can just take a list of documents to do something in the future
+        raise NotImplementedError
+
+    @property
+    def name(self):
+        return "textclusterexplainer"
