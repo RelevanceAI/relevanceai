@@ -63,6 +63,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         else:
             self.hooks = None
 
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
     def log(self, response, *args, **kwargs):
         """It takes the response from the request and logs the url, path_url, method, status_code, headers,
         content, time, and elapsed time
