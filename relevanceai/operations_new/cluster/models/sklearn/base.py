@@ -7,7 +7,7 @@ from typing import List, Union
 from sklearn.base import ClusterMixin
 
 
-class SklearnModelBase(ModelBase, ClusterMixin):
+class SklearnModelBase(ClusterMixin, ModelBase):
     """Sklearn model base"""
 
     def fit_predict(self, *args, **kwargs) -> List:
