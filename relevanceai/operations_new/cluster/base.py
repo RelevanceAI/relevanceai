@@ -5,10 +5,10 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
 from relevanceai.operations_new.cluster.models.base import ModelBase
-from relevanceai.operations_new.base import OperationsBase
+from relevanceai.operations_new.base import OperationBase
 
 
-class ClusterBase(ABC, OperationsBase):
+class ClusterBase(OperationBase, ABC):
 
     models: List[ModelBase]
     fields: List[str]
