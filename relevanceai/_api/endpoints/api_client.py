@@ -30,13 +30,26 @@ class APIEndpointsClient(_Base, DocUtils):
             **kwargs,
         )
 
+    # To avoid the inits being missed - we set the endpoints as
+    # properties here
+    # we set the clients as internal variables
+    # so they do not have to be initiated every time
+
     @property
     def datasets(self):
-        return DatasetsClient(self.credentials)
+        if hasattr(self, "_datasets_client"):
+            return self._datasets_client
+        else:
+            self._datasets_client = DatasetsClient(self.credentials)
+        return self._datasets_client
 
     @property
     def services(self):
-        return ServicesClient(self.credentials)
+        if hasattr(self, "_services_client"):
+            return self._services_client
+        else:
+            self._services_client = ServicesClient(self.credentials)
+        return self._services_client
 
     @property
     def example_datasets(self):
@@ -44,15 +57,24 @@ class APIEndpointsClient(_Base, DocUtils):
 
     @property
     def admin(self):
-        return AdminClient(self.credentials)
+        if hasattr(self, "_admin_client"):
+            return self._admin_client
+        self._admin_client = AdminClient(self.credentials)
+        return self._admin_client
 
     @property
     def reports(self):
-        return ReportsClient(self.credentials)
+        if hasattr(self, "_reports_client"):
+            return self._reports_client
+        self._reports_client = ReportsClient(self.credentials)
+        return self._reports_client
 
     @property
     def deployables(self):
-        return DeployableClient(self.credentials)
+        if hasattr(self, "_deployables_client"):
+            self._deployables_client = DeployableClient(self.credentials)
+        self._deployables_client = DeployableClient(self.credentials)
+        return self._deployables_client
 
     def _convert_id_to_string(self, documents, create_id: bool = False):
         try:
