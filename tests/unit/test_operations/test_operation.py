@@ -25,8 +25,7 @@ class TestOperation:
             alias=alias,
             vector_fields=[vector_field],
             parent_field=parent_field,
-            cluster_ids=[f"_cluster.{vector_field}.{alias}"],
             filters=["sample_1_vector"],
             min_parent_cluster_size=2,
         )
-        assert parent_field in test_dataset.schema
+        assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
