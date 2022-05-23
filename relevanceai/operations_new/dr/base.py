@@ -102,15 +102,20 @@ class DimReductionBase(OperationBase):
 
         updated_documents = documents
 
+        concat_vectors: List[List[float]] = [[] for _ in range(len(documents))]
+
         for vector_field in self.vector_fields:
             vectors = self.get_field_across_documents(
                 field=vector_field, docs=documents
             )
-            reduced_vectors = self.model.fit_transform(vectors)
-            reduced_vector_name = self.model.vector_name(vector_field)
-            self.set_field_across_documents(
-                field=reduced_vector_name, values=reduced_vectors, docs=documents
-            )
+            for vector, concat_vector in zip(vectors, concat_vectors):
+                concat_vector.extend(vector)
+
+        reduced_vectors = self.model.fit_transform(concat_vectors)
+        reduced_vector_name = self.model.vector_name(self.vector_fields)
+        self.set_field_across_documents(
+            field=reduced_vector_name, values=reduced_vectors, docs=documents
+        )
 
         # removes unnecessary info for updated_where
         updated_documents = [

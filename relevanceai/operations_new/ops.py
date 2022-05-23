@@ -67,13 +67,15 @@ class Operations(Write):
             credentials=self.credentials,
             **kwargs,
         )
-        for documents in self.chunk_dataset(
-            select_fields=vector_fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
+        documents = self.get_all_documents(
+            select_fields=vector_fields,
+            filters=filters,
+            include_vector=True,
+        )
+        updated_documents = ops.run(documents)
+        self.upsert_documents(
+            updated_documents,
+        )
 
         self.store_operation_metadata(
             operation="vectorize_text",
