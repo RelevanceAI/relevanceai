@@ -79,7 +79,7 @@ class Operations(Write):
         )
 
         self.store_operation_metadata(
-            operation="vectorize_text",
+            operation="reduce_dims",
             values=str(
                 {
                     "vector_fields": vector_fields,
@@ -271,7 +271,7 @@ class Operations(Write):
             )
 
         self.store_operation_metadata(
-            operation="vectorize_image",
+            operation="label",
             values=str(
                 {
                     "vector_fields": vector_fields,
