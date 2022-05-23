@@ -37,7 +37,7 @@ class CleanTextBase(OperationBase, BaseTextProcessing):
         self.set_field(output_field + "." + text_field, document, clean_text)
         return document
 
-    def run(
+    def transform(
         self,
         text_field,
         documents,
