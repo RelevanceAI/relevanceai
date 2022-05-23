@@ -444,6 +444,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         encode_fn_or_model,
         n_closest: int = 5,
         highlight_output_field="_explain_",
+        algorithm: str = "centroid",
     ):
         """
         It takes a text field and a function that encodes the text field into a vector.
@@ -462,6 +463,8 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             The number of closest documents to each cluster to return.
         highlight_output_field, optional
             The name of the field that will be added to the output dataset.
+        algorithm: str
+            Algorithm is either "centroid" or "relational"
         Returns
         -------
             A new dataset with the same data as the original dataset, but with a new field called _explain_
@@ -481,15 +484,27 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         )
 
         ops = TextClusterExplainerOps(credentials=self.credentials)
-        return ops.explain_clusters(
-            dataset_id=self.dataset_id,
-            alias=self.alias,
-            vector_fields=self.vector_fields,
-            text_field=text_field,
-            encode_fn=encode_fn,
-            n_closest=n_closest,
-            highlight_output_field=highlight_output_field,
-        )
+        if algorithm == "centroid":
+            return ops.explain_clusters(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        elif algorithm == "relational":
+            return ops.explain_clusters_relational(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
 
     def _get_n_clusters(self):
         if "n_clusters" in self.model_kwargs:
