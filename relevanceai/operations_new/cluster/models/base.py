@@ -42,3 +42,9 @@ class ModelBase(ABC, DocUtils):
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
         )
+
+    def __str__(self):
+        if hasattr(self.model):
+            return str(self.model)
+        else:
+            return "generic_cluster_model"

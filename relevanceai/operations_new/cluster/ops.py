@@ -16,6 +16,8 @@ class ClusterOps(ClusterBase, OperationAPIBase):
     """
 
     # These need to be instantiated on __init__
+    model_name: str
+
     def __init__(
         self,
         dataset_id: str,
@@ -33,16 +35,18 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
-        self.alias = alias
         self.cluster_field = cluster_field
         self.verbose = verbose
         self.model = model
+        if isinstance(self.model, str):
+            self.model_name = self.model
+        else:
+            self.model_name = str(self.model)
         self.model_kwargs = model_kwargs
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        self.alias = self._get_alias(alias)
         super().__init__(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
@@ -53,6 +57,10 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             model_kwargs=model_kwargs,
             **kwargs,
         )
+
+        # alias is set after model so that we can get the number of clusters
+        # if the model needs ot be instantiated
+        self.alias = self._get_alias(alias)
 
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
@@ -440,28 +448,24 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             highlight_output_field=highlight_output_field,
         )
 
+    def _get_n_clusters(self):
+        if "n_clusters" in self.model_kwargs:
+            return self.model_kwargs["n_clusters"]
+        elif hasattr(self.model, "n_clusters"):
+            return self.model.n_clusters
+        elif hasattr(self.model, "k"):
+            return self.model.k
+        return None
+
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
+        n_clusters = self._get_n_clusters()
         if alias is None:
-            if hasattr(self.model, "n_clusters"):
-                n_clusters = (
-                    self.n_clusters
-                    if self.n_clusters is not None
-                    else self.model.n_clusters
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            elif hasattr(self.model, "k"):
-                n_clusters = (
-                    self.n_clusters if self.n_clusters is not None else self.model.k
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            else:
-                alias = self.model_name
-
             Warning.MISSING_ALIAS.format(alias=alias)
-
+            if n_clusters is not None:
+                alias = f"{self.model_name}-{n_clusters}"
+            else:
+                alias = f"{self.model_name}"
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
