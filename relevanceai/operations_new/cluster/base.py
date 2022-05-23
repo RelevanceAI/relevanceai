@@ -1,14 +1,12 @@
 """
 Base class for clustering
 """
-from abc import ABC, abstractmethod
-from copy import deepcopy
 from typing import List, Dict, Any
 from relevanceai.operations_new.cluster.models.base import ModelBase
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.run import OperationRun
 
 
-class ClusterBase(OperationBase, ABC):
+class ClusterBase(OperationRun):
 
     model: ModelBase
 
@@ -38,8 +36,6 @@ class ClusterBase(OperationBase, ABC):
 
     def _get_model(self, model):
         # TODO: change this from abstract to an actual get_model
-        from relevanceai.operations_new.cluster.models.base import ModelBase
-
         if isinstance(model, str):
             return self._get_model_from_string(model)
         return model
