@@ -56,8 +56,13 @@ class TestClusterOps:
         vector_field = "sample_1_vector_"
         alias = "kmeans-10"
 
-        operator = test_client.ClusterOps(model="kmeans", n_clusters=10)
-        operator(test_dataset, vector_fields=[vector_field])
+        operator = test_client.ClusterOps(
+            vector_fields=[vector_field],
+            dataset_id=test_dataset,
+            model="kmeans",
+            model_kwargs=dict(n_clusters=10),
+        )
+        operator(test_dataset)
 
         schema = test_dataset.schema
         assert f"_cluster_" in schema
