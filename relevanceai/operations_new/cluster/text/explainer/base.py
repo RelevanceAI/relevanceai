@@ -140,11 +140,11 @@ class BaseExplainer(DocUtils):
 
         """
         # Replace with case-switch in future
-        for f in fields:
+        for field in fields:
             [
                 self._encode_chunk_document(
                     chunk_field=chunk_field,
-                    field=f,
+                    field=field,
                     doc=d,
                     vector_error_treatment=vector_error_treatment,
                     field_type="chunkvector",
@@ -174,11 +174,11 @@ class BaseExplainer(DocUtils):
             fields:
                 The list of fields to be used
         """
-        for f in fields:
+        for field in fields:
             # Replace with case-switch in future
-            contained_docs = [d for d in documents if self.is_field(f, d)]
+            contained_docs = [d for d in documents if self.is_field(field, d)]
             self._bulk_encode_document(
-                f,
+                field,
                 contained_docs,
                 vector_error_treatment=vector_error_treatment,
                 field_type=field_type,
@@ -215,20 +215,17 @@ class BaseExplainer(DocUtils):
         encode_fn: Callable,
         query_text,
         result_texts,
-        max_highlights=None,
-        ignore_warnings: bool = True,
+        maximum_span: int = 5,
     ):
-        import numpy as np
-        from IPython.display import display
-        from sklearn.preprocessing import MinMaxScaler
-        from jsonshower import show_json
-
         query_vector = encode_fn(query_text)
         cos_similarity = list()
         for result_text in result_texts:
             doc = self.get_result(encode_fn, result_text, query_vector)
             doc["explain_chunk"] = [
-                {"text": t} for t in self.get_word_combinations(result_text)
+                {"text": t}
+                for t in self.get_word_combinations(
+                    result_text, maximum_span=maximum_span
+                )
             ]
             self.encode_documents(encode_fn, ["text"], doc["explain_chunk"])
             for d in doc["explain_chunk"]:
