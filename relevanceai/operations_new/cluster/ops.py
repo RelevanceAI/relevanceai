@@ -23,6 +23,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         alias: str,
         cluster_field: str = "_cluster_",
         verbose: bool = False,
+        model=None,
         model_kwargs=None,
         *args,
         **kwargs,
@@ -35,6 +36,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         self.alias = alias
         self.cluster_field = cluster_field
         self.verbose = verbose
+        self.model = model
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -44,6 +46,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             alias=alias,
             cluster_field=cluster_field,
             verbose=verbose,
+            model=model,
             model_kwargs=model_kwargs,
             **kwargs,
         )
@@ -373,12 +376,48 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             cluster_properties_filter=cluster_properties_filter,
         )
 
-    def explain_text_clusters(self, text_field: str, n_closest: int = 5):
+    def explain_text_clusters(
+        self,
+        text_field,
+        encode_fn,
+        n_closest: int = 5,
+        highlight_output_field="_explain_",
+    ):
+        """
+        It takes a text field and a function that encodes the text field into a vector.
+        It then returns the top n closest vectors to each cluster centroid.
+        .. code-block::
+            def encode(X):
+                return [1, 2, 1]
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn=encode)
+        Parameters
+        ----------
+        text_field
+            The field in the dataset that contains the text to be explained.
+        encode_fn
+            This is the function that will be used to encode the text.
+        n_closest : int, optional
+            The number of closest documents to each cluster to return.
+        highlight_output_field, optional
+            The name of the field that will be added to the output dataset.
+        Returns
+        -------
+            A new dataset with the same data as the original dataset, but with a new field called _explain_
+        """
         from relevanceai.operations_new.cluster.text.explainer.ops import (
             TextClusterExplainerOps,
         )
 
-        ops = TextClusterExplainerOps()
+        ops = TextClusterExplainerOps(credentials=self.credentials)
+        return ops.explain_clusters(
+            dataset_id=self.dataset_id,
+            alias=self.alias,
+            vector_fields=self.vector_fields,
+            text_field=text_field,
+            encode_fn=encode_fn,
+            n_closest=n_closest,
+            highlight_output_field=highlight_output_field,
+        )
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here

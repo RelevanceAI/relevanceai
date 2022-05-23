@@ -247,8 +247,6 @@ class BaseExplainer(DocUtils):
         query_text,
         answer_text,
     ):
-        import numpy as np
-        from sklearn.preprocessing import MinMaxScaler
 
         query_vector = encode_fn(query_text)
         doc = self.get_result(encode_fn, answer_text, query_vector)

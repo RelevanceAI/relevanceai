@@ -59,8 +59,9 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             vector_fields=vector_fields,
             alias=alias,
             dataset_id=dataset_id,
+            model=None,
         )
-        closest = cluster_ops.closest(
+        closest = cluster_ops.list_closest(
             page_size=n_closest, select_fields=[text_field], verbose=False
         )
         # For the results in closest, we explain a text field
