@@ -13,9 +13,14 @@ class OperationRun(OperationBase):
     """
 
     def run(
-        self, dataset: Dataset, select_fields: list, filters: list, *args, **kwargs
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        *args,
+        **kwargs
     ):
-        # Run on all datasets
+        # A default run on all datasets
         documents = dataset.get_all_documents(
             select_fields=select_fields, filters=filters
         )
@@ -24,7 +29,8 @@ class OperationRun(OperationBase):
         results = dataset.upsert_documents(updated_documents)
         # TODO: update values
         self.store_operation_metadata(
-            dataset=dataset, values={"select_fields": select_fields, "dataset": dataset}
+            dataset=dataset,
+            values={"select_fields": select_fields, "dataset": dataset, **kwargs},
         )
         return results
 

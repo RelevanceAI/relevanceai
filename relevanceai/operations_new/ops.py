@@ -415,34 +415,12 @@ class Operations(Write):
         else:
             filters += vector_field_filters
 
-        documents = self.get_all_documents(filters=filters, select_fields=vector_fields)
-
-        ops(
-            documents,
-        )
-
         # Create the cluster report
-        if alias is None:
-            alias = ops.alias
+        ops.run(dataset=self, select_fields=vector_fields, filters=filters)
 
         print(
-            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{ops.alias}', vector_fields={ops.vector_fields}, dataset_id='{self.dataset_id}')`"
         )
-
-        self.store_operation_metadata(
-            operation="cluster",
-            values=str(
-                {
-                    "model": model,
-                    "vector_fields": vector_fields,
-                    "alias": alias,
-                    "filters": filters,
-                    "include_cluster_report": include_cluster_report,
-                    "model_kwargs": model_kwargs,
-                }
-            ),
-        )
-
         return ops
 
     def _get_alias(self, alias: Any) -> str:

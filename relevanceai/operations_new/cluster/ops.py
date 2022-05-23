@@ -37,6 +37,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         self.cluster_field = cluster_field
         self.verbose = verbose
         self.model = model
+        self.model_kwargs = model_kwargs
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -462,3 +463,17 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
+
+    def store_operation_metadatas(self):
+        self.store_operation_metadata(
+            operation="cluster",
+            values=str(
+                {
+                    "model": self.model,
+                    "vector_fields": self.vector_fields,
+                    "alias": self.alias,
+                    "filters": self.filters,
+                    "model_kwargs": self.model_kwargs,
+                }
+            ),
+        )
