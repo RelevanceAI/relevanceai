@@ -24,6 +24,7 @@ class ClusterBase(OperationBase, ABC):
 
         self.vector_fields = vector_fields
         self.alias = alias
+        self._check_vector_fields()
 
         if model_kwargs is None:
             model_kwargs = {}
@@ -33,6 +34,17 @@ class ClusterBase(OperationBase, ABC):
         self.cluster_field = cluster_field
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def _check_vector_fields(self):
+        # check the vector fields
+        for vector_field in self.vector_fields:
+            if not vector_field.endswith("_vector_"):
+                raise ValueError("Vector field is bad!")
+        # TODO: check the schema
+        if hasattr(self, "dataset"):
+            for vector_field in self.vector_fields:
+                if hasattr(self.dataset, "schema"):
+                    assert vector_field in self.dataset.schema
 
     def _get_model(self, model):
         # TODO: change this from abstract to an actual get_model
