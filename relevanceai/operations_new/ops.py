@@ -71,7 +71,9 @@ class Operations(Write):
             **kwargs,
         )
         documents = self.get_all_documents(
-            chunksize=chunksize, select_fields=vector_fields, filters=filters
+            chunksize=chunksize,
+            select_fields=vector_fields,
+            filters=filters,
         )
         updated_documents = ops.transform(documents)
         self.upsert_documents(
