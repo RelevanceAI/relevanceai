@@ -13,7 +13,13 @@ class ClusterBase(OperationBase, ABC):
     model: ModelBase
 
     def __init__(
-        self, vector_fields: List[str], alias: str, model: Any, model_kwargs, **kwargs
+        self,
+        vector_fields: List[str],
+        alias: str,
+        model: Any,
+        model_kwargs,
+        cluster_field: str = "_cluster_",
+        **kwargs,
     ):
 
         self.vector_fields = vector_fields
@@ -24,6 +30,7 @@ class ClusterBase(OperationBase, ABC):
         self.model = self._get_model(
             model=model,
         )
+        self.cluster_field = cluster_field
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -35,6 +42,8 @@ class ClusterBase(OperationBase, ABC):
             return self._get_model_from_string(model)
 
         elif isinstance(model, ModelBase):
+            return model
+        elif model is None:
             return model
         raise NotImplementedError
 
@@ -105,3 +114,17 @@ class ClusterBase(OperationBase, ABC):
         ]
 
         return updated_documents
+
+    def _get_cluster_field_name(self, alias: str = None):
+        if alias is None:
+            alias = self.alias
+        if isinstance(self.vector_fields, list):
+            if hasattr(self, "cluster_field"):
+                set_cluster_field = (
+                    f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
+                )
+            else:
+                set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
+        elif isinstance(self.vector_fields, str):
+            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
+        return set_cluster_field

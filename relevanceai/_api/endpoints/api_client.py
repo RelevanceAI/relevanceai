@@ -24,16 +24,35 @@ class APIEndpointsClient(_Base, DocUtils):
         credentials: Credentials,
         **kwargs,
     ):
-        self.datasets = DatasetsClient(credentials)
-        self.services = ServicesClient(credentials)
-        self.example_datasets = ExampleDatasets()
-        self.admin = AdminClient(credentials)
-        self.reports = ReportsClient(credentials)
-        self.deployables = DeployableClient(credentials)
+        self.credentials = credentials
         super().__init__(
             credentials=credentials,
             **kwargs,
         )
+
+    @property
+    def datasets(self):
+        return DatasetsClient(self.credentials)
+
+    @property
+    def services(self):
+        return ServicesClient(self.credentials)
+
+    @property
+    def example_datasets(self):
+        return ExampleDatasets()
+
+    @property
+    def admin(self):
+        return AdminClient(self.credentials)
+
+    @property
+    def reports(self):
+        return ReportsClient(self.credentials)
+
+    @property
+    def deployables(self):
+        return DeployableClient(self.credentials)
 
     def _convert_id_to_string(self, documents, create_id: bool = False):
         try:

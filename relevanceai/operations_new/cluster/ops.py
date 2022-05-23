@@ -5,11 +5,12 @@ from relevanceai._api.api_client import (
 from relevanceai.constants.errors import MissingClusterError
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.apibase import OperationAPIBase
 from typing import Callable, Dict, Any, Set, List, Optional
 from relevanceai.constants import Warning
 
 
-class ClusterOps(ClusterBase, APIClient):
+class ClusterOps(ClusterBase, OperationAPIBase):
     """
     Cluster-related functionalities
     """
@@ -46,20 +47,6 @@ class ClusterOps(ClusterBase, APIClient):
             model_kwargs=model_kwargs,
             **kwargs,
         )
-
-    def _get_cluster_field_name(self, alias: str = None):
-        if alias is None:
-            alias = self.alias
-        if isinstance(self.vector_fields, list):
-            if hasattr(self, "cluster_field"):
-                set_cluster_field = (
-                    f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
-                )
-            else:
-                set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
-        elif isinstance(self.vector_fields, str):
-            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
-        return set_cluster_field
 
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
@@ -290,6 +277,8 @@ class ClusterOps(ClusterBase, APIClient):
         cluster_properties_filter: dict
             Filter if clusters with certain characteristics should be hidden in results
         """
+        if cluster_properties_filters is None:
+            cluster_properties_filters = {}
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
