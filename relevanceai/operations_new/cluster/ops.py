@@ -513,6 +513,13 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
         return alias.lower()
 
+    def _get_alias_from_sklearn(self, sklearn_model):
+        from sklearn.cluster import KMeans
+
+        if isinstance(sklearn_model, KMeans):
+            return "kmeans-" + str(sklearn_model.n_clusters)
+        return None
+
     def store_operation_metadatas(self):
         self.store_operation_metadata(
             operation="cluster",

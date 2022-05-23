@@ -65,3 +65,32 @@ class OperationBase(ABC, DocUtils):
             raise ValueError("alias is not set. Please supply alias=")
         if self.alias.lower() != self.alias:
             raise ValueError("Alias cannot be lower case.")
+
+    def _get_package_from_model(self, model):
+        """
+        Determine the package for a model.
+        This can be useful for checking dependencies.
+        This may be used across modules for
+        deeper integrations
+        """
+        # TODO: add support for huggingface integrations
+        # such as transformers and sentencetransformers
+        model_name = str(model.__class__).lower()
+        if "function" in model_name:
+            model_name = str(model.__name__)
+
+        if "sklearn" in model_name:
+            self.package = "sklearn"
+
+        elif "faiss" in model_name:
+            self.package = "faiss"
+
+        elif "hdbscan" in model_name:
+            self.package = "hdbscan"
+
+        elif "communitydetection" in model_name:
+            self.package = "sentence-transformers"
+
+        else:
+            self.package = "custom"
+        return self.package
