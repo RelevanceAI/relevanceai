@@ -99,3 +99,10 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         return closest
+
+    @property
+    def name(self):
+        return "text-explainer"
+
+    def run(self):
+        pass
