@@ -492,15 +492,25 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
     def _get_alias(self, alias: Any) -> str:
         # Auto-generates alias here
+        if alias is not None and isinstance(alias, str):
+            return alias
+
         n_clusters = self._get_n_clusters()
-        if alias is None:
-            Warning.MISSING_ALIAS.format(alias=alias)
-            if n_clusters is not None:
-                alias = f"{self.model_name}-{n_clusters}"
-            else:
-                alias = f"{self.model_name}"
+
+        # Issue a warning about auto-generated alias
+        Warning.MISSING_ALIAS.format(alias=alias)
+        # We auto-generate certain aliases if the model
+        # is a default model like kmeans or community detection
+        if hasattr(self.model, "alias"):
+            return self.model.alias
+
+        if n_clusters is not None:
+            alias = f"{self.model_name}-{n_clusters}"
+        else:
+            alias = f"{self.model_name}"
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
+
         return alias.lower()
 
     def store_operation_metadatas(self):
