@@ -166,8 +166,8 @@ class DocReadUtils:
 
         docs = [
             {
-            "value": 2,
-            "type": "car"
+                "value": 2,
+                "type": "car"
             },
             {
                 "value": 10,
