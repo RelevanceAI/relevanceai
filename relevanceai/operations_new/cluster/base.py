@@ -86,28 +86,17 @@ class ClusterBase(OperationBase, ABC):
 
         """
 
-        updated_documents = deepcopy(documents)
-
         labels = self.model.fit_predict_documents(
             vector_fields=self.vector_fields,
-            documents=updated_documents,
+            documents=documents,
         )
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
-        self.set_field_across_documents(cluster_field_name, labels, updated_documents)
+        documents_to_upsert = [{"_id": d["_id"]} for d in documents]
 
-        # removes unnecessary info for updated_where
-        updated_documents = [
-            {
-                key: value
-                for key, value in document.items()
-                if key not in self.vector_fields or key == "_id"
-            }
-            for document in updated_documents
-        ]
-
-        return updated_documents
+        self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
+        return documents_to_upsert
 
     def _get_cluster_field_name(self):
         alias = self.alias
