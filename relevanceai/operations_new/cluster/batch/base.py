@@ -1,7 +1,10 @@
-from relevanceai.operations_new.apibase import OperationAPIBase
+"""
+OperationBase
+"""
+from relevanceai.operations_new.base import OperationBase
 
 
-class PartialClusterModelBase:
+class BatchClusterBase(OperationBase):
     def partial_fit(self, documents):
         # Run partial fitting on documents
         pass
