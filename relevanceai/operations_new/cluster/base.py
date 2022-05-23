@@ -52,10 +52,15 @@ class ClusterBase(OperationRun):
                 KMeansModel,
             )
 
-            model = KMeansModel(*args, **kwargs)
+            model = KMeansModel(**kwargs)
             return model
         elif model == "communitydetection":
-            raise NotImplementedError("Community detection not supported yet")
+            from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
+                CommunityDetection,
+            )
+
+            model = CommunityDetection(**kwargs)
+            return model
         raise ValueError("Model not supported.")
 
     @property
