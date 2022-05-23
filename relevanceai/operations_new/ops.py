@@ -375,7 +375,7 @@ class Operations(Write):
         ------------
 
         model: Union[str, Any]
-            Any K-Means model
+            Any model. Acceptable values are `kmeans`, `communitydetection`, `hdbscan`.
         vector_fields: List[str]
             A list of possible vector fields
         alias: str
