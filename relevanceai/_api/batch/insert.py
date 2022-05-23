@@ -295,7 +295,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'],
             after_id=True)
         >>> while len(documents['documents']) > 0:
-        >>>     documents['documents'] = model.encode_documents_in_bulk(['product_name'], documents['documents'])
+        >>>     documents['documents'] = model.bulk_encode_documents(['product_name'], documents['documents'])
         >>>     client.update_documents(collection, documents['documents'])
         >>>     documents = client.datasets.documents.get_where(collection, select_fields=['product_name'], search_after=documents['after_id'])
 

@@ -1,9 +1,9 @@
-from relevanceai.operations_new.apibase import OperationsAPIBase
+from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.dr.base import DimReductionBase
 from typing import Optional
 
 
-class DimReductionOps(DimReductionBase, OperationsAPIBase):
+class DimReductionOps(DimReductionBase, OperationAPIBase):
     """
     API related Functionality for Operation
     """

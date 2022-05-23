@@ -273,7 +273,7 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         model=None,
         **kwargs,
     ):
-        from relevanceai.operations.cluster import ClusterOps
+        from relevanceai.operations_new.cluster.ops import ClusterOps
 
         return ClusterOps(
             credentials=self.credentials,

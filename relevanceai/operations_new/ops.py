@@ -1,9 +1,11 @@
 from typing import Any, Dict, List, Optional
 from relevanceai.dataset.write import Write
 from datetime import datetime
+from relevanceai.utils.decorators.analytics import track
 
 
 class Operations(Write):
+    @track
     def store_operation_metadata(self, operation: str, values: str):
         """
         Store metadata about operators
@@ -26,6 +28,7 @@ class Operations(Write):
         # Gets metadata and appends to the operation history
         return self.upsert_metadata(metadata)
 
+    @track
     def reduce_dims(
         self,
         vector_fields: List[str],
@@ -33,7 +36,7 @@ class Operations(Write):
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        chunksize: int = 1000,
         **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
@@ -68,17 +71,17 @@ class Operations(Write):
             **kwargs,
         )
         documents = self.get_all_documents(
+            chunksize=chunksize,
             select_fields=vector_fields,
             filters=filters,
-            include_vector=True,
         )
-        updated_documents = ops.run(documents)
+        updated_documents = ops.transform(documents)
         self.upsert_documents(
             updated_documents,
         )
 
         self.store_operation_metadata(
-            operation="vectorize_text",
+            operation="reduce_dims",
             values=str(
                 {
                     "vector_fields": vector_fields,
@@ -91,6 +94,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def vectorize_text(
         self,
         fields: List[str],
@@ -130,7 +134,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
-            updated_documents = ops.run(documents)
+            updated_documents = ops.transform(documents)
             self.upsert_documents(
                 updated_documents,
             )
@@ -147,6 +151,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def vectorize_image(
         self,
         fields: List[str],
@@ -179,7 +184,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
-            updated_documents = ops.run(documents)
+            updated_documents = ops.transform(documents)
             self.upsert_documents(
                 updated_documents,
             )
@@ -196,6 +201,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def label(
         self,
         vector_fields: List[str],
@@ -267,7 +273,7 @@ class Operations(Write):
             )
 
         self.store_operation_metadata(
-            operation="vectorize_image",
+            operation="label",
             values=str(
                 {
                     "vector_fields": vector_fields,
@@ -285,6 +291,7 @@ class Operations(Write):
         )
         return
 
+    @track
     def split_sentences(
         self,
         text_fields: List[str],
@@ -335,3 +342,109 @@ class Operations(Write):
             ),
         )
         return
+
+    @track
+    def cluster(
+        self,
+        vector_fields: List[str],
+        model: Any = None,
+        alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        include_cluster_report: bool = True,
+        model_kwargs: dict = None,
+        **kwargs,
+    ):
+        """
+        Run clustering on your dataset.
+
+        Example
+        ----------
+
+        .. code-block::
+
+            from sklearn.cluster import KMeans
+            model = KMeans()
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.cluster(
+                model=model, vector_fields=["sample_vector_"],
+                alias="kmeans-8"
+            )
+
+        Parameters
+        ------------
+
+        model: Union[str, Any]
+            Any model. Acceptable values are `kmeans`, `communitydetection`, `hdbscan`.
+        vector_fields: List[str]
+            A list of possible vector fields
+        alias: str
+            The alias to be used to store your model
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
+        """
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        ops = ClusterOps(
+            model=model,
+            alias=alias,  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
+            verbose=False,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+        vector_field_filters = [
+            {
+                "field": vector_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vector_field in vector_fields
+        ]
+        if filters is None:
+            filters = vector_field_filters
+        else:
+            filters += vector_field_filters
+
+        # Create the cluster report
+        ops.run(dataset=self, select_fields=vector_fields, filters=filters)
+
+        print(
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{ops.alias}', vector_fields={ops.vector_fields}, dataset_id='{self.dataset_id}')`"
+        )
+        return ops
+
+    def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
+        if alias is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = (
+                    self.n_clusters
+                    if self.n_clusters is not None
+                    else self.model.n_clusters
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            elif hasattr(self.model, "k"):
+                n_clusters = (
+                    self.n_clusters if self.n_clusters is not None else self.model.k
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            else:
+                alias = self.model_name
+
+            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
+
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+        return alias.lower()

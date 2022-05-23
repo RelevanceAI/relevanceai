@@ -1,3 +1,4 @@
+import warnings
 from relevanceai._api.api_client import (
     APIClient,
 )  # this needs to be replace by below in dr PR
@@ -5,21 +6,29 @@ from relevanceai._api.api_client import (
 from relevanceai.constants.errors import MissingClusterError
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.apibase import OperationAPIBase
 from typing import Callable, Dict, Any, Set, List, Optional
+from relevanceai.constants import Warning
+from relevanceai.dataset import Dataset
 
 
-class ClusterOps(ClusterBase, APIClient):
+class ClusterOps(ClusterBase, OperationAPIBase):
     """
     Cluster-related functionalities
     """
 
     # These need to be instantiated on __init__
+    model_name: str
+
     def __init__(
         self,
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        cluster_field: str,
+        cluster_field: str = "_cluster_",
+        verbose: bool = False,
+        model=None,
+        model_kwargs=None,
         *args,
         **kwargs,
     ):
@@ -28,25 +37,36 @@ class ClusterOps(ClusterBase, APIClient):
         """
         self.dataset_id = dataset_id
         self.vector_fields = vector_fields
-        self.alias = alias
         self.cluster_field = cluster_field
+        self.verbose = verbose
+        self.model = model
+        if isinstance(self.model, str):
+            self.model_name = self.model
+        else:
+            self.model_name = str(self.model)
+
+        if model_kwargs is None:
+            model_kwargs = {}
+
+        self.model_kwargs = model_kwargs
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def _get_cluster_field_name(self, alias: str = None):
-        if alias is None:
-            alias = self.alias
-        if isinstance(self.vector_fields, list):
-            if hasattr(self, "cluster_field"):
-                set_cluster_field = (
-                    f"{self.cluster_field}.{'.'.join(self.vector_fields)}.{alias}"
-                )
-            else:
-                set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
-        elif isinstance(self.vector_fields, str):
-            set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
-        return set_cluster_field
+        super().__init__(
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
+            cluster_field=cluster_field,
+            verbose=verbose,
+            model=model,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+
+        # alias is set after model so that we can get the number of clusters
+        # if the model needs ot be instantiated
+        self.alias = self._get_alias(alias)
 
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
@@ -102,7 +122,7 @@ class ClusterOps(ClusterBase, APIClient):
     def list_cluster_ids(
         self,
         alias: str = None,
-        minimum_cluster_size: int = 3,
+        minimum_cluster_size: int = 0,
         num_clusters: int = 1000,
     ):
         """
@@ -132,7 +152,7 @@ class ClusterOps(ClusterBase, APIClient):
         """
         # Mainly to be used for subclustering
         # Get the cluster alias
-        cluster_field = self._get_cluster_field_name(alias=self.alias)
+        cluster_field = self._get_cluster_field_name()
 
         # currently the logic for facets is that when it runs out of pages
         # it just loops - therefore we need to store it in a simple hash
@@ -161,14 +181,32 @@ class ClusterOps(ClusterBase, APIClient):
 
         return list(all_cluster_ids)
 
-    def _insert_centroids(
+    def insert_centroids(
         self,
         centroid_documents,
     ) -> None:
+        """
+        Insert centroids
+        Centroids look below
+
+        .. code-block::
+
+            cluster_ops = client.ClusterOps(
+                vector_field=["sample_1_vector_"],
+                alias="sample"
+            )
+            cluster_ops.insert_centroids(
+                centorid_documents={
+                    "cluster-0": [1, 1, 1],
+                    "cluster-2": [2, 1, 1]
+                }
+            )
+
+        """
         # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
-        self.datasets.cluster.centroids.insert(
+        return self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
-            cluster_centers=centroid_documents,
+            cluster_centers=self.json_encoder(centroid_documents),
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
@@ -192,13 +230,24 @@ class ClusterOps(ClusterBase, APIClient):
             centroids = cluster_ops.create_centroids()
 
         """
-        import numpy as np
-
         # Get an array of the different vectors
         if len(self.vector_fields) > 1:
             raise NotImplementedError(
                 "Do not currently support multiple vector fields for centroid creation."
             )
+
+        # calculate the centroids
+        centroid_vectors = self.calculate_centroids()
+
+        self.insert_centroids(
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors
+
+    def calculate_centroids(self):
+        import numpy as np
+
+        # calculate the centroids
         centroid_vectors = {}
 
         def calculate_centroid(vectors):
@@ -215,10 +264,26 @@ class ClusterOps(ClusterBase, APIClient):
                 {"_id": k, self.vector_fields[0]: v}
                 for k, v in centroid_vectors.items()
             ]
-        self._insert_centroids(
-            centroid_documents=centroid_vectors,
-        )
         return centroid_vectors
+
+    def get_centroid_documents(self):
+        centroid_vectors = {}
+        if self.model.cluster_centers_ is not None:
+            centroid_vectors = self.model.cluster_centers_
+            # get the cluster label function
+            cluster_ids = self.list_cluster_ids()
+            if len(self.vector_fields) > 1:
+                warnings.warn(
+                    "Currently do not support inserting centroids with multiple vector fields"
+                )
+            centroids = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in zip(cluster_ids, centroid_vectors)
+            ]
+        else:
+            centroids = self.create_centroids()
+
+        return centroids
 
     def list_closest(
         self,
@@ -277,6 +342,8 @@ class ClusterOps(ClusterBase, APIClient):
         cluster_properties_filter: dict
             Filter if clusters with certain characteristics should be hidden in results
         """
+        if cluster_properties_filters is None:
+            cluster_properties_filters = {}
         return self.datasets.cluster.centroids.list_closest_to_center(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
@@ -370,3 +437,194 @@ class ClusterOps(ClusterBase, APIClient):
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
         )
+
+    def explain_text_clusters(
+        self,
+        text_field,
+        encode_fn_or_model,
+        n_closest: int = 5,
+        highlight_output_field="_explain_",
+        algorithm: str = "centroid",
+    ):
+        """
+        It takes a text field and a function that encodes the text field into a vector.
+        It then returns the top n closest vectors to each cluster centroid.
+        .. code-block::
+            def encode(X):
+                return [1, 2, 1]
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
+        Parameters
+        ----------
+        text_field
+            The field in the dataset that contains the text to be explained.
+        encode_fn
+            This is the function that will be used to encode the text.
+        n_closest : int, optional
+            The number of closest documents to each cluster to return.
+        highlight_output_field, optional
+            The name of the field that will be added to the output dataset.
+        algorithm: str
+            Algorithm is either "centroid" or "relational"
+        Returns
+        -------
+            A new dataset with the same data as the original dataset, but with a new field called _explain_
+        """
+        if isinstance(encode_fn_or_model, str):
+            # Get the model
+            self.vectorizer = self._get_model(encode_fn_or_model)
+            if hasattr(self.vectorizer, "encode"):
+                encode_fn = self.vectorizer.encode
+            else:
+                raise AttributeError("Vectorizer is missing an `encode` function.")
+        else:
+            encode_fn = encode_fn_or_model
+
+        from relevanceai.operations_new.cluster.text.explainer.ops import (
+            TextClusterExplainerOps,
+        )
+
+        ops = TextClusterExplainerOps(credentials=self.credentials)
+        if algorithm == "centroid":
+            return ops.explain_clusters(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        elif algorithm == "relational":
+            return ops.explain_clusters_relational(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
+
+    def _get_n_clusters(self):
+        if "n_clusters" in self.model_kwargs:
+            return self.model_kwargs["n_clusters"]
+        elif hasattr(self.model, "n_clusters"):
+            return self.model.n_clusters
+        elif hasattr(self.model, "k"):
+            return self.model.k
+        return None
+
+    def _generate_alias(self) -> str:
+        # Issue a warning about auto-generated alias
+        # We auto-generate certain aliases if the model
+        # is a default model like kmeans or community detection
+        n_clusters = self._get_n_clusters()
+        if hasattr(self.model, "alias"):
+            return self.model.alias
+
+        if n_clusters is not None:
+            alias = f"{self.model_name}-{n_clusters}"
+        else:
+            alias = f"{self.model_name}"
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+
+        Warning.MISSING_ALIAS.format(alias=alias)
+        return alias
+
+    def _get_alias(self, alias: Any) -> str:
+        # Depending a package
+        # Get the alias
+        self._get_package_from_model(self.model)
+        if self.package == "sklearn":
+            self.alias = self._get_alias_from_sklearn()
+            if self.alias is not None:
+                return self.alias
+
+        if alias is not None and isinstance(alias, str):
+            return alias
+
+        alias = self._generate_alias()
+        return alias.lower()
+
+    def _get_alias_from_sklearn(self):
+        from sklearn.cluster import KMeans
+
+        if isinstance(self.model, KMeans):
+            return "kmeans-" + str(self.model.n_clusters)
+        return None
+
+    def store_operation_metadatas(self):
+        self.store_operation_metadata(
+            operation="cluster",
+            values=str(
+                {
+                    "model": self.model,
+                    "vector_fields": self.vector_fields,
+                    "alias": self.alias,
+                    "filters": self.filters,
+                    "model_kwargs": self.model_kwargs,
+                }
+            ),
+        )
+
+    def run(
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        *args,
+        **kwargs,
+    ):
+        # A default run on all datasets
+        documents = dataset.get_all_documents(
+            select_fields=select_fields, filters=filters
+        )
+        # Loop through all documents
+        updated_documents = self.transform(documents, *args, **kwargs)
+        results = dataset.upsert_documents(updated_documents)
+        # insert centroids
+        # TODO: update values
+        centroid_documents = self.get_centroid_documents()
+        self.insert_centroids(centroid_documents)
+
+        self.store_operation_metadata(
+            dataset=dataset,
+            values={"select_fields": select_fields, **kwargs},
+        )
+        return results
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.datasets.cluster.centroids.documents(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )["results"]
+        return self._centroids
+
+    def get_centroid_from_id(self, cluster_id: str):
+        """
+        Get the centroid from the relevant document ID
+        """
+        for c in self.centroids:
+            if c["_id"] == cluster_id:
+                return c
+        raise ValueError(f"Missing the centorid with id {cluster_id}")

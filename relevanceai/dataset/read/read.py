@@ -669,7 +669,7 @@ class Read(Statistics):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
-            print("✅ You have successfully inserted data.")
+            print("✅ You have successfully upserted metadata.")
         else:
             return results
 

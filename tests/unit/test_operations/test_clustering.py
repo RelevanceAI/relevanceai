@@ -42,6 +42,7 @@ class TestClusterOps:
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
+    @pytest.mark.skip(reason="minibatch kmeans not implemented yet")
     def test_dataset_cluster_4(self, test_dataset: Dataset):
         alias = "cluster_test_4"
         test_dataset.cluster(

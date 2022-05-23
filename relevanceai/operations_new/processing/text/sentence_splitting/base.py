@@ -29,7 +29,7 @@ class SentenceSplittingBase(OperationBase):
         self.set_field(output_field, document, split_text_value)
         return document
 
-    def run(
+    def transform(
         self,
         text_field,
         documents,
