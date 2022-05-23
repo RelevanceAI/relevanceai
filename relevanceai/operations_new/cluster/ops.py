@@ -1,3 +1,4 @@
+import warnings
 from relevanceai._api.api_client import (
     APIClient,
 )  # this needs to be replace by below in dr PR
@@ -271,7 +272,14 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             centroid_vectors = self.model.cluster_centers_
             # get the cluster label function
             cluster_ids = self.list_cluster_ids()
-            centroids = {k: v for k, v in zip(cluster_ids, centroid_vectors)}
+            if len(self.vector_fields) > 1:
+                warnings.warn(
+                    "Currently do not support inserting centroids with multiple vector fields"
+                )
+            centroids = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in zip(cluster_ids, centroid_vectors)
+            ]
         else:
             centroids = self.create_centroids()
 
