@@ -73,7 +73,7 @@ class Operations(Write):
         documents = self.get_all_documents(
             chunksize=chunksize, select_fields=vector_fields, filters=filters
         )
-        updated_documents = ops.run(documents)
+        updated_documents = ops.transform(documents)
         self.upsert_documents(
             updated_documents,
         )
@@ -132,7 +132,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
-            updated_documents = ops.run(documents)
+            updated_documents = ops.transform(documents)
             self.upsert_documents(
                 updated_documents,
             )
@@ -182,7 +182,7 @@ class Operations(Write):
         for documents in self.chunk_dataset(
             select_fields=fields, filters=filters, chunksize=chunksize
         ):
-            updated_documents = ops.run(documents)
+            updated_documents = ops.transform(documents)
             self.upsert_documents(
                 updated_documents,
             )

@@ -23,7 +23,7 @@ class VectorizeBase(OperationBase):
     def _get_model(self, *args, **kwargs):
         raise NotImplementedError
 
-    def run(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.
 

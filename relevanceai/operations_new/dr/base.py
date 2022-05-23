@@ -8,7 +8,7 @@ class DimReductionBase(OperationBase):
 
     model: DimReductionModelBase
     fields: List[str]
-    alias: Union[str, None]
+    alias: str
 
     def __init__(
         self,
@@ -20,7 +20,8 @@ class DimReductionBase(OperationBase):
         **kwargs,
     ):
         self.vector_fields = vector_fields
-        self.alias = alias
+        # TODO: Add a get ailas method
+        self.alias = alias  # type: ignore
         if model_kwargs is None:
             model_kwargs = {}
         self.model = self._get_model(
@@ -100,7 +101,7 @@ class DimReductionBase(OperationBase):
             )
         return mapped_model
 
-    def run(
+    def transform(
         self,
         documents: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
