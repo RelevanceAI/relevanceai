@@ -33,4 +33,4 @@ jobs:
           ${{ runner.os }}-${{ env.pythonLocation }}-
     - name: xenon
       run: |
-        xenon --max-absolute B --max-modules A --max-average A --exclude relevanceai/operations relevanceai
+        xenon --max-absolute B --max-modules A --max-average A --exclude relevanceai/operations/*,relevanceai/_api/* relevanceai
