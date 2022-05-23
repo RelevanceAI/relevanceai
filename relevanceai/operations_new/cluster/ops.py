@@ -441,7 +441,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
     def explain_text_clusters(
         self,
         text_field,
-        encode_fn,
+        encode_fn_or_model,
         n_closest: int = 5,
         highlight_output_field="_explain_",
     ):
@@ -451,7 +451,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         .. code-block::
             def encode(X):
                 return [1, 2, 1]
-            cluster_ops.explain_text_clusters(text_field="hey", encode_fn=encode)
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
         Parameters
         ----------
         text_field
@@ -466,6 +466,16 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         -------
             A new dataset with the same data as the original dataset, but with a new field called _explain_
         """
+        if isinstance(encode_fn_or_model, str):
+            # Get the model
+            self.vectorizer = self._get_model(encode_fn_or_model)
+            if hasattr(self.vectorizer, "encode"):
+                encode_fn = self.vectorizer.encode
+            else:
+                raise AttributeError("Vectorizer is missing an `encode` function.")
+        else:
+            encode_fn = encode_fn_or_model
+
         from relevanceai.operations_new.cluster.text.explainer.ops import (
             TextClusterExplainerOps,
         )
@@ -569,3 +579,37 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             values={"select_fields": select_fields, **kwargs},
         )
         return results
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.datasets.cluster.centroids.documents(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )["results"]
+        return self._centroids
+
+    def get_centroid_from_id(self, cluster_id: str):
+        """
+        Get the centroid from the relevant document ID
+        """
+        for c in self.centroids:
+            if c["_id"] == cluster_id:
+                return c
+        raise ValueError(f"Missing the centorid with id {cluster_id}")

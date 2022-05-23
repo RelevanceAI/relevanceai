@@ -51,6 +51,10 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
         # For each centroid, explains the closest n_closest to the centroids
         # Then highlights why the centroid is similar to the second most similar one
         # List the closest
+        if len(vector_fields) > 1:
+            raise NotImplementedError(
+                "Currently do not support more than 1 vector fields."
+            )
 
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
@@ -61,6 +65,9 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             dataset_id=dataset_id,
             model=None,
         )
+        # get get the centroid from the centroid
+        centroids = cluster_ops.centroids
+
         closest = cluster_ops.list_closest(
             page_size=n_closest, select_fields=[text_field], verbose=False
         )

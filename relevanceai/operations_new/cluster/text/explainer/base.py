@@ -249,6 +249,16 @@ class BaseExplainer(DocUtils):
     ):
 
         query_vector = encode_fn(query_text)
+        return self.explain_from_vector(
+            encode_fn=encode_fn, query_vector=query_vector, answer_text=answer_text
+        )
+
+    def explain_from_vector(
+        self,
+        encode_fn: Callable,
+        query_vector,
+        answer_text,
+    ):
         doc = self.get_result(encode_fn, answer_text, query_vector)
         doc["explain_chunk"] = [
             {"text": t} for t in self.get_word_combinations(answer_text)
