@@ -344,9 +344,9 @@ class Operations(Write):
     @track
     def cluster(
         self,
+        vector_fields: List[str],
         model: Any = None,
         alias: Optional[str] = None,
-        vector_fields: List[str] = None,
         filters: Optional[list] = None,
         include_cluster_report: bool = True,
         **kwargs,
@@ -397,6 +397,20 @@ class Operations(Write):
             dataset_id=self.dataset_id,
             **kwargs,
         )
+        vector_field_filters = [
+            {
+                "field": vector_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vector_field in vector_fields
+        ]
+        if filters is None:
+            filters = vector_field_filters
+        else:
+            filters += vector_field_filters
+
         documents = self.get_all_documents(filters=filters, select_fields=vector_fields)
 
         ops(
