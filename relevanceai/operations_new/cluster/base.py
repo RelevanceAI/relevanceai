@@ -61,6 +61,13 @@ class ClusterBase(OperationRun):
 
             model = CommunityDetection(**kwargs)
             return model
+        elif model == "optics":
+            from relevanceai.operations_new.cluster.models.sklearn.optics import (
+                OpticsModel,
+            )
+
+            model = CommunityDetection(**kwargs)
+            return model
         raise ValueError("Model not supported.")
 
     @property
