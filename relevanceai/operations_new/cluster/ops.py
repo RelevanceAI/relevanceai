@@ -490,9 +490,8 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             return self.model.k
         return None
 
-    def _generate_alias(self):
+    def _generate_alias(self) -> str:
         # Issue a warning about auto-generated alias
-        Warning.MISSING_ALIAS.format(alias=alias)
         # We auto-generate certain aliases if the model
         # is a default model like kmeans or community detection
         n_clusters = self._get_n_clusters()
@@ -506,6 +505,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
 
+        Warning.MISSING_ALIAS.format(alias=alias)
         return alias
 
     def _get_alias(self, alias: Any) -> str:
