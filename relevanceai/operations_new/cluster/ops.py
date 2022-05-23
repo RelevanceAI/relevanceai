@@ -205,7 +205,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
         return self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
-            cluster_centers=centroid_documents,
+            cluster_centers=self.json_encoder(centroid_documents),
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
