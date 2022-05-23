@@ -52,3 +52,5 @@ class OperationBase(ABC, DocUtils):
     def _check_alias(self):
         if self.alias is None:
             raise ValueError("alias is not set. Please supply alias=")
+        if self.alias.lower() != self.alias:
+            raise ValueError("Alias cannot be lower case.")
