@@ -490,17 +490,12 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             return self.model.k
         return None
 
-    def _get_alias(self, alias: Any) -> str:
-        # Auto-generates alias here
-        if alias is not None and isinstance(alias, str):
-            return alias
-
-        n_clusters = self._get_n_clusters()
-
+    def _generate_alias(self):
         # Issue a warning about auto-generated alias
         Warning.MISSING_ALIAS.format(alias=alias)
         # We auto-generate certain aliases if the model
         # is a default model like kmeans or community detection
+        n_clusters = self._get_n_clusters()
         if hasattr(self.model, "alias"):
             return self.model.alias
 
@@ -511,13 +506,28 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
 
+        return alias
+
+    def _get_alias(self, alias: Any) -> str:
+        # Depending a package
+        # Get the alias
+        self._get_package_from_model(self.model)
+        if self.package == "sklearn":
+            self.alias = self._get_alias_from_sklearn()
+            if self.alias is not None:
+                return self.alias
+
+        if alias is not None and isinstance(alias, str):
+            return alias
+
+        alias = self._generate_alias()
         return alias.lower()
 
-    def _get_alias_from_sklearn(self, sklearn_model):
+    def _get_alias_from_sklearn(self):
         from sklearn.cluster import KMeans
 
-        if isinstance(sklearn_model, KMeans):
-            return "kmeans-" + str(sklearn_model.n_clusters)
+        if isinstance(self.model, KMeans):
+            return "kmeans-" + str(self.model.n_clusters)
         return None
 
     def store_operation_metadatas(self):
