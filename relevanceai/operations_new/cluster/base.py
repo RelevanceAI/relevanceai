@@ -62,6 +62,42 @@ class ClusterBase(OperationRun):
     def name(self):
         return "cluster"
 
+    def format_cluster_label(self, label):
+        """> If the label is an integer, return a string that says "cluster_" and the integer. If the label is
+        a string, return the string. If the label is neither, raise an error
+
+        Parameters
+        ----------
+        label
+            the label of the cluster. This can be a string or an integer.
+
+        Returns
+        -------
+            A list of lists.
+
+        """
+        if isinstance(label, str):
+            return label
+        return "cluster_" + str(label)
+
+    def format_cluster_labels(self, labels):
+        return [self.format_cluster_label(label) for label in labels]
+
+    def fit_predict_documents(self, documents):
+        # run fit predict on documetns
+        if hasattr(self.model, "fit_predict_documents"):
+            return self.model.fit_predict_documents(
+                documents=documents, vector_fields=self.vector_fields
+            )
+        elif hasattr(self.model, "fit_predict"):
+            if len(self.vector_fields) == 1:
+                vectors = self.get_field_across_documents(
+                    self.vector_fields[0], documents
+                )
+                cluster_labels = self.model.fit_predict(vectors)
+                return self.format_cluster_labels(cluster_labels)
+        raise AttributeError("Model is missing a `fit_predict` method.")
+
     def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.
@@ -77,8 +113,8 @@ class ClusterBase(OperationRun):
 
         """
 
-        labels = self.model.fit_predict_documents(
-            vector_fields=self.vector_fields,
+        # TODO: add support for sklearn kmeans
+        labels = self.fit_predict_documents(
             documents=documents,
         )
         # Get the cluster field name
