@@ -30,7 +30,7 @@ class OperationRun(OperationBase):
         # TODO: update values
         self.store_operation_metadata(
             dataset=dataset,
-            values={"select_fields": select_fields, "dataset": dataset, **kwargs},
+            values={"select_fields": select_fields, **kwargs},
         )
         return results
 
