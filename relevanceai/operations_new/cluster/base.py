@@ -91,15 +91,7 @@ class ClusterBase(OperationBase, ABC):
             documents=updated_documents,
         )
         # Get the cluster field name
-        if self.alias is None:
-            cluster_field_name = (
-                "_cluster_." + ".".join(self.vector_fields) + "." + self.model.name
-            )
-
-        else:
-            cluster_field_name = (
-                "_cluster_." + ".".join(self.vector_fields) + "." + self.alias
-            )
+        cluster_field_name = self._get_cluster_field_name()
 
         self.set_field_across_documents(cluster_field_name, labels, updated_documents)
 
@@ -115,9 +107,8 @@ class ClusterBase(OperationBase, ABC):
 
         return updated_documents
 
-    def _get_cluster_field_name(self, alias: str = None):
-        if alias is None:
-            alias = self.alias
+    def _get_cluster_field_name(self):
+        alias = self.alias
         if isinstance(self.vector_fields, list):
             if hasattr(self, "cluster_field"):
                 set_cluster_field = (

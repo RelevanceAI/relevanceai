@@ -132,7 +132,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         # Mainly to be used for subclustering
         # Get the cluster alias
-        cluster_field = self._get_cluster_field_name(alias=self.alias)
+        cluster_field = self._get_cluster_field_name()
 
         # currently the logic for facets is that when it runs out of pages
         # it just loops - therefore we need to store it in a simple hash
