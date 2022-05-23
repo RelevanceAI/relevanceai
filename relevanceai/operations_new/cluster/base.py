@@ -42,13 +42,7 @@ class ClusterBase(OperationBase, ABC):
 
         if isinstance(model, str):
             return self._get_model_from_string(model)
-        elif isinstance(model, ModelBase):
-            return model
-        elif model is None:
-            return model
-        raise ValueError(
-            "Model not supported. Needs to be a string or an instance of ModelBase"
-        )
+        return model
 
     def normalize_model_name(self, model):
         if isinstance(model, str):
