@@ -164,10 +164,28 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
         return list(all_cluster_ids)
 
-    def _insert_centroids(
+    def insert_centroids(
         self,
         centroid_documents,
     ) -> None:
+        """
+        Insert centroids
+        Centroids look below
+
+        .. code-block::
+
+            cluster_ops = client.ClusterOps(
+                vector_field=["sample_1_vector_"],
+                alias="sample"
+            )
+            cluster_ops.insert_centroids(
+                centorid_documents={
+                    "cluster-0": [1, 1, 1],
+                    "cluster-2": [2, 1, 1]
+                }
+            )
+
+        """
         # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
         self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
@@ -218,7 +236,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 {"_id": k, self.vector_fields[0]: v}
                 for k, v in centroid_vectors.items()
             ]
-        self._insert_centroids(
+        self.insert_centroids(
             centroid_documents=centroid_vectors,
         )
         return centroid_vectors
