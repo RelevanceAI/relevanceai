@@ -33,6 +33,9 @@ class OperationBase(ABC, DocUtils):
             raise ValueError(
                 "No vector_fields has been set. Please supply with vector_fields="
             )
+        elif isinstance(self.vector_fields, str):
+            # Force it to be a list instead
+            self.vector_fields = [self.vector_fields]
 
         if len(self.vector_fields) == 0:
             raise ValueError("No vector fields set. Please supply with vector_fields=")
