@@ -12,3 +12,7 @@ class KMeansModel(SklearnModelBase):
     @property
     def name(self):
         return "kmeans"
+
+    @property
+    def cluster_centers_(self):
+        return self.model.cluster_centers_

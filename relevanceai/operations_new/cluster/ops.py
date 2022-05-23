@@ -8,6 +8,7 @@ from relevanceai.operations_new.cluster.base import ClusterBase
 from relevanceai.operations_new.apibase import OperationAPIBase
 from typing import Callable, Dict, Any, Set, List, Optional
 from relevanceai.constants import Warning
+from relevanceai.dataset import Dataset
 
 
 class ClusterOps(ClusterBase, OperationAPIBase):
@@ -120,7 +121,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
     def list_cluster_ids(
         self,
         alias: str = None,
-        minimum_cluster_size: int = 3,
+        minimum_cluster_size: int = 0,
         num_clusters: int = 1000,
     ):
         """
@@ -228,13 +229,24 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             centroids = cluster_ops.create_centroids()
 
         """
-        import numpy as np
-
         # Get an array of the different vectors
         if len(self.vector_fields) > 1:
             raise NotImplementedError(
                 "Do not currently support multiple vector fields for centroid creation."
             )
+
+        # calculate the centroids
+        centroid_vectors = self.calculate_centroids()
+
+        self.insert_centroids(
+            centroid_documents=centroid_vectors,
+        )
+        return centroid_vectors
+
+    def calculate_centroids(self):
+        import numpy as np
+
+        # calculate the centroids
         centroid_vectors = {}
 
         def calculate_centroid(vectors):
@@ -251,10 +263,19 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 {"_id": k, self.vector_fields[0]: v}
                 for k, v in centroid_vectors.items()
             ]
-        self.insert_centroids(
-            centroid_documents=centroid_vectors,
-        )
         return centroid_vectors
+
+    def get_centroid_documents(self):
+        centroid_vectors = {}
+        if self.model.cluster_centers_ is not None:
+            centroid_vectors = self.model.cluster_centers_
+            # get the cluster label function
+            cluster_ids = self.list_cluster_ids()
+            centroids = {k: v for k, v in zip(cluster_ids, centroid_vectors)}
+        else:
+            centroids = self.create_centroids()
+
+        return centroids
 
     def list_closest(
         self,
@@ -487,3 +508,29 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 }
             ),
         )
+
+    def run(
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        *args,
+        **kwargs,
+    ):
+        # A default run on all datasets
+        documents = dataset.get_all_documents(
+            select_fields=select_fields, filters=filters
+        )
+        # Loop through all documents
+        updated_documents = self.transform(documents, *args, **kwargs)
+        results = dataset.upsert_documents(updated_documents)
+        # insert centroids
+        # TODO: update values
+        centroid_documents = self.get_centroid_documents()
+        self.insert_centroids(centroid_documents)
+
+        self.store_operation_metadata(
+            dataset=dataset,
+            values={"select_fields": select_fields, **kwargs},
+        )
+        return results

@@ -38,7 +38,8 @@ class ModelBase(ABC, DocUtils):
     def fit_predict_documents(self, vector_fields, documents):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
-            return self.fit_predict(vectors)
+            cluster_labels = self.fit_predict(vectors)
+            return self.format_cluster_labels(cluster_labels)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
         )
@@ -48,3 +49,35 @@ class ModelBase(ABC, DocUtils):
             return str(self.model)
         else:
             return "generic_cluster_model"
+
+    @property
+    def cluster_centers_(self):
+        # Get the cluster centers
+        return None
+
+    def format_cluster_label(self, label):
+        """> If the label is an integer, return a string that says "cluster_" and the integer. If the label is
+        a string, return the string. If the label is neither, raise an error
+
+        Parameters
+        ----------
+        label
+            the label of the cluster. This can be a string or an integer.
+
+        Returns
+        -------
+            A list of lists.
+
+        """
+        if isinstance(label, int):
+            return "cluster_" + str(label)
+        elif isinstance(label, str):
+            return label
+        else:
+            raise ValueError(
+                f"""Not sure how to label this cluster. Type {type(label)}
+                should be of type `str`."""
+            )
+
+    def format_cluster_labels(self, labels):
+        return [self.format_cluster_label(label) for label in labels]
