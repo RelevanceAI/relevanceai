@@ -349,6 +349,7 @@ class Operations(Write):
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         include_cluster_report: bool = True,
+        model_kwargs: dict = None,
         **kwargs,
     ):
         """
@@ -395,6 +396,7 @@ class Operations(Write):
             verbose=False,
             credentials=self.credentials,
             dataset_id=self.dataset_id,
+            model_kwargs=model_kwargs,
             **kwargs,
         )
         vector_field_filters = [
@@ -434,6 +436,7 @@ class Operations(Write):
                     "alias": alias,
                     "filters": filters,
                     "include_cluster_report": include_cluster_report,
+                    "model_kwargs": model_kwargs,
                 }
             ),
         )
