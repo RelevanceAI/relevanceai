@@ -24,7 +24,7 @@ class BaseExplainer(DocUtils):
                 The chunk size of an object.
         Example:
             >>> documents = [{...}]
-            >>> ViClient.chunk(documents)
+            >>> BaseExplainer.chunk(documents)
         """
         for i in range(0, len(lst), chunksize):
             yield lst[i : i + chunksize]
