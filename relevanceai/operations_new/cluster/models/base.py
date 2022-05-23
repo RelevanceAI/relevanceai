@@ -69,15 +69,9 @@ class ModelBase(ABC, DocUtils):
             A list of lists.
 
         """
-        if isinstance(label, int):
-            return "cluster_" + str(label)
-        elif isinstance(label, str):
+        if isinstance(label, str):
             return label
-        else:
-            raise ValueError(
-                f"""Not sure how to label this cluster. Type {type(label)}
-                should be of type `str`."""
-            )
+        return "cluster_" + str(label)
 
     def format_cluster_labels(self, labels):
         return [self.format_cluster_label(label) for label in labels]
