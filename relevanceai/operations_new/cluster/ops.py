@@ -41,6 +41,8 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+        self.alias = self._get_alias(alias)
         super().__init__(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
