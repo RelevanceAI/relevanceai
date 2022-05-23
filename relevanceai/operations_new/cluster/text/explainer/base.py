@@ -154,7 +154,7 @@ class BaseExplainer(DocUtils):
             ]
         return documents
 
-    def encode_documents_in_bulk(
+    def bulk_encode_documents(
         self,
         fields: list,
         documents: list,

@@ -66,7 +66,7 @@ class ClusterBase(OperationRun):
                 OpticsModel,
             )
 
-            model = CommunityDetection(**kwargs)
+            model = OpticsModel(**kwargs)
             return model
         raise ValueError("Model not supported.")
 
