@@ -27,7 +27,7 @@ class OperationBase(ABC, DocUtils):
         """The function is an abstract method that raises a NotImplementedError if it is not implemented"""
         raise NotImplementedError
 
-    def _check_vector_fields(self):
+    def _check_vector_field_type(self):
         # check the vector fields
         if self.vector_fields is None:
             raise ValueError(
@@ -37,20 +37,28 @@ class OperationBase(ABC, DocUtils):
             # Force it to be a list instead
             self.vector_fields = [self.vector_fields]
 
-        if len(self.vector_fields) == 0:
-            raise ValueError("No vector fields set. Please supply with vector_fields=")
-
+    def _check_vector_names(self):
         if hasattr(self, "vector_fields"):
             for vector_field in self.vector_fields:
                 if not vector_field.endswith("_vector_"):
                     raise ValueError(
                         "Invalid vector field. Ensure they end in `_vector_`."
                     )
+
+    def _check_vector_field_in_schema(self):
         # TODO: check the schema
         if hasattr(self, "dataset"):
             for vector_field in self.vector_fields:
                 if hasattr(self.dataset, "schema"):
                     assert vector_field in self.dataset.schema
+
+    def _check_vector_fields(self):
+        self._check_vector_field_type()
+
+        if len(self.vector_fields) == 0:
+            raise ValueError("No vector fields set. Please supply with vector_fields=")
+        self._check_vector_names()
+        self._check_vector_field_in_schema()
 
     def _check_alias(self):
         if self.alias is None:
