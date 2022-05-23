@@ -42,6 +42,10 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             self.model_name = self.model
         else:
             self.model_name = str(self.model)
+
+        if model_kwargs is None:
+            model_kwargs = {}
+
         self.model_kwargs = model_kwargs
 
         for k, v in kwargs.items():
