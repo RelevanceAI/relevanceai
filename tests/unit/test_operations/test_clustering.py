@@ -61,6 +61,7 @@ class TestClusterOps:
             dataset_id=test_dataset,
             model="kmeans",
             model_kwargs=dict(n_clusters=10),
+            alias=alias,
         )
         operator(test_dataset)
 
