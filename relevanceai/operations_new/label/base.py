@@ -38,7 +38,7 @@ from relevanceai.operations_new.base import OperationBase
 
 
 class LabelBase(OperationBase):
-    def run(  # type: ignore
+    def transform(  # type: ignore
         self,
         vector_field: str,
         documents,

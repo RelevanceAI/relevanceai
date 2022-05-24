@@ -94,3 +94,7 @@ class OperationBase(ABC, DocUtils):
         else:
             self.package = "custom"
         return self.package
+
+    @staticmethod
+    def normalize_string(string: str):
+        return string.lower().replace("-", "").replace("_", "")

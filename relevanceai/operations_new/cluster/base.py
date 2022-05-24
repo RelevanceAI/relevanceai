@@ -21,23 +21,21 @@ class ClusterBase(OperationRun):
     ):
 
         self.vector_fields = vector_fields
-        self.alias = alias
 
-        if model_kwargs is None:
-            model_kwargs = {}
-        self.model = self._get_model(
-            model=model,
-        )
+        self.model_kwargs = {} if model_kwargs == {} else model_kwargs
+
+        self.alias = self._get_alias(alias)
+        self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
         self.cluster_field = cluster_field
         for k, v in kwargs.items():
             setattr(self, k, v)
 
         self._check_vector_fields()
 
-    def _get_model(self, model):
+    def _get_model(self, model, model_kwargs: dict = None):
         # TODO: change this from abstract to an actual get_model
         if isinstance(model, str):
-            return self._get_model_from_string(model)
+            return self._get_model_from_string(model, model_kwargs)
         return model
 
     def normalize_model_name(self, model):
@@ -45,28 +43,30 @@ class ClusterBase(OperationRun):
             return model.lower().replace("-", "").replace("_", "")
         return model
 
-    def _get_model_from_string(self, model: str, *args, **kwargs):
+    def _get_model_from_string(self, model: str, model_kwargs: dict = None):
+        if model_kwargs is None:
+            model_kwargs = {}
         model = self.normalize_model_name(model)
         if model == "kmeans":
             from relevanceai.operations_new.cluster.models.sklearn.kmeans import (
                 KMeansModel,
             )
 
-            model = KMeansModel(**kwargs)
+            model = KMeansModel(model_kwargs)
             return model
         elif model == "communitydetection":
             from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
                 CommunityDetection,
             )
 
-            model = CommunityDetection(**kwargs)
+            model = CommunityDetection(**model_kwargs)
             return model
         elif model == "optics":
             from relevanceai.operations_new.cluster.models.sklearn.optics import (
                 OpticsModel,
             )
 
-            model = OpticsModel(**kwargs)
+            model = OpticsModel(**model_kwargs)
             return model
         raise ValueError("Model not supported.")
 

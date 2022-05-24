@@ -270,6 +270,9 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
     @track
     def ClusterOps(
         self,
+        dataset_id: str,
+        vector_fields: list,
+        alias: str,
         model=None,
         **kwargs,
     ):
@@ -277,6 +280,9 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
 
         return ClusterOps(
             credentials=self.credentials,
+            dataset_id=dataset_id,
+            vector_fields=vector_fields,
+            alias=alias,
             model=model,
             **kwargs,
         )

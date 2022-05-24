@@ -4,67 +4,48 @@ Cluster
 Basic
 ---------
 
-The easiest way to cluster is to run the following.
-
-.. automethod:: relevanceai.operations.operations.Operations.cluster
-
-Custom Cluster Models
--------------------------
-
-The ClusterBase class is intended to be inherited so that users can add their own clustering algorithms
-and models. A cluster base has the following abstractmethods (methods to be overwritten):
-
-- :code:`fit_transform`
-- :code:`metadata` (optional if you want to store cluster metadata)
-- :code:`get_centers` (optional if you want to store cluster centroid documents)
-
-:code:`CentroidBase` is the most basic class to inherit. Use this class if you have an
-in-memory fitting algorithm.
-
-If your clusters return centroids, you will want to inherit
-:code:`CentroidClusterBase`.
-
-If your clusters can fit on batches, you will want to inherit
-:code:`BatchClusterBase`.
-
-If you have both Batches and Centroids, you will want to inherit both.
+The easiest way to cluster a dataset is to use the `cluster` method from a `Dataset` object (an example is shown below).
 
 .. code-block::
 
-    import numpy as np
-    from faiss import Kmeans
-    from relevanceai import Client, CentroidClusterBase
+    from relevanceai import Client
+    client= Client()
 
-    client = Client()
-    df = client.Dataset("_github_repo_vectorai")
+    from relevanceai import mock_documents
+    docs = mock_documents()
+    ds = client.Dataset("sample")
+    ds.upsert_documents(docs)
 
-    class FaissKMeans(CentroidClusterBase):
-        def __init__(self, model):
-            self.model = model
+    cluster_ops = ds.cluster(
+        vector_fields=["sample_1_vector_"],
+        model="kmeans"
+    )
 
-        def fit_predict(self, vectors):
-            vectors = np.array(vectors).astype("float32")
-            self.model.train(vectors)
-            cluster_labels = self.model.assign(vectors)[1]
-            return cluster_labels
+Native Scikit-learn Integration
+---------------------------------
 
-        def metadata(self):
-            return self.model.__dict__
+You can easily cluster with the model if your cluster model has a `fit_predict` method.
 
-        def get_centers(self):
-            return self.model.centroids
+.. code-block::
 
-    n_clusters = 10
-    d = 512
-    alias = f"faiss-kmeans-{n_clusters}"
-    vector_fields = ["documentation_vector_"]
+    from sklearn.cluster import KMeans
+    model = KMeans(n_clusters=100)
+    cluster_ops = ds.cluster(
+        vector_fields=["sample_1_vector_"],
+        model=model.
+        alias="native-sklearn" # alias is anything you want
+    )
 
-    model = FaissKMeans(model=Kmeans(d=d, k=n_clusters))
-    clusterer = client.ClusterOps(model=model, alias=alias)
-    clusterer.fit_predict_update(dataset=df, vector_fields=vector_fields)
 
-.. automodule:: relevanceai.workflows.cluster_ops.clusterbase
-   :members:
+Once clustered, you can access all of the useful Scikit-learn integrations.
+
+.. code-block::
+
+    # List the closest to each centroid in a cluster
+    cluster_ops.list_closest()
+
+    # Launch a cluster app
+    ds.launch_cluster_app()
 
 Reloading ClusterOps
 ------------------------
@@ -78,7 +59,7 @@ You can do that in 2 ways.
     # State the vector fields and alias in the ClusterOps object
     ds = client.Dataset("sample_dataset_id")
     cluster_ops = ds.ClusterOps(
-        alias="kmeans-16", 
+        alias="kmeans-16",
         vector_fields=['sample_vector_'])
     )
 

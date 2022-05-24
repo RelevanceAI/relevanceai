@@ -391,6 +391,8 @@ class Operations(Write):
         """
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
+        if model is None:
+            model = "kmeans"
         ops = ClusterOps(
             model=model,
             alias=alias,  # type: ignore
@@ -448,3 +450,26 @@ class Operations(Write):
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
+
+    @track
+    def batch_cluster(
+        self,
+        vector_fields: List[str],
+        model: Any = None,
+        alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        include_cluster_report: bool = True,
+        model_kwargs: dict = None,
+        **kwargs,
+    ):
+        from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        cluster_ops = BatchClusterOps(
+            model=model,
+            alias=alias,
+            vector_fields=vector_fields,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+        cluster_ops.run(self, filters)
+        return cluster_ops
