@@ -27,13 +27,12 @@ class ClusterAlias:
         return alias.lower()
 
     def _get_alias_from_sklearn(self):
-        from sklearn.cluster import KMeans, MiniBatchKMeans
-
-        if isinstance(self.model, MiniBatchKMeans):
-            return "minibatchkmeans-" + str(self.model.n_clusters)
-        elif isinstance(self.model, KMeans):
-            return "kmeans-" + str(self.model.n_clusters)
-        return None
+        if hasattr(self.model, "n_clusters"):
+            return f"{self.model_name}-{self.model.n_clusters}"
+        elif hasattr(self.model, "k"):
+            return f"{self.model_name}-{self.model.k}"
+        else:
+            return f"{self.model_name}"
 
     def _get_n_clusters(self):
         if "n_clusters" in self.model_kwargs:
