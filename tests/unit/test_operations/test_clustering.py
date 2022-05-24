@@ -52,23 +52,23 @@ class TestClusterOps:
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
-    def testClusterUtils(self, test_client: Client, test_dataset: Dataset):
-        vector_field = "sample_1_vector_"
-        alias = "kmeans-10"
+    # def testClusterUtils(self, test_client: Client, test_dataset: Dataset):
+    #     vector_field = "sample_1_vector_"
+    #     alias = "kmeans-10"
 
-        operator = test_client.ClusterOps(
-            vector_fields=[vector_field],
-            dataset_id=test_dataset,
-            model="kmeans",
-            model_kwargs=dict(n_clusters=10),
-            alias=alias,
-        )
-        operator(test_dataset)
+    #     operator = test_client.ClusterOps(
+    #         vector_fields=[vector_field],
+    #         dataset_id=test_dataset,
+    #         model="kmeans",
+    #         model_kwargs=dict(n_clusters=10),
+    #         alias=alias,
+    #     )
+    #     operator(test_dataset)
 
-        schema = test_dataset.schema
-        assert f"_cluster_" in schema
-        assert f"_cluster_.{vector_field}" in schema
-        assert f"_cluster_.{vector_field}.{alias}" in schema
+    #     schema = test_dataset.schema
+    #     assert f"_cluster_" in schema
+    #     assert f"_cluster_.{vector_field}" in schema
+    #     assert f"_cluster_.{vector_field}.{alias}" in schema
 
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
         n_clusters = 10
