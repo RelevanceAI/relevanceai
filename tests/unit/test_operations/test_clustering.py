@@ -86,7 +86,6 @@ class TestClusterOps:
             cluster_ids=cluster_ids,
             approx=0,
             page_size=10,
-            centroid_vector_fields=["sample_1_vector_"],
             include_vector=False,
             include_count=False,
             similarity_metric="l1",
