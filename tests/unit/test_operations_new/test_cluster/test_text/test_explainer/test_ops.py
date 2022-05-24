@@ -1,8 +1,10 @@
 """Simple test for testing cluster ops
 """
+import pytest
 from relevanceai.dataset import Dataset
 
 
+@pytest.mark.skip(reason="not implemented properly")
 def test_cluster_ops_explain_closest(test_dataset: Dataset):
     # Get the cluster ops object
     # Using the cluster ops object, highlight the closest ones
