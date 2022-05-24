@@ -1,4 +1,4 @@
-Partial Clustering
+Batch Clustering
 ----------------------
 
 .. automodule:: relevanceai.operations.cluster.partial

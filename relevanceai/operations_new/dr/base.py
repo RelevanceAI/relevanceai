@@ -8,19 +8,20 @@ class DimReductionBase(OperationBase):
 
     model: DimReductionModelBase
     fields: List[str]
-    alias: Union[str, None]
+    alias: str
 
     def __init__(
         self,
         vector_fields: List[str],
-        alias: Union[str, None],
         model: Union[str, DimReductionModelBase],
         n_components: int,
+        alias: Optional[str] = None,
         model_kwargs: Optional[dict] = None,
         **kwargs,
     ):
         self.vector_fields = vector_fields
-        self.alias = alias
+        # TODO: Add a get ailas method
+        self.alias = alias  # type: ignore
         if model_kwargs is None:
             model_kwargs = {}
         self.model = self._get_model(
@@ -44,62 +45,72 @@ class DimReductionBase(OperationBase):
         **kwargs,
     ) -> DimReductionModelBase:
         if isinstance(model, str):
-            if model == "pca":
-                from relevanceai.operations_new.dr.models.pca import PCAModel
-
-                model = PCAModel(
-                    n_components=n_components,
-                    alias=alias,
-                    **kwargs,
-                )
-
-            elif model == "ivis":
-                from relevanceai.operations_new.dr.models.ivis import IvisModel
-
-                model = IvisModel(
-                    n_components=n_components,
-                    alias=alias,
-                    **kwargs,
-                )
-
-            elif model == "umap":
-                from relevanceai.operations_new.dr.models.umap import UMAPModel
-
-                model = UMAPModel(
-                    n_components=n_components,
-                    alias=alias,
-                    **kwargs,
-                )
-
-            elif model == "tsne":
-                from relevanceai.operations_new.dr.models.tsne import TSNEModel
-
-                model = TSNEModel(
-                    n_components=n_components,
-                    alias=alias,
-                    **kwargs,
-                )
-
-            else:
-                raise ValueError(
-                    "relevanceai currently does not support this model as a string. the current supported models are [pca, tsne, umpa, ivis]"
-                )
-
+            model = self._get_model_from_string(
+                model, n_components=n_components, alias=alias  # type: ignore
+            )
             return model
-
         elif isinstance(model, DimReductionModelBase):
             return model
-
         else:
             raise ValueError(
                 "dim reduction model provided should be either a string or inherit from DimReductionModelBase"
             )
 
-    def run(
+    def _get_model_from_string(
+        self, model: str, n_components: int, alias: str, **kwargs
+    ) -> DimReductionModelBase:
+        if model == "pca":
+            from relevanceai.operations_new.dr.models.pca import PCAModel
+
+            mapped_model = PCAModel(
+                n_components=n_components,
+                alias=alias,
+                **kwargs,
+            )
+
+        elif model == "ivis":
+            from relevanceai.operations_new.dr.models.ivis import IvisModel
+
+            mapped_model = IvisModel(
+                n_components=n_components,
+                alias=alias,
+                **kwargs,
+            )
+
+        elif model == "umap":
+            from relevanceai.operations_new.dr.models.umap import UMAPModel
+
+            mapped_model = UMAPModel(
+                n_components=n_components,
+                alias=alias,
+                **kwargs,
+            )
+
+        elif model == "tsne":
+            from relevanceai.operations_new.dr.models.tsne import TSNEModel
+
+            mapped_model = TSNEModel(
+                n_components=n_components,
+                alias=alias,
+                **kwargs,
+            )
+
+        else:
+            raise ValueError(
+                "relevanceai currently does not support this model as a string. the current supported models are [pca, tsne, umpa, ivis]"
+            )
+        return mapped_model
+
+    def transform(
         self,
         documents: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
-
+        # Is expected behavior when you have multiple vector fields
+        # to concatenate them (similar to ClusterOps)
+        # Or to run DR algorithm
+        # This is the expected behavior if I did this:
+        # ds.reduce_dims(vector_fields=[])
+        # ds.reduce_dims(vector_fields=[])
         updated_documents = documents
 
         concat_vectors: List[List[float]] = [[] for _ in range(len(documents))]

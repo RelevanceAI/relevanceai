@@ -46,7 +46,7 @@ class TestLabelOps:
         # TODO: Test for expanded = True and False
         # Test for differnet label documents (is an intuitive error returned)
         documents = mock_documents(100)
-        docs = ops.run(
+        docs = ops.transform(
             documents=documents,
             vector_field="sample_1_vector_",
             label_documents=label_documents,
