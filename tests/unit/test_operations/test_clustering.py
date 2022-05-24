@@ -52,7 +52,7 @@ class TestClusterOps:
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 
-    @pytest.mark.skip(erason="broken from refactor")
+    @pytest.mark.skip(reason="broken from refactor")
     def testClusterUtils(self, test_client: Client, test_dataset: Dataset):
         vector_field = "sample_1_vector_"
         alias = "kmeans-10"
