@@ -111,8 +111,8 @@ class Operations(Write):
     def vectorize_image(
         self,
         fields: List[str],
-        models: List[Any],
-        batched: bool = True,
+        models: Optional[List[Any]] = None,
+        batched: Optional[bool] = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = None,
     ):
@@ -277,7 +277,6 @@ class Operations(Write):
     def cluster(
         self,
         vector_fields: List[str],
-        n_clusters: Optional[int] = None,
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
@@ -335,9 +334,6 @@ class Operations(Write):
 
         model = "kmeans" if model is None else model
         model_kwargs = {} if model_kwargs is None else model_kwargs
-
-        if n_clusters is not None:
-            model_kwargs["n_clusters"] = n_clusters
 
         ops = ClusterOps(
             model=model,

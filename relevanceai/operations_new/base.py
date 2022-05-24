@@ -15,7 +15,7 @@ class OperationBase(ABC, DocUtils):
     alias: str
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        self.transform(*args, **kwargs)
+        return self.transform(*args, **kwargs)
 
     @property
     @abstractmethod
