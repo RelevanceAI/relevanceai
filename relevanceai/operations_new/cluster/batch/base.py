@@ -2,12 +2,13 @@
 OperationBase
 """
 from typing import Any, Optional, List
+from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 from relevanceai.operations_new.base import OperationBase
 from relevanceai.operations_new.cluster.base import ClusterBase
 
 
-class BatchClusterBase(ClusterBase):
+class BatchClusterBase(ClusterBase, ClusterAlias):
     def __init__(
         self,
         vector_fields: list,
@@ -15,7 +16,7 @@ class BatchClusterBase(ClusterBase):
         model_kwargs: Optional[dict] = None,
         alias: str = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         self.vector_fields = vector_fields
         self._check_vector_fields()
@@ -45,6 +46,8 @@ class BatchClusterBase(ClusterBase):
             documents = self.model.transform(documents)
         else:
             raise AttributeError("Model missing a predict.")
+        print("Saving cluster labels to: ")
+        print(cluster_field)
         return [
             {"_id": d["_id"], cluster_field: self.get_field(cluster_field, d)}
             for d in documents

@@ -77,20 +77,3 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
             results = dataset.upsert_documents(chunk)
 
         return
-
-    def _get_alias(self, alias: Any) -> str:
-        # Depending a package
-        # Get the alias
-        if alias is not None:
-            self.alias = alias
-            return alias
-
-        self._get_package_from_model(self.model)
-        if self.package == "sklearn":
-            self.alias = self._get_alias_from_sklearn()
-            if self.alias is not None:
-                return self.alias
-        if alias is not None and isinstance(alias, str):
-            return alias
-        alias = self._generate_alias()
-        return alias.lower()

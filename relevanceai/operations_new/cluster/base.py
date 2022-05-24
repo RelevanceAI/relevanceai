@@ -21,10 +21,11 @@ class ClusterBase(OperationRun):
     ):
 
         self.vector_fields = vector_fields
-        self.alias = alias
 
         if model_kwargs is None:
             model_kwargs = {}
+
+        self.alias = self._get_alias(alias)
         self.model = self._get_model(
             model=model,
         )

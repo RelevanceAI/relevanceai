@@ -466,7 +466,7 @@ class Operations(Write):
             model=model,
             alias=alias,
             vector_fields=vector_fields,
-            model_kwags=model_kwargs,
+            model_kwargs=model_kwargs,
             **kwargs,
         )
         cluster_ops.run(self, filters)
