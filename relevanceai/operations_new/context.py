@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.run import OperationRun
@@ -9,7 +9,7 @@ class Upload:
         self,
         dataset: Dataset,
         operation: OperationRun,
-        metadata: Dict[str, Any],
+        metadata: Optional[Dict[str, Any]] = None,
     ):
         self.dataset = dataset
         self.operation = operation

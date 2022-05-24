@@ -2,8 +2,10 @@
 All functions related to running operations on datasets
 """
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
+from relevanceai.operations_new.context import Upload
 from relevanceai.operations_new.base import OperationBase
 
 
@@ -18,39 +20,91 @@ class OperationRun(OperationBase):
         select_fields: list = None,
         filters: list = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
-        # A default run on all datasets
-        documents = dataset.get_all_documents(
-            select_fields=select_fields, filters=filters
-        )
-        # Loop through all documents
-        updated_documents = self.transform(documents, *args, **kwargs)
-        results = dataset.upsert_documents(updated_documents)
-        # TODO: update values
-        self.store_operation_metadata(
+        """It takes a dataset, and then it gets all the documents from that dataset. Then it transforms the
+        documents and then it upserts the documents.
+
+        Parameters
+        ----------
+        dataset : Dataset
+            Dataset,
+        select_fields : list
+            list = None,
+        filters : list
+            list = None,
+
+        """
+        with Upload(
             dataset=dataset,
-            values={
-                "select_fields": select_fields,
+            operation=self,
+        ) as dataset:
+            documents = dataset.get_all_documents(
+                select_fields=select_fields,
+                filters=filters,
+            )
+            updated_documents = self.transform(
+                documents,
+                *args,
                 **kwargs,
-            },
-        )
-        return results
+            )
+            dataset.upsert_documents(updated_documents)
 
     def run_in_chunks(
-        self, dataset: Dataset, select_fields: list, filters: list, *args, **kwargs
+        self,
+        dataset: Dataset,
+        select_fields: list,
+        filters: list,
+        *args,
+        **kwargs,
     ):
-        self.store_operation_metadata(dataset=dataset, values=kwargs)
-        for chunk in dataset.chunk_dataset(
-            select_fields=select_fields, filters=filters
-        ):
-            new_chunk = self.transform(chunk)
-            dataset.upsert_documents(new_chunk)
+        """It takes a dataset, filters it, and then runs a transform function on each chunk of the filtered
+        dataset.
 
-    def store_operation_metadata(self, dataset: Dataset, values: dict):
+        Parameters
+        ----------
+        dataset : Dataset
+            Dataset,
+        select_fields : list
+            list of fields to select from the dataset
+        filters : list
+            list = []
+
         """
-        Store metadata about operators
-        This is stored in the format:
+        with Upload(
+            dataset=dataset,
+            operation=self,
+        ) as dataset:
+
+            for chunk in dataset.chunk_dataset(
+                select_fields=select_fields,
+                filters=filters,
+            ):
+                updated_chunk = self.transform(
+                    chunk,
+                    *args,
+                    **kwargs,
+                )
+                dataset.upsert_documents(updated_chunk)
+
+    def store_operation_metadata(
+        self,
+        dataset: Dataset,
+        values: Optional[Dict[str, Any]] = None,
+    ):
+        """This function stores metadata about operators
+
+        Parameters
+        ----------
+        dataset : Dataset
+            Dataset,
+        values : Optional[Dict[str, Any]]
+            Optional[Dict[str, Any]] = None,
+
+        Returns
+        -------
+            The dataset object with the metadata appended to it.
+
         .. code-block::
 
             {
@@ -62,11 +116,17 @@ class OperationRun(OperationBase):
             }
 
         """
+        if values is None:
+            values = self.get_operation_metada()
+
         print("Storing operation metadata...")
         timestamp = str(datetime.now().timestamp()).replace(".", "-")
         metadata = {
             "_operationhistory_": {
-                timestamp: {"operation": self.name, "parameters": str(values)}
+                timestamp: {
+                    "operation": self.name,
+                    "parameters": str(values),
+                }
             }
         }
         # Gets metadata and appends to the operation history

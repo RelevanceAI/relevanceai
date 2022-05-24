@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations_new.context import Upload
 from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.cluster.base import ClusterBase
 from relevanceai.constants import MissingClusterError, Warning
@@ -567,32 +568,6 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 }
             ),
         )
-
-    def run(
-        self,
-        dataset: Dataset,
-        select_fields: list = None,
-        filters: list = None,
-        *args,
-        **kwargs,
-    ):
-        # A default run on all datasets
-        documents = dataset.get_all_documents(
-            select_fields=select_fields, filters=filters
-        )
-        # Loop through all documents
-        updated_documents = self.transform(documents, *args, **kwargs)
-        results = dataset.upsert_documents(updated_documents)
-        # insert centroids
-        # TODO: update values
-        centroid_documents = self.get_centroid_documents()
-        self.insert_centroids(centroid_documents)
-
-        self.store_operation_metadata(
-            dataset=dataset,
-            values={"select_fields": select_fields, **kwargs},
-        )
-        return results
 
     @property
     def centroids(self):
