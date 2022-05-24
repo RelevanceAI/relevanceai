@@ -1,7 +1,7 @@
 """
 Base class for clustering
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ModelBase
 from relevanceai.operations_new.run import OperationRun
 
@@ -15,8 +15,8 @@ class ClusterBase(OperationRun):
         vector_fields: List[str],
         alias: str,
         model: Any,
-        model_kwargs,
         cluster_field: str = "_cluster_",
+        model_kwargs: Optional[dict] = None,
         **kwargs,
     ):
 

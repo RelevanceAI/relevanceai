@@ -38,7 +38,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     logger: AbstractLogger
     request_logger: FileLogger
 
-    def __init__(self, request_log_filename="request.jsonl", **kwargs):
+    def __init__(self, request_log_filename="request.jsonl"):
 
         if os.getenv("DEBUG_REQUESTS") == "TRUE":
             try:
@@ -62,9 +62,6 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
         else:
             self.hooks = None
-
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
     def log(self, response, *args, **kwargs):
         """It takes the response from the request and logs the url, path_url, method, status_code, headers,

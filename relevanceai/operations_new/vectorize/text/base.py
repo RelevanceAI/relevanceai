@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Any
 
 from relevanceai.operations_new.vectorize.base import VectorizeBase
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase

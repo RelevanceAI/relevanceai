@@ -6,38 +6,16 @@ from relevanceai.utils.decorators.analytics import track
 
 class Operations(Write):
     @track
-    def store_operation_metadata(self, operation: str, values: str):
-        """
-        Store metadata about operators
-        {
-            "_operationhistory_": {
-                "1-1-1-17-2-3": {
-                    "operation": "vector", "model_name": "miniLm"
-                },
-            }
-        }
-
-        """
-        print("Storing operation metadata...")
-        timestamp = str(datetime.now().timestamp()).replace(".", "-")
-        metadata = {
-            "_operationhistory_": {
-                timestamp: {"operation": operation, "parameters": values}
-            }
-        }
-        # Gets metadata and appends to the operation history
-        return self.upsert_metadata(metadata)
-
-    @track
     def reduce_dims(
         self,
         vector_fields: List[str],
         n_components: int = 3,
+        batched: bool = True,
         model: Optional[Any] = None,
+        model_kwargs: Optional[dict] = None,
         alias: Optional[str] = None,
-        filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 1000,
-        **kwargs,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -63,44 +41,32 @@ class Operations(Write):
         model = "pca" if model is None else model
 
         ops = DimReductionOps(
+            credentials=self.credentials,
             vector_fields=vector_fields,
             n_components=n_components,
             model=model,
+            model_kwargs=model_kwargs,
             alias=alias,
-            credentials=self.credentials,
-            **kwargs,
-        )
-        documents = self.get_all_documents(
-            chunksize=chunksize,
-            select_fields=vector_fields,
-            filters=filters,
-        )
-        updated_documents = ops.transform(documents)
-        self.upsert_documents(
-            updated_documents,
         )
 
-        self.store_operation_metadata(
-            operation="reduce_dims",
-            values=str(
-                {
-                    "vector_fields": vector_fields,
-                    "n_components": n_components,
-                    "models": model,
-                    "filters": filters,
-                    "alias": alias,
-                }
-            ),
+        res = ops.run(
+            dataset=self,
+            select_fields=vector_fields,
+            chunksize=chunksize,
+            filters=filters,
+            batched=batched,
         )
-        return
+
+        return ops
 
     @track
     def vectorize_text(
         self,
         fields: List[str],
         models: Optional[List[Any]] = None,
-        filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        batched: bool = True,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -126,38 +92,29 @@ class Operations(Write):
         models = ["all-mpnet-base-v2"] if models is None else models
 
         ops = VectorizeTextOps(
+            credentials=self.credentials,
             fields=fields,
             models=models,
-            credentials=self.credentials,
         )
 
-        for documents in self.chunk_dataset(
-            select_fields=fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.transform(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
-
-        self.store_operation_metadata(
-            operation="vectorize_text",
-            values=str(
-                {
-                    "fields": fields,
-                    "models": models,
-                    "filters": filters,
-                }
-            ),
+        res = ops.run(
+            dataset=self,
+            select_fields=fields,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
         )
-        return
+
+        return ops
 
     @track
     def vectorize_image(
         self,
         fields: List[str],
         models: List[Any],
-        filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        batched: bool = True,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -180,26 +137,23 @@ class Operations(Write):
         """
         from relevanceai.operations_new.vectorize.image.ops import VectorizeImageOps
 
-        ops = VectorizeImageOps(fields=fields, models=models)
-        for documents in self.chunk_dataset(
-            select_fields=fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.transform(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
+        models = ["clip"] if models is None else models
 
-        self.store_operation_metadata(
-            operation="vectorize_image",
-            values=str(
-                {
-                    "fields": fields,
-                    "models": models,
-                    "filters": filters,
-                }
-            ),
+        ops = VectorizeImageOps(
+            credentials=self.credentials,
+            fields=fields,
+            models=models,
         )
-        return
+
+        res = ops.run(
+            dataset=self,
+            select_fields=fields,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
+        )
+
+        return ops
 
     @track
     def label(
