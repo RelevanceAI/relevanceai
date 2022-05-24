@@ -6,6 +6,7 @@ from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 from relevanceai.dataset import Dataset
+from typing import Any
 
 
 class BatchClusterOps(BatchClusterBase, ClusterOps):
@@ -32,11 +33,10 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
         self.vector_fields = vector_fields
         self.cluster_field = cluster_field
         self.verbose = verbose
-        self.model = model
-        if isinstance(self.model, str):
-            self.model_name = self.model
+        if isinstance(model, str):
+            self.model_name = model
         else:
-            self.model_name = str(self.model)
+            self.model_name = str(model)
 
         if model_kwargs is None:
             model_kwargs = {}
@@ -50,6 +50,7 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
             vector_fields=vector_fields,
             model=model,
             model_kwargs=model_kwargs,
+            alias=alias,
             **kwargs
         )
 
@@ -64,12 +65,30 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
             select_fields=self.vector_fields, filters=filters
         ):
             # Provide a chunk
-            vectors = self.get_field_across_documents()
-            self.model.partial_fit(chunk)
+            if isinstance(self.model, str):
+                self.model = self._get_model(self.model)
+            vectors = self.get_field_across_documents(self.vector_fields[0], chunk)
+            self.model.partial_fit(vectors)
 
         print("Predicting...")
         for chunk in dataset.chunk_dataset(select_fields=self.vector_fields):
             # Provide a chunk
             chunk = self.transform(chunk)
-            dataset.upsert_documents(chunk)
+            results = dataset.upsert_documents(chunk)
+
         return
+
+    def _get_alias(self, alias: Any) -> str:
+        # Depending a package
+        # Get the alias
+        self._get_package_from_model(self.model)
+        if self.package == "sklearn":
+            self.alias = self._get_alias_from_sklearn()
+            if self.alias is not None:
+                return self.alias
+
+        if alias is not None and isinstance(alias, str):
+            return alias
+
+        alias = self._generate_alias()
+        return alias.lower()

@@ -14,7 +14,7 @@ class BatchClusterModelBase(_ModelUtils, ABC):
     def predict(self):
         raise NotImplementedError
 
-    @abstractmethod
     @property
+    @abstractmethod
     def name(self):
         raise NotImplementedError

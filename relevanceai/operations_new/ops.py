@@ -466,7 +466,6 @@ class Operations(Write):
             model=model,
             alias=alias,
             vector_fields=vector_fields,
-            filters=filters,
             model_kwags=model_kwargs,
             **kwargs,
         )
