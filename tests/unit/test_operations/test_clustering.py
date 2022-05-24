@@ -57,9 +57,8 @@ class TestClusterOps:
         vector_field = "sample_1_vector_"
         alias = "kmeans-10"
 
-        operator = test_client.ClusterOps(
+        operator = test_dataset.cluster(
             vector_fields=[vector_field],
-            dataset_id=test_dataset,
             model="kmeans",
             model_kwargs=dict(n_clusters=10),
             alias=alias,
@@ -74,13 +73,12 @@ class TestClusterOps:
     def test_list_closest(self, test_client: Client, test_dataset: Dataset):
         n_clusters = 10
 
-        clusterer = test_client.ClusterOps(
+        clusterer = test_dataset.cluster(
             alias="new_clustering",
             model=MiniBatchKMeans(n_clusters=n_clusters),
             vector_fields=["sample_1_vector_"],
             dataset_id=test_dataset.dataset_id,
         )
-        clusterer.run(test_dataset)
         cluster_ids = ["cluster-0", "cluster-6", "cluster-3"]
         closests = clusterer.list_closest(
             cluster_ids=cluster_ids,
