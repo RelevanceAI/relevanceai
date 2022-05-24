@@ -79,7 +79,7 @@ class TestClusterOps:
             vector_fields=["sample_1_vector_"],
             dataset_id=test_dataset.dataset_id,
         )
-        cluster_ids = ["cluster-0", "cluster-6", "cluster-3"]
+        cluster_ids = ["cluster_0", "cluster_6", "cluster_3"]
         closests = clusterer.list_closest(
             cluster_ids=cluster_ids,
             approx=0,
@@ -106,7 +106,6 @@ class TestClusterOps:
         #     select_fields=["_id"],
         #     include_vector=True,
         # )["results"]
-
         # assert len(closests) == n_clusters
 
     @pytest.mark.skip(NOT_IMPLEMENTED)

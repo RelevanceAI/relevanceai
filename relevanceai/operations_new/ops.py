@@ -391,6 +391,8 @@ class Operations(Write):
         """
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
+        if model is None:
+            model = "kmeans"
         ops = ClusterOps(
             model=model,
             alias=alias,  # type: ignore
