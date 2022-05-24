@@ -254,23 +254,17 @@ class Operations(Write):
             credentials=self.credentials,
         )
 
-        for documents in self.chunk_dataset(
-            select_fields=vector_fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(
-                vector_field=vector_fields[0],
-                documents=documents,
-                label_documents=label_documents,
-                expanded=expanded,
-                max_number_of_labels=max_number_of_labels,
-                similarity_metric=similarity_metric,
-                similarity_threshold=similarity_threshold,
-                label_field=label_field,
-                label_vector_field=label_vector_field,
-            )
-            self.upsert_documents(
-                updated_documents,
-            )
+        res = ops.run(
+            dataset=self,
+            vector_field=vector_fields[0],
+            label_documents=label_documents,
+            expanded=expanded,
+            max_number_of_labels=max_number_of_labels,
+            similarity_metric=similarity_metric,
+            similarity_threshold=similarity_threshold,
+            label_field=label_field,
+            label_vector_field=label_vector_field,
+        )
 
         self.store_operation_metadata(
             operation="label",
@@ -289,7 +283,7 @@ class Operations(Write):
                 }
             ),
         )
-        return
+        return ops
 
     @track
     def split_sentences(
@@ -321,45 +315,32 @@ class Operations(Write):
             credentials=self.credentials,
         )
 
-        for c in self.chunk_dataset(select_fields=text_fields):
-            for text_field in text_fields:
-                c = ops.run(
-                    text_field=text_field,
-                    documents=c,
-                    inplace=True,
-                    output_field=output_field,
-                )
-            self.upsert_documents(c)
-
-        self.store_operation_metadata(
-            operation="sentence_splitting",
-            values=str(
-                {
-                    "text_field": text_field,
-                    "output_field": output_field,
-                    "language": language,
-                }
-            ),
+        res = ops.run(
+            dataset=self,
+            text_fields=text_fields,
+            inplace=True,
+            output_field=output_field,
         )
-        return
+
+        return ops
 
     @track
     def cluster(
         self,
         vector_fields: List[str],
-        model: Any = None,
+        model: Optional[Any],
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         include_cluster_report: bool = True,
-        model_kwargs: dict = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
-        """
-        Run clustering on your dataset.
+        """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
+        filters, a boolean value, a dictionary of model keyword arguments, and a list of keyword
+        arguments. It returns an object of type `ClusterOps`
 
         Example
         ----------
-
         .. code-block::
 
             from sklearn.cluster import KMeans
@@ -374,21 +355,30 @@ class Operations(Write):
             )
 
         Parameters
-        ------------
-
-        model: Union[str, Any]
-            Any model. Acceptable values are `kmeans`, `communitydetection`, `hdbscan`.
-        vector_fields: List[str]
+        ----------
+        vector_fields : List[str]
             A list of possible vector fields
-        alias: str
-            The alias to be used to store your model
-        cluster_config: dict
+        model : Optional[Any]
+            The clustering model to use. Currently, we support KMeans and MiniBatchKMeans.
+        alias : Optional[str]
+            The name of the cluster model.
+        filters : Optional[list]
+            Optional[list] = None,
+        include_cluster_report : bool, optional
+            bool = True
+        model_kwargs : Optional[Dict[str, Any]]
             The cluster config to use
             You can change the number of clusters for kmeans using:
             `cluster_config={"n_clusters": 10}`. For a full list of
             possible parameters for different models, simply check how
             the cluster models are instantiated.
+
+        Returns
+        -------
+            The cluster object
+
         """
+
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
         ops = ClusterOps(
@@ -401,50 +391,21 @@ class Operations(Write):
             model_kwargs=model_kwargs,
             **kwargs,
         )
-        vector_field_filters = [
-            {
-                "field": vector_field,
-                "filter_type": "exists",
-                "condition": ">=",
-                "condition_value": " ",
-            }
-            for vector_field in vector_fields
-        ]
-        if filters is None:
-            filters = vector_field_filters
-        else:
-            filters += vector_field_filters
+
+        if filters is not None:
+            filters = ops._get_filters(filters, vector_fields)
 
         # Create the cluster report
-        ops.run(dataset=self, select_fields=vector_fields, filters=filters)
+        ops.run(
+            dataset=self,
+            select_fields=vector_fields,
+            filters=filters,
+        )
 
         print(
-            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{ops.alias}', vector_fields={ops.vector_fields}, dataset_id='{self.dataset_id}')`"
+            f"You can now utilise the ClusterOps object using \
+            `cluster_ops = client.ClusterOps(alias='{ops.alias}', \
+            vector_fields={ops.vector_fields}, \
+            dataset_id='{self.dataset_id}')`"
         )
         return ops
-
-    def _get_alias(self, alias: Any) -> str:
-        # Auto-generates alias here
-        if alias is None:
-            if hasattr(self.model, "n_clusters"):
-                n_clusters = (
-                    self.n_clusters
-                    if self.n_clusters is not None
-                    else self.model.n_clusters
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            elif hasattr(self.model, "k"):
-                n_clusters = (
-                    self.n_clusters if self.n_clusters is not None else self.model.k
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            else:
-                alias = self.model_name
-
-            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
-
-        if self.verbose:
-            print(f"The alias is `{alias.lower()}`.")
-        return alias.lower()

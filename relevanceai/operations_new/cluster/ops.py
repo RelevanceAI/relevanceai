@@ -1,15 +1,13 @@
 import warnings
-from relevanceai._api.api_client import (
-    APIClient,
-)  # this needs to be replace by below in dr PR
 
-from relevanceai.constants.errors import MissingClusterError
-from relevanceai.utils.decorators.analytics import track
-from relevanceai.operations_new.cluster.base import ClusterBase
-from relevanceai.operations_new.apibase import OperationAPIBase
-from typing import Callable, Dict, Any, Set, List, Optional
-from relevanceai.constants import Warning
+from typing import Callable, Dict, Any, Set, List, Optional, Union
+from copy import deepcopy
+
 from relevanceai.dataset import Dataset
+from relevanceai.utils.decorators.analytics import track
+from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.constants import MissingClusterError, Warning
 
 
 class ClusterOps(ClusterBase, OperationAPIBase):
@@ -90,7 +88,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         cluster_field = self._get_cluster_field_name()
         # TODO; change this to fetch all documents
-        documents = self.datasets.documents.get_where(
+        documents = self._get_all_documents(
             self.dataset_id,
             filters=[
                 {
@@ -107,7 +105,6 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 },
             ],
             select_fields=[field, cluster_field],
-            page_size=9999,
         )
         # get the field across each
         arr = self.get_field_across_documents(field, documents["documents"])
@@ -453,6 +450,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             def encode(X):
                 return [1, 2, 1]
             cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
+
         Parameters
         ----------
         text_field
@@ -465,6 +463,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             The name of the field that will be added to the output dataset.
         algorithm: str
             Algorithm is either "centroid" or "relational"
+
         Returns
         -------
             A new dataset with the same data as the original dataset, but with a new field called _explain_
@@ -620,11 +619,66 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             )["results"]
         return self._centroids
 
-    def get_centroid_from_id(self, cluster_id: str):
+    def get_centroid_from_id(
+        self,
+        cluster_id: str,
+    ) -> Dict[str, Any]:
+        """> It takes a cluster id and returns the centroid with that id
+
+        Parameters
+        ----------
+        cluster_id : str
+            The id of the cluster to get the centroid for.
+
+        Returns
+        -------
+            The centroid with the given id.
+
         """
-        Get the centroid from the relevant document ID
-        """
-        for c in self.centroids:
-            if c["_id"] == cluster_id:
-                return c
+
+        for centroid in self.centroids:
+            if centroid["_id"] == cluster_id:
+                return centroid
+
         raise ValueError(f"Missing the centorid with id {cluster_id}")
+
+    @staticmethod
+    def _get_filters(
+        filters: List[Dict[str, Union[str, int]]],
+        vector_fields: List[str],
+    ) -> List[Dict[str, Union[str, int]]]:
+        """It takes a list of filters and a list of vector fields and returns a list of filters that
+        includes the original filters and a filter for each vector field that checks if the vector field
+        exists
+
+        Parameters
+        ----------
+        filters : List[Dict[str, Union[str, int]]]
+            List[Dict[str, Union[str, int]]]
+        vector_fields : List[str]
+            List[str] = ["vector_field_1", "vector_field_2"]
+
+        Returns
+        -------
+            A list of dictionaries.
+
+        """
+
+        vector_field_filters = [
+            {
+                "field": vector_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vector_field in vector_fields
+        ]
+
+        filters = deepcopy(filters)
+
+        if filters is None:
+            filters = vector_field_filters
+        else:
+            filters += vector_field_filters  # type: ignore
+
+        return filters

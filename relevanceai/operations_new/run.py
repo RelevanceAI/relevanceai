@@ -1,10 +1,10 @@
 """
 All functions related to running operations on datasets
 """
+from datetime import datetime
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.base import OperationBase
-from datetime import datetime
 
 
 class OperationRun(OperationBase):
@@ -30,21 +30,22 @@ class OperationRun(OperationBase):
         # TODO: update values
         self.store_operation_metadata(
             dataset=dataset,
-            values={"select_fields": select_fields, **kwargs},
+            values={
+                "select_fields": select_fields,
+                **kwargs,
+            },
         )
         return results
 
     def run_in_chunks(
         self, dataset: Dataset, select_fields: list, filters: list, *args, **kwargs
     ):
-        for i, chunk in enumerate(
-            dataset.chunk_dataset(select_fields=select_fields, filters=filters)
+        self.store_operation_metadata(dataset=dataset, values=kwargs)
+        for chunk in dataset.chunk_dataset(
+            select_fields=select_fields, filters=filters
         ):
             new_chunk = self.transform(chunk)
             dataset.upsert_documents(new_chunk)
-            if i == 0:
-                # We only need to store on the first operation
-                self.store_operation_metadata(dataset=dataset, values=kwargs)
 
     def store_operation_metadata(self, dataset: Dataset, values: dict):
         """
@@ -65,7 +66,7 @@ class OperationRun(OperationBase):
         timestamp = str(datetime.now().timestamp()).replace(".", "-")
         metadata = {
             "_operationhistory_": {
-                timestamp: {"operation": self.name, "parameters": values}
+                timestamp: {"operation": self.name, "parameters": str(values)}
             }
         }
         # Gets metadata and appends to the operation history

@@ -35,9 +35,9 @@ class ClusterBase(OperationRun):
         self._check_vector_fields()
 
     def _get_model(self, model):
-        # TODO: change this from abstract to an actual get_model
         if isinstance(model, str):
-            return self._get_model_from_string(model)
+            model = self._get_model_from_string(model)
+
         return model
 
     def normalize_model_name(self, model):
@@ -47,13 +47,19 @@ class ClusterBase(OperationRun):
 
     def _get_model_from_string(self, model: str, *args, **kwargs):
         model = self.normalize_model_name(model)
-        if model == "kmeans":
-            from relevanceai.operations_new.cluster.models.sklearn.kmeans import (
-                KMeansModel,
+
+        from relevanceai.operations_new.cluster.models.sklearn import (
+            __all__ as sklearn_models,
+        )
+
+        if model in sklearn_models:
+            from relevanceai.operations_new.cluster.models.sklearn.base import (
+                SklearnModelBase,
             )
 
-            model = KMeansModel(**kwargs)
+            model = SklearnModelBase(model=model, **kwargs)
             return model
+
         elif model == "communitydetection":
             from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
                 CommunityDetection,
@@ -61,13 +67,7 @@ class ClusterBase(OperationRun):
 
             model = CommunityDetection(**kwargs)
             return model
-        elif model == "optics":
-            from relevanceai.operations_new.cluster.models.sklearn.optics import (
-                OpticsModel,
-            )
 
-            model = OpticsModel(**kwargs)
-            return model
         raise ValueError("Model not supported.")
 
     @property

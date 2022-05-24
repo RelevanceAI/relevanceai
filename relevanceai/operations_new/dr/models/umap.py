@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 from importlib_metadata import PackageNotFoundError
 
 import numpy as np
