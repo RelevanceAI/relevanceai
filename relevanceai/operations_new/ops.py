@@ -209,11 +209,12 @@ class Operations(Write):
         expanded=True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
-        filters: Optional[list] = None,
-        chunksize: int = 100,
         similarity_threshold: float = 0,
         label_field: str = "label",
-        label_vector_field="label_vector_",
+        label_vector_field: str = "label_vector_",
+        batched: bool = False,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -264,6 +265,9 @@ class Operations(Write):
         res = ops.run(
             dataset=self,
             label_documents=label_documents,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
         )
 
         return ops
@@ -274,6 +278,10 @@ class Operations(Write):
         text_fields: List[str],
         output_field="_splittextchunk_",
         language: str = "en",
+        inplace: bool = True,
+        batched: bool = False,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -294,15 +302,19 @@ class Operations(Write):
         )
 
         ops = SentenceSplitterOps(
-            language=language,
             credentials=self.credentials,
+            text_fields=text_fields,
+            language=language,
+            inplace=inplace,
+            output_field=output_field,
         )
 
         res = ops.run(
             dataset=self,
-            text_fields=text_fields,
-            inplace=True,
-            output_field=output_field,
+            select_fields=text_fields,
+            batched=batched,
+            filters=filters,
+            chunksize=chunksize,
         )
 
         return ops
@@ -313,9 +325,11 @@ class Operations(Write):
         vector_fields: List[str],
         model: Optional[Any],
         alias: Optional[str] = None,
-        filters: Optional[list] = None,
         include_cluster_report: bool = True,
         model_kwargs: Optional[Dict[str, Any]] = None,
+        batched: bool = False,
+        chunksize: Optional[int] = None,
+        filters: Optional[list] = None,
         **kwargs,
     ):
         """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
@@ -382,6 +396,8 @@ class Operations(Write):
         ops.run(
             dataset=self,
             select_fields=vector_fields,
+            batched=batched,
+            chunksize=chunksize,
             filters=filters,
         )
 

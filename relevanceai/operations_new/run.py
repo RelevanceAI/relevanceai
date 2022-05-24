@@ -19,6 +19,8 @@ class OperationRun(OperationBase):
         dataset: Dataset,
         select_fields: list = None,
         filters: list = None,
+        batched=False,
+        chunksize=100,
         *args,
         **kwargs,
     ):
@@ -39,53 +41,30 @@ class OperationRun(OperationBase):
             dataset=dataset,
             operation=self,
         ) as dataset:
-            documents = dataset.get_all_documents(
-                select_fields=select_fields,
-                filters=filters,
-            )
-            updated_documents = self.transform(
-                documents,
-                *args,
-                **kwargs,
-            )
-            dataset.upsert_documents(updated_documents)
 
-    def run_in_chunks(
-        self,
-        dataset: Dataset,
-        select_fields: list,
-        filters: list,
-        *args,
-        **kwargs,
-    ):
-        """It takes a dataset, filters it, and then runs a transform function on each chunk of the filtered
-        dataset.
-
-        Parameters
-        ----------
-        dataset : Dataset
-            Dataset,
-        select_fields : list
-            list of fields to select from the dataset
-        filters : list
-            list = []
-
-        """
-        with Upload(
-            dataset=dataset,
-            operation=self,
-        ) as dataset:
-
-            for chunk in dataset.chunk_dataset(
-                select_fields=select_fields,
-                filters=filters,
-            ):
-                updated_chunk = self.transform(
-                    chunk,
+            if batched:
+                for chunk in dataset.chunk_dataset(
+                    select_fields=select_fields,
+                    filters=filters,
+                    chunksize=chunksize,
+                ):
+                    updated_chunk = self.transform(
+                        chunk,
+                        *args,
+                        **kwargs,
+                    )
+                    dataset.upsert_documents(updated_chunk)
+            else:
+                documents = dataset.get_all_documents(
+                    select_fields=select_fields,
+                    filters=filters,
+                )
+                updated_documents = self.transform(
+                    documents,
                     *args,
                     **kwargs,
                 )
-                dataset.upsert_documents(updated_chunk)
+                dataset.upsert_documents(updated_documents)
 
     def store_operation_metadata(
         self,
@@ -117,7 +96,7 @@ class OperationRun(OperationBase):
 
         """
         if values is None:
-            values = self.get_operation_metada()
+            values = self.get_operation_metadata()
 
         print("Storing operation metadata...")
         timestamp = str(datetime.now().timestamp()).replace(".", "-")

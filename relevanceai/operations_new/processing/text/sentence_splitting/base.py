@@ -1,9 +1,24 @@
 from copy import deepcopy
+
+from typing import List
+
 from relevanceai.operations_new.base import OperationBase
 from relevanceai.utils import MissingPackageError
 
 
 class SentenceSplittingBase(OperationBase):
+    def __init__(
+        self,
+        text_fields: List[str],
+        language: str = "en",
+        inplace: bool = True,
+        output_field: str = "_splittextchunk_",
+    ):
+        self.text_fields = text_fields
+        self.language = language
+        self.inplace = inplace
+        self.output_field = output_field
+
     @property
     def name(self):
         return "sentence_splitting"
@@ -11,7 +26,6 @@ class SentenceSplittingBase(OperationBase):
     def split_text(
         self,
         text,
-        language: str = "en",
     ):
         """The function takes a text and a language as input and returns a list of sentences
 
@@ -32,13 +46,11 @@ class SentenceSplittingBase(OperationBase):
         except ModuleNotFoundError:
             raise MissingPackageError("sentence-splitter")
 
-        return split_text_into_sentences(text=text, language=language)
+        return split_text_into_sentences(text=text, language=self.language)
 
     def split_text_document(
         self,
-        text_fields,
         document,
-        output_field: str = "_splittextchunk_",
     ):
         """It takes a document, splits it into chunks, and then returns a list of documents, each
         containing a single chunk
@@ -57,20 +69,23 @@ class SentenceSplittingBase(OperationBase):
             A list of dictionaries.
 
         """
-        for text_field in text_fields:
-            t = self.get_fields(text_field, document)
-            split_text = self.split_text(t)
+        for text_field in self.text_fields:
+            text = self.get_fields(text_field, document)
+            split_text = self.split_text(text)
+
             # Format the split text into documents
             split_text_value = [{text_field: s} for s in split_text if s.strip() != ""]
-            self.set_field(output_field, document, split_text_value)
+            self.set_field(
+                self.output_field,
+                document,
+                split_text_value,
+            )
+
         return document
 
     def transform(
         self,
-        text_fields,
         documents,
-        inplace: bool = True,
-        output_field: str = "_splittextchunk_",
     ):
         """It takes a list of documents, and for each document, it splits the text into chunks and adds the
         chunks to the document
@@ -91,12 +106,15 @@ class SentenceSplittingBase(OperationBase):
             A list of documents
 
         """
-        if not inplace:
+        if not self.inplace:
             documents = deepcopy(documents)
+
         # TODO; switch to something faster than list comprehension
         [
             self.split_text_document(
-                text_fields=text_fields, document=document, output_field=output_field
+                document=document,
+                text_fields=self.text_fields,
+                output_field=self.output_field,
             )
             for document in documents
         ]
