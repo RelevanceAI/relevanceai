@@ -83,9 +83,7 @@ class TestClusterOps:
         clusterer.run(test_dataset)
         cluster_ids = ["cluster-0", "cluster-6", "cluster-3"]
         closests = clusterer.list_closest(
-            vector_field="sample_1_vector_",
             cluster_ids=cluster_ids,
-            alias="new_clustering",
             approx=0,
             sum_fields=True,
             page_size=10,
