@@ -76,11 +76,9 @@ class TestClusterOps:
         clusterer = test_client.ClusterOps(
             alias="new_clustering",
             model=MiniBatchKMeans(n_clusters=n_clusters),
-        )
-        clusterer.run(
-            dataset_id=test_dataset.dataset_id,
             vector_fields=["sample_1_vector_"],
         )
+        clusterer.run(test_dataset)
         cluster_ids = ["cluster-0", "cluster-6", "cluster-3"]
         closests = clusterer.list_closest(
             dataset_id=test_dataset.dataset_id,
@@ -104,11 +102,9 @@ class TestClusterOps:
             alias="new_clustering_2",
             model="kmeans",
             n_clusters=n_clusters,
-        )
-        clusterer.run(
-            dataset_id=test_dataset.dataset_id,
             vector_fields=["sample_2_vector_"],
         )
+        clusterer.run(test_dataset)
         closests = clusterer.list_closest(
             dataset_id=test_dataset.dataset_id,
             vector_field="sample_2_vector_",
