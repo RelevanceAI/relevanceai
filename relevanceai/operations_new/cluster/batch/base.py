@@ -10,7 +10,7 @@ class BatchClusterBase(OperationBase):
     def __init__(
         self,
         vector_fields: list,
-        model: BatchClusterModelBase,
+        model: BatchClusterModelBase = None,
         model_kwargs: Optional[dict] = None,
         *args,
         **kwargs
