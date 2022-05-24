@@ -115,7 +115,7 @@ class TestClusterOps:
         ALIAS = "new_merge_clustering"
         test_dataset.cluster(
             model="kmeans",
-            n_clusters=3,
+            model_kwargs={"n_clusters": 3},
             alias=ALIAS,
             vector_fields=["sample_1_vector_"],
         )
