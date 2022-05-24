@@ -8,9 +8,7 @@ import numpy as np
 from sklearn.base import ClusterMixin
 
 from relevanceai.operations_new.cluster.models.base import ModelBase
-from relevanceai.operations_new.cluster.models.sklearn import (
-    models as sklearn_models,
-)
+from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
 
 
 class SklearnModelBase(ModelBase):

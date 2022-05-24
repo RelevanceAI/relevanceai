@@ -48,9 +48,7 @@ class ClusterBase(OperationRun):
             model_kwargs = {}
         model = self.normalize_model_name(model)
 
-        from relevanceai.operations_new.cluster.models.sklearn import (
-            models as sklearn_models,
-        )
+        from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
 
         if model in sklearn_models:
             from relevanceai.operations_new.cluster.models.sklearn.base import (
