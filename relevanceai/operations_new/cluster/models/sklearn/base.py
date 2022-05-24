@@ -5,10 +5,12 @@ from typing import Any, List, Dict, Optional, Union
 
 import numpy as np
 
-from relevanceai.operations_new.cluster.models.base import ModelBase
 from sklearn.base import ClusterMixin
 
-from sklearn.cluster import __all__
+from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.sklearn import (
+    models as sklearn_models,
+)
 
 
 class SklearnModelBase(ModelBase):
@@ -20,15 +22,17 @@ class SklearnModelBase(ModelBase):
         model_kwargs: Optional[Dict] = None,
     ):
         if isinstance(model, str):
-            assert model in __all__
-            model = SklearnModelBase.import_from_string(f"sklearn.cluster.{model}")
+            assert model in sklearn_models
+            model = SklearnModelBase.import_from_string(
+                f"sklearn.cluster.{sklearn_models[model]}"
+            )
+            if model_kwargs is None:
+                model_kwargs = {}
+
+            self.model = model(**model_kwargs)
         else:
-            assert model.__name__ in __all__
-
-        if model_kwargs is None:
-            model_kwargs = {}
-
-        self.model = model(**model_kwargs)
+            assert model.__name__ in list(sklearn_models.values())
+            self.model = model
 
     @staticmethod
     def import_from_string(name):

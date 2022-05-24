@@ -42,7 +42,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         if isinstance(self.model, str):
             self.model_name = self.model
         else:
-            self.model_name = str(self.model)
+            self.model_name = type(self.model).__name__.lower()
 
         if model_kwargs is None:
             model_kwargs = {}
@@ -443,6 +443,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         n_closest: int = 5,
         highlight_output_field="_explain_",
         algorithm: str = "centroid",
+        model_kwargs: Optional[dict] = None,
     ):
         """
         It takes a text field and a function that encodes the text field into a vector.
@@ -471,7 +472,8 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            self.vectorizer = self._get_model(encode_fn_or_model)
+            model_kwargs = {} if model_kwargs is None else model_kwargs
+            self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
             if hasattr(self.vectorizer, "encode"):
                 encode_fn = self.vectorizer.encode
             else:
@@ -549,11 +551,12 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         return alias.lower()
 
     def _get_alias_from_sklearn(self):
-        from sklearn.cluster import KMeans
-
-        if isinstance(self.model, KMeans):
-            return "kmeans-" + str(self.model.n_clusters)
-        return None
+        if hasattr(self.model, "n_clusters"):
+            return f"{self.model_name}-{self.model.n_clusters}"
+        elif hasattr(self.model, "k"):
+            return f"{self.model_name}-{self.model.k}"
+        else:
+            return f"{self.model_name}"
 
     def store_operation_metadatas(self):
         self.store_operation_metadata(
@@ -563,7 +566,6 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                     "model": self.model,
                     "vector_fields": self.vector_fields,
                     "alias": self.alias,
-                    "filters": self.filters,
                     "model_kwargs": self.model_kwargs,
                 }
             ),

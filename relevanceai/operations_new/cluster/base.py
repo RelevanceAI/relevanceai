@@ -27,6 +27,7 @@ class ClusterBase(OperationRun):
             model_kwargs = {}
         self.model = self._get_model(
             model=model,
+            model_kwargs=model_kwargs,
         )
         self.cluster_field = cluster_field
         for k, v in kwargs.items():
@@ -34,9 +35,9 @@ class ClusterBase(OperationRun):
 
         self._check_vector_fields()
 
-    def _get_model(self, model):
+    def _get_model(self, model, model_kwargs):
         if isinstance(model, str):
-            model = self._get_model_from_string(model)
+            model = self._get_model_from_string(model, model_kwargs)
 
         return model
 
@@ -45,11 +46,11 @@ class ClusterBase(OperationRun):
             return model.lower().replace("-", "").replace("_", "")
         return model
 
-    def _get_model_from_string(self, model: str, *args, **kwargs):
+    def _get_model_from_string(self, model: str, model_kwargs: dict, *args, **kwargs):
         model = self.normalize_model_name(model)
 
         from relevanceai.operations_new.cluster.models.sklearn import (
-            __all__ as sklearn_models,
+            models as sklearn_models,
         )
 
         if model in sklearn_models:
@@ -57,7 +58,11 @@ class ClusterBase(OperationRun):
                 SklearnModelBase,
             )
 
-            model = SklearnModelBase(model=model, **kwargs)
+            model = SklearnModelBase(
+                model=model,
+                model_kwargs=model_kwargs,
+                **kwargs,
+            )
             return model
 
         elif model == "communitydetection":
@@ -146,6 +151,8 @@ class ClusterBase(OperationRun):
                 )
             else:
                 set_cluster_field = f"_cluster_.{'.'.join(self.vector_fields)}.{alias}"
+
         elif isinstance(self.vector_fields, str):
             set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
+
         return set_cluster_field

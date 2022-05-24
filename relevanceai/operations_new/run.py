@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.context import Upload
 from relevanceai.operations_new.base import OperationBase
 
 
@@ -17,10 +16,10 @@ class OperationRun(OperationBase):
     def run(
         self,
         dataset: Dataset,
-        select_fields: list = None,
-        filters: list = None,
-        batched=False,
-        chunksize=100,
+        batched: Optional[bool] = False,
+        chunksize: Optional[int] = 100,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
         *args,
         **kwargs,
     ):
@@ -37,6 +36,9 @@ class OperationRun(OperationBase):
             list = None,
 
         """
+
+        from relevanceai.operations_new.context import Upload
+
         with Upload(
             dataset=dataset,
             operation=self,

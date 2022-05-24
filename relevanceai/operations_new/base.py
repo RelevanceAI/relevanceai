@@ -28,10 +28,12 @@ class OperationBase(ABC, DocUtils):
         """abstractmethod for transform"""
         raise NotImplementedError
 
-    @abstractmethod
     def get_operation_metadata(self, *args, **kwargs) -> Dict[str, Any]:
         """abstractmethod for return metadata for upsertion"""
-        raise NotImplementedError
+        return dict(
+            operation=self.name,
+            values=self.__dict__,
+        )
 
     def _check_vector_field_type(self):
         """If the vector_fields is None, raise an error. If it's a string, force it to be a list"""

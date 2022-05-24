@@ -188,7 +188,7 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         return self.datasets.create(dataset_id, schema=schema)
 
     @track
-    def list_datasets(self):
+    def list_datasets(self, verbose=False):
         """List Datasets
 
         Example
@@ -201,9 +201,10 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
             client.list_datasets()
 
         """
-        self.print_dashboard_message(
-            "You can view all your datasets at https://cloud.relevance.ai/datasets/"
-        )
+        if verbose:
+            self.print_dashboard_message(
+                "You can view all your datasets at https://cloud.relevance.ai/datasets/"
+            )
         datasets = self.datasets.list()
         datasets["datasets"] = sorted(datasets["datasets"])
         return datasets

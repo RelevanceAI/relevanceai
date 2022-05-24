@@ -6,6 +6,9 @@ from relevanceai.operations_new.vectorize.models.text.mappings import *
 
 
 class VectorizeTextBase(VectorizeBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def _get_model(self, model: Any) -> VectorizeModelBase:
         """If the model is a string, then it is either a TFHUB model or a Sentence Transformer model. If it
         is a TFHUB model, then return None. If it is a Sentence Transformer model, then return a

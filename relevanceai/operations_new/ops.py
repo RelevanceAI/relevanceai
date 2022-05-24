@@ -15,7 +15,7 @@ class Operations(Write):
         model_kwargs: Optional[dict] = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 100,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -63,10 +63,10 @@ class Operations(Write):
     def vectorize_text(
         self,
         fields: List[str],
-        models: Optional[List[Any]] = None,
         batched: bool = True,
+        models: Optional[List[Any]] = None,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 20,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -160,7 +160,7 @@ class Operations(Write):
         self,
         vector_fields: List[str],
         label_documents: List[Any],
-        expanded=True,
+        expanded: bool = True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
         similarity_threshold: float = 0,
@@ -168,7 +168,7 @@ class Operations(Write):
         label_vector_field: str = "label_vector_",
         batched: bool = False,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 100,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -235,7 +235,7 @@ class Operations(Write):
         inplace: bool = True,
         batched: bool = False,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 100,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -277,13 +277,14 @@ class Operations(Write):
     def cluster(
         self,
         vector_fields: List[str],
-        model: Optional[Any],
+        n_clusters: Optional[int] = None,
+        model: Optional[Any] = None,
         alias: Optional[str] = None,
-        include_cluster_report: bool = True,
         model_kwargs: Optional[Dict[str, Any]] = None,
-        batched: bool = False,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 100,
         filters: Optional[list] = None,
+        batched: Optional[bool] = False,
+        include_cluster_report: bool = True,
         **kwargs,
     ):
         """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
@@ -332,6 +333,12 @@ class Operations(Write):
 
         from relevanceai.operations_new.cluster.ops import ClusterOps
 
+        model = "kmeans" if model is None else model
+        model_kwargs = {} if model_kwargs is None else model_kwargs
+
+        if n_clusters is not None:
+            model_kwargs["n_clusters"] = n_clusters
+
         ops = ClusterOps(
             model=model,
             alias=alias,  # type: ignore
@@ -356,9 +363,17 @@ class Operations(Write):
         )
 
         print(
-            f"You can now utilise the ClusterOps object using \
-            `cluster_ops = client.ClusterOps(alias='{ops.alias}', \
-            vector_fields={ops.vector_fields}, \
-            dataset_id='{self.dataset_id}')`"
+            f"""You can now utilise the ClusterOps object using the below:
+
+    cluster_ops = client.ClusterOps(
+        alias='{ops.alias}',
+        vector_fields={ops.vector_fields},
+        dataset_id='{self.dataset_id}'
+    )"""
+        )
+
+        print("Configure your new cluster app below:")
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
         )
         return ops

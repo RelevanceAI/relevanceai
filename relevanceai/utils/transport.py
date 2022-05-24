@@ -38,7 +38,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     logger: AbstractLogger
     request_logger: FileLogger
 
-    def __init__(self, request_log_filename="request.jsonl"):
+    def __init__(self, request_log_filename="request.jsonl", **kwargs):
 
         if os.getenv("DEBUG_REQUESTS") == "TRUE":
             try:
