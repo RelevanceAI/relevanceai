@@ -77,7 +77,6 @@ class TestClusterOps:
             alias="new_clustering",
             model=MiniBatchKMeans(n_clusters=n_clusters),
             vector_fields=["sample_1_vector_"],
-            dataset_id=test_dataset.dataset_id,
         )
         cluster_ids = ["cluster_0", "cluster_6", "cluster_3"]
         closests = clusterer.list_closest(
