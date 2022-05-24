@@ -112,23 +112,24 @@ class TestClusterOps:
         assert False
 
     def test_merge(self, test_client: Client, test_dataset: Dataset):
+        ALIAS = "new_merge_clustering"
         test_dataset.cluster(
             model="kmeans",
             n_clusters=3,
-            alias="new_clustering",
+            alias=ALIAS,
             vector_fields=["sample_1_vector_"],
         )
 
         centroids = test_client.datasets.cluster.centroids.list(
             dataset_id=test_dataset.dataset_id,
-            alias="new_clustering",
+            alias=ALIAS,
             vector_fields=["sample_1_vector_"],
         )["results"]
         assert len(centroids) == 3
 
         ops = ClusterOps.from_dataset(
             dataset=test_dataset,
-            alias="new_clustering",
+            alias=ALIAS,
             vector_fields=["sample_1_vector_"],
         )
 
@@ -136,7 +137,7 @@ class TestClusterOps:
 
         centroids = test_client.datasets.cluster.centroids.list(
             dataset_id=test_dataset.dataset_id,
-            alias="new_clustering",
+            alias=ALIAS,
             vector_fields=["sample_1_vector_"],
         )["results"]
         assert len(centroids) == 2
