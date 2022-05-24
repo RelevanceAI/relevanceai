@@ -16,7 +16,7 @@ The easiest way to cluster a dataset is to use the `cluster` method from a `Data
     ds = client.Dataset("sample")
     ds.upsert_documents(docs)
 
-    ds.cluster(
+    cluster_ops = ds.cluster(
         vector_fields=["sample_1_vector_"],
         model="kmeans"
     )
@@ -24,7 +24,28 @@ The easiest way to cluster a dataset is to use the `cluster` method from a `Data
 Native Scikit-learn Integration
 ---------------------------------
 
-As
+You can easily cluster with the model if your cluster model has a `fit_predict` method.
+
+.. code-block::
+
+    from sklearn.cluster import KMeans
+    model = KMeans(n_clusters=100)
+    cluster_ops = ds.cluster(
+        vector_fields=["sample_1_vector_"],
+        model=model.
+        alias="native-sklearn" # alias is anything you want
+    )
+
+
+Once clustered, you can access all of the useful Scikit-learn integrations.
+
+.. code-block::
+
+    # List the closest to each centroid in a cluster
+    cluster_ops.list_closest()
+
+    # Launch a cluster app
+    ds.launch_cluster_app()
 
 Reloading ClusterOps
 ------------------------
