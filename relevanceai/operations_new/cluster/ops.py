@@ -549,9 +549,11 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         return alias.lower()
 
     def _get_alias_from_sklearn(self):
-        from sklearn.cluster import KMeans
+        from sklearn.cluster import KMeans, MiniBatchKMeans
 
-        if isinstance(self.model, KMeans):
+        if isinstance(self.model, MiniBatchKMeans):
+            return "minibatchkmeans-" + str(self.model.n_clusters)
+        elif isinstance(self.model, KMeans):
             return "kmeans-" + str(self.model.n_clusters)
         return None
 

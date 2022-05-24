@@ -39,6 +39,7 @@ class BatchClusterBase(ClusterBase):
             cluster_labels = self.model.predict(
                 self.get_field_across_documents(self.vector_fields[0], documents)
             )
+            cluster_labels = self.format_cluster_labels(cluster_labels)
             self.set_field_across_documents(cluster_field, cluster_labels, documents)
         elif hasattr(self.model, "transform"):
             documents = self.model.transform(documents)
