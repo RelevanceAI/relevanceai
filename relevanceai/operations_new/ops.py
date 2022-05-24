@@ -252,12 +252,7 @@ class Operations(Write):
 
         ops = LabelOps(
             credentials=self.credentials,
-        )
-
-        res = ops.run(
-            dataset=self,
             vector_field=vector_fields[0],
-            label_documents=label_documents,
             expanded=expanded,
             max_number_of_labels=max_number_of_labels,
             similarity_metric=similarity_metric,
@@ -266,23 +261,11 @@ class Operations(Write):
             label_vector_field=label_vector_field,
         )
 
-        self.store_operation_metadata(
-            operation="label",
-            values=str(
-                {
-                    "vector_fields": vector_fields,
-                    "expanded": expanded,
-                    "max_number_of_labels": max_number_of_labels,
-                    "similarity_metric": similarity_metric,
-                    "filters": filters,
-                    "chunksize": chunksize,
-                    "similarity_threshold": similarity_threshold,
-                    "label_field": label_field,
-                    "label_vector_field": label_vector_field,
-                    "label_documents": label_documents,
-                }
-            ),
+        res = ops.run(
+            dataset=self,
+            label_documents=label_documents,
         )
+
         return ops
 
     @track
