@@ -580,3 +580,15 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             if c["_id"] == cluster_id:
                 return c
         raise ValueError(f"Missing the centorid with id {cluster_id}")
+
+    def merge(self, cluster_ids: list):
+        """
+        Merge clusters into the first one.
+        The centroids are re-calculated and become a new middle.
+        """
+        return self.datasets.cluster.merge(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+        )
