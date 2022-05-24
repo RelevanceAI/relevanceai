@@ -1,6 +1,24 @@
+"""
+RelevanceAI Operations wrappers for use from a Dataset object
+
+.. code-block::
+
+    from relevanceai import Client
+
+    client = Client()
+
+    dataset = client.Dataset()
+
+    dataset.vectorize_text(*args, **kwargs)
+
+    dataset.reduce_dims(*args, **kwargs)
+
+    dataset.cluster(*args **kwarsgs)
+"""
+
 from typing import Any, Dict, List, Optional
+
 from relevanceai.dataset.write import Write
-from datetime import datetime
 from relevanceai.utils.decorators.analytics import track
 
 
@@ -373,3 +391,52 @@ class Operations(Write):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
         )
         return ops
+
+    def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
+        if alias is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = (
+                    self.n_clusters
+                    if self.n_clusters is not None
+                    else self.model.n_clusters
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            elif hasattr(self.model, "k"):
+                n_clusters = (
+                    self.n_clusters if self.n_clusters is not None else self.model.k
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            else:
+                alias = self.model_name
+
+            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
+
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+        return alias.lower()
+
+    @track
+    def batch_cluster(
+        self,
+        vector_fields: List[str],
+        model: Any = None,
+        alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        include_cluster_report: bool = True,
+        model_kwargs: dict = None,
+        **kwargs,
+    ):
+        from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        cluster_ops = BatchClusterOps(
+            model=model,
+            alias=alias,
+            vector_fields=vector_fields,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+        cluster_ops.run(self, filters)
+        return cluster_ops

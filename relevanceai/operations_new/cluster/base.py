@@ -21,21 +21,18 @@ class ClusterBase(OperationRun):
     ):
 
         self.vector_fields = vector_fields
-        self.alias = alias
 
-        if model_kwargs is None:
-            model_kwargs = {}
-        self.model = self._get_model(
-            model=model,
-            model_kwargs=model_kwargs,
-        )
+        self.model_kwargs = {} if model_kwargs is None else model_kwargs
+        self.alias = self._get_alias(alias)
+        self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
+
         self.cluster_field = cluster_field
         for k, v in kwargs.items():
             setattr(self, k, v)
 
         self._check_vector_fields()
 
-    def _get_model(self, model, model_kwargs):
+    def _get_model(self, model: Any, model_kwargs: dict) -> Any:
         if isinstance(model, str):
             model = self._get_model_from_string(model, model_kwargs)
 
@@ -46,7 +43,9 @@ class ClusterBase(OperationRun):
             return model.lower().replace("-", "").replace("_", "")
         return model
 
-    def _get_model_from_string(self, model: str, model_kwargs: dict, *args, **kwargs):
+    def _get_model_from_string(self, model: str, model_kwargs: dict = None):
+        if model_kwargs is None:
+            model_kwargs = {}
         model = self.normalize_model_name(model)
 
         from relevanceai.operations_new.cluster.models.sklearn import (
@@ -61,7 +60,6 @@ class ClusterBase(OperationRun):
             model = SklearnModelBase(
                 model=model,
                 model_kwargs=model_kwargs,
-                **kwargs,
             )
             return model
 
@@ -70,7 +68,7 @@ class ClusterBase(OperationRun):
                 CommunityDetection,
             )
 
-            model = CommunityDetection(**kwargs)
+            model = CommunityDetection(**model_kwargs)
             return model
 
         raise ValueError("Model not supported.")

@@ -1,17 +1,21 @@
 import warnings
 
-from typing import Callable, Dict, Any, Set, List, Optional, Union
 from copy import deepcopy
 
-from relevanceai.dataset import Dataset
+from typing import Optional, Union, Callable, Dict, Any, Set, List
+
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.operations_new.context import Upload
+
 from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.base import ClusterBase
+
+from relevanceai.constants import Warning
+from relevanceai.constants.errors import MissingClusterError
 from relevanceai.constants import MissingClusterError, Warning
 
 
-class ClusterOps(ClusterBase, OperationAPIBase):
+class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
     """
     Cluster-related functionalities
     """
@@ -659,3 +663,15 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             filters += vector_field_filters  # type: ignore
 
         return filters
+
+    def merge(self, cluster_ids: list):
+        """
+        Merge clusters into the first one.
+        The centroids are re-calculated and become a new middle.
+        """
+        return self.datasets.cluster.merge(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            alias=self.alias,
+            cluster_ids=cluster_ids,
+        )
