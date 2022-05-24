@@ -1,9 +1,12 @@
 """
-Partial Cluster Ops
+Batch Cluster Operations
 """
-from relevanceai.operations_new.cluster.partial.base import PartialClusterBase
+from relevanceai.operations_new.cluster.batch.base import BatchClusterBase
 from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.cluster.ops import ClusterOps
 
 
-class BatchClusterOps(PartialClusterBase):
+class BatchClusterOps(BatchClusterBase, ClusterOps):
+    """ """
+
     pass
