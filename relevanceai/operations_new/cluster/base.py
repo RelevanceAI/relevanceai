@@ -52,7 +52,7 @@ class ClusterBase(OperationRun):
                 KMeansModel,
             )
 
-            model = KMeansModel(**model_kwargs)
+            model = KMeansModel(model_kwargs)
             return model
         elif model == "communitydetection":
             from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
