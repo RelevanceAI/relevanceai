@@ -11,3 +11,6 @@ class LabelOps(OperationAPIBase, LabelBase):  # type: ignore
     """
     Label Operations
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
