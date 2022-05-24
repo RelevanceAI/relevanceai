@@ -28,11 +28,11 @@ class ClusterAlias:
 
     def _get_alias_from_sklearn(self):
         if hasattr(self.model, "n_clusters"):
-            return f"{self.model_name}-{self.model.n_clusters}"
+            return f"{type(self.model).__name__.lower()}-{self.model.n_clusters}"
         elif hasattr(self.model, "k"):
-            return f"{self.model_name}-{self.model.k}"
+            return f"{type(self.model).__name__.lower()}-{self.model.k}"
         else:
-            return f"{self.model_name}"
+            return f"{type(self.model).__name__.lower()}"
 
     def _get_n_clusters(self):
         if "n_clusters" in self.model_kwargs:
