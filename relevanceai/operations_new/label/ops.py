@@ -10,4 +10,5 @@ class LabelOps(LabelBase, OperationAPIBase):  # type: ignore
     Label Operations
     """
 
-    pass
+    def run(self):
+        raise NotImplementedError
