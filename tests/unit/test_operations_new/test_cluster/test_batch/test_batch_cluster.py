@@ -9,8 +9,7 @@ def test_batch_cluster(test_dataset: Dataset):
         model="minibatchkmeans",
         model_kwargs={"n_clusters": 15},
     )
-    alias = "minibatchkmeans-15"
-    assert alias in test_dataset.schema
+    assert f"_cluster_.sample_1_vector_.minibatchkmeans-15" in test_dataset.schema
 
 
 def test_batch_cluster_kmeans_integration(test_dataset: Dataset):
@@ -21,5 +20,4 @@ def test_batch_cluster_kmeans_integration(test_dataset: Dataset):
         vector_fields=["sample_1_vector_"],
         model=model,
     )
-    alias = "minibatchkmeans-20"
-    assert alias in test_dataset.schema
+    assert f"_cluster_.sample_1_vector_.minibatchkmeans-20" in test_dataset.schema
