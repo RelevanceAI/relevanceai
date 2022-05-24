@@ -34,22 +34,32 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
             self.get_field_across_documents(self.vector_fields, documents)
         )
 
+    @property
+    def full_cluster_field(self):
+        if not hasattr(self, "_cluster_field"):
+            self._cluster_field = self._get_cluster_field_name()
+            print("Saving cluster labels to: ")
+            print(self._cluster_field)
+        return self._cluster_field
+
     def transform(self, documents):
-        cluster_field = self._get_cluster_field_name()
         if hasattr(self.model, "predict"):
             cluster_labels = self.model.predict(
                 self.get_field_across_documents(self.vector_fields[0], documents)
             )
             cluster_labels = self.format_cluster_labels(cluster_labels)
-            self.set_field_across_documents(cluster_field, cluster_labels, documents)
+            self.set_field_across_documents(
+                self.full_cluster_field, cluster_labels, documents
+            )
         elif hasattr(self.model, "transform"):
             documents = self.model.transform(documents)
         else:
             raise AttributeError("Model missing a predict.")
-        print("Saving cluster labels to: ")
-        print(cluster_field)
         return [
-            {"_id": d["_id"], cluster_field: self.get_field(cluster_field, d)}
+            {
+                "_id": d["_id"],
+                self.full_cluster_field: self.get_field(self.full_cluster_field, d),
+            }
             for d in documents
         ]
 
