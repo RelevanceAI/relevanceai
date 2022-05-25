@@ -46,7 +46,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         if isinstance(self.model, str):
             self.model_name = self.model
         else:
-            self.model_name = type(self.model).__name__.lower()
+            self.model_name = str(self.model)
 
         if model_kwargs is None:
             model_kwargs = {}
