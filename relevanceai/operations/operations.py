@@ -679,8 +679,8 @@ class Operations(Write, IO):
     def analyze_sentiment(
         self,
         text_fields: list,
-        output_field: str = None,
         model_name: str = "siebert/sentiment-roberta-large-english",
+        output_field: str = None,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
@@ -695,7 +695,7 @@ class Operations(Write, IO):
 
         .. code-block::
 
-            ds.add_sentiment(field="sample_1_label")
+            ds.analyze_sentiment(field="sample_1_label")
 
         Parameters
         --------------
@@ -719,7 +719,13 @@ class Operations(Write, IO):
         """
         from relevanceai.operations_new.sentiment.ops import SentimentOps
 
-        ops = SentimentOps(text_fields=text_fields, model_name=model_name)
+        ops = SentimentOps(
+            text_fields=text_fields,
+            model_name=model_name,
+            highlight=highlight,
+            max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
+        )
 
         return ops.run(self, batched=True)
 

@@ -2,6 +2,7 @@
 """
 
 # Running a function across each subcluster
+from sre_constants import MAX_UNTIL
 import numpy as np
 import csv
 from typing import Optional
@@ -15,6 +16,11 @@ class SentimentBase(OperationBase):
         self,
         text_fields: list,
         model_name: str = "siebert/sentiment-roberta-large-english",
+        highlight: bool = False,
+        positive_sentiment_name: str = "positive",
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: float = 0.1,
+        **kwargs,
     ):
         """
         Sentiment Ops.
@@ -28,6 +34,12 @@ class SentimentBase(OperationBase):
         """
         self.model_name = model_name
         self.text_fields = text_fields
+        self.highlight = highlight
+        self.positive_sentiment_name = positive_sentiment_name
+        self.max_number_of_shap_documents = max_number_of_shap_documents
+        self.min_abs_score = min_abs_score
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def preprocess(self, text: str):
         new_text = []
@@ -167,7 +179,13 @@ class SentimentBase(OperationBase):
         for t in self.text_fields:
             output_field = self._get_output_field(t)
             sentiments = [
-                self.analyze_sentiment(self.get_field(t, doc)) for doc in documents
+                self.analyze_sentiment(
+                    self.get_field(t, doc),
+                    highlight=self.highlight,
+                    max_number_of_shap_documents=self.max_number_of_shap_documents,
+                    min_abs_score=self.min_abs_score,
+                )
+                for doc in documents
             ]
             self.set_field_across_documents(output_field, sentiments, documents)
         return documents
