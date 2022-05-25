@@ -104,7 +104,9 @@ class SentimentBase(OperationBase):
             overall_sentiment = 0
         else:
             overall_sentiment = (
-                max_score if sentiment == positive_sentiment_name else -max_score
+                max_score
+                if sentiment.lower() == positive_sentiment_name
+                else -max_score
             )
         if not highlight:
             return {
