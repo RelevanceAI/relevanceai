@@ -19,6 +19,10 @@ class Upload:
         return self.dataset
 
     def __exit__(self, *args, **kwargs):
+        if hasattr(self.operation, "get_centroid_documents"):
+            centroid_documents = self.get_centroid_documents()
+            self.insert_centroids(centroid_documents)
+
         self.operation.store_operation_metadata(
             dataset=self.dataset,
             values=self.metadata,

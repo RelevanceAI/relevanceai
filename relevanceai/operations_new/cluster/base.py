@@ -27,6 +27,7 @@ class ClusterBase(OperationRun):
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
         self.cluster_field = cluster_field
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
