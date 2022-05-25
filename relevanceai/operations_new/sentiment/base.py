@@ -100,7 +100,7 @@ class SentimentBase(OperationBase):
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
         sentiment = self.label_mapping.get(sentiment, sentiment)
-        if sentiment == "neutral":
+        if sentiment.lower() == "neutral":
             overall_sentiment = 0
         else:
             overall_sentiment = (
