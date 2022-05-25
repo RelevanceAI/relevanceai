@@ -20,4 +20,5 @@ class OperationAPIBase(APIClient, OperationRun, OperationsAPILogger):
 
     @classmethod
     def from_dataset(self, *args, **kwargs):
-        raise NotImplementedError
+        dataset = kwargs.pop("dataset")
+        return

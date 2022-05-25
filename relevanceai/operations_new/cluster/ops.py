@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import warnings
 
 from copy import deepcopy
@@ -110,9 +111,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
                 },
             ],
             select_fields=[field, cluster_field],
+            show_progress_bar=False,
         )
         # get the field across each
-        arr = self.get_field_across_documents(field, documents["documents"])
+        arr = self.get_field_across_documents(field, documents)
         output[cluster_id] = func(arr)
 
     def _operate_across_clusters(self, field: str, func: Callable):
@@ -273,7 +275,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         if self.model._centroids is not None:
             centroid_vectors = self.model._centroids
             # get the cluster label function
-            cluster_ids = self.list_cluster_ids()
+            cluster_ids = sorted(self.list_cluster_ids())
             if len(self.vector_fields) > 1:
                 warnings.warn(
                     "Currently do not support inserting centroids with multiple vector fields"

@@ -48,11 +48,12 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
 
         super().__init__(
             vector_fields=vector_fields,
-            model=model,
+            model="MiniBatchKmeans" if model is None else model,
             model_kwargs=model_kwargs,
-            alias=alias,
             **kwargs
         )
+
+        self.alias = self._get_alias(alias)
 
     def run(self, dataset: Dataset, filters: list = None):
         """
@@ -64,9 +65,6 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
         for chunk in dataset.chunk_dataset(
             select_fields=self.vector_fields, filters=filters
         ):
-            # Provide a chunk
-            if isinstance(self.model, str):
-                self.model = self._get_model(self.model)
             vectors = self.get_field_across_documents(self.vector_fields[0], chunk)
             self.model.partial_fit(vectors)
 

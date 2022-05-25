@@ -1,7 +1,7 @@
 """
 OperationBase
 """
-from typing import Any, Optional, List
+from typing import Any, Dict, Optional, List
 from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 from relevanceai.operations_new.base import OperationBase
@@ -12,27 +12,33 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
     def __init__(
         self,
         vector_fields: list,
-        model: BatchClusterModelBase = None,
-        model_kwargs: Optional[dict] = None,
-        alias: str = None,
+        model: Any,
+        model_kwargs: dict,
         *args,
         **kwargs,
     ):
         self.vector_fields = vector_fields
         self._check_vector_fields()
-        self.model = self._get_model(model)
+        self.model = self._get_model(model, model_kwargs)
         if model_kwargs is None:
             model_kwargs = {}
         self.model_kwargs: dict = model_kwargs
-        self.alias = self._get_alias(alias)
 
-    def partial_fit(self, documents: List):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def partial_fit(self, documents: List, model_kwargs=None):
         """Run partial fitting on a list of documents"""
         if isinstance(self.model, str):
-            self.model = self._get_model(self.model)
+            model_kwargs = {} if model_kwargs is None else model_kwargs
+            self.model = self._get_model(self.model, model_kwargs)
         return self.model.partial_fit(
             self.get_field_across_documents(self.vector_fields, documents)
         )
+
+    @property
+    def name(self):
+        return type(self.model).__name__.lower()
 
     @property
     def full_cluster_field(self):
@@ -42,36 +48,45 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
             print(self._cluster_field)
         return self._cluster_field
 
-    def transform(self, documents):
-        if hasattr(self.model, "predict"):
-            cluster_labels = self.model.predict(
-                self.get_field_across_documents(self.vector_fields[0], documents)
-            )
-            cluster_labels = self.format_cluster_labels(cluster_labels)
-            self.set_field_across_documents(
-                self.full_cluster_field, cluster_labels, documents
-            )
-        elif hasattr(self.model, "transform"):
-            documents = self.model.transform(documents)
-        else:
-            raise AttributeError("Model missing a predict.")
-        return [
-            {
-                "_id": d["_id"],
-                self.full_cluster_field: self.get_field(self.full_cluster_field, d),
-            }
-            for d in documents
-        ]
+    def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """It takes a list of documents, and for each document, it runs the document through each of the
+        models in the pipeline, and returns the updated documents.
 
-    def _get_model(self, model):
+        Parameters
+        ----------
+        documents : List[Dict[str, Any]]
+            List[Dict[str, Any]]
+
+        Returns
+        -------
+            A list of dictionaries.
+
+        """
+
+        # TODO: add support for sklearn kmeans
+        labels = self.fit_predict_documents(
+            documents=documents,
+        )
+        # Get the cluster field name
+        cluster_field_name = self._get_cluster_field_name()
+
+        documents_to_upsert = [{"_id": d["_id"]} for d in documents]
+
+        self.set_field_across_documents(
+            cluster_field_name,
+            labels,
+            documents_to_upsert,
+        )
+        return documents_to_upsert
+
+    def _get_model(self, model: Any, model_kwargs: dict) -> Any:
         if isinstance(model, str):
-            self.model_name = model
-            model = OperationBase.normalize_string(model)
-            if model == "minibatchkmeans":
-                from sklearn.cluster import MiniBatchKMeans
+            model = self._get_model_from_string(model, model_kwargs)
 
-                self.model = MiniBatchKMeans(**self.model_kwargs)
-                return self.model
-            else:
-                raise ValueError("Only supports minibatchkmeans for now.")
+        elif "sklearn" in model.__module__:
+            model = self._get_sklearn_model_from_class(model)
+
+        elif "faiss" in model.__module__:
+            model = self._get_faiss_model_from_class(model)
+
         return model
