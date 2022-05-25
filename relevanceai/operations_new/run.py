@@ -37,9 +37,9 @@ class OperationRun(OperationBase):
 
         """
 
-        from relevanceai.operations_new.context import Upload
+        from relevanceai.operations_new.context import OperationManager
 
-        with Upload(
+        with OperationManager(
             dataset=dataset,
             operation=self,
         ) as dataset:

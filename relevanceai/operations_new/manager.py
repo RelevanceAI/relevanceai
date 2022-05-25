@@ -4,7 +4,15 @@ from relevanceai.dataset import Dataset
 from relevanceai.operations_new.run import OperationRun
 
 
-class Upload:
+class OperationManager:
+    """
+    Operation manager manages an operation.
+    It handles datasets and operations
+    .. code-block::
+        with OperationManager():
+            #
+    """
+
     def __init__(
         self,
         dataset: Dataset,
