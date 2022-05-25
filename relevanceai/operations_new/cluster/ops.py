@@ -274,7 +274,8 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         if self.model._centroids is not None:
             centroid_vectors = self.model._centroids
             # get the cluster label function
-            cluster_ids = sorted(self.list_cluster_ids())
+            labels = range(len(centroid_vectors))
+            cluster_ids = self.format_cluster_labels(labels)
             if len(self.vector_fields) > 1:
                 warnings.warn(
                     "Currently do not support inserting centroids with multiple vector fields"
