@@ -4,6 +4,42 @@ Changelog
 Here you will find a list of changes for each package update related to the Relevance AI
 Python library.
 
+v2.3.0
+-------
+
+## What's Changed
+* Feature/dr refactor by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/743
+* fix cluster filters, standardise insert_metadata, fix decimal on cosine by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/761
+* add label rework by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/768
+* add check_vector_fields by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/760
+* Create test_unit_dev.yaml by @joshp-f in https://github.com/RelevanceAI/RelevanceAI/pull/769
+* Implement test_list_closest by @ajhwb in https://github.com/RelevanceAI/RelevanceAI/pull/758
+* Feature/sdk 340 labelling rework by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/767
+* Feature/sdk 382 sentence splitter operator by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/771
+* Implemented test_apply by @ajhwb in https://github.com/RelevanceAI/RelevanceAI/pull/773
+* fix type error for filters by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/775
+* fixed vectorize by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/776
+* Improved test_list_closest by @ajhwb in https://github.com/RelevanceAI/RelevanceAI/pull/777
+* fi subcluter by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/778
+* Feature/DR Naming Convention (Alias to be vector name instead.) by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/759
+* Feature/sdk 390 2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/782
+* fixed for concatenating vector fields by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/785
+* Development readme by @ajhwb in https://github.com/RelevanceAI/RelevanceAI/pull/787
+* Added sentence-splitter package by @ajhwb in https://github.com/RelevanceAI/RelevanceAI/pull/788
+* Feature/sdk 390 2 by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/783
+* Feature/sdk 400 partialclusterops by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/789
+* sklearn integration and updating run/transform by @jtwinrelevanceai in https://github.com/RelevanceAI/RelevanceAI/pull/790
+* Feature/sdk 406 fix sentiment ops by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/792
+
+## New Contributors
+* @joshp-f made their first contribution in https://github.com/RelevanceAI/RelevanceAI/pull/769
+* @ajhwb made their first contribution in https://github.com/RelevanceAI/RelevanceAI/pull/758
+
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v2.2.0...v2.3.0
+
+v2.2.0
+---------
+
 ## What's Changed
 * support stuff by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/590
 * Feature/fix datasets by @boba-and-beer in https://github.com/RelevanceAI/RelevanceAI/pull/592
@@ -43,7 +79,7 @@ Python library.
 * Feature/cluster metadata by @JackyKoh in https://github.com/RelevanceAI/RelevanceAI/pull/744
 
 
-**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v2.1.8...v2.2.0    
+**Full Changelog**: https://github.com/RelevanceAI/RelevanceAI/compare/v2.1.8...v2.2.0
 
 v2.1.0
 -----------
@@ -99,7 +135,7 @@ Features/Updates:
 - Add Sentiment Analysis
 - Complete SDK reference restructure
 - SDK aesthetic overhaul
-- And much more! 
+- And much more!
 
 Backend:
 
