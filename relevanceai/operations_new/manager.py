@@ -7,10 +7,12 @@ from relevanceai.operations_new.run import OperationRun
 class OperationManager:
     """
     Operation manager manages an operation.
-    It handles datasets and operations
-    .. code-block::
-        with OperationManager():
-            #
+    It handles storing operation manager.
+
+    In future, it will also handle:
+    - logging
+    - timing
+    - Faster asynchronous processing
     """
 
     def __init__(
