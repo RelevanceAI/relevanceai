@@ -4,7 +4,7 @@ from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.dr.base import DimReductionBase
 
 
-class DimReductionOps(OperationAPIBase, DimReductionBase):
+class DimReductionOps(DimReductionBase, OperationAPIBase):
     """
     API related Functionality for Operation
     """
@@ -25,8 +25,11 @@ class DimReductionOps(OperationAPIBase, DimReductionBase):
             n_components=n_components,
             model_kwargs=model_kwargs,
             alias=alias,
-            **kwargs
+            **kwargs,
         )
         self.model = self._get_model(
-            model=model, n_components=n_components, alias=alias, **model_kwargs
+            model=model,
+            n_components=n_components,
+            alias=alias,
+            **model_kwargs,
         )

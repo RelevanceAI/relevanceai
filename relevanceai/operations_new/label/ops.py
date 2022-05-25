@@ -7,7 +7,7 @@ from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.context import Upload
 
 
-class LabelOps(OperationAPIBase, LabelBase):  # type: ignore
+class LabelOps(LabelBase, OperationAPIBase):  # type: ignore
     """
     Label Operations
     """
