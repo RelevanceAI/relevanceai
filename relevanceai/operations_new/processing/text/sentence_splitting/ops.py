@@ -8,5 +8,5 @@ from relevanceai.operations_new.processing.text.sentence_splitting.base import (
 )
 
 
-class SentenceSplitterOps(SentenceSplittingBase, OperationAPIBase):
+class SentenceSplitterOps(OperationAPIBase, SentenceSplittingBase):
     pass

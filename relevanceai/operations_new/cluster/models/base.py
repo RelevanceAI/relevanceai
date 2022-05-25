@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
+import numpy as np
+
 from relevanceai.utils import DocUtils
 
 
 class _ModelUtils(DocUtils):
+    _centroids = None
+
     def predict_documents(self, vector_fields, documents):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
@@ -13,10 +17,15 @@ class _ModelUtils(DocUtils):
             "support for multiple vector fields not available right now."
         )
 
-    def fit_predict_documents(self, vector_fields, documents):
+    def fit_predict_documents(
+        self,
+        vector_fields: List[str],
+        documents: List[Dict[str, Any]],
+        warm_start: bool = False,
+    ):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
-            cluster_labels = self.fit_predict(vectors)
+            cluster_labels = self.fit_predict(vectors, warm_start)
             return self.format_cluster_labels(cluster_labels)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
@@ -27,11 +36,6 @@ class _ModelUtils(DocUtils):
             return str(self.model)
         else:
             return "generic_cluster_model"
-
-    @property
-    def cluster_centers_(self):
-        # Get the cluster centers
-        return None
 
     def format_cluster_label(self, label):
         """> If the label is an integer, return a string that says "cluster_" and the integer. If the label is
@@ -63,6 +67,20 @@ class ModelBase(ABC, _ModelUtils):
 
     def fit(self, *args, **kwargs) -> None:
         raise NotImplementedError
+
+    def calculate_centroids(
+        self, labels: np.ndarray, vectors: np.ndarray
+    ) -> np.ndarray:
+
+        if not isinstance(vectors, np.ndarray):
+            vectors = np.array(vectors)
+
+        centroids = []
+        for label in sorted(np.unique(labels).tolist()):
+            centroid = vectors[labels == label].mean(axis=0)
+            centroids.append(centroid)
+        centroids = np.array(centroids)
+        return centroids
 
     @abstractmethod
     def predict(self, *args, **kwargs) -> List[Dict[str, Any]]:

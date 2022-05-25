@@ -1,10 +1,10 @@
 from typing import List, Dict, Any, Optional, Union
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.run import OperationRun
 from relevanceai.operations_new.dr.models.base import DimReductionModelBase
 
 
-class DimReductionBase(OperationBase):
+class DimReductionBase(OperationRun):
 
     model: DimReductionModelBase
     fields: List[str]
@@ -20,10 +20,13 @@ class DimReductionBase(OperationBase):
         **kwargs,
     ):
         self.vector_fields = vector_fields
+
         # TODO: Add a get ailas method
         self.alias = alias  # type: ignore
+
         if model_kwargs is None:
             model_kwargs = {}
+
         self.model = self._get_model(
             model=model,
             n_components=n_components,
@@ -44,6 +47,20 @@ class DimReductionBase(OperationBase):
         alias: Union[str, None],
         **kwargs,
     ) -> DimReductionModelBase:
+        """It returns a model.
+
+        Parameters
+        ----------
+        model : Union[str, DimReductionModelBase]
+            Union[str, DimReductionModelBase]
+        n_components : int
+            int
+        alias : Union[str, None]
+            Union[str, None]
+
+        """
+        import inspect
+
         if isinstance(model, str):
             model = self._get_model_from_string(
                 model, n_components=n_components, alias=alias  # type: ignore
@@ -97,7 +114,7 @@ class DimReductionBase(OperationBase):
 
         else:
             raise ValueError(
-                "relevanceai currently does not support this model as a string. the current supported models are [pca, tsne, umpa, ivis]"
+                "relevanceai currently does not support this model as a string. the current supported models are [pca, tsne, umap, ivis]"
             )
         return mapped_model
 
@@ -105,13 +122,6 @@ class DimReductionBase(OperationBase):
         self,
         documents: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
-        # Is expected behavior when you have multiple vector fields
-        # to concatenate them (similar to ClusterOps)
-        # Or to run DR algorithm
-        # This is the expected behavior if I did this:
-        # ds.reduce_dims(vector_fields=[])
-        # ds.reduce_dims(vector_fields=[])
-        updated_documents = documents
 
         concat_vectors: List[List[float]] = [[] for _ in range(len(documents))]
 
@@ -135,7 +145,7 @@ class DimReductionBase(OperationBase):
                 for key, value in document.items()
                 if key not in self.vector_fields
             }
-            for document in updated_documents
+            for document in documents
         ]
 
         return documents

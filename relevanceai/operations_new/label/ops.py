@@ -10,5 +10,5 @@ class LabelOps(LabelBase, OperationAPIBase):  # type: ignore
     Label Operations
     """
 
-    def run(self):
-        raise NotImplementedError
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

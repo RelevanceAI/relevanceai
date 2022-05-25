@@ -683,7 +683,6 @@ class Read(Statistics):
             print("✅ You have successfully inserted metadata.")
         else:
             return results
-        return self.insert_metadata(metadata)
 
     @track
     def chunk_dataset(

@@ -1,6 +1,7 @@
+from typing import Optional
+
 from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.dr.base import DimReductionBase
-from typing import Optional
 
 
 class DimReductionOps(DimReductionBase, OperationAPIBase):
@@ -18,15 +19,17 @@ class DimReductionOps(DimReductionBase, OperationAPIBase):
     ):
         if model_kwargs is None:
             model_kwargs = {}
+
         super().__init__(
             model=model,
             n_components=n_components,
             model_kwargs=model_kwargs,
             alias=alias,
-            **kwargs
+            **kwargs,
         )
         self.model = self._get_model(
-            model=model, n_components=n_components, alias=alias, **model_kwargs
+            model=model,
+            n_components=n_components,
+            alias=alias,
+            **model_kwargs,
         )
-        for k, v in kwargs.items():
-            setattr(self, k, v)
