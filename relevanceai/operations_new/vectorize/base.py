@@ -3,17 +3,20 @@ from typing import List, Dict, Any
 from abc import abstractmethod
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.run import OperationRun
 
 
-class VectorizeBase(OperationBase):
+class VectorizeBase(OperationRun):
 
     models: List[VectorizeModelBase]
     fields: List[str]
 
-    def __init__(self, fields: List[str], models: List[VectorizeModelBase]):
+    def __init__(self, fields: List[str], models: List[VectorizeModelBase], **kwargs):
         self.fields = fields
         self.models = [self._get_model(model) for model in models]
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     @property
     def name(self):
@@ -51,7 +54,7 @@ class VectorizeBase(OperationBase):
             {
                 key: value
                 for key, value in document.items()
-                if key in self.fields or key == "_id"
+                if key not in self.fields or key == "_id"
             }
             for document in updated_documents
         ]

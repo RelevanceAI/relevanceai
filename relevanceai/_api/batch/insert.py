@@ -39,8 +39,8 @@ from relevanceai.constants import (
 
 
 class BatchInsertClient(BatchRetrieveClient):
-    def __init__(self, *args, **kw):
-        super().__init__(*args, **kw)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def _insert_documents(
         self,

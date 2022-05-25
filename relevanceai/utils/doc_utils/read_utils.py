@@ -256,6 +256,9 @@ class DocReadUtils:
                     return False
         return True
 
+    def is_field_across_documents(self, field, documents):
+        return all([self.is_field(field, doc)] for doc in documents)
+
     @staticmethod
     def list_doc_fields(doc: dict) -> List[str]:
         """returns all fields in a document, nested fields are flattened

@@ -1,16 +1,18 @@
 import warnings
-from relevanceai._api.api_client import (
-    APIClient,
-)  # this needs to be replace by below in dr PR
 
-from relevanceai.constants.errors import MissingClusterError
-from relevanceai.operations_new.cluster.alias import ClusterAlias
+from copy import deepcopy
+
+from typing import Optional, Union, Callable, Dict, Any, Set, List
+
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.operations_new.cluster.base import ClusterBase
+
 from relevanceai.operations_new.apibase import OperationAPIBase
-from typing import Callable, Dict, Any, Set, List, Optional
+from relevanceai.operations_new.cluster.alias import ClusterAlias
+from relevanceai.operations_new.cluster.base import ClusterBase
+
 from relevanceai.constants import Warning
-from relevanceai.dataset import Dataset
+from relevanceai.constants.errors import MissingClusterError
+from relevanceai.constants import MissingClusterError, Warning
 
 
 class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
@@ -91,7 +93,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         """
         cluster_field = self._get_cluster_field_name()
         # TODO; change this to fetch all documents
-        documents = self.datasets.documents.get_where(
+        documents = self._get_all_documents(
             self.dataset_id,
             filters=[
                 {
@@ -108,10 +110,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
                 },
             ],
             select_fields=[field, cluster_field],
-            page_size=9999,
+            show_progress_bar=False,
         )
         # get the field across each
-        arr = self.get_field_across_documents(field, documents["documents"])
+        arr = self.get_field_across_documents(field, documents)
         output[cluster_id] = func(arr)
 
     def _operate_across_clusters(self, field: str, func: Callable):
@@ -269,10 +271,11 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
 
     def get_centroid_documents(self):
         centroid_vectors = {}
-        if self.model.cluster_centers_ is not None:
-            centroid_vectors = self.model.cluster_centers_
+        if self.model._centroids is not None:
+            centroid_vectors = self.model._centroids
             # get the cluster label function
-            cluster_ids = self.list_cluster_ids()
+            labels = range(len(centroid_vectors))
+            cluster_ids = self.format_cluster_labels(labels)
             if len(self.vector_fields) > 1:
                 warnings.warn(
                     "Currently do not support inserting centroids with multiple vector fields"
@@ -446,6 +449,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         n_closest: int = 5,
         highlight_output_field="_explain_",
         algorithm: str = "centroid",
+        model_kwargs: Optional[dict] = None,
     ):
         """
         It takes a text field and a function that encodes the text field into a vector.
@@ -454,6 +458,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             def encode(X):
                 return [1, 2, 1]
             cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
+
         Parameters
         ----------
         text_field
@@ -466,17 +471,22 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             The name of the field that will be added to the output dataset.
         algorithm: str
             Algorithm is either "centroid" or "relational"
+
         Returns
         -------
             A new dataset with the same data as the original dataset, but with a new field called _explain_
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            self.vectorizer = self._get_model(encode_fn_or_model)
-            if hasattr(self.vectorizer, "encode"):
-                encode_fn = self.vectorizer.encode
-            else:
-                raise AttributeError("Vectorizer is missing an `encode` function.")
+            raise NotImplementedError(
+                "Model strings not supported yet. Please supply a function."
+            )
+            # model_kwargs = {} if model_kwargs is None else model_kwargs
+            # self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
+            # if hasattr(self.vectorizer, "encode"):
+            #     encode_fn = self.vectorizer.encode
+            # else:
+            #     raise AttributeError("Vectorizer is missing an `encode` function.")
         else:
             encode_fn = encode_fn_or_model
 
@@ -515,37 +525,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
                     "model": self.model,
                     "vector_fields": self.vector_fields,
                     "alias": self.alias,
-                    "filters": self.filters,
                     "model_kwargs": self.model_kwargs,
                 }
             ),
         )
-
-    def run(
-        self,
-        dataset: Dataset,
-        select_fields: list = None,
-        filters: list = None,
-        *args,
-        **kwargs,
-    ):
-        # A default run on all datasets
-        documents = dataset.get_all_documents(
-            select_fields=select_fields, filters=filters
-        )
-        # Loop through all documents
-        updated_documents = self.transform(documents, *args, **kwargs)
-        results = dataset.upsert_documents(updated_documents)
-        # insert centroids
-        # TODO: update values
-        centroid_documents = self.get_centroid_documents()
-        self.insert_centroids(centroid_documents)
-
-        self.store_operation_metadata(
-            dataset=dataset,
-            values={"select_fields": select_fields, **kwargs},
-        )
-        return results
 
     @property
     def centroids(self):
@@ -572,14 +555,69 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             )["results"]
         return self._centroids
 
-    def get_centroid_from_id(self, cluster_id: str):
+    def get_centroid_from_id(
+        self,
+        cluster_id: str,
+    ) -> Dict[str, Any]:
+        """> It takes a cluster id and returns the centroid with that id
+
+        Parameters
+        ----------
+        cluster_id : str
+            The id of the cluster to get the centroid for.
+
+        Returns
+        -------
+            The centroid with the given id.
+
         """
-        Get the centroid from the relevant document ID
-        """
-        for c in self.centroids:
-            if c["_id"] == cluster_id:
-                return c
+
+        for centroid in self.centroids:
+            if centroid["_id"] == cluster_id:
+                return centroid
+
         raise ValueError(f"Missing the centorid with id {cluster_id}")
+
+    @staticmethod
+    def _get_filters(
+        filters: List[Dict[str, Union[str, int]]],
+        vector_fields: List[str],
+    ) -> List[Dict[str, Union[str, int]]]:
+        """It takes a list of filters and a list of vector fields and returns a list of filters that
+        includes the original filters and a filter for each vector field that checks if the vector field
+        exists
+
+        Parameters
+        ----------
+        filters : List[Dict[str, Union[str, int]]]
+            List[Dict[str, Union[str, int]]]
+        vector_fields : List[str]
+            List[str] = ["vector_field_1", "vector_field_2"]
+
+        Returns
+        -------
+            A list of dictionaries.
+
+        """
+
+        vector_field_filters = [
+            {
+                "field": vector_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vector_field in vector_fields
+        ]
+
+        filters = deepcopy(filters)
+
+        if filters is None:
+            filters = vector_field_filters
+        else:
+            filters += vector_field_filters  # type: ignore
+
+        return filters
 
     def merge(self, cluster_ids: list):
         """

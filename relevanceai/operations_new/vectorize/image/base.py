@@ -6,6 +6,9 @@ from relevanceai.operations_new.vectorize.models.image.mappings import *
 
 
 class VectorizeImageBase(VectorizeBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def _get_model(self, model: Any) -> VectorizeModelBase:
         """If the model is a string, then check if it's in the TFHUB_MODELS dictionary. If it is, then
         return a TFHubImage2Vec object. If it's not, then raise a ValueError
@@ -27,7 +30,7 @@ class VectorizeImageBase(VectorizeBase):
                     TFHubImage2Vec,
                 )
 
-                vector_length = self.TFHUB_MODELS[model]["vector_length"]
+                vector_length = TFHUB_MODELS[model]["vector_length"]
                 image_dimensions = (
                     TFHUB_MODELS[model]["image_dimensions"]
                     if "image_dimensions" in TFHUB_MODELS[model]
@@ -41,12 +44,12 @@ class VectorizeImageBase(VectorizeBase):
 
                 return model
 
-            if model in self.CLIP_MODELS:
+            if model in CLIP_MODELS:
                 from relevanceai.operations_new.vectorize.models.image.clip import (
                     ClipImage2Vec,
                 )
 
-                vector_length = self.CLIP_MODELS[model]["vector_length"]
+                vector_length = CLIP_MODELS[model]["vector_length"]
                 model = ClipImage2Vec(
                     url=model,
                     vector_length=vector_length,
