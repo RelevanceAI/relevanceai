@@ -45,6 +45,7 @@ class SklearnModelBase(ModelBase):
         return mod
 
     def warm_start(self):
+        # not really
         model_ref = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
         kwargs = self.model_kwargs
         kwargs["init"] = self.model.init

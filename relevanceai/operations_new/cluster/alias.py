@@ -1,3 +1,4 @@
+import warnings
 from typing import Any
 from relevanceai.constants.warning import Warning
 
@@ -27,12 +28,16 @@ class ClusterAlias:
         return alias.lower()
 
     def _get_alias_from_sklearn(self):
-        if hasattr(self.model, "n_clusters"):
-            return f"{self.model.name}-{self.model.n_clusters}"
-        elif hasattr(self.model, "k"):
-            return f"{self.model.name}-{self.model.k}"
+        if hasattr(self.model, "name"):
+            if hasattr(self.model, "n_clusters"):
+                return f"{self.model.name}-{self.model.n_clusters}"
+            elif hasattr(self.model, "k"):
+                return f"{self.model.name}-{self.model.k}"
+            else:
+                return f"{self.model.name}"
         else:
-            return f"{self.model.name}"
+            warnings.warn("No alias has been detected - using model type.")
+            return str(type(self.model))
 
     def _get_n_clusters(self):
         if "n_clusters" in self.model_kwargs:
