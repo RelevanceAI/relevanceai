@@ -1,17 +1,17 @@
 """
 All read operations for Dataset
 """
+import collections
 import re
 import math
 import warnings
 import pandas as pd
 
 from tqdm.auto import tqdm
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Mapping
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 
-from relevanceai.operations.cluster.centroids import Centroids
 
 from relevanceai.dataset.read.metadata import Metadata
 from relevanceai.dataset.read.statistics import Statistics
@@ -22,6 +22,35 @@ from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.constants.constants import MAX_CACHESIZE
 from relevanceai.constants.warning import Warning
+
+
+def update_nested_dictionary(d: dict, u: Union[dict, Mapping]):
+    """ "If the value is a dictionary, recursively call update_nested_dictionary on it, otherwise just set
+    the value."
+
+    The function takes two dictionaries as arguments, d and u. It iterates over the key-value pairs in
+    u, and for each pair, it checks if the value is a dictionary. If it is, it calls
+    update_nested_dictionary on the value and the corresponding value in d. If the value is not a
+    dictionary, it just sets the value in d to the value in u
+
+    Parameters
+    ----------
+    d : dict
+        The dictionary to update
+    u : dict
+        the dictionary
+
+    Returns
+    -------
+        A dictionary with the updated values.
+
+    """
+    for k, v in u.items():
+        if isinstance(v, collections.Mapping):
+            d[k] = update_nested_dictionary(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 
 class Read(Statistics):
@@ -44,9 +73,13 @@ class Read(Statistics):
         highlight_fields: Optional[Dict[str, list]] = None,
         **kwargs,
     ):
+
+        from relevanceai.operations.cluster.centroids import Centroids
+
         self.credentials = credentials
         self.fields = [] if fields is None else fields
         self.dataset_id = dataset_id
+
         self.centroids = Centroids(
             credentials=credentials,
             dataset_id=self.dataset_id,
@@ -206,7 +239,7 @@ class Read(Statistics):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
         )
         head_documents = self.get_documents(
-            number_of_documents=n,
+            number_of_documents=n, include_after_id=False
         )
         if raw_json:
             return head_documents
@@ -234,7 +267,7 @@ class Read(Statistics):
         )
 
     def _repr_html_(self):
-        documents = self.get_documents()
+        documents = self.get_documents(include_after_id=False)
         documents = [
             {
                 "_id": document["_id"],
@@ -574,6 +607,8 @@ class Read(Statistics):
         select_fields: Optional[list] = None,
         include_vector: bool = True,
         include_cursor: bool = False,
+        after_id: Optional[list] = None,
+        include_after_id: bool = True,
     ):
         """
         Retrieve documents with filters. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -611,6 +646,8 @@ class Read(Statistics):
             select_fields=select_fields,
             include_vector=include_vector,
             include_cursor=include_cursor,
+            after_id=after_id,
+            include_after_id=include_after_id,
         )
 
     @track
@@ -632,7 +669,7 @@ class Read(Statistics):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
-            print("✅ You have successfully inserted data.")
+            print("✅ You have successfully upserted metadata.")
         else:
             return results
 
@@ -640,13 +677,12 @@ class Read(Statistics):
     def upsert_metadata(self, metadata: dict):
         """Upsert metadata."""
         original_metadata: dict = self.get_metadata()
-        original_metadata.update(metadata)
+        update_nested_dictionary(original_metadata, metadata)
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
             print("✅ You have successfully inserted metadata.")
         else:
             return results
-        return self.insert_metadata(metadata)
 
     @track
     def chunk_dataset(
@@ -678,9 +714,9 @@ class Read(Statistics):
         """
         docs = self.get_documents(
             number_of_documents=chunksize,
-            include_cursor=True,
             filters=filters,
             select_fields=select_fields,
+            include_after_id=True,
         )
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
@@ -691,7 +727,7 @@ class Read(Statistics):
                 docs = self.get_documents(
                     number_of_documents=chunksize,
                     include_cursor=True,
-                    cursor=docs["cursor"],
+                    after_id=docs["after_id"],
                     filters=filters,
                 )
                 pbar.update(1)

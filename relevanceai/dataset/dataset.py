@@ -1,11 +1,9 @@
 from typing import Dict, List, Optional, Union
 
 from relevanceai.client.helpers import Credentials
-from relevanceai.dataset.read import Read
-from relevanceai.dataset.write import Write
-from relevanceai.dataset.io import IO
 from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
+from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import (
     GLOBAL_DATASETS,
@@ -14,7 +12,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(IO, Read, Write, Operations):
+class Dataset(OperationsNew, Operations):
     @track
     def __init__(
         self,
@@ -139,3 +137,25 @@ class Dataset(IO, Read, Write, Operations):
 
         """
         return PROJECTOR_APP_LINK.format(self.dataset_id)
+
+    def set_dtypes(self, mapping: dict):
+        unstruc_types = ["_numeric_", "_category_", "_text_", "_image_"]
+        for unstruc_type in unstruc_types:
+            if unstruc_type not in mapping:
+                mapping[unstruc_type] = []
+
+        self.datasets.post_metadata(
+            self.dataset_id,
+            metadata=mapping,
+        )
+
+    def get_dtypes(self):
+        metadata = self.datasets.metadata(
+            self.dataset_id,
+        )["results"]
+        metadata = {
+            key: value
+            for key, value in metadata.items()
+            if key.startswith("_") and key.endswith("_")
+        }
+        return metadata

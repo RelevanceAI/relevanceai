@@ -1,22 +1,22 @@
-from typing import List, Dict, Optional, Any, Union
+import warnings
+from typing import List, Dict, Optional, Any, Union, Callable
 from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
 
-from relevanceai._api import APIClient
+from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.operations.vector.vectorizer import Vectorizer
+from relevanceai.utils.logger import FileLogger
+
+from relevanceai.dataset.io import IO
 
 
-class Operations(APIClient):
-    def __init__(
-        self,
-        credentials: Credentials,
-        dataset_id: str,
-    ):
+class Operations(Write, IO):
+    def __init__(self, credentials: Credentials, dataset_id: str, **kwargs):
         self.credentials = credentials
         self.dataset_id = dataset_id
-        super().__init__(self.credentials)
+        super().__init__(credentials=self.credentials, dataset_id=dataset_id, **kwargs)
 
     @track
     def cluster(
@@ -24,6 +24,7 @@ class Operations(APIClient):
         model: Any = None,
         vector_fields: Optional[List[str]] = None,
         alias: Optional[str] = None,
+        filters: Optional[list] = None,
         include_cluster_report: bool = True,
         **kwargs,
     ):
@@ -55,7 +56,12 @@ class Operations(APIClient):
             A list of possible vector fields
         alias: str
             The alias to be used to store your model
-
+        cluster_config: dict
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
         """
         from relevanceai.operations.cluster import ClusterOps
 
@@ -64,12 +70,19 @@ class Operations(APIClient):
             model=model,
             alias=alias,
             vector_fields=vector_fields,
+            verbose=False,
             **kwargs,
         )
         ops(
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             include_cluster_report=include_cluster_report,
+            filters=filters,
+        )
+        if alias is None:
+            alias = ops.alias
+        print(
+            f"You can now utilise the ClusterOps object using `cluster_ops = client.ClusterOps(alias='{alias}', vector_fields={vector_fields}, dataset_id='{self.dataset_id}')`"
         )
         return ops
 
@@ -78,8 +91,9 @@ class Operations(APIClient):
         self,
         alias: str,
         vector_fields: List[str],
-        model: Any = "umap",
+        model: Any = "pca",
         n_components: int = 3,
+        filters: Optional[list] = None,
         **kwargs,
     ):
         """
@@ -105,7 +119,7 @@ class Operations(APIClient):
             ds.reduce_dims(
                 alias="sample",
                 vector_fields=["sample_1_vector_"],
-                model="umap"
+                model="pca"
             )
 
         """
@@ -121,7 +135,10 @@ class Operations(APIClient):
             dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             alias=alias,
+            filters=filters,
         )
+
+    dimensionality_reduction = reduce_dims
 
     @track
     def vectorize(
@@ -232,7 +249,7 @@ class Operations(APIClient):
     @track
     def vector_search(self, **kwargs):
         """
-        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of Relevance vector search:
 
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
         e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.
@@ -514,7 +531,7 @@ class Operations(APIClient):
         """
         Multistep chunk search involves a vector search followed by chunk search, used to accelerate chunk searches or to identify context before delving into relevant chunks. e.g. Search against the paragraph vector first then sentence chunkvector after. \n
 
-        For more information about chunk search check out services.search.chunk. \n
+        For more information about chunk search check out datasets.search.chunk. \n
 
         For more information about vector search check out services.search.vector
 
@@ -634,11 +651,10 @@ class Operations(APIClient):
         vector_fields,
         parent_field,
         filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
+        min_parent_cluster_size: Optional[int] = None,
         **kwargs,
     ):
-        """
-        Subcluster
-        """
         from relevanceai.operations.cluster import SubClusterOps
 
         ops = SubClusterOps(
@@ -652,24 +668,24 @@ class Operations(APIClient):
             **kwargs,
         )
         return ops.fit_predict(
-            dataset=self.dataset_id, vector_fields=vector_fields, filters=filters
+            dataset=self.dataset_id,
+            vector_fields=vector_fields,
+            filters=filters,
+            min_parent_cluster_size=min_parent_cluster_size,
+            cluster_ids=cluster_ids,
         )
 
     @track
-    def add_sentiment(
+    def analyze_sentiment(
         self,
-        field: str,
+        text_fields: list,
+        model_name: str = "siebert/sentiment-roberta-large-english",
         output_field: str = None,
-        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
-        log_to_file: bool = True,
-        chunksize: int = 20,
-        workflow_alias: str = "sentiment",
-        notes=None,
-        refresh: bool = False,
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
+        **apply_args,
     ):
         """
         Easily add sentiment to your dataset
@@ -679,7 +695,7 @@ class Operations(APIClient):
 
         .. code-block::
 
-            ds.add_sentiment(field="sample_1_label")
+            ds.analyze_sentiment(field="sample_1_label")
 
         Parameters
         --------------
@@ -701,29 +717,32 @@ class Operations(APIClient):
             The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
-        from relevanceai.operations.text.sentiment.sentiment_workflow import (
-            SentimentWorkflow,
-        )
+        from relevanceai.operations_new.sentiment.ops import SentimentOps
 
-        if output_field is None:
-            output_field = "_sentiment_." + field
-        workflow = SentimentWorkflow(
-            model_name=model_name, workflow_alias=workflow_alias
-        )
-        return workflow.fit_dataset(
-            dataset=self,
-            input_field=field,
-            output_field=output_field,
-            log_to_file=log_to_file,
-            chunksize=chunksize,
-            workflow_alias=workflow_alias,
-            notes=notes,
-            refresh=refresh,
+        ops = SentimentOps(
+            text_fields=text_fields,
+            model_name=model_name,
             highlight=highlight,
-            positive_sentiment_name=positive_sentiment_name,
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
+
+        return ops.run(self, batched=True)
+
+        # return .fit_dataset(
+        #     dataset=self,
+        #     input_field=field,
+        #     output_field=output_field,
+        #     log_to_file=log_to_file,
+        #     chunksize=chunksize,
+        #     workflow_alias=workflow_alias,
+        #     notes=notes,
+        #     refresh=refresh,
+        #     highlight=highlight,
+        #     positive_sentiment_name=positive_sentiment_name,
+        #     max_number_of_shap_documents=max_number_of_shap_documents,
+        #     min_abs_score=min_abs_score,
+        # )
 
     @track
     def question_answer(
@@ -860,6 +879,7 @@ class Operations(APIClient):
     #         ]
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
+
     def advanced_search(
         self,
         query: str = None,
@@ -876,7 +896,11 @@ class Operations(APIClient):
         query: str
             The query to use
         vector_search_query: dict
-
+            The vector search query
+        fields_to_search: list
+            The list of fields to search
+        select_fields: list
+            The fields to select
 
         """
         return self.datasets.fast_search(
@@ -887,6 +911,8 @@ class Operations(APIClient):
             includeFields=select_fields,
             **kwargs,
         )
+
+    search = advanced_search
 
     @track
     def list_deployables(self):
@@ -950,7 +976,7 @@ class Operations(APIClient):
                 batch_size=16,
                 triple_loss_type:str='BatchHardSoftMarginTripletLoss'
             )
-            ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+            ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
 
         Parameters
         ------------
@@ -993,3 +1019,171 @@ class Operations(APIClient):
             verbose=verbose,
             **kwargs,
         )
+
+    @track
+    def label_from_list(
+        self,
+        vector_field: str,
+        model: Callable,
+        label_list: list,
+        similarity_metric="cosine",
+        number_of_labels: int = 1,
+        score_field: str = "_search_score",
+        alias: Optional[str] = None,
+    ):
+        """Label from a given list.
+
+        Parameters
+        ------------
+
+        vector_field: str
+            The vector field to label in the original dataset
+        model: Callable
+            This will take a list of strings and then encode them
+        label_list: List
+            A list of labels to accept
+        similarity_metric: str
+            The similarity metric to accept
+        number_of_labels: int
+            The number of labels to accept
+        score_field: str
+            What to call the scoring of the labels
+        alias: str
+            The alias of the labels
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample")
+
+            # Get a model to help us encode
+            from vectorhub.encoders.text.tfhub import USE2Vec
+            enc = USE2Vec()
+
+            # Use that model to help with encoding
+            label_list = ["dog", "cat"]
+
+            df = client.Dataset("_github_repo_vectorai")
+
+            df.label_from_list("documentation_vector_", enc.bulk_encode, label_list, alias="pets")
+
+        """
+        if alias is None:
+            warnings.warn(
+                "No alias is detected for labelling. Default to 'default' as the alias."
+            )
+            alias = "default"
+        print("Encoding labels...")
+        label_vectors = []
+        for c in self.chunk(label_list, chunksize=20):
+            with FileLogger(verbose=True):
+                label_vectors.extend(model(c))
+
+        if len(label_vectors) == 0:
+            raise ValueError("Failed to encode.")
+
+        # we need this to mock label documents - these values are not important
+        # and can be changed :)
+        LABEL_VECTOR_FIELD = "label_vector_"
+        LABEL_FIELD = "label"
+
+        label_documents = [
+            {LABEL_VECTOR_FIELD: label_vectors[i], LABEL_FIELD: label}
+            for i, label in enumerate(label_list)
+        ]
+
+        return self._bulk_label_dataset(
+            label_documents=label_documents,
+            vector_field=vector_field,
+            label_vector_field=LABEL_VECTOR_FIELD,
+            similarity_metric=similarity_metric,
+            number_of_labels=number_of_labels,
+            score_field=score_field,
+            label_fields=[LABEL_FIELD],
+            alias=alias,
+        )
+
+    def _bulk_label_dataset(
+        self,
+        label_documents,
+        vector_field,
+        label_vector_field,
+        similarity_metric,
+        number_of_labels,
+        score_field,
+        label_fields,
+        alias,
+    ):
+        def label_and_store(d: dict):
+            labels = self._get_nearest_labels(
+                label_documents=label_documents,
+                vector=self.get_field(vector_field, d),
+                label_vector_field=label_vector_field,
+                similarity_metric=similarity_metric,
+                number_of_labels=number_of_labels,
+                score_field=score_field,
+                label_fields=label_fields,
+            )
+            d.update(self._store_labels_in_document(labels, alias))
+            return d
+
+        def bulk_label_documents(documents):
+            [label_and_store(d) for d in documents]
+            return documents
+
+        print("Labelling dataset...")
+        return self.bulk_apply(
+            bulk_label_documents,
+            filters=[
+                {
+                    "field": vector_field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+            select_fields=[vector_field],
+        )
+
+    @track
+    def _store_labels_in_document(self, labels: list, alias: str):
+        if isinstance(labels, dict) and "label" in labels:
+            return {"_label_": {alias: labels["label"]}}
+        return {"_label_": {alias: labels}}
+
+    def _get_nearest_labels(
+        self,
+        label_documents: List[Dict],
+        vector: List[float],
+        label_vector_field: str,
+        similarity_metric,
+        number_of_labels: int,
+        label_fields: List[str],
+        score_field="_label_score",
+    ):
+
+        from relevanceai.operations.vector.local_nearest_neighbours import (
+            NearestNeighbours,
+        )
+
+        nearest_neighbors: List[Dict] = NearestNeighbours.get_nearest_neighbours(
+            label_documents,
+            vector,
+            label_vector_field,
+            similarity_metric,
+            score_field=score_field,
+        )[:number_of_labels]
+        labels: List[Dict] = self.subset_documents(
+            [score_field] + label_fields, nearest_neighbors
+        )
+        # Preprocess labels for easier frontend access
+        new_labels = {}
+        for lf in label_fields:
+            new_labels[lf] = [
+                {"label": l.get(lf), score_field: l.get(score_field)} for l in labels
+            ]
+        return new_labels

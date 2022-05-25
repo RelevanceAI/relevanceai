@@ -231,6 +231,7 @@ class Series(APIClient):
         output_field: str,
         filters: list = [],
         axis: int = 0,
+        **kwargs,
     ):
         """
         Apply a function along an axis of the DataFrame.
@@ -284,7 +285,11 @@ class Series(APIClient):
             return documents
 
         return self.pull_update_push_async(
-            self.dataset_id, bulk_fn, select_fields=[self.field], filters=filters
+            self.dataset_id,
+            bulk_fn,
+            select_fields=[self.field],
+            filters=filters,
+            **kwargs,
         )
 
     @track
@@ -426,12 +431,12 @@ class Series(APIClient):
             agg_type = "category"
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
-        aggregation = self.services.aggregate.aggregate(
-            self.dataset_id,
+        aggregation = self.datasets.aggregate(
+            dataset_id=self.dataset_id,
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
-        )
+        )["results"]
 
         total = self.get_number_of_documents(dataset_id=self.dataset_id)
         aggregation = pd.DataFrame(aggregation)
@@ -667,3 +672,11 @@ class Series(APIClient):
 
     def filter(self, **kwargs):
         return [kwargs]
+
+    def set_dtype(self, dtype):
+        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        metadata[self.field] = dtype
+        self.datasets.post_metadata(
+            self.dataset_id,
+            metadata=metadata,
+        )

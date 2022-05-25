@@ -1,7 +1,6 @@
 """
 Visualisations for your clustering.
 """
-from re import I
 import pandas as pd
 import numpy as np
 from relevanceai.constants.errors import (
@@ -243,8 +242,8 @@ class ClusterVizOps(ClusterOps, ClusterUtils):
         """
         closest_clusters = self.closest(include_vector=True, verbose=False)
         import seaborn as sns
-        from doc_utils import DocUtils
-        from relevanceai.utils.cosine_similarity import cosine_similarity
+        from relevanceai.utils import DocUtils
+        from relevanceai.utils.distances.cosine_similarity import cosine_similarity
         from sklearn.metrics import pairwise_distances
 
         shape = (len(closest_clusters["results"]), len(closest_clusters["results"]))

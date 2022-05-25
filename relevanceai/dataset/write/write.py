@@ -6,13 +6,13 @@ import warnings
 import requests
 import pandas as pd
 
-from doc_utils import DocUtils
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
-from relevanceai._api import APIClient
+from relevanceai.dataset.read import Read
 
+from relevanceai.utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
@@ -20,7 +20,7 @@ from relevanceai.utils import make_id
 from relevanceai.constants.warning import Warning
 
 
-class Write(APIClient):
+class Write(Read):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
 
@@ -642,7 +642,7 @@ class Write(APIClient):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
@@ -894,4 +894,27 @@ class Write(APIClient):
         """
         return self.datasets.documents.bulk_delete(
             dataset_id=self.dataset_id, ids=document_ids
+        )
+
+    def update_where(self, update: dict, filters):
+        """
+        Updates documents by filters. The updates to make to the documents that is returned by a filter. \n
+        For more information about filters refer to datasets.documents.get_where.
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset()
+            ds.update_where(
+                {"value": 3},
+                filters=ds['value'] != 10 # apply a simple filter
+            )
+
+        """
+        return self.datasets.documents.update_where(
+            dataset_id=self.dataset_id, update=update, filters=filters
         )

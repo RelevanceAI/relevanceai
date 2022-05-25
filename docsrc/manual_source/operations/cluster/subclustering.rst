@@ -41,7 +41,8 @@ The easiest to cluster is to run this:
       model=model,
       parent_field=parent_field,
       vector_fields=["sample_2_vector_"],
-      alias="subcluster-kmeans-2"
+      alias="subcluster-kmeans-2",
+      min_parent_cluster_size=2 # The minimum number of points the cluster needs to subcluster on
    )
 
    # You should also be able to track your subclusters using
