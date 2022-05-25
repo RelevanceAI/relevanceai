@@ -13,6 +13,7 @@ class ClusterBase(OperationRun):
     def __init__(
         self,
         vector_fields: List[str],
+        alias: str,
         model: Any,
         cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
@@ -22,6 +23,7 @@ class ClusterBase(OperationRun):
         self.vector_fields = vector_fields
 
         self.model_kwargs = {} if model_kwargs is None else model_kwargs
+        self.alias = self._get_alias(alias)
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
         self.cluster_field = cluster_field
