@@ -7,7 +7,7 @@ from relevanceai.operations.cluster.base import (
     ClusterBase,
     CentroidClusterBase,
 )
-from relevanceai.operations.cluster import ClusterOps
+from relevanceai.operations_new.cluster import ClusterOps
 from relevanceai.operations.dr.ops import ReduceDimensionsOps
 from relevanceai.operations.vector import Base2Vec
 
