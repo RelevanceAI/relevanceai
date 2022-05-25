@@ -13,6 +13,7 @@ class OperationManager:
     - logging
     - timing
     - Faster asynchronous processing
+    - Have post-operation hooks (such as centroid insertion)
     """
 
     def __init__(
