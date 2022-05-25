@@ -14,7 +14,7 @@ and machine learning engineers how best to unlock Relevance AI.
 .. toctree::
     :caption: Vectorize
 
-    vectorizing_guide
+    how_to_vectorize_guide
 
 .. toctree::
     :caption: Cluster
