@@ -478,12 +478,15 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            model_kwargs = {} if model_kwargs is None else model_kwargs
-            self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
-            if hasattr(self.vectorizer, "encode"):
-                encode_fn = self.vectorizer.encode
-            else:
-                raise AttributeError("Vectorizer is missing an `encode` function.")
+            raise NotImplementedError(
+                "Model strings not supported yet. Please supply a function."
+            )
+            # model_kwargs = {} if model_kwargs is None else model_kwargs
+            # self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
+            # if hasattr(self.vectorizer, "encode"):
+            #     encode_fn = self.vectorizer.encode
+            # else:
+            #     raise AttributeError("Vectorizer is missing an `encode` function.")
         else:
             encode_fn = encode_fn_or_model
 
