@@ -152,6 +152,10 @@ class ClusterBase(OperationRun):
         """
 
         # TODO: add support for sklearn kmeans
+        if not self.is_field_across_documents(self.vector_fields[0], documents):
+            raise ValueError(
+                "You have missing vectors in your document. You will want to apply a filter for vector fields. See here for a page of filter options: https://relevanceai.readthedocs.io/en/development/core/filters/exists.html#exists."
+            )
         labels = self.fit_predict_documents(
             documents=documents,
         )
