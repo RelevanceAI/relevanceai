@@ -159,7 +159,8 @@ class SentimentBase(OperationBase):
         return "sentiment"
 
     def _get_output_field(self, text_field):
-        return f"_sentiment_.{text_field}.{self.model_name}"
+        norm_name = self.model_name.replace("/", "-")
+        return f"_sentiment_.{text_field}.{norm_name}"
 
     def transform(self, documents):
         # For each document, update the field
