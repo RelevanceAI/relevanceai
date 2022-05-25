@@ -270,8 +270,8 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
 
     def get_centroid_documents(self):
         centroid_vectors = {}
-        if self.model.cluster_centers_ is not None:
-            centroid_vectors = self.model.cluster_centers_
+        if self.model.centroids is not None:
+            centroid_vectors = self.model.centroids
             # get the cluster label function
             cluster_ids = self.list_cluster_ids()
             if len(self.vector_fields) > 1:

@@ -40,24 +40,22 @@ class SklearnModelBase(ModelBase):
             mod = getattr(mod, comp)
         return mod
 
-    def fit_predict(self, *args, **kwargs) -> List[int]:
-        res: np.ndarray = self.model.fit_predict(*args, **kwargs)
-        return res.tolist()
+    def fit_predict(self, vectors, *args, **kwargs) -> List[int]:
+        labels: np.ndarray = self.model.fit_predict(vectors, *args, **kwargs)
+        self._centroids = self.calculate_centroids(labels, vectors)
+        return labels.tolist()
 
     def fit(self, *args, **kwargs) -> Any:
         return self.model.fit(*args, **kwargs)
 
-    def predict(self, *args, **kwargs) -> List[int]:
-        res: np.ndarray = self.model.predict(*args, **kwargs)
-        return res.tolist()
+    def predict(self, vectors, *args, **kwargs) -> List[int]:
+        labels: np.ndarray = self.model.predict(vectors, *args, **kwargs)
+        self._centroids = self.calculate_centroids(labels, vectors)
+        return labels.tolist()
 
     @property
     def name(self):
         return self.model.__name__.lower()
-
-    @property
-    def cluster_centers_(self):
-        return self.model.cluster_centers_
 
     @property
     def alias(self):
