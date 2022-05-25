@@ -116,6 +116,11 @@ class ClusterBase(OperationRun):
         return [self.format_cluster_label(label) for label in labels]
 
     def fit_predict_documents(self, documents, warm_start=False):
+        """
+        If warm_start=True, copies the values from the previous fit.
+        Only works for cluster models that use centroids. You should
+        not have to use this parameter.
+        """
         # run fit predict on documetns
         if hasattr(self.model, "fit_predict_documents"):
             return self.model.fit_predict_documents(
