@@ -20,8 +20,14 @@ class Upload:
 
     def __exit__(self, *args, **kwargs):
         if hasattr(self.operation, "get_centroid_documents"):
-            centroid_documents = self.get_centroid_documents()
-            self.insert_centroids(centroid_documents)
+            # If we get here, the operetion must be clustering and we should upsert centroid docs
+
+            from relevanceai.operations_new.cluster.ops import ClusterOps
+
+            self.operation: ClusterOps
+
+            centroid_documents = self.operation.get_centroid_documents()
+            self.operation.insert_centroids(centroid_documents)
 
         self.operation.store_operation_metadata(
             dataset=self.dataset,
