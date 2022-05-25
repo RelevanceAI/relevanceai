@@ -56,10 +56,36 @@ class _ModelUtils(DocUtils):
 
 
 class ModelBase(ABC, _ModelUtils):
+    @staticmethod
+    def import_from_string(name):
+        """It takes a string, splits it on the period, and then imports the module
+
+        Parameters
+        ----------
+        name
+            The name of the class to import.
+
+        Returns
+        -------
+            The module object.
+
+        """
+        components = name.split(".")
+        mod = __import__(components[0])
+        for comp in components[1:]:
+            mod = getattr(mod, comp)
+        return mod
+
     @property
-    @abstractmethod
     def name(self):
-        raise NotImplementedError
+        """It returns the name of the model class in lowercase
+
+        Returns
+        -------
+            The name of the model.
+
+        """
+        return type(self.model).__name__.lower()
 
     def fit(self, *args, **kwargs) -> None:
         raise NotImplementedError

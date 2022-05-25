@@ -21,7 +21,7 @@ class SklearnModelBase(ModelBase):
     ):
         if isinstance(model, str):
             assert model in sklearn_models
-            model = SklearnModelBase.import_from_string(
+            model = ModelBase.import_from_string(
                 f"sklearn.cluster.{sklearn_models[model]}"
             )
             if model_kwargs is None:
@@ -31,14 +31,6 @@ class SklearnModelBase(ModelBase):
         else:
             assert model.__name__ in list(sklearn_models.values())
             self.model = model
-
-    @staticmethod
-    def import_from_string(name):
-        components = name.split(".")
-        mod = __import__(components[0])
-        for comp in components[1:]:
-            mod = getattr(mod, comp)
-        return mod
 
     def fit_predict(self, *args, **kwargs) -> List[int]:
         res: np.ndarray = self.model.fit_predict(*args, **kwargs)
@@ -52,13 +44,9 @@ class SklearnModelBase(ModelBase):
         return res.tolist()
 
     @property
-    def name(self):
-        return self.model.__name__.lower()
-
-    @property
     def cluster_centers_(self):
         return self.model.cluster_centers_
 
     @property
     def alias(self):
-        return self.name + str(self.model.n_clusters)
+        return f"{self.name}-{str(self.model.n_clusters)}"
