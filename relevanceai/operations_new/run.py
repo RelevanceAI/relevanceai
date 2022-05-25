@@ -37,7 +37,7 @@ class OperationRun(OperationBase):
 
         """
 
-        from relevanceai.operations_new.context import OperationManager
+        from relevanceai.operations_new.manager import OperationManager
 
         with OperationManager(
             dataset=dataset,
