@@ -124,8 +124,12 @@ def json_encoder(obj: Any, force_string: bool = False):
     if force_string:
         return repr(obj)
 
-    if isinstance(obj, DocumentList) or isinstance(obj, Document):
+    if isinstance(obj, DocumentList):
         obj = obj.json()
+        return obj
+
+    if isinstance(obj, Document):
+        obj = [obj.json()]
         return obj
 
     raise ValueError(f"{obj} ({type(obj)}) cannot be converted to JSON format")
