@@ -27,17 +27,16 @@ class SklearnModelBase(ModelBase):
             if model_kwargs is None:
                 model_kwargs = {}
 
-            self.model = self.model_ref(**model_kwargs)
+            self.model = model(**model_kwargs)
         else:
             assert type(model).__name__ in list(sklearn_models.values())
             self.model = model
 
     def warm_start(self):
-        # not really
-        model_ref = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
+        model = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
         kwargs = self.model_kwargs
         kwargs["init"] = self.model.init
-        self.model = model_ref(kwargs)
+        self.model = model(kwargs)
 
     def partial_fit(self, *args, **kwargs) -> Any:
         if hasattr(self.model, "partial_fit"):
@@ -67,4 +66,7 @@ class SklearnModelBase(ModelBase):
 
     @property
     def alias(self):
-        return f"{self.name}-{str(self.model.n_clusters)}"
+        if hasattr(self.model, "n_clusters"):
+            return f"{self.name}-{str(self.model.n_clusters)}"
+        else:
+            return f"{self.name}"
