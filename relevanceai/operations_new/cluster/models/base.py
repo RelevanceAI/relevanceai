@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 import numpy as np
 
 from relevanceai.utils import DocUtils
+from relevanceai.utils import DocumentList
 
 
 class _ModelUtils(DocUtils):
@@ -20,9 +21,9 @@ class _ModelUtils(DocUtils):
     def fit_predict_documents(
         self,
         vector_fields: List[str],
-        documents: List[Dict[str, Any]],
+        documents: DocumentList,
         warm_start: bool = False,
-    ):
+    ) -> DocumentList:
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
             cluster_labels = self.fit_predict(vectors, warm_start)

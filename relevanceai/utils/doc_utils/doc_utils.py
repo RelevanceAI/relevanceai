@@ -319,6 +319,10 @@ class DocumentList(DocUtils, MutableSequence):
             for document in documents
         ]
 
+    def __iter__(self):
+        for document in self.documents:
+            yield document
+
     def _ipython_display_(self):
         """> The function takes a JSON object and displays it in a pretty format"""
         display(self.json())

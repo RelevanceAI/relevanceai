@@ -13,6 +13,7 @@ import pytest
 from relevanceai import Client
 
 from relevanceai.dataset import Dataset
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 
 from tests.globals.constants import NOT_IMPLEMENTED, generate_dataset_id
 
@@ -256,7 +257,7 @@ class TestDatasetWrite:
         random_string = "you are the queen"
         label = "sample_output"
 
-        def bulk_fn(docs):
+        def bulk_fn(docs: DocumentList):
             for d in docs:
                 d[label] = d.get("sample_1_label", "") + random_string
             return docs

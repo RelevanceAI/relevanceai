@@ -90,11 +90,11 @@ class Series(APIClient):
             select_fields=[self.field],
             include_vector=include_vector,
         )
+        documents = documents.json()
+
         if include_vector:
             warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK)
             return pd.json_normalize(documents).set_index("_id")._repr_html_()
-
-        documents = documents.json()
 
         try:
             return self._show_json(documents, return_html=True)

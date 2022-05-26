@@ -22,6 +22,7 @@ from relevanceai.utils.distances import (
     euclidean_distance_matrix,
     cosine_similarity_matrix,
 )
+from relevanceai.utils.doc_utils.doc_utils import Document, DocumentList
 
 
 class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
@@ -338,7 +339,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
     def _get_centroid_documents(
         self, vectors: np.ndarray, labels: List[str], vector_field: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+    ):
         centroid_documents = []
 
         centroids: Dict[str, Any] = {}
@@ -427,6 +428,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
     def _fit_predict(
         self, documents: List[Dict[str, Any]], vector_field: str, inplace=True
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+
         vectors = np.array(
             [self.get_field(vector_field, document) for document in documents]
         )

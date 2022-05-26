@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Optional
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.run import OperationRun
+from relevanceai.utils import DocumentList
 
 
 class OperationManager:
@@ -47,9 +48,9 @@ class OperationManager:
 
     @staticmethod
     def clean(
-        before_docs: List[Dict[str, Any]],
-        after_docs: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+        before_docs: DocumentList,
+        after_docs: DocumentList,
+    ) -> DocumentList:
         updated_documents = [
             {
                 key: value

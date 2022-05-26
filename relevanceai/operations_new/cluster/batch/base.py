@@ -6,6 +6,7 @@ from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 from relevanceai.operations_new.base import OperationBase
 from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.utils import DocumentList
 
 
 class BatchClusterBase(ClusterBase, ClusterAlias):
@@ -48,7 +49,7 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
             print(self._cluster_field)
         return self._cluster_field
 
-    def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def transform(self, documents: DocumentList) -> DocumentList:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.
 

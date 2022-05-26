@@ -4,6 +4,7 @@ Base class for clustering
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ModelBase
 from relevanceai.operations_new.run import OperationRun
+from relevanceai.utils import DocumentList
 
 
 class ClusterBase(OperationRun):
@@ -129,7 +130,9 @@ class ClusterBase(OperationRun):
     def format_cluster_labels(self, labels):
         return [self.format_cluster_label(label) for label in labels]
 
-    def fit_predict_documents(self, documents, warm_start=False):
+    def fit_predict_documents(
+        self, documents: DocumentList, warm_start=False
+    ) -> DocumentList:
         """
         If warm_start=True, copies the values from the previous fit.
         Only works for cluster models that use centroids. You should

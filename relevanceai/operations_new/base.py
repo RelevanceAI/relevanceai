@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
 from relevanceai.utils import DocUtils
+from relevanceai.utils import DocumentList
 
 
 class OperationBase(ABC, DocUtils):
@@ -24,7 +25,7 @@ class OperationBase(ABC, DocUtils):
         raise NotImplementedError
 
     @abstractmethod
-    def transform(self, *args, **kwargs) -> List[Dict[str, Any]]:
+    def transform(self, *args, **kwargs) -> DocumentList:
         """abstractmethod for transform"""
         raise NotImplementedError
 
