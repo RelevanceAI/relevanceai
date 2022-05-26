@@ -28,7 +28,7 @@ class Operations(Write):
         self,
         vector_fields: List[str],
         n_components: int = 3,
-        batched: bool = True,
+        batched: bool = False,
         model: Optional[Any] = None,
         model_kwargs: Optional[dict] = None,
         alias: Optional[str] = None,

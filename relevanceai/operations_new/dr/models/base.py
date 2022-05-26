@@ -11,12 +11,15 @@ class DimReductionModelBase(ABC, DocUtils):
 
     def vector_name(self, fields: List[str]) -> str:
         if isinstance(self.alias, str):
-            return f"{self.alias}_vector_"
+            if "_vector_" in self.alias:
+                return self.alias
+            else:
+                return f"{self.alias}_vector_"
         else:
             if len(fields) > 1:
-                return f"{self.model_name}_{fields[0]}_vector_"
-            else:
                 return f"concat_{self.model_name}_vector_"
+            else:
+                return f"{self.model_name}_{fields[0]}_vector_"
 
     def fit(self, *args, **kwargs) -> None:
         raise NotImplementedError
