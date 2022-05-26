@@ -134,8 +134,16 @@ class DimReductionBase(OperationRun):
 
         reduced_vectors = self.model.fit_transform(concat_vectors)
         reduced_vector_name = self.model.vector_name(self.vector_fields)
+
+        if reduced_vector_name in self.vector_fields:
+            raise ValueError(
+                "Alias is already being used, Please set a different alias"
+            )
+
         self.set_field_across_documents(
-            field=reduced_vector_name, values=reduced_vectors, docs=documents
+            field=reduced_vector_name,
+            values=reduced_vectors,
+            docs=documents,
         )
 
         # removes unnecessary info for updated_where
@@ -143,9 +151,9 @@ class DimReductionBase(OperationRun):
             {
                 key: value
                 for key, value in document.items()
-                if key not in self.vector_fields
+                if key in ["_id", reduced_vector_name]
             }
             for document in documents
         ]
 
-        return documents
+        return updated_documents
