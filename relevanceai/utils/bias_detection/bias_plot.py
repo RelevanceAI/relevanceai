@@ -24,7 +24,8 @@ can be found below.
 """
 
 from typing import List, Dict, Any, Callable
-from doc_utils import DocUtils
+
+from relevanceai.utils import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 
 from relevanceai.constants.errors import MissingPackageError

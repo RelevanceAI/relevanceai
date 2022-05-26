@@ -16,7 +16,7 @@ class Metadata(APIClient):
     def __contains__(self, m):
         return m in self.to_dict().keys()
 
-    def insert_metadata(self, metadata: dict, verbose: bool = False):
+    def insert(self, metadata: dict, verbose: bool = False):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
@@ -24,20 +24,23 @@ class Metadata(APIClient):
         else:
             return results
 
-    def upsert_metadata(self, metadata: dict, verbose: bool = False):
+    def upsert(self, metadata: dict, verbose: bool = False):
         """Upsert metadata."""
         original_metadata: dict = self.datasets.metadata(self.dataset_id)
         original_metadata.update(metadata)
 
         # TODO: how do you fire and forget this
-        return self.insert_metadata(metadata)
+        return self.insert(metadata)
 
     def __getitem__(self, key):
         return self.get_field(key, self._metadata)
 
     def __setitem__(self, key, value):
         self.set_field(key, self._metadata, value)
-        self.upsert_metadata(self._metadata)
+        self.upsert(self._metadata)
 
     def to_dict(self):
         return self._metadata
+
+    def clear(self):
+        self.datasets.post_metadata(dataset_id=self.dataset_id, metadata={})

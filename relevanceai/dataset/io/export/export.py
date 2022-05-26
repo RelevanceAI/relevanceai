@@ -19,7 +19,30 @@ class Export(CSVExport, DictExport, PandasExport):
         filter_condition: Callable = None,
         chunksize: int = 20,
     ):
-        """Export this current dataset to another dataset"""
+        """
+        `to_dataset` takes a list of filters and a filter condition and creates a new dataset with the
+        filtered documents
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+
+
+        Parameters
+        ----------
+        child_dataset_id : str
+            The id of the dataset you want to create.
+        filters : list
+            List of possible filters
+        filter_condition : Callable
+            List of possible filter conditions
+        chunksize : int, optional
+            The number of documents to be processed at a time.
+        """
         for i, chunk in enumerate(
             self.chunk_dataset(chunksize=chunksize, filters=filters)
         ):

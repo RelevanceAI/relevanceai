@@ -17,3 +17,4 @@ from relevanceai.utils.transport import *
 from relevanceai.utils.helpers import *
 from relevanceai.utils.filter_helper import *
 from relevanceai.utils.distances import *
+from relevanceai.utils.doc_utils import DocUtils

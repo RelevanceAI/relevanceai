@@ -89,7 +89,7 @@ class DatasetsClient(_Base):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
@@ -208,7 +208,7 @@ class DatasetsClient(_Base):
             Whether to sort results by ascending or descending order
 
         """
-        fields = [] if fields is None else fields
+        fields = [] if fields in (None, [None]) else fields
 
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/facets",
@@ -610,9 +610,9 @@ class DatasetsClient(_Base):
     def aggregate(
         self,
         dataset_id: str,
-        groupby: List[str] = None,
-        metrics: List[str] = None,
-        select_fields: List[str] = None,
+        groupby: List = None,
+        metrics: List = None,
+        select_fields: List = None,
         sort: List[str] = None,
         asc: bool = False,
         filters: List = None,
@@ -654,9 +654,11 @@ class DatasetsClient(_Base):
         """
         # "https://api-dev.ap-southeast-2.relevance.ai/latest/datasets/{DATASET_ID}/aggregate"
         filters = [] if filters is None else filters
-        if aggregation_query is None:
-            aggregation_query = {"metrics": metrics}
 
+        if aggregation_query is None:
+            if metrics is None:
+                metrics = []
+            aggregation_query = {"metrics": metrics}
             if groupby:
                 aggregation_query["groupby"] = groupby
 
@@ -672,6 +674,7 @@ class DatasetsClient(_Base):
                 "page_size": page_size,
                 "page": page,
                 "asc": asc,
+                "select_fields": select_fields,
             },
         )
 
@@ -712,6 +715,10 @@ class DatasetsClient(_Base):
             Increases or decreases the impact of traditional search when calculating a documents _relevance. new_traditional_relevance = traditional_relevance*queryConfig.weight
         vectorSearchQuery: dict
             Vector search queries.
+        instantAnswerQuery: dict
+            Provides an instant answer
+        fieldsToSearch: list
+            The list of fields to search
 
         """
         # fast search
@@ -756,6 +763,24 @@ class DatasetsClient(_Base):
             parameters["afterId"] = afterId  # type: ignore
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/simple_search",
+            method="POST",
+            parameters=parameters,
+        )
+
+    def recommend(self, documents_to_recommend: list):
+        """
+        Recommend documents similar to specific documents. Specify which vector field must be used for recommendation using the documentsToRecommend property.
+        Parameters
+        ------------
+        documentsToRecommend: list
+            This takes a list of objects. Each object must specify the id of the document to generate recommendations for, and the vector field that will be compared. Weight can be changed to increase or decrease how much a document contributes to the recommendation. A negative weight will make a document less likely to be recommended.
+            `field` - The vector field used for recommendation.
+            `id` - The id of the document used for recommendation.
+            `weight` - Influences how much a document affects recommendation results. A negative weight causes documents like this to show up less.
+        """
+        parameters = {"documentsToRecommend": documents_to_recommend}
+        return self.make_http_request(
+            endpoint="/datasets/{dataset_id}/recommend",
             method="POST",
             parameters=parameters,
         )

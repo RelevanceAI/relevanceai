@@ -224,7 +224,7 @@ class Centroids(APIClient):
             The name of the dataset
 
         vector_fields: List[str]
-            A lit of the vectors fields in your dataset that have cluster centroids you wish to update
+            A list of the vectors fields in your dataset that have cluster centroids you wish to update
 
         alias: str
             The alias that was used to cluster
@@ -267,13 +267,9 @@ class Centroids(APIClient):
         alias: str
             The alias that was used to cluster
         """
-
-        return self.make_http_request(
-            endpoint=f"services/cluster/centroids/{centroid_id}/delete",
-            method="POST",
-            parameters={
-                "dataset_id": dataset_id,
-                "vector_field": vector_field,
-                "alias": alias,
-            },
+        return self.datasets.cluster.centroids.delete_centroid_by_id(
+            centroid_id=centroid_id,
+            dataset_id=dataset_id,
+            vector_field=vector_field,
+            alias=alias,
         )

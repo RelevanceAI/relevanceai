@@ -21,7 +21,7 @@ You can find out more about different types of TripletLoss on https://www.sbert.
         batch_size=16,
         triple_loss_type:str='BatchHardSoftMarginTripletLoss'
     )
-    ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+    ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
 
 """
 
@@ -208,7 +208,7 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             ds = client.Dataset("quickstart")
             from relevanceai.operations.text_finetuning.supervised_finetuning_ops import SupervisedTripleLossFinetuneOps
             ops = SupervisedTripleLossFinetuneOps.from_dataset(ds)
-            ops.operate(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
+            ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
 
         Parameters
         -------------

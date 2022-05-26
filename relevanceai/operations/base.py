@@ -1,7 +1,7 @@
 """
 Base class for operations.
 """
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 from relevanceai.client.helpers import (
     Credentials,
     process_token,
@@ -65,3 +65,44 @@ class BaseOps:
             return dataset
         elif isinstance(dataset, Dataset):
             return dataset.dataset_id
+
+    def _check_vector_fields(self, vector_fields: List[str]):
+        if vector_fields is None:
+            raise ValueError("Vector fields cannot be None. Please set vector_fields=")
+        if len(vector_fields) == 0:
+            raise ValueError(
+                "Please select at least 1 vector field"
+            )  # we can add a optional behaviour to use all vectors here.
+        if isinstance(vector_fields, str):
+            return [vector_fields]
+        else:
+            new_vector_fields = []
+            for f in vector_fields:
+                if not f.endswith(
+                    "_vector_"
+                ):  # this could support chunkvector in the future.
+                    new_vector_fields.append(
+                        f + "_vector_"
+                    )  # this will modify input, but assumes this is a mistake that the user is making
+                else:
+                    new_vector_fields.append(f)
+            return new_vector_fields
+
+    def _create_alias(self, alias, vector_fields, tag="default"):
+        vector_suffix = f"_{tag}_vector_" if tag else "_vector_"
+        if alias is None:
+            if vector_fields is not None:
+                if len(vector_fields) > 0:
+                    new_alias = (
+                        "-".join([f.replace("_vector_", "") for f in vector_fields])
+                        + vector_suffix
+                    )
+                elif len(vector_fields) == 1:
+                    new_alias = vector_fields[0] + vector_suffix
+                else:
+                    new_alias = vector_suffix
+            else:
+                new_alias = vector_suffix
+            return new_alias
+        else:
+            return alias if alias.endswith("_vector_") else alias + vector_suffix

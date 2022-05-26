@@ -1,6 +1,4 @@
 """Reducing Dimensions
 """
 
-from .dim_reduction_ops import (
-    ReduceDimensionsOps,
-)
+from relevanceai.operations.dr.ops import ReduceDimensionsOps

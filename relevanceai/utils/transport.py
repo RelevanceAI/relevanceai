@@ -1,10 +1,13 @@
 """The Transport Class defines a transport as used by the Channel class to communicate with the network.
 """
+import os
 import asyncio
 import codecs
 import time
+import json
 import traceback
 
+from pprint import pprint
 from json.decoder import JSONDecodeError
 from typing import Optional
 
@@ -16,13 +19,14 @@ import requests
 from requests import Request
 
 from relevanceai.constants.config import Config
-from relevanceai.utils.logger import AbstractLogger
+from relevanceai.utils.logger import AbstractLogger, FileLogger
 from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
 from relevanceai.utils.config_mixin import ConfigMixin
 
 DO_NOT_REPEAT_STATUS_CODES = {400, 401, 413, 404, 422}
+_HAS_PRINTED = False
 
 
 class Transport(JSONEncoderUtils, ConfigMixin):
@@ -32,6 +36,66 @@ class Transport(JSONEncoderUtils, ConfigMixin):
     api_key: str
     config: Config
     logger: AbstractLogger
+    request_logger: FileLogger
+
+    def __init__(self, request_log_filename="request.jsonl", **kwargs):
+
+        if os.getenv("DEBUG_REQUESTS") == "TRUE":
+            try:
+                from appdirs import user_cache_dir
+            except:
+                raise ModuleNotFoundError("please instal appdirs `pip install appdirs`")
+
+            from relevanceai import __version__
+
+            dir = user_cache_dir("relevanceai", version=__version__)
+            os.makedirs(dir, exist_ok=True)
+
+            self.request_logging_fpath = os.path.join(
+                dir, request_log_filename
+            ).replace("\\", "/")
+
+            from relevanceai.utils import FileLogger
+
+            self.request_logger = FileLogger(fn=self.request_logging_fpath)
+            self.hooks = {"response": self.log}
+
+        else:
+            self.hooks = None
+
+    def log(self, response, *args, **kwargs):
+        """It takes the response from the request and logs the url, path_url, method, status_code, headers,
+        content, time, and elapsed time
+
+        Parameters
+        ----------
+        response
+            The response object
+
+        """
+        with self.request_logger:
+            log = {}
+            log["url"] = response.url
+            log["path_url"] = response.request.path_url
+            log["method"] = response.request.method
+            log["headers"] = response.headers
+            log["time"] = time.time()
+            log["elapsed"] = response.elapsed.microseconds
+            try:
+                log["body"] = json.loads(response.request.body)
+            except:
+                log["body"] = {}
+
+            try:
+                content = json.loads(response.content)
+            except:
+                content = response.content
+
+            response = {"send": log, "recv": content}
+            pprint(response, sort_dicts=False)
+
+            print()
+            print()
 
     @property
     def _dashboard_request_url(self):
@@ -211,6 +275,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         url=request_url,
                         headers=self.auth_header,
                         json=parameters if method.upper() == "POST" else {},
+                        hooks=self.hooks,
                     ).prepare()
                 elif method.upper() == "GET":
                     # Get requests do not have JSONs - which will error out
@@ -220,7 +285,14 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                         url=request_url,
                         headers=self.auth_header,
                         params=parameters if method.upper() == "GET" else {},
+                        hooks=self.hooks,
                     ).prepare()
+
+                # if self.enable_request_logging:
+                #     print("URL: ", request_url)
+                #     if self.enable_request_logging == "full":
+                #         print("HEADERS: ", req.headers)
+                #         print("BODY: ", req.body)
 
                 with requests.Session() as s:
                     response = s.send(req)
@@ -331,6 +403,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                     json=parameters if method.upper() == "POST" else {},
                     params=parameters if method.upper() == "GET" else {},
                 ) as response:
+
+                    if os.getenv("DEBUG_REQUESTS") == "TRUE":
+                        self.log(response)
+
                     if response.status == 200:
                         self._log_response_success(base_url, endpoint)
                         self._log_response_time(

@@ -9,11 +9,11 @@ Example
 
 
 """
-from doc_utils import DocUtils
+from typing import Union, Optional
+
+from relevanceai.utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.dataset.dataset import Dataset
-from typing import Union, Optional
-from abc import abstractmethod, ABC
 
 
 class Ops(DocUtils):

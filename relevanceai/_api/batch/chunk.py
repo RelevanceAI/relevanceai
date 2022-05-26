@@ -16,7 +16,7 @@ class Chunker:
         Example:
 
         >>> documents = [{...}]
-        >>> ViClient.chunk(documents)
+        >>> client.chunk(documents)
 
         Parameters
         ----------

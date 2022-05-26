@@ -18,7 +18,10 @@ If you need to change your token, simply run:
     client = Client(token="...")
 
 """
+import os
 import re
+from tkinter import Label
+import uuid
 import getpass
 import pandas as pd
 import analytics
@@ -39,9 +42,11 @@ from relevanceai.dataset import Dataset
 from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 from relevanceai.utils.config_mixin import ConfigMixin
+from relevanceai.client.cache import CacheMixin
+from relevanceai.client.operators import Operators
 
 
-class Client(APIClient, ConfigMixin):
+class Client(APIClient, ConfigMixin, CacheMixin, Operators):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -56,16 +61,22 @@ class Client(APIClient, ConfigMixin):
         token: str
             You can paste the token here if things need to be refreshed
 
-        force_refresh: bool
-            If True, it forces you to refresh your client
+        enable_request_logging: bool, str
+            Whether to print out the requests made, if "full" the body will be printed as well.
         """
 
         if token is None:
             token = auth()
+            print(
+                "If you require non-interactive token authentication, you can set token=..."
+            )
 
         self.token = token
         self.credentials = process_token(token)
         super().__init__(self.credentials)
+
+        if os.getenv("DEBUG_REQUESTS") == "TRUE":
+            print(f"logging requests to: {self.request_logging_fpath}")
 
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
@@ -115,9 +126,6 @@ class Client(APIClient, ConfigMixin):
         token = getpass.getpass(f"Activation token:")
         return token
 
-    def make_search_suggestion(self):
-        return self.services.search.make_suggestion()
-
     def check_auth(self):
         print(f"Connecting to {self.region}...")
         return self.list_datasets()
@@ -158,7 +166,7 @@ class Client(APIClient, ConfigMixin):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out services.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
@@ -180,7 +188,7 @@ class Client(APIClient, ConfigMixin):
         return self.datasets.create(dataset_id, schema=schema)
 
     @track
-    def list_datasets(self):
+    def list_datasets(self, verbose=False):
         """List Datasets
 
         Example
@@ -193,9 +201,10 @@ class Client(APIClient, ConfigMixin):
             client.list_datasets()
 
         """
-        self.print_dashboard_message(
-            "You can view all your datasets at https://cloud.relevance.ai/datasets/"
-        )
+        if verbose:
+            self.print_dashboard_message(
+                "You can view all your datasets at https://cloud.relevance.ai/datasets/"
+            )
         datasets = self.datasets.list()
         datasets["datasets"] = sorted(datasets["datasets"])
         return datasets
@@ -262,32 +271,20 @@ class Client(APIClient, ConfigMixin):
     @track
     def ClusterOps(
         self,
+        dataset_id: str,
+        vector_fields: list,
+        alias: str,
         model=None,
         **kwargs,
     ):
-        from relevanceai.operations.cluster import ClusterOps
+        from relevanceai.operations_new.cluster.ops import ClusterOps
 
         return ClusterOps(
             credentials=self.credentials,
-            model=model,
-            **kwargs,
-        )
-
-    @track
-    def ClusterVizOps(
-        self,
-        vector_fields: List[str],
-        alias: str,
-        dataset_id: str,
-        **kwargs,
-    ):
-        from relevanceai.operations.viz import ClusterVizOps
-
-        return ClusterVizOps(
-            credentials=self.credentials,
+            dataset_id=dataset_id,
             vector_fields=vector_fields,
             alias=alias,
-            dataset_id=dataset_id,
+            model=model,
             **kwargs,
         )
 
