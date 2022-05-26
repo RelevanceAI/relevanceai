@@ -467,5 +467,4 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
-        ops.run(self, filters=filters)
-        return ops
+        return ops.run(self, filters=filters)
