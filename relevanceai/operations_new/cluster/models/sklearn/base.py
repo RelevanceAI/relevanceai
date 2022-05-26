@@ -19,37 +19,27 @@ class SklearnModelBase(ModelBase):
         model: Union[ClusterMixin, str],
         model_kwargs: dict,
     ):
+
         if isinstance(model, str):
             assert model in sklearn_models
-            self.model_ref = SklearnModelBase.import_from_string(
+            model = ModelBase.import_from_string(
                 f"sklearn.cluster.{sklearn_models[model]}"
             )
             if model_kwargs is None:
                 model_kwargs = {}
 
-            self.model = self.model_ref(**model_kwargs)
+            self.model = model(**model_kwargs)
         else:
             assert type(model).__name__ in list(sklearn_models.values())
             self.model = model
 
-        self.model_kwargs = model_kwargs
-        for key, value in self.model_kwargs.items():
-            setattr(self, key, value)
-
-    @staticmethod
-    def import_from_string(name):
-        components = name.split(".")
-        mod = __import__(components[0])
-        for comp in components[1:]:
-            mod = getattr(mod, comp)
-        return mod
+        super().__init__(model_kwargs=self.model.__dict__)
 
     def warm_start(self):
-        # not really
-        model_ref = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
+        model = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
         kwargs = self.model_kwargs
         kwargs["init"] = self.model.init
-        self.model = model_ref(kwargs)
+        self.model = model(kwargs)
 
     def partial_fit(self, *args, **kwargs) -> Any:
         if hasattr(self.model, "partial_fit"):
@@ -76,14 +66,3 @@ class SklearnModelBase(ModelBase):
         labels: np.ndarray = self.model.predict(vectors, *args, **kwargs)
         self._centroids = self.calculate_centroids(labels, vectors)
         return labels.tolist()
-
-    @property
-    def name(self):
-        return type(self.model).__name__.lower()
-
-    @property
-    def alias(self):
-        return self.name + str(self.model.n_clusters)
-
-
-from sklearn.cluster import KMeans

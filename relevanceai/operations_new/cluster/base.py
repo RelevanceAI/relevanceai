@@ -60,6 +60,7 @@ class ClusterBase(OperationRun):
     def normalize_model_name(self, model):
         if isinstance(model, str):
             return model.lower().replace("-", "").replace("_", "")
+
         return model
 
     def _get_model_from_string(self, model: str, model_kwargs: dict = None):
@@ -77,6 +78,17 @@ class ClusterBase(OperationRun):
             )
 
             model = SklearnModelBase(
+                model=model,
+                model_kwargs=model_kwargs,
+            )
+            return model
+
+        elif model == "faiss":
+            from relevanceai.operations_new.cluster.models.faiss.base import (
+                FaissModelBase,
+            )
+
+            model = FaissModelBase(
                 model=model,
                 model_kwargs=model_kwargs,
             )
