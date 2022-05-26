@@ -19,6 +19,7 @@ class SklearnModelBase(ModelBase):
         model: Union[ClusterMixin, str],
         model_kwargs: dict,
     ):
+
         if isinstance(model, str):
             assert model in sklearn_models
             model = ModelBase.import_from_string(
@@ -31,6 +32,8 @@ class SklearnModelBase(ModelBase):
         else:
             assert type(model).__name__ in list(sklearn_models.values())
             self.model = model
+
+        super().__init__(model_kwargs=self.model.__dict__)
 
     def warm_start(self):
         model = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
@@ -63,10 +66,3 @@ class SklearnModelBase(ModelBase):
         labels: np.ndarray = self.model.predict(vectors, *args, **kwargs)
         self._centroids = self.calculate_centroids(labels, vectors)
         return labels.tolist()
-
-    @property
-    def alias(self):
-        if hasattr(self.model, "n_clusters"):
-            return f"{self.name}-{str(self.model.n_clusters)}"
-        else:
-            return f"{self.name}"

@@ -60,6 +60,11 @@ class _ModelUtils(DocUtils):
 
 
 class ModelBase(ABC, _ModelUtils):
+    def __init__(self, *args, **kwargs):
+        model_kwargs = kwargs.pop("model_kwargs", {})
+        for key, value in model_kwargs.items():
+            setattr(self, key, value)
+
     @staticmethod
     def import_from_string(name):
         """It takes a string, splits it on the period, and then imports the module
