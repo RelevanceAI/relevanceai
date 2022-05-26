@@ -19,6 +19,7 @@ class LabelBase(OperationBase):
         similarity_threshold: float = 0.1,
         label_field="label",
         label_vector_field="label_vector_",
+        **kwargs,
     ):
         self.vector_field = vector_field
         self.expanded = expanded
@@ -27,6 +28,9 @@ class LabelBase(OperationBase):
         self.similarity_threshold = similarity_threshold
         self.label_field = label_field
         self.label_vector_field = label_vector_field
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def transform(  # type: ignore
         self,

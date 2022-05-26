@@ -46,7 +46,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         if isinstance(self.model, str):
             self.model_name = self.model
         else:
-            self.model_name = type(self.model).__name__.lower()
+            self.model_name = str(self.model)
 
         if model_kwargs is None:
             model_kwargs = {}
@@ -110,9 +110,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
                 },
             ],
             select_fields=[field, cluster_field],
+            show_progress_bar=False,
         )
         # get the field across each
-        arr = self.get_field_across_documents(field, documents["documents"])
+        arr = self.get_field_across_documents(field, documents)
         output[cluster_id] = func(arr)
 
     def _operate_across_clusters(self, field: str, func: Callable):
@@ -270,10 +271,11 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
 
     def get_centroid_documents(self):
         centroid_vectors = {}
-        if self.model.cluster_centers_ is not None:
-            centroid_vectors = self.model.cluster_centers_
+        if self.model._centroids is not None:
+            centroid_vectors = self.model._centroids
             # get the cluster label function
-            cluster_ids = self.list_cluster_ids()
+            labels = range(len(centroid_vectors))
+            cluster_ids = self.format_cluster_labels(labels)
             if len(self.vector_fields) > 1:
                 warnings.warn(
                     "Currently do not support inserting centroids with multiple vector fields"
@@ -476,12 +478,15 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            model_kwargs = {} if model_kwargs is None else model_kwargs
-            self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
-            if hasattr(self.vectorizer, "encode"):
-                encode_fn = self.vectorizer.encode
-            else:
-                raise AttributeError("Vectorizer is missing an `encode` function.")
+            raise NotImplementedError(
+                "Model strings not supported yet. Please supply a function."
+            )
+            # model_kwargs = {} if model_kwargs is None else model_kwargs
+            # self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
+            # if hasattr(self.vectorizer, "encode"):
+            #     encode_fn = self.vectorizer.encode
+            # else:
+            #     raise AttributeError("Vectorizer is missing an `encode` function.")
         else:
             encode_fn = encode_fn_or_model
 

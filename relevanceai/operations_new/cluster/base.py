@@ -27,6 +27,7 @@ class ClusterBase(OperationRun):
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
         self.cluster_field = cluster_field
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -36,7 +37,25 @@ class ClusterBase(OperationRun):
         if isinstance(model, str):
             model = self._get_model_from_string(model, model_kwargs)
 
+        elif "sklearn" in model.__module__:
+            model = self._get_sklearn_model_from_class(model)
+
+        elif "faiss" in model.__module__:
+            model = self._get_faiss_model_from_class(model)
+
         return model
+
+    def _get_sklearn_model_from_class(self, model):
+        from relevanceai.operations_new.cluster.models.sklearn.base import (
+            SklearnModelBase,
+        )
+
+        model_kwargs = model.__dict__
+        model = SklearnModelBase(model=model, model_kwargs=model_kwargs)
+        return model
+
+    def _get_faiss_model_from_class(self, model):
+        raise NotImplementedError
 
     def normalize_model_name(self, model):
         if isinstance(model, str):
@@ -49,6 +68,7 @@ class ClusterBase(OperationRun):
             model_kwargs = {}
 
         model = self.normalize_model_name(model)
+        model_kwargs = {} if model_kwargs is None else model_kwargs
 
         from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
 
@@ -109,18 +129,29 @@ class ClusterBase(OperationRun):
     def format_cluster_labels(self, labels):
         return [self.format_cluster_label(label) for label in labels]
 
-    def fit_predict_documents(self, documents):
+    def fit_predict_documents(self, documents, warm_start=False):
+        """
+        If warm_start=True, copies the values from the previous fit.
+        Only works for cluster models that use centroids. You should
+        not have to use this parameter.
+        """
         # run fit predict on documetns
         if hasattr(self.model, "fit_predict_documents"):
             return self.model.fit_predict_documents(
-                documents=documents, vector_fields=self.vector_fields
+                documents=documents,
+                vector_fields=self.vector_fields,
+                warm_start=warm_start,
             )
         elif hasattr(self.model, "fit_predict"):
             if len(self.vector_fields) == 1:
                 vectors = self.get_field_across_documents(
-                    self.vector_fields[0], documents
+                    self.vector_fields[0],
+                    documents,
                 )
-                cluster_labels = self.model.fit_predict(vectors)
+                cluster_labels = self.model.fit_predict(
+                    vectors,
+                    warm_start=warm_start,
+                )
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
 
@@ -140,6 +171,10 @@ class ClusterBase(OperationRun):
         """
 
         # TODO: add support for sklearn kmeans
+        if not self.is_field_across_documents(self.vector_fields[0], documents):
+            raise ValueError(
+                "You have missing vectors in your document. You will want to apply a filter for vector fields. See here for a page of filter options: https://relevanceai.readthedocs.io/en/development/core/filters/exists.html#exists."
+            )
         labels = self.fit_predict_documents(
             documents=documents,
         )
