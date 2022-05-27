@@ -24,6 +24,7 @@ Relevance AI Concepts
   :width: 800
   :alt: Overview of Relevance AI
 
+
 About Relevance AI
 --------------------
 
@@ -44,6 +45,15 @@ Why Relevance AI
 - **Managed end-to-end**, Relevance AI's platform is end-to-end managed that helps you go from data to value. E.g. text, image -> Vectorizing -> Inserting into managed or self deployed vector databases & data warehouses -> Different ML algorithms K-NN, ANN, Cluster, DR -> Shareable Frontend App and API that interacts and enhances the process.
 - **Highly flexible and integrated**. Each part of the platform you can bring your own models. (e.g. Replacing the default clustering algorithm with any sklearn clustering model or one you build yourself)
 - **Powerful**, we don't just facilitate each part of the process in building a use case with vectors. We enhace it further with algorithms and interactions to get more value of them. (e.g. fast aggregaation of data within clusters, vector similarity search with multiple vectors)
+
+
+Relevance AI Ecosystem
+-------------------------
+
+.. image:: ecosystem_diagram.png
+  :width: 800
+  :alt: Overview of Relevance AI
+
 
 Authorization
 ---------------
