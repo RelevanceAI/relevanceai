@@ -18,8 +18,6 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
 from typing import Any, Dict, List, Optional
 
-from matplotlib.transforms import Transform
-
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
 
