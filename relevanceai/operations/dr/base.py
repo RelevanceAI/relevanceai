@@ -6,7 +6,7 @@ import numpy as np
 import json
 import gc
 
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
