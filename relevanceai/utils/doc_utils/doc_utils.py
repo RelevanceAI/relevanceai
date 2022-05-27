@@ -199,6 +199,8 @@ class Document(DocUtils):
                     document[key] = value
         return document
 
+    dict = json
+
     def keys(self, parent=None):
         """It takes a dictionary, and returns a list of all the keys in the dictionary, including nested
         keys
@@ -447,3 +449,5 @@ class DocumentList(DocUtils, MutableSequence):
 
         """
         return [document.json() for document in self.documents]
+
+    dict = json
