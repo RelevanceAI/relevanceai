@@ -71,7 +71,7 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
-        documents_to_upsert = [{"_id": d["_id"]} for d in documents]
+        documents_to_upsert = DocumentList([{"_id": d["_id"]} for d in documents])
 
         self.set_field_across_documents(
             cluster_field_name,

@@ -33,7 +33,7 @@ class VectorizeModelBase(DocUtils):
             self.set_field_across_documents(
                 field=self.vector_name(field),
                 values=vectors,
-                docs=documents,
+                documents=documents,
             )
 
         return documents

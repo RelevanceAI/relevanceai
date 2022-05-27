@@ -143,7 +143,7 @@ class DimReductionBase(OperationRun):
         self.set_field_across_documents(
             field=reduced_vector_name,
             values=reduced_vectors,
-            docs=documents,
+            documents=documents,
         )
 
         # removes unnecessary info for updated_where

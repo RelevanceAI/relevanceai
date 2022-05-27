@@ -158,7 +158,7 @@ class ClusterBase(OperationRun):
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
 
-    def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def transform(self, documents: DocumentList) -> DocumentList:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.
 
@@ -184,7 +184,7 @@ class ClusterBase(OperationRun):
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
-        documents_to_upsert = [{"_id": d["_id"]} for d in documents]
+        documents_to_upsert = DocumentList([{"_id": d["_id"]} for d in documents])
 
         self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
         return documents_to_upsert

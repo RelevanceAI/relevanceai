@@ -1,5 +1,7 @@
 from copy import deepcopy
 from typing import List, Dict, Any
+
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 from .read_utils import DocReadUtils
 
 
@@ -77,7 +79,10 @@ class DocWriteUtils(DocReadUtils):
             return doc
 
     def set_field_across_documents(
-        self, field: str, values: List[Any], docs: List[Dict]
+        self,
+        field: str,
+        values: List[Any],
+        documents: DocumentList,
     ):
         """
         For multiple documents, set the right fields.
@@ -103,8 +108,8 @@ class DocWriteUtils(DocReadUtils):
             >>> sample_document = {'kfc': {'item': ''}}
             >>> vi_client.set_fields('kfc.item', sample_document, 'chickens')
         """
-        assert len(values) == len(docs), (
+        assert len(values) == len(documents), (
             "Assert that the number of values " + "equates to the number of documents"
         )
         for i, value in enumerate(values):
-            self.set_field(field, docs[i], value)
+            self.set_field(field, documents[i], value)

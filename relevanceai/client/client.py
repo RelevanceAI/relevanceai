@@ -31,7 +31,7 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai._api import APIClient
 
-from relevanceai.utils.doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 from relevanceai.client.helpers import *
 

@@ -22,7 +22,7 @@ from relevanceai.utils.distances import (
     euclidean_distance_matrix,
     cosine_similarity_matrix,
 )
-from relevanceai.utils.doc_utils.doc_utils import Document, DocumentList
+from relevanceai.utils import Document, DocumentList
 
 
 class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
@@ -467,12 +467,12 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         labelled_documents = [{"_id": d["_id"]} for d in documents]
 
         self.set_field_across_documents(
-            field=self.cluster_field, values=labels, docs=labelled_documents
+            field=self.cluster_field, values=labels, documents=labelled_documents
         )
 
         if inplace:  # add the cluster labels into the original documents
             self.set_field_across_documents(
-                field=self.cluster_field, values=labels, docs=documents
+                field=self.cluster_field, values=labels, documents=documents
             )
 
         centroid_documents = self._get_centroid_documents(

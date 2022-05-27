@@ -187,8 +187,8 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
                 traceback.print_exc()
                 pass
 
-        full_data = DocumentList(full_data)
-        return full_data
+        documents = DocumentList(full_data)
+        return documents
 
     def get_number_of_documents(self, dataset_id, filters: Optional[List] = None):
         """

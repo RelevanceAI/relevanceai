@@ -11,7 +11,7 @@ from relevanceai.client.helpers import Credentials
 from relevanceai.constants import Messages
 from relevanceai.constants import IMG_EXTS
 
-from relevanceai.utils.decorators import log
+from relevanceai.utils import log
 
 from relevanceai.operations.vector.base import Base2Vec
 

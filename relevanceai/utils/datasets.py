@@ -16,9 +16,9 @@ import pandas as pd
 import requests
 
 from relevanceai.constants import DATASETS
-from relevanceai.constants.errors import MissingPackageExtraError
+from relevanceai.constants import MissingPackageExtraError
 
-from doc_utils import DocumentList
+from relevanceai.utils import DocumentList
 
 THIS_MODULE = sys.modules[__name__]
 
@@ -357,7 +357,7 @@ def get_news_dataset(
 
 def get_online_ecommerce_dataset(
     number_of_documents: Union[None, int] = 1000, select_fields: Optional[List] = None
-) -> List:
+) -> DocumentList:
     """
     Download an example ecommerce dataset (https://data.world/crowdflower/ecommerce-search-relevance) \n
     Total Len: 15528 \n
@@ -410,11 +410,11 @@ def get_online_ecommerce_dataset(
         df["url"] = df["url"].str.replace("http://", "https://")
     if "_unit_id" in df.columns:
         df["_id"] = df["_unit_id"].astype(str)
-    documents = [
+    raw_documents = [
         {k: v for k, v in doc.items() if not pd.isna(v)}
         for doc in df.to_dict(orient="records")
     ]
-    documents = DocumentList(documents)
+    documents = DocumentList(raw_documents)
     return documents
 
 
@@ -523,7 +523,7 @@ def get_realestate_dataset(
     return documents
 
 
-def mock_documents(number_of_documents: int = 100, vector_length=5):
+def mock_documents(number_of_documents: int = 100, vector_length=5) -> DocumentList:
     """
     Utility function to mock documents. Aimed at helping users reproduce errors
     if required.
@@ -607,8 +607,8 @@ def mock_documents(number_of_documents: int = 100, vector_length=5):
         document["_id"] = make_id(document)
         return document
 
-    documents = [vector_document() for _ in range(number_of_documents)]
-    documents = DocumentList(documents)
+    raw_documents = [vector_document() for _ in range(number_of_documents)]
+    documents = DocumentList(raw_documents)
     return documents
 
 

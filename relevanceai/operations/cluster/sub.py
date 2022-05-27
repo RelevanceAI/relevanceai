@@ -237,7 +237,7 @@ class _SubClusterOps(ClusterOps):
             ]
         else:
             self.set_field_across_documents(
-                field=cluster_field, values=labels, docs=doc_subset
+                field=cluster_field, values=labels, documents=doc_subset
             )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)

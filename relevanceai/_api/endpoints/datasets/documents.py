@@ -3,7 +3,7 @@ from typing import List, Optional
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
-from relevanceai.utils.doc_utils import DocumentList, Document
+from relevanceai.utils import DocumentList, Document
 
 
 class DocumentsClient(_Base):

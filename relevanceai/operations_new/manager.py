@@ -45,21 +45,3 @@ class OperationManager:
             dataset=self.dataset,
             values=self.metadata,
         )
-
-    @staticmethod
-    def clean(
-        before_docs: DocumentList,
-        after_docs: DocumentList,
-    ) -> DocumentList:
-        updated_documents = [
-            {
-                key: value
-                for key, value in after_doc.items()
-                if key not in before_doc or key == "_id"
-            }
-            for (before_doc, after_doc,) in zip(
-                before_docs,
-                after_docs,
-            )
-        ]
-        return updated_documents
