@@ -9,6 +9,6 @@ All the core functionalities related to Relevance AI.
     Client <client/index>
     insert_data
     Dataset <dataset/index>
-    Dummy Datasets <available_datasets>
     Filters <filters/index>
     Cache <cache>
+    Dummy Datasets <available_datasets>

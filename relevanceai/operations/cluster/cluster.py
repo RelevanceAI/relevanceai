@@ -98,6 +98,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         )  # type: ignore
 
         self.model_name = None
+        self.verbose = verbose
 
         if model is None:
             model = "kmeans"
@@ -195,7 +196,8 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
             Warning.MISSING_ALIAS.format(alias=alias)
 
-        print(f"The alias is `{alias.lower()}`.")
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
         return alias.lower()
 
     def _get_package(self, model):
@@ -397,7 +399,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             alias=self.alias,
         )
 
-    def _insert_cluster_metadata(
+    def _insert_metadata(
         self, dataset_id: str, vector_fields: List[str], centroid_documents: List[Dict]
     ):
         metadata = self.datasets.metadata(dataset_id=dataset_id)
@@ -523,7 +525,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
         print("Retrieving all documents...")
         from relevanceai.utils.filter_helper import create_filter
 
-        filters = create_filter(vector_field, filter_type="exists")
+        filters += create_filter(vector_field, filter_type="exists")
         documents = self._get_all_documents(
             dataset_id=dataset_id,
             select_fields=vector_fields,
@@ -552,7 +554,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             centroid_documents=centroid_documents,
         )
         print("Inserting Metadata...")
-        self._insert_cluster_metadata(
+        self._insert_metadata(
             dataset_id=dataset_id,
             vector_fields=vector_fields,
             centroid_documents=centroid_documents,

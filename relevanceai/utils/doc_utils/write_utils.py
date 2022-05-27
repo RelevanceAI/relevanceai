@@ -8,6 +8,7 @@ class DocWriteUtils(DocReadUtils):
 
     def run_function_against_all_documents(self, fn, docs, field=None):
         """Run a function against documetns if the field is there"""
+        # TODO: Change this to an operator and not a dict comprehension
         if field is not None:
             {fn(self.get_field(field, d)) for d in docs if self.is_field(field, d)}
         else:

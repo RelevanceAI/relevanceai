@@ -126,9 +126,7 @@ if is_sklearn_available():
         calinski_harabasz_score,
         silhouette_samples,
     )
-    from sklearn.metrics.pairwise import (
-        pairwise_distances,
-    )
+    from sklearn.metrics.pairwise import pairwise_distances
     from sklearn.cluster import MiniBatchKMeans, KMeans
     from sklearn.tree import _tree, DecisionTreeClassifier
     from sklearn.neighbors import NearestNeighbors

@@ -218,7 +218,7 @@ class Statistics(APIClient):
             fig.tight_layout()
             plt.show()
         else:
-            return None
+            return fig
 
     def health(self, output_format="dataframe") -> Union[pd.DataFrame, dict]:
         """

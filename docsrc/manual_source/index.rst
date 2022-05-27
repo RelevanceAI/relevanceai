@@ -68,8 +68,7 @@ Everything you upload to Relevance AI is yours, including any vectors, code, con
    installation
    Guides <guides/index>
    Core <core/index>
-   Operations <operations/index>
-   sequential_workflow
+   Operators <operations/index>
    changelog
    Debugging <debugging/index>
 

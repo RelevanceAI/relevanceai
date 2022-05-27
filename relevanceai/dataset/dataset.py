@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Union
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
+from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import (
     GLOBAL_DATASETS,
@@ -11,7 +12,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(Operations):
+class Dataset(OperationsNew, Operations):
     @track
     def __init__(
         self,

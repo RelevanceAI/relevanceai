@@ -1,5 +1,5 @@
 🔢 Vectorizing Guide
-===================
+====================
 
 Firstly, we must import what we need from Relevance AI
 

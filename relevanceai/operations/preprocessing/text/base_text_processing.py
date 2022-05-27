@@ -13,9 +13,9 @@ class BaseTextProcessing:
     @staticmethod
     def normalize_text(
         txt: str,
-        lower: bool = True,
-        remove_digit: bool = True,
-        remove_punct: bool = True,
+        lower: bool = False,
+        remove_digit: bool = False,
+        remove_punct: bool = False,
     ) -> str:
         """
         * Lower-casing
@@ -74,4 +74,10 @@ class MLStripper(HTMLParser):
         self.text.write(d)
 
     def get_data(self):
-        return self.text.getvalue()
+        return (
+            self.text.getvalue()
+            .replace("\r", " ")
+            .replace("\n", " ")
+            .replace("\t", " ")
+            .strip()
+        )

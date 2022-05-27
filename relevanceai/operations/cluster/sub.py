@@ -22,6 +22,7 @@ class _SubClusterOps(ClusterOps):
         parent_field: str,
         outlier_value=-1,
         outlier_label="outlier",
+        verbose=False,
         **kwargs,
     ):
         """
@@ -35,6 +36,7 @@ class _SubClusterOps(ClusterOps):
         self.model = model
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
+        self.verbose = verbose
         if isinstance(dataset, str):
             self.dataset_id = dataset
         else:
@@ -189,7 +191,10 @@ class _SubClusterOps(ClusterOps):
         )
 
     def _fit_predict(
-        self, documents: List[Dict[str, Any]], vector_field: str
+        self,
+        documents: List[Dict[str, Any]],
+        vector_field: str,
+        return_only_labels=True,
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         doc_subset = [doc for doc in documents if self.is_field(vector_field, doc)]
         vectors = np.array(
@@ -225,13 +230,19 @@ class _SubClusterOps(ClusterOps):
         labels = self._format_sub_labels(parent_values, labels)
 
         cluster_field = f"_cluster_.{vector_field}.{self.alias}"
-        self.set_field_across_documents(
-            field=cluster_field, values=labels, docs=doc_subset
-        )
+        if return_only_labels:
+            doc_subset = [
+                {"_id": doc["_id"], cluster_field: labels[i]}
+                for i, doc in enumerate(doc_subset)
+            ]
+        else:
+            self.set_field_across_documents(
+                field=cluster_field, values=labels, docs=doc_subset
+            )
 
         centroid_documents = self._get_centroid_documents(vectors, labels)
 
-        return centroid_documents, documents
+        return centroid_documents, doc_subset
 
 
 class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
@@ -245,6 +256,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         parent_field: str,
         outlier_value=-1,
         outlier_label="outlier",
+        verbose: bool = True,
         **kwargs,
     ):
         """
@@ -258,6 +270,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         self.model = model
         self.outlier_value = outlier_value
         self.outlier_label = outlier_label
+        self.verbose = verbose
         if isinstance(dataset, str):
             self.dataset_id: str = dataset
         else:
@@ -285,6 +298,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         filters: Optional[List] = None,
         verbose: bool = False,
         min_parent_cluster_size: Optional[int] = None,
+        cluster_ids: Optional[list] = None,
     ):
         """
 
@@ -360,6 +374,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
             filters=filters,
             verbose=False,
             min_parent_cluster_size=min_parent_cluster_size,
+            cluster_ids=cluster_ids,
         )
 
         if verbose:

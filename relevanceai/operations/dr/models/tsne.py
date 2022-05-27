@@ -14,8 +14,8 @@ class TSNE(DimReductionBase):
         dr_args: Optional[Dict[Any, Any]] = DIM_REDUCTION_DEFAULT_ARGS["tsne"],
         dims: int = 3,
     ) -> np.ndarray:
+        from sklearn.decomposition import PCA
         from sklearn.manifold import TSNE
 
-        self.logger.debug(f"{dr_args}")
         tsne = TSNE(n_components=dims, **dr_args)
         return tsne.fit_transform(vectors)
