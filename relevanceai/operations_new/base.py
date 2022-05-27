@@ -9,6 +9,11 @@ from relevanceai.utils import DocUtils
 
 
 class OperationBase(ABC, DocUtils):
+    """
+    To write your own operation, you need to add:
+    - name
+    - transform
+    """
 
     # Typehints to help with development
     vector_fields: List[str]

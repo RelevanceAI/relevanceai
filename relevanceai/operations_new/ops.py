@@ -18,6 +18,8 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
 from typing import Any, Dict, List, Optional
 
+from matplotlib.transforms import Transform
+
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
 
@@ -466,5 +468,33 @@ class Operations(Write):
             highlight=highlight,
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
+        )
+        return ops.run(self, filters=filters)
+
+    def apply_transformers_pipeline(
+        self,
+        text_fields: list,
+        pipeline,
+        output_field: Optional[str] = None,
+        filters: Optional[list] = None,
+    ):
+        """
+        Apply a transformers pipeline generically.
+
+        .. code-block::
+
+            from transformers import pipeline
+            pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
+            ds.apply_hf_pipeline(
+                text_fields, pipeline
+            )
+
+        """
+        from relevanceai.operations_new.processing.transformers.ops import (
+            TransformersPipelineOps,
+        )
+
+        ops = TransformersPipelineOps(
+            text_fields=text_fields, pipeline=pipeline, output_field=output_field
         )
         return ops.run(self, filters=filters)
