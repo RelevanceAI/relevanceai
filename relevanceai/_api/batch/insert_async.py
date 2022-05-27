@@ -5,7 +5,7 @@ import warnings
 
 import orjson
 
-from doc_utils import DocumentList
+from relevanceai.utils import DocumentList
 from datetime import datetime
 from concurrent.futures import as_completed, wait
 from pathlib import Path
