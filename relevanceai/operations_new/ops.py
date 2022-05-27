@@ -485,7 +485,7 @@ class Operations(Write):
 
             from transformers import pipeline
             pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
-            ds.apply_hf_pipeline(
+            ds.apply_transformers_pipeline(
                 text_fields, pipeline
             )
 
