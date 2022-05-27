@@ -50,6 +50,9 @@ class DocReadUtils:
                     else:
                         return missing_treatment
             except TypeError:
+                # {"value": [{"value": 10}, {"text": 5}]}
+                # d["value.0.value"] - returns 10
+                # d["value.1.text"]
                 if self._is_string_integer(f):
                     # Get the Get the chunk document out.
                     try:
