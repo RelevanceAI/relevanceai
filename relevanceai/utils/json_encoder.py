@@ -33,7 +33,7 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
-from doc_utils import DocumentList, Document
+from relevanceai.utils import DocumentList, Document
 
 # Taken from pydanitc.json
 ENCODERS_BY_TYPE = {
