@@ -14,7 +14,7 @@ Developer-first vector platform for ML teams
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/subclustering_guide.ipynb
 
 🤖 Basic Sub-clustering
-======================
+=======================
 
 This notebook is a quick guide on how to use Relevance AI for
 subclustering. Subclustering allows users to infinitely drill down into
@@ -40,7 +40,7 @@ value under ``Authorization token`` and paste it here
     client = Client()
 
 🚣 Inserting data
-----------------
+-----------------
 
 We use a sample ecommerce dataset - with vectors
 ``product_image_clip_vector_`` and ``product_title_clip_vector_``
@@ -53,64 +53,23 @@ already encoded for us.
     docs = get_ecommerce_dataset_encoded()
     docs[0].keys()
 
-
-
-
-.. parsed-literal::
-
-    dict_keys(['product_image', 'query', 'product_price', 'source', 'product_title', 'product_link', 'product_image_clip_vector_', 'product_title_clip_vector_', 'insert_date_', '_id'])
-
-
-
 .. code:: ipython3
 
     ds = client.Dataset("basic_subclustering")
     ds.delete()
     ds.upsert_documents(docs)
 
-
-.. parsed-literal::
-
-    ✅ All documents inserted/edited successfully.
-
-
 .. code:: ipython3
 
     ds.schema
-
-
-
-
-.. parsed-literal::
-
-    {'insert_date_': 'date',
-     'product_image': 'text',
-     'product_image_clip_vector_': {'vector': 512},
-     'product_link': 'text',
-     'product_price': 'text',
-     'product_title': 'text',
-     'product_title_clip_vector_': {'vector': 512},
-     'query': 'text',
-     'source': 'text'}
-
-
 
 .. code:: ipython3
 
     vector_fields = ds.list_vector_fields()
     vector_fields
 
-
-
-
-.. parsed-literal::
-
-    ['product_image_clip_vector_', 'product_title_clip_vector_']
-
-
-
 🍒 Running the initial clustering approach:
-------------------------------------------
+-------------------------------------------
 
 Let’s instantiate a clustering model and set an appropriate parent alias
 for ``n_clusters``. Let’s vectorize over all available vector fields.
@@ -130,62 +89,6 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
 
     ds.schema
 
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/2 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    Build your clustering app here: https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/2 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    Build your clustering app here: https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/
-
-
-
-
-.. parsed-literal::
-
-    {'_cluster_': 'dict',
-     '_cluster_.product_image_clip_vector_': 'dict',
-     '_cluster_.product_image_clip_vector_.kmeans_10': 'text',
-     '_cluster_.product_title_clip_vector_': 'dict',
-     '_cluster_.product_title_clip_vector_.kmeans_10': 'text',
-     'insert_date_': 'date',
-     'product_image': 'text',
-     'product_image_clip_vector_': {'vector': 512},
-     'product_link': 'text',
-     'product_price': 'text',
-     'product_title': 'text',
-     'product_title_clip_vector_': {'vector': 512},
-     'query': 'text',
-     'source': 'text'}
-
-
-
 .. code:: ipython3
 
     # You can find the parent field in the schema or alternatively provide a field.
@@ -204,7 +107,7 @@ could further break down these clusters using subclustering.
    Screen Shot 2022-04-07 at 2.41.57 pm.png
 
 🫐 Running sub-clustering
-------------------------
+-------------------------
 
 .. code:: ipython3
 
@@ -229,133 +132,6 @@ could further break down these clusters using subclustering.
         alias=subcluster_alias,
     )
 
-
-
-.. parsed-literal::
-
-      0%|          | 0/10 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
 .. code:: ipython3
 
     """
@@ -364,43 +140,11 @@ could further break down these clusters using subclustering.
 
     ds.schema
 
-
-
-
-.. parsed-literal::
-
-    {'_cluster_': 'dict',
-     '_cluster_.product_image_clip_vector_': 'dict',
-     '_cluster_.product_image_clip_vector_.kmeans_10': 'text',
-     '_cluster_.product_image_clip_vector_.kmeans_10_3': 'text',
-     '_cluster_.product_title_clip_vector_': 'dict',
-     '_cluster_.product_title_clip_vector_.kmeans_10': 'text',
-     'insert_date_': 'date',
-     'product_image': 'text',
-     'product_image_clip_vector_': {'vector': 512},
-     'product_link': 'text',
-     'product_price': 'text',
-     'product_title': 'text',
-     'product_title_clip_vector_': {'vector': 512},
-     'query': 'text',
-     'source': 'text'}
-
-
-
 You should also be able to track your subclusters using ``ds.metadata``.
 
 .. code:: ipython3
 
     ds.metadata
-
-
-
-
-.. parsed-literal::
-
-    {'_subcluster_': [{'parent_field': '_cluster_.product_image_clip_vector_.kmeans_10', 'cluster_field': '_cluster_.product_image_clip_vector_.kmeans_10_3'}]}
-
-
 
 You can also view your subcluster results using
 
@@ -410,135 +154,6 @@ You can also view your subcluster results using
 
     ds[subcluster_field]
 
-
-.. parsed-literal::
-
-    /usr/local/lib/python3.7/dist-packages/relevanceai/dataset/series.py:93: UserWarning: Displaying using pandas. To get image functionality please install RelevanceAI[notebook].
-      warnings.warn(Warning.MISSING_RELEVANCE_NOTEBOOK)
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-
-.. raw:: html
-
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>_cluster_.product_image_clip_vector_.kmeans_10_3</th>
-        </tr>
-        <tr>
-          <th>_id</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0007a669-07e9-4a4a-b63c-40312690b381</th>
-          <td>cluster-9-1</td>
-        </tr>
-        <tr>
-          <th>00445000-a8ed-4523-b610-f70aa79d47f7</th>
-          <td>cluster-1-1</td>
-        </tr>
-        <tr>
-          <th>00a3d45e-2096-46aa-94c6-7d8480fb1436</th>
-          <td>cluster-1-2</td>
-        </tr>
-        <tr>
-          <th>01317a4c-2136-4fa3-be56-c07d79a646b3</th>
-          <td>cluster-4-1</td>
-        </tr>
-        <tr>
-          <th>0165f12a-cc93-4306-8161-750511e9a997</th>
-          <td>cluster-3-1</td>
-        </tr>
-        <tr>
-          <th>0186fa90-2de2-4b9c-9496-b395bf5cab51</th>
-          <td>cluster-0-0</td>
-        </tr>
-        <tr>
-          <th>01e4dba0-147e-41a7-8efa-95c33e23c93d</th>
-          <td>cluster-5-2</td>
-        </tr>
-        <tr>
-          <th>026d370b-0660-468c-aeb0-63d6849713e2</th>
-          <td>cluster-5-0</td>
-        </tr>
-        <tr>
-          <th>02f4c283-23eb-432c-8dff-b6fece2aa869</th>
-          <td>cluster-5-0</td>
-        </tr>
-        <tr>
-          <th>03db6840-58de-4dd8-820a-0bd3a5f6b6d0</th>
-          <td>cluster-1-0</td>
-        </tr>
-        <tr>
-          <th>042210e2-382d-4483-8a94-72711505a56f</th>
-          <td>cluster-3-0</td>
-        </tr>
-        <tr>
-          <th>0435795a-899f-4cdf-89be-a0f3f189d69e</th>
-          <td>cluster-1-1</td>
-        </tr>
-        <tr>
-          <th>0478c702-b53c-46e6-8ab1-915670145163</th>
-          <td>cluster-3-1</td>
-        </tr>
-        <tr>
-          <th>04f72125-5a90-4574-a996-e41f2db7a767</th>
-          <td>cluster-7-0</td>
-        </tr>
-        <tr>
-          <th>050a9f63-3549-4720-9be7-9daa07f868e8</th>
-          <td>cluster-2-0</td>
-        </tr>
-        <tr>
-          <th>054c64cc-bb4b-48c6-a01d-99b532c07347</th>
-          <td>cluster-3-2</td>
-        </tr>
-        <tr>
-          <th>056cf704-162d-4ba5-8622-23695ee24216</th>
-          <td>cluster-5-1</td>
-        </tr>
-        <tr>
-          <th>05f401ef-d3f2-404b-a433-666fe410028d</th>
-          <td>cluster-3-1</td>
-        </tr>
-        <tr>
-          <th>060bf51a-5918-4709-a2bc-8e74452ff853</th>
-          <td>cluster-9-0</td>
-        </tr>
-        <tr>
-          <th>0614f0a9-adcb-4c6c-939c-e7869525549c</th>
-          <td>cluster-1-1</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-
-
-
 .. code:: ipython3
 
     """
@@ -546,201 +161,8 @@ You can also view your subcluster results using
     """
     ds.health()
 
-
-.. parsed-literal::
-
-    You can view your dashboard at: https://cloud.relevance.ai/dataset/basic_subclustering/dashboard/monitor/schema
-
-
-
-
-.. raw:: html
-
-
-      <div id="df-f8a769dd-bdb1-424b-b1c5-8e61b203602b">
-        <div class="colab-df-container">
-          <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>exists</th>
-          <th>missing</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>_cluster_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>_cluster_.product_image_clip_vector_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>_cluster_.product_image_clip_vector_.kmeans_10</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>_cluster_.product_image_clip_vector_.kmeans_10_3</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>_cluster_.product_title_clip_vector_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>_cluster_.product_title_clip_vector_.kmeans_10</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>insert_date_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_image</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_image_clip_vector_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_link</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_price</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_title</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>product_title_clip_vector_</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>query</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>source</th>
-          <td>739</td>
-          <td>0</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-          <button class="colab-df-convert" onclick="convertToInteractive('df-f8a769dd-bdb1-424b-b1c5-8e61b203602b')"
-                  title="Convert this dataframe to an interactive table."
-                  style="display:none;">
-
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-           width="24px">
-        <path d="M0 0h24v24H0V0z" fill="none"/>
-        <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
-      </svg>
-          </button>
-
-      <style>
-        .colab-df-container {
-          display:flex;
-          flex-wrap:wrap;
-          gap: 12px;
-        }
-
-        .colab-df-convert {
-          background-color: #E8F0FE;
-          border: none;
-          border-radius: 50%;
-          cursor: pointer;
-          display: none;
-          fill: #1967D2;
-          height: 32px;
-          padding: 0 0 0 0;
-          width: 32px;
-        }
-
-        .colab-df-convert:hover {
-          background-color: #E2EBFA;
-          box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-          fill: #174EA6;
-        }
-
-        [theme=dark] .colab-df-convert {
-          background-color: #3B4455;
-          fill: #D2E3FC;
-        }
-
-        [theme=dark] .colab-df-convert:hover {
-          background-color: #434B5C;
-          box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-          filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-          fill: #FFFFFF;
-        }
-      </style>
-
-          <script>
-            const buttonEl =
-              document.querySelector('#df-f8a769dd-bdb1-424b-b1c5-8e61b203602b button.colab-df-convert');
-            buttonEl.style.display =
-              google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-            async function convertToInteractive(key) {
-              const element = document.querySelector('#df-f8a769dd-bdb1-424b-b1c5-8e61b203602b');
-              const dataTable =
-                await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                         [key], {});
-              if (!dataTable) return;
-
-              const docLinkHtml = 'Like what you see? Visit the ' +
-                '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-                + ' to learn more about interactive tables.';
-              element.innerHTML = '';
-              dataTable['output_type'] = 'display_data';
-              await google.colab.output.renderOutput(dataTable, element);
-              const docLink = document.createElement('div');
-              docLink.innerHTML = docLinkHtml;
-              element.appendChild(docLink);
-            }
-          </script>
-        </div>
-      </div>
-
-
-
-
 🧐 Looking into our subclusters
-------------------------------
+-------------------------------
 
 Let’s build a subcluster lookup to help us further analyze our clusters
 
@@ -780,13 +202,6 @@ Let’s build a subcluster lookup to help us further analyze our clusters
 
     subclusters_3 = build_subcluster_lut(ds, vector_field, parent_alias, subcluster_alias)
 
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
 .. code:: ipython3
 
     from relevanceai import show_json
@@ -825,104 +240,6 @@ Let’s build a subcluster lookup to help us further analyze our clusters
     cluster_id = 'cluster-0'
     sample_subclusters(subclusters_3, cluster_id )
 
-
-.. parsed-literal::
-
-    ==========
-    Cluster: cluster-0
-    Subclusters: cluster-0-0 cluster-0-1 cluster-0-2
-    Displaying 10 of 89 documents ...
-    ==========
-
-
-
-.. raw:: html
-
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>product_image</th>
-          <th>query</th>
-          <th>product_title</th>
-          <th>product_price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9977286/P90003216.jpg" width="60" ></td>
-          <td>nike womens</td>
-          <td>Nike Women's Luxe Rectangular Sunglasses (As Is Item)</td>
-          <td>$48.49</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9574438/P16763406.jpg" width="60" ></td>
-          <td>Levis</td>
-          <td>Levi's Men's 514 Grey Twill Soft Washed Slim-straight Jeans</td>
-          <td>$39.99</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9463748/P16646903.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>White Mark Women's Madelyn Mulitcolor Patterned Dress</td>
-          <td>$40.99</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9116183/Tahari-Arthur-S.-Levine-Womens-Sequin-Animal-Jacquard-Bust-Dress-P16301204.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Tahari Arthur S. Levine Women's Sequin Animal Jacquard Bust Dress</td>
-          <td>$85.99 - $86.99</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9554038/P16735303.jpg" width="60" ></td>
-          <td>Levis</td>
-          <td>Levi's Women's Black Ink 'Perfect Waist' Straight Leg Jeans</td>
-          <td>$44.99</td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9505614/P16685126.jpg" width="60" ></td>
-          <td>workout clothes for women</td>
-          <td>Marika Women's Heather Grey Leggings</td>
-          <td>$24.99 - $27.99</td>
-        </tr>
-        <tr>
-          <th>6</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10050322/P17194657.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>White Mark Women's Fit-and-Flare Floral Skater Dress</td>
-          <td>$38.99</td>
-        </tr>
-        <tr>
-          <th>7</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/P16735289.jpg" width="60" ></td>
-          <td>Levis</td>
-          <td>Levi's Women's Petite Dark Ice Mid-rise Bootcut Jeans</td>
-          <td>$39.99</td>
-        </tr>
-        <tr>
-          <th>8</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/7467779/7467779/White-Mark-Womens-Plus-Venezia-Gold-Turquoise-Dress-P14915708.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>White Mark Women's Plus 'Venezia' Gold Turquoise Dress</td>
-          <td>$31.99</td>
-        </tr>
-        <tr>
-          <th>9</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9219097/P16387923.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>White Mark Women's Teal and Yellow Printed Bell-sleeve Dress</td>
-          <td>$38.99</td>
-        </tr>
-      </tbody>
-    </table>
-
-
 Sub-clustering allows us to further drill down into our clusters to find
 more well-defined groups -
 
@@ -935,107 +252,8 @@ more well-defined groups -
 
     sample_subclusters(subclusters_3, cluster_id, subcluster_id)
 
-
-.. parsed-literal::
-
-    Searching kmeans_10_3 in product_image_clip_vector_ ...
-    ==========
-    Cluster: cluster-0
-    Subclusters: cluster-0-0
-    Displaying 10 of 45 documents ...
-    ==========
-
-
-
-.. raw:: html
-
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>product_image</th>
-          <th>query</th>
-          <th>product_title</th>
-          <th>product_price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10014787/P17162117.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Daniella Collection Women's Black/ Gold Beaded Rhinestone Dress</td>
-          <td>$329.99</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/8968835/A.B.S.-by-Allen-Schwartz-Womens-Gold-Sequined-Fitted-Cocktail-Dress-P16177699.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>A.B.S. by Allen Schwartz Women's Gold Sequined Fitted Cocktail Dress</td>
-          <td>$84.99 - $226.99</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9542387/P16722745.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Kayla Collection Women's Two-tone Metallic and Black Maxi Dress</td>
-          <td>$114.99</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/8983682/Amelia-Womens-Cotton-Satin-Front-zip-Dress-P16190039.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>Amelia Women's Cotton Satin Front-zip Dress</td>
-          <td>$43.99 - $53.49</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9463748/P16646903.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>White Mark Women's Madelyn Mulitcolor Patterned Dress</td>
-          <td>$40.99</td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10050322/P17194657.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>White Mark Women's Fit-and-Flare Floral Skater Dress</td>
-          <td>$38.99</td>
-        </tr>
-        <tr>
-          <th>6</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9116183/Tahari-Arthur-S.-Levine-Womens-Sequin-Animal-Jacquard-Bust-Dress-P16301204.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Tahari Arthur S. Levine Women's Sequin Animal Jacquard Bust Dress</td>
-          <td>$85.99 - $86.99</td>
-        </tr>
-        <tr>
-          <th>7</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9082385/R-M-Richards-Womens-Plus-Size-Fortuny-Pleated-Metallic-2-piece-Dress-P16273309.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>R & M Richards Women's Plus Size Fortuny Pleated Metallic 2-piece Dress</td>
-          <td>$84.99 - $88.99</td>
-        </tr>
-        <tr>
-          <th>8</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/P16385400m.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>Von Ronen New York Women's Short Transformer Dress One Size Fits 0-12</td>
-          <td>$82.99 - $84.99</td>
-        </tr>
-        <tr>
-          <th>9</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10056058/P17200720.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>La Femme Gold Sequined Sweetheart Rhinestone Strapless Formal Dress</td>
-          <td>$319.99</td>
-        </tr>
-      </tbody>
-    </table>
-
-
 🍇 You can then run sub-clustering again on a separate parent alias!
--------------------------------------------------------------------
+--------------------------------------------------------------------
 
 If we find our initial subclusters are insufficient, we can run
 subclustering again even more clusters to drill down down even furher.
@@ -1065,133 +283,6 @@ constantly referring back to the parent alias.
         alias=subcluster_alias,
     )
 
-
-
-.. parsed-literal::
-
-      0%|          | 0/10 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
 Let’s sample again with 5 subclusters We can see comparatively, these
 results are even more finegrained than when subclustering with 3
 subclusters
@@ -1205,105 +296,6 @@ subclusters
 
     print(f"Sampling {subcluster_alias} in {vector_field} ...")
     sample_subclusters(subclusters_5, cluster_id, subcluster_id)
-
-
-.. parsed-literal::
-
-    Searching kmeans_10_5 in product_image_clip_vector_ ...
-    ==========
-    Cluster: cluster-0
-    Subclusters: cluster-0-0
-    Displaying 10 of 13 documents ...
-    ==========
-
-
-
-.. raw:: html
-
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>product_image</th>
-          <th>query</th>
-          <th>product_title</th>
-          <th>product_price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10056077/P17200830.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Aidan Mattox Gold Cap Sleeve Lace Side Pocket Evening Dress</td>
-          <td>$469.99</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9143695/Little-Mistress-Womens-Black-and-Gold-Sequin-Dress-P16324636.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Little Mistress Women's Black and Gold Sequin Dress</td>
-          <td>$111.99 - $124.99</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10014787/P17162117.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Daniella Collection Women's Black/ Gold Beaded Rhinestone Dress</td>
-          <td>$329.99</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10017113/P17164138.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Ignite Evenings by Carol Lin Women's Sequin Halter Gown</td>
-          <td>$131.99</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/8756409/Halston-Heritage-Womens-Gold-Allover-Sequined-Evening-Dress-P15999762.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Halston Heritage Women's Gold Allover Sequined Evening Dress</td>
-          <td>$154.99 - $172.99</td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/9116183/Tahari-Arthur-S.-Levine-Womens-Sequin-Animal-Jacquard-Bust-Dress-P16301204.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Tahari Arthur S. Levine Women's Sequin Animal Jacquard Bust Dress</td>
-          <td>$85.99 - $86.99</td>
-        </tr>
-        <tr>
-          <th>6</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/8769783/R-M-Richards-Womens-Lurex-Draped-Jacket-and-Dress-Set-P16010866.jpg" width="60" ></td>
-          <td>yellow dress</td>
-          <td>R & M Richards Women's Lurex Draped Jacket and Dress Set</td>
-          <td>$89.99</td>
-        </tr>
-        <tr>
-          <th>7</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10056058/P17200720.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>La Femme Gold Sequined Sweetheart Rhinestone Strapless Formal Dress</td>
-          <td>$319.99</td>
-        </tr>
-        <tr>
-          <th>8</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10095484/P17236994.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Aidan Mattox Gold Sequin Tulle V-neck Sleeveless Long Evening Dress</td>
-          <td>$399.99</td>
-        </tr>
-        <tr>
-          <th>9</th>
-          <td><img src="https://ak1.ostkcdn.com/images/products/10095458/P17236985.jpg" width="60" ></td>
-          <td>gold dress</td>
-          <td>Aidan Mattox Gold Strapless Fairy Tale Empire Waist Bead Evening Dress</td>
-          <td>$469.99</td>
-        </tr>
-      </tbody>
-    </table>
-
 
 Next Steps
 ----------
