@@ -1,35 +1,43 @@
 Explain Text Clusters
 ========================
 
-This uses a marginal similarity measure to explain clusters.
+This uses marginal similarity measure to explain clusters.
 
 .. code-block::
 
+    cluster_ops = ds.cluster(
+        vector_fields=["product_title_all-mpnet-base-v2_vector_"],
+        model=model
+    )
+
+    cluster_ops.explain_text_clusters(
+        text_field="product_title", encode_fn_or_model="all-mpnet-base-v2", algorithm="relational"
+    )
+
+.. code-block::
+
+    from relevanceai import Client
+    client = Client()
+
     from relevanceai.utils.datasets import get_ecommerce_1_dataset
     docs = get_ecommerce_1_dataset()
-    ds = client.Dataset("ecommerce")
+    ds = client.Dataset("ecommerce-test")
 
     ds.upsert_documents(docs)
 
-
-    from sentence_transformers import SentenceTransformer
-    enc = SentenceTransformer("all-MiniLM-L6-v2")
-
-    def encode(text):
-        return enc.encode(text).tolist()
-
-    ds['product_title'].apply(encode, output_field="product_title_minilm_vector_")
+    ds.vectorize_text(["product_title"])
 
     from sklearn.cluster import KMeans
     model = KMeans(n_clusters=25)
 
-    cluster_ops = ds.cluster(vector_fields=["product_title_minilm_vector_"], model=model)
-
-    # we can now run text explanations
-    cluster_ops.explain_text_clusters(
-        text_field="product_title", encode_fn_or_model=encode, algorithm="relational"
+    cluster_ops = ds.cluster(
+        vector_fields=["product_title_all-mpnet-base-v2_vector_"],
+        model=model
     )
 
+    cluster_ops.explain_text_clusters(
+        text_field="product_title", encode_fn_or_model="all-mpnet-base-v2", algorithm="relational"
+    )
     # These text explanations need can be either `relational` or `centroid`
 
 The **relational** will compare the first document against the rest and is best used to explain
