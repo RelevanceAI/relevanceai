@@ -4,7 +4,7 @@
 import math
 import traceback
 
-from doc_utils import DocumentList
+from relevanceai.utils import DocumentList
 
 from typing import List, Optional
 
