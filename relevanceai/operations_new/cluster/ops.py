@@ -1,4 +1,5 @@
 import warnings
+from tqdm.auto import tqdm
 
 from copy import deepcopy
 
@@ -624,4 +625,81 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             vector_fields=self.vector_fields,
             alias=self.alias,
             cluster_ids=cluster_ids,
+        )
+
+    @property
+    def dataset(self):
+        pass
+
+    def label_with_summarizer(
+        self,
+        text_field: str,
+        model_name: str = "bigscience/T0_3B",
+        n_closest: int = 5,
+        verbose: bool = True,
+    ):
+        """
+        Label clusters using a summarizer.
+        """
+        from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+        # Models should be garbage collected as they are
+        # locally defined
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        sent_closest = self.list_closest(
+            select_fields=[text_field], page_size=n_closest
+        )
+
+        def summarize(text, tokenizer=tokenizer, model=model):
+            text = "Extreme summary: " + text
+            inputs = tokenizer.encode(text, return_tensors="pt")
+            outputs = model.generate(inputs)
+            return tokenizer.decode(outputs[0])
+
+        cluster_labels: dict = {}
+        topic_docs = []
+
+        for count, (cluster_name, cluster_data) in enumerate(
+            tqdm(sent_closest["results"].items())
+        ):
+            text_to_summarize = ""
+            for i, r in enumerate(cluster_data["results"]):
+                text_to_summarize += r[text_field] + " "
+            response = summarize(text_to_summarize)
+            if verbose:
+                print(f"===={cluster_name}====")
+                print(text_to_summarize)
+                print("==== Generated ====")
+                print("Summarizer said: ", response)
+                print("\n")
+
+            topic_docs += [
+                {
+                    "cluster_id": cluster_name,
+                    "topic": response,
+                    "text_to_summarize": text_to_summarize,
+                }
+            ]
+
+        metadata = self.metadata
+        metadata_doc = metadata.to_dict()
+        if "cluster_metadata" not in metadata_doc:
+            metadata_doc["cluster_metadata"] = {"labels": {}}
+
+        cluster_field = "_cluster_." + ".".join(self.vector_fields) + "." + self.alias
+
+        cluster_labels = {
+            k["cluster_id"]: k["topic"].replace("\n", "") for k in topic_docs
+        }
+        if cluster_field not in metadata_doc["cluster_metadata"]["labels"]:
+            labels = metadata_doc["cluster_metadata"]["labels"]
+            labels.update({cluster_field: {"labels": cluster_labels}})
+        else:
+            metadata_doc["cluster_metadata"]["labels"][cluster_field][
+                "labels"
+            ] = cluster_labels
+
+        return self.datasets.post_metadata(
+            dataset_id=self.dataset_id, metadata=metadata_doc
         )
