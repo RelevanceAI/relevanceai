@@ -12,6 +12,7 @@ from typing import List, Union, Dict, Any, Tuple, Optional
 from typing_extensions import Literal
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 from relevanceai.utils.logger import LoguruLogger
 from relevanceai.operations.cluster.constants import (
     DIM_REDUCTION,
@@ -33,19 +34,23 @@ class DimReductionBase(LoguruLogger, DocUtils):
     def transform(self, *args, **kw):
         raise NotImplementedError
 
-    def transform_documents(self, vector_fields: List[str], documents: List[Dict]):
+    def transform_documents(self, vector_fields: List[str], documents: DocumentList):
         vectors = np.array(
             self.get_fields_across_documents(
-                vector_fields, documents, missing_treatment="skip"
+                vector_fields,
+                documents,
+                missing_treatment="skip",
             )
         )
         vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
         return self.transform(vectors)
 
-    def fit_documents(self, vector_fields: List[str], documents: List[Dict]):
+    def fit_documents(self, vector_fields: List[str], documents: DocumentList):
         vectors = np.array(
             self.get_fields_across_documents(
-                vector_fields, documents, missing_treatment="skip"
+                vector_fields,
+                documents,
+                missing_treatment="skip",
             )
         )
         vectors = vectors.reshape(-1, vectors.shape[1] * vectors.shape[2])
@@ -63,7 +68,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
     def fit_transform_documents(
         self,
         vector_fields: List[str],
-        documents: List[Dict],
+        documents: DocumentList,
         alias: str,
         exclude_original_vectors: bool = True,
         dims: int = 3,
@@ -92,7 +97,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
 
         """
 
-        documents = list(self.filter_docs_for_fields(vector_fields, documents))
+        documents = self.filter_docs_for_fields(vector_fields, documents)
         vectors = np.array(
             self.get_fields_across_documents(
                 vector_fields, documents, missing_treatment="skip"
@@ -104,7 +109,7 @@ class DimReductionBase(LoguruLogger, DocUtils):
         gc.collect()
 
         if exclude_original_vectors:
-            dr_docs = [{"_id": d["_id"]} for d in documents]
+            dr_docs = DocumentList([{"_id": d["_id"]} for d in documents])
             self.set_field_across_documents(alias, dr_vectors, dr_docs)
             return dr_docs
         else:

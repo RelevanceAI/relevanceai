@@ -10,6 +10,10 @@ from relevanceai.utils import DocumentList
 class _ModelUtils(DocUtils):
     _centroids = None
 
+    @abstractmethod
+    def fit_predict(self, *args, **kwargs):
+        raise NotImplementedError
+
     def predict_documents(self, vector_fields, documents):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)

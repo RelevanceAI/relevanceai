@@ -1,7 +1,8 @@
-from doc_utils.doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 
 doc_utils = DocUtils()
 
@@ -12,7 +13,7 @@ class NearestNeighbours(_Base, DocUtils):
 
     @staticmethod
     def get_nearest_neighbours(
-        documents: list,
+        documents: DocumentList,
         vector: list,
         vector_field: str,
         distance_measure_mode: NEAREST_NEIGHBOURS = "cosine",

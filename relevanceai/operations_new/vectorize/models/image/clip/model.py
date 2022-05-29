@@ -234,3 +234,18 @@ class ClipImage2Vec(VectorizeModelBase):
         elif data_type == "text":
             return self.bulk_encode_text(data)
         raise ValueError("data_type must be either `image` or `text`")
+
+    def is_greyscale(self, img_path: str):
+        """Determine if an image is grayscale or not"""
+        try:
+            img = Image.open(requests.get(img_path, stream=True).raw)
+        except MissingSchema:
+            img = Image.open(img_path)
+        img = img.convert("RGB")
+        w, h = img.size
+        for i in range(w):
+            for j in range(h):
+                r, g, b = img.getpixel((i, j))
+                if r != g != b:
+                    return False
+        return True

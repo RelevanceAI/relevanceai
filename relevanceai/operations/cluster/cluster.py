@@ -464,7 +464,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
             n_clusters = len(set(labels)) - 1
             print(f"Found {n_clusters} clusters using {self.model_name}")
 
-        labelled_documents = [{"_id": d["_id"]} for d in documents]
+        labelled_documents = DocumentList([{"_id": d["_id"]} for d in documents])
 
         self.set_field_across_documents(
             field=self.cluster_field, values=labels, documents=labelled_documents

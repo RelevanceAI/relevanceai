@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import itertools
 import requests
 import warnings
@@ -26,6 +27,14 @@ class Base2Vec(DocUtils):
     """
     Base class for vector
     """
+
+    @abstractmethod
+    def encode(self, *args, **kwargs):
+        raise NotImplementedError
+
+    @abstractmethod
+    def bulk_encode(self, *args, **kwargs):
+        raise NotImplementedError
 
     def __init__(self):
         self.__dict__.update(BASE_2VEC_DEFINITON)
@@ -217,7 +226,9 @@ class Base2Vec(DocUtils):
         else:
             [
                 self.set_field(
-                    self.get_default_vector_field_name(field, field_type=field_type), d
+                    self.get_default_vector_field_name(field, field_type=field_type),
+                    value=None,
+                    doc=d,
                 )
                 if not self.is_empty_vector(vectors[i])
                 else vector_error_treatment

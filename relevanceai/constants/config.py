@@ -1,7 +1,7 @@
 """Configuration Settings"""
 import configparser
 
-from doc_utils.doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 
 
 class Config(DocUtils):
@@ -28,6 +28,26 @@ class Config(DocUtils):
     - Dashboard - URLS to various things
 
     """
+
+    number_of_retries: int
+    seconds_between_retries: int
+
+    log_to_file: bool
+    logging_level: str
+    enable_logging: bool
+    log_file_name: str
+
+    target_chunk_mb: str
+    max_chunk_size: str
+
+    base_url: str
+    base_ingest_url: str
+    output_format: str
+
+    dashboard_request_url: str
+    base_dashboard_url: str
+    signup_endpoint: str
+    search_dashboard_endpoint: str
 
     def __init__(self, config_path):
         self.config_path = config_path
@@ -81,33 +101,39 @@ class Config(DocUtils):
 
     reset = reset_to_default
 
-    # NOT NEEDED used to generate original config
-    # @staticmethod
-    # def _create_default():
-    #     config = configparser.ConfigParser()
-    #     config["retries"] = {"number_of_retries": 3, "seconds_between_retries": 2}
-    #     config["logging"] = {
-    #         "log_to_file": False,
-    #         "logging_level": "ERROR",
-    #         "enable_logging": True,
-    #         "log_file_name": "relevanceai",
-    #     }
-    #     config["upload"] = {"target_chunk_mb": 100, "max_chunk_size": 10000}
-    #     config["api"] = {
-    #         "base_url": "https://gateway-api-aueast.relevance.ai/latest",
-    #         "base_ingest_url": "https://ingest-api-dev-aueast.relevance.ai/latest",
-    #         "output_format": "json",
-    #     }
+    @staticmethod
+    def _create_default(config_path: str):
+        """NOT NEEDED used to generate original config"""
 
-    #     config["dashboard"] = {
-    #         "dashboard_request_url": "https:s-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest",
-    #         "base_dashboard_url": "https://cloud.relevance.ai",
-    #         "signup_endpoint": "/sdk/api",
-    #         "search_dashboard_endpoint": "/sdk/search",
-    #     }
+        config = configparser.ConfigParser()
+        config["retries"] = {
+            "number_of_retries": "3",
+            "seconds_between_retries": "2",
+        }
+        config["logging"] = {
+            "log_to_file": "False",
+            "logging_level": "ERROR",
+            "enable_logging": "True",
+            "log_file_name": "relevanceai",
+        }
+        config["upload"] = {
+            "target_chunk_mb": "100",
+            "max_chunk_size": "10000",
+        }
+        config["api"] = {
+            "base_url": "https://gateway-api-aueast.relevance.ai/latest",
+            "base_ingest_url": "https://ingest-api-dev-aueast.relevance.ai/latest",
+            "output_format": "json",
+        }
+        config["dashboard"] = {
+            "dashboard_request_url": "https:s-central1-vectorai-auth.cloudfunctions.net/handleSDKRequest",
+            "base_dashboard_url": "https://cloud.relevance.ai",
+            "signup_endpoint": "/sdk/api",
+            "search_dashboard_endpoint": "/sdk/search",
+        }
 
-    #     with open(CONFIG_PATH, "w") as configfile:
-    #         config.write(configfile)
+        with open(config_path, "w") as configfile:
+            config.write(configfile)
 
     def __getitem__(self, key):
         """
@@ -124,4 +150,5 @@ class Config(DocUtils):
 
 # To create the initial config
 if __name__ == "__main__":
-    Config._create_default()
+    config_path = "./relevanceai/config.ini"
+    Config._create_default(config_path)

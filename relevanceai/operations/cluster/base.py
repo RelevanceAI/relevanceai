@@ -57,10 +57,12 @@ If you have both Batches and Centroids, you will want to inherit both.
 
 import numpy as np
 
+from copy import copy
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict, Callable
 
 from relevanceai.utils import DocUtils
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
     is_sklearn_available,
@@ -182,7 +184,7 @@ class ClusterBase(DocUtils, ABC):
     def fit_documents(
         self,
         vector_fields: list,
-        documents: List[dict],
+        documents: DocumentList,
         alias: str = "default",
         cluster_field: str = "_cluster_",
         return_only_clusters: bool = True,
@@ -237,10 +239,12 @@ class ClusterBase(DocUtils, ABC):
                 ]
             return documents
 
-        new_documents = documents.copy()
+        new_documents = copy(documents)
 
         self.set_field_across_documents(
-            set_cluster_field, cluster_labels, new_documents
+            set_cluster_field,
+            cluster_labels,
+            new_documents,
         )
 
         if return_only_clusters:

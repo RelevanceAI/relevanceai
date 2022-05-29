@@ -1,6 +1,8 @@
+from copy import copy, deepcopy
+
 from collections.abc import MutableSequence
 
-from typing import Dict, List, Any
+from typing import Callable, Dict, List, Any
 
 from pandas import isna
 
@@ -321,12 +323,36 @@ class DocumentList(DocUtils, MutableSequence):
             for document in documents
         ]
 
+    def filter(
+        self,
+        func: Callable,
+        inplace: bool = True,
+    ):
+        """It filters the documents in the corpus.
+
+        Parameters
+        ----------
+        func : Callable
+            Callable
+        inplace : bool, optional
+            bool = True
+
+        Returns
+        -------
+            A list of documents that have been filtered.
+
+        """
+        filtered = [document for document in self.documents if func(document)]
+        if inplace:
+            filtered = deepcopy(filtered)
+        return filtered
+
     def __iter__(self):
         for document in self.documents:
             yield document
 
     def _ipython_display_(self):
-        """> The function takes a JSON object and displays it in a pretty format"""
+        """The function takes a JSON object and displays it in a pretty format"""
         display(self.json())
 
     def __repr__(self):

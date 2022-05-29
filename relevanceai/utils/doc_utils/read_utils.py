@@ -1,5 +1,7 @@
 import pandas as pd
 from typing import Dict, List, Any
+
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 from .errors import MissingFieldError
 
 
@@ -106,7 +108,7 @@ class DocReadUtils:
     def get_field_across_documents(
         self,
         field: str,
-        docs: List[Dict],
+        documents: DocumentList,
         missing_treatment: str = "return_empty_string",
     ):
         """
@@ -140,9 +142,10 @@ class DocReadUtils:
                 return self.is_field(field, doc)
 
             return [
-                self.get_field(field, doc) for doc in filter(check_field_in_doc, docs)
+                self.get_field(field, doc)
+                for doc in filter(check_field_in_doc, documents)
             ]
-        return [self.get_field(field, doc, missing_treatment) for doc in docs]
+        return [self.get_field(field, doc, missing_treatment) for doc in documents]
 
     def get_fields_across_document(
         self, fields: List[str], doc: Dict, missing_treatment="return_empty_string"
@@ -157,7 +160,7 @@ class DocReadUtils:
     def get_fields_across_documents(
         self,
         fields: List[str],
-        docs: List[Dict],
+        documents: DocumentList,
         missing_treatment="return_empty_string",
     ):
         """Get numerous fields across documents.
@@ -190,16 +193,16 @@ class DocReadUtils:
 
         """
         if missing_treatment == "skip_if_any_missing":
-            docs = self.filter_docs_for_fields(fields, docs)
-            return [self.get_fields_across_document(fields, doc) for doc in docs]
+            documents = self.filter_docs_for_fields(fields, documents)
+            return [self.get_fields_across_document(fields, doc) for doc in documents]
         return [
             self.get_fields_across_document(
                 fields, doc, missing_treatment=missing_treatment
             )
-            for doc in docs
+            for doc in documents
         ]
 
-    def filter_docs_for_fields(self, fields: List, docs: List):
+    def filter_docs_for_fields(self, fields: List, documents: DocumentList):
         """
         Filter for docs if they contain a list of fields
         """
@@ -207,7 +210,7 @@ class DocReadUtils:
         def is_any_field_missing_in_doc(doc):
             return all([self.is_field(f, doc) for f in fields])
 
-        return filter(is_any_field_missing_in_doc, docs)
+        return documents.filter(is_any_field_missing_in_doc)
 
     @classmethod
     def is_field(self, field: str, doc: Dict) -> bool:

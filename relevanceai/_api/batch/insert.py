@@ -19,6 +19,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai.constants.config import Config
 
 from relevanceai.utils import make_id
 from relevanceai.utils.logger import FileLogger
@@ -39,6 +40,8 @@ from relevanceai.constants import (
 
 
 class BatchInsertClient(BatchRetrieveClient):
+    config: Config
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

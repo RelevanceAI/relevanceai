@@ -3,6 +3,7 @@ from pydoc import doc
 from typing import Any, Dict, List
 
 from relevanceai.utils import DocUtils
+from relevanceai.utils import DocumentList
 
 
 class VectorizeModelBase(DocUtils):
@@ -24,10 +25,10 @@ class VectorizeModelBase(DocUtils):
         pass
 
     def encode_documents(
-        self, documents: List[Dict[str, Any]], fields: List[str], bias_value=0
+        self, documents: DocumentList, fields: List[str], bias_value=0
     ):
         for field in fields:
-            values = self.get_field_across_documents(field=field, docs=documents)
+            values = self.get_field_across_documents(field=field, documents=documents)
             vectors = self.bulk_encode(values)
 
             self.set_field_across_documents(

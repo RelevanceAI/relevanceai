@@ -127,7 +127,7 @@ class DimReductionBase(OperationRun):
 
         for vector_field in self.vector_fields:
             vectors = self.get_field_across_documents(
-                field=vector_field, docs=documents
+                field=vector_field, documents=documents
             )
             for vector, concat_vector in zip(vectors, concat_vectors):
                 concat_vector.extend(vector)
