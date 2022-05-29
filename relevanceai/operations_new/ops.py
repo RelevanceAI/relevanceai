@@ -493,6 +493,8 @@ class Operations(Write):
         )
 
         ops = TransformersPipelineOps(
-            text_fields=text_fields, pipeline=pipeline, output_field=output_field
+            text_fields=text_fields,
+            pipeline=pipeline,
+            output_field=output_field,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(self, filters=filters, select_fields=text_fields)
