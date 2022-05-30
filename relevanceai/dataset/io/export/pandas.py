@@ -9,7 +9,7 @@ from relevanceai.constants.constants import MAX_CACHESIZE
 
 class PandasExport(Read):
     @added(version="1.1.5")
-    @lru_cache(maxsize=MAX_CACHESIZE)
+    @lru_cache(maxsize=MAX_CACHESIZE)  # mypy: ignore
     def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.

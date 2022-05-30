@@ -68,7 +68,7 @@ class Operations(Write):
         )
 
         res = ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             select_fields=vector_fields,
             chunksize=chunksize,
             filters=filters,
@@ -116,7 +116,7 @@ class Operations(Write):
         )
 
         res = ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             select_fields=fields,
             filters=filters,
             batched=batched,
@@ -164,7 +164,7 @@ class Operations(Write):
         )
 
         res = ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             select_fields=fields,
             filters=filters,
             batched=batched,
@@ -235,7 +235,7 @@ class Operations(Write):
         )
 
         res = ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             label_documents=label_documents,
             filters=filters,
             batched=batched,
@@ -282,7 +282,7 @@ class Operations(Write):
         )
 
         res = ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             select_fields=text_fields,
             batched=batched,
             filters=filters,
@@ -369,7 +369,7 @@ class Operations(Write):
 
         # Create the cluster report
         ops.run(
-            dataset=self,
+            dataset=self,  # type: ignore
             select_fields=vector_fields,
             batched=batched,
             chunksize=chunksize,
@@ -391,32 +391,6 @@ class Operations(Write):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
         )
         return ops
-
-    def _get_alias(self, alias: Any) -> str:
-        # Auto-generates alias here
-        if alias is None:
-            if hasattr(self.model, "n_clusters"):
-                n_clusters = (
-                    self.n_clusters
-                    if self.n_clusters is not None
-                    else self.model.n_clusters
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            elif hasattr(self.model, "k"):
-                n_clusters = (
-                    self.n_clusters if self.n_clusters is not None else self.model.k
-                )
-                alias = f"{self.model_name}-{n_clusters}"
-
-            else:
-                alias = self.model_name
-
-            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
-
-        if self.verbose:
-            print(f"The alias is `{alias.lower()}`.")
-        return alias.lower()
 
     @track
     def batch_cluster(
@@ -442,7 +416,10 @@ class Operations(Write):
         if filters is not None:
             filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters)
+        cluster_ops.run(
+            self,  # type: ignore
+            filters,
+        )
 
         return cluster_ops
 
@@ -467,7 +444,10 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(
+            self,  # type: ignore
+            filters=filters,
+        )
 
     def apply_transformers_pipeline(
         self,
@@ -497,4 +477,8 @@ class Operations(Write):
             pipeline=pipeline,
             output_field=output_field,
         )
-        return ops.run(self, filters=filters, select_fields=text_fields)
+        return ops.run(
+            self,  # type: ignore
+            filters=filters,
+            select_fields=text_fields,
+        )

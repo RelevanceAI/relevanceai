@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 # -*- coding: utf-8 -*-
 """
 Pandas like dataset API

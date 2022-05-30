@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from typing import Any, Set, Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -22,7 +24,7 @@ from relevanceai.utils.distances import (
     euclidean_distance_matrix,
     cosine_similarity_matrix,
 )
-from relevanceai.utils import Document, DocumentList
+from relevanceai.utils import DocumentList
 
 
 class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):

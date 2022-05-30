@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 """
 Vectorizer model is used to interact with `advanced_vectorize`
 """

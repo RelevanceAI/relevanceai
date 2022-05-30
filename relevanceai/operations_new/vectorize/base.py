@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.operations_new.run import OperationRun
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 
 
 class VectorizeBase(OperationRun):
@@ -26,7 +27,7 @@ class VectorizeBase(OperationRun):
     def _get_model(self, *args, **kwargs):
         raise NotImplementedError
 
-    def transform(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def transform(self, documents: DocumentList) -> DocumentList:
         """It takes a list of documents, and for each document, it runs the document through each of the
         models in the pipeline, and returns the updated documents.
 
@@ -50,13 +51,15 @@ class VectorizeBase(OperationRun):
             )
 
         # removes unnecessary info for updated_where
-        updated_documents = [
-            {
-                key: value
-                for key, value in document.items()
-                if key not in self.fields or key == "_id"
-            }
-            for document in updated_documents
-        ]
+        document_list = DocumentList(
+            [
+                {
+                    key: value
+                    for key, value in document.items()
+                    if key not in self.fields or key == "_id"
+                }
+                for document in updated_documents
+            ]
+        )
 
-        return updated_documents
+        return document_list

@@ -12,7 +12,7 @@ from relevanceai.utils import DocumentList
 class BatchClusterBase(ClusterBase, ClusterAlias):
     def __init__(
         self,
-        vector_fields: list,
+        vector_fields: List[str],
         model: Any,
         model_kwargs: dict,
         *args,
@@ -28,13 +28,13 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def partial_fit(self, documents: List, model_kwargs=None):
+    def partial_fit(self, documents: DocumentList, model_kwargs=None):
         """Run partial fitting on a list of documents"""
         if isinstance(self.model, str):
             model_kwargs = {} if model_kwargs is None else model_kwargs
             self.model = self._get_model(self.model, model_kwargs)
-        return self.model.partial_fit(
-            self.get_field_across_documents(self.vector_fields, documents)
+        return self.model.partial_fit(  # type: ignore
+            self.get_field_across_documents(self.vector_fields, documents)  # type: ignore
         )
 
     @property
@@ -75,7 +75,7 @@ class BatchClusterBase(ClusterBase, ClusterAlias):
 
         self.set_field_across_documents(
             cluster_field_name,
-            labels,
+            labels.json(),
             documents_to_upsert,
         )
         return documents_to_upsert

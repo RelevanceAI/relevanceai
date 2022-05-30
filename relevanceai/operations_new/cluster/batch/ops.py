@@ -68,7 +68,7 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
             vectors = self.get_field_across_documents(
                 self.vector_fields[0], chunk, missing_treatment="skip"
             )
-            self.model.partial_fit(vectors)
+            self.model.partial_fit(vectors)  # type: ignore
 
         print("Predicting...")
         for chunk in dataset.chunk_dataset(select_fields=self.vector_fields):

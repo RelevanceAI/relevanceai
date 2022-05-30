@@ -27,11 +27,9 @@ import pandas as pd
 import analytics
 
 from base64 import b64decode as decode
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from relevanceai._api import APIClient
-
-from relevanceai import DocUtils
 
 from relevanceai.client.helpers import *
 
@@ -47,6 +45,8 @@ from relevanceai.client.operators import Operators
 
 
 class Client(APIClient, ConfigMixin, CacheMixin, Operators):
+    credentials: Credentials
+
     def __init__(
         self,
         token: Optional[str] = None,

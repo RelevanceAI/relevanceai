@@ -112,7 +112,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             return {"documents": data, "after_id": resp["after_id"]}
         return data
 
-    @lru_cache(maxsize=MAX_CACHESIZE)
+    @lru_cache(maxsize=MAX_CACHESIZE)  # mypy: ignore
     def _get_all_documents(
         self,
         dataset_id: str,

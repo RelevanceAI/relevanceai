@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 import warnings
 from typing import List, Dict, Optional, Any, Union, Callable
 from tqdm.auto import tqdm
@@ -727,7 +729,10 @@ class Operations(Write, IO):
             min_abs_score=min_abs_score,
         )
 
-        return ops.run(self, batched=True)
+        return ops.run(
+            self,  # type: ignore
+            batched=True,
+        )
 
         # return .fit_dataset(
         #     dataset=self,

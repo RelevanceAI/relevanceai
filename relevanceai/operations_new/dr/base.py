@@ -2,6 +2,7 @@ from typing import List, Dict, Any, Optional, Union
 
 from relevanceai.operations_new.run import OperationRun
 from relevanceai.operations_new.dr.models.base import DimReductionModelBase
+from relevanceai.utils.doc_utils.doc_utils import DocumentList
 
 
 class DimReductionBase(OperationRun):
@@ -74,8 +75,15 @@ class DimReductionBase(OperationRun):
             )
 
     def _get_model_from_string(
-        self, model: str, n_components: int, alias: str, **kwargs
+        self,
+        model: str,
+        n_components: int,
+        alias: str,
+        **kwargs,
     ) -> DimReductionModelBase:
+
+        mapped_model: Any
+
         if model == "pca":
             from relevanceai.operations_new.dr.models.pca import PCAModel
 
@@ -120,8 +128,8 @@ class DimReductionBase(OperationRun):
 
     def transform(
         self,
-        documents: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+        documents: DocumentList,
+    ) -> DocumentList:
 
         concat_vectors: List[List[float]] = [[] for _ in range(len(documents))]
 
@@ -147,13 +155,15 @@ class DimReductionBase(OperationRun):
         )
 
         # removes unnecessary info for updated_where
-        updated_documents = [
-            {
-                key: value
-                for key, value in document.items()
-                if key in ["_id", reduced_vector_name]
-            }
-            for document in documents
-        ]
+        updated_documents = DocumentList(
+            [
+                {
+                    key: value
+                    for key, value in document.items()
+                    if key in ["_id", reduced_vector_name]
+                }
+                for document in documents
+            ]
+        )
 
         return updated_documents

@@ -202,7 +202,7 @@ class Series(APIClient):
 
     head = sample
 
-    @lru_cache(maxsize=MAX_CACHESIZE)
+    @lru_cache(maxsize=MAX_CACHESIZE)  # mypy: ignore
     @track
     def all(
         self,
@@ -512,7 +512,7 @@ class Series(APIClient):
             return self.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
-    @lru_cache(maxsize=MAX_CACHESIZE)
+    @lru_cache(maxsize=MAX_CACHESIZE)  # mypy: ignore
     def _get_pandas_series(self):
         documents = self._get_all_documents(
             dataset_id=self.dataset_id,

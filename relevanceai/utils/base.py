@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.transport import Transport
 from relevanceai.utils.logger import LoguruLogger

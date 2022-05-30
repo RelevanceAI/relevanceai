@@ -18,7 +18,7 @@ import requests
 from relevanceai.constants import DATASETS
 from relevanceai.constants import MissingPackageExtraError
 
-from relevanceai.utils import DocumentList
+from relevanceai import DocumentList
 
 THIS_MODULE = sys.modules[__name__]
 

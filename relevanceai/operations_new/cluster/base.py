@@ -34,6 +34,9 @@ class ClusterBase(OperationRun):
 
         self._check_vector_fields()
 
+    def _get_alias(self, *args, **kwargs):
+        raise NotImplementedError
+
     def _get_model(self, model: Any, model_kwargs: dict) -> Any:
         if model is None:
             return model
@@ -80,30 +83,30 @@ class ClusterBase(OperationRun):
                 SklearnModelBase,
             )
 
-            model = SklearnModelBase(
+            sklearn_model = SklearnModelBase(
                 model=model,
                 model_kwargs=model_kwargs,
             )
-            return model
+            return sklearn_model
 
         elif model == "faiss":
             from relevanceai.operations_new.cluster.models.faiss.base import (
                 FaissModelBase,
             )
 
-            model = FaissModelBase(
+            faiss_model = FaissModelBase(
                 model=model,
                 model_kwargs=model_kwargs,
             )
-            return model
+            return faiss_model
 
         elif model == "communitydetection":
             from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
                 CommunityDetection,
             )
 
-            model = CommunityDetection(**model_kwargs)
-            return model
+            community_detection_model = CommunityDetection(**model_kwargs)
+            return community_detection_model
 
         raise ValueError("Model not supported.")
 
@@ -188,7 +191,9 @@ class ClusterBase(OperationRun):
 
         documents_to_upsert = DocumentList([{"_id": d["_id"]} for d in documents])
 
-        self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
+        self.set_field_across_documents(
+            cluster_field_name, labels.json(), documents_to_upsert
+        )
         return documents_to_upsert
 
     def _get_cluster_field_name(self):

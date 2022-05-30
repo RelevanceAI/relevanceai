@@ -349,7 +349,7 @@ class Read(Statistics):
         elif output_format == "pandas":
             return pd.DataFrame.from_dict(documents, orient="records")
 
-    @lru_cache(maxsize=MAX_CACHESIZE)
+    @lru_cache(maxsize=MAX_CACHESIZE)  # type: ignore
     @track
     def get_all_documents(
         self,

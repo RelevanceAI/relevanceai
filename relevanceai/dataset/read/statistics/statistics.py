@@ -15,6 +15,8 @@ from relevanceai._api.endpoints.datasets.cluster import ClusterClient
 
 
 class Statistics(APIClient):
+    credentials: Credentials
+
     def __init__(
         self,
         credentials: Credentials,

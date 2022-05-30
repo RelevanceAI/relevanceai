@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from collections import Counter
 from sklearn.metrics import (
     silhouette_score,

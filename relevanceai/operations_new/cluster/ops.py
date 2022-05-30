@@ -480,8 +480,8 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             # Get the model
             from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
 
-            self.model = VectorizeTextBase._get_model(encode_fn_or_model)
-            encode_fn = self.model.encode
+            self.model = VectorizeTextBase._get_model(encode_fn_or_model)  # type: ignore
+            encode_fn = self.model.encode  # type: ignore
         else:
             encode_fn = encode_fn_or_model
 

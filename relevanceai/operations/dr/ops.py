@@ -1,6 +1,6 @@
-from typing import Union, Any, Optional, List
+# mypy: ignore-errors
 
-from relevanceai import DocUtils
+from typing import Any, Optional, List
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
