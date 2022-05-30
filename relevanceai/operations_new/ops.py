@@ -445,3 +445,56 @@ class Operations(Write):
         cluster_ops.run(self, filters)
 
         return cluster_ops
+
+    def extract_sentiment(
+        self,
+        text_fields: List[str],
+        model_name: str,
+        highlight: bool = False,
+        max_number_of_shap_documents: int = 1,
+        min_abs_score: float = 0.1,
+        filters: Optional[list] = None,
+    ):
+        """
+        Extract sentiment from the dataset
+        """
+        from relevanceai.operations_new.sentiment.ops import SentimentOps
+
+        ops = SentimentOps(
+            text_fields=text_fields,
+            model_name=model_name,
+            highlight=highlight,
+            max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
+        )
+        return ops.run(self, filters=filters)
+
+    def apply_transformers_pipeline(
+        self,
+        text_fields: list,
+        pipeline,
+        output_field: Optional[str] = None,
+        filters: Optional[list] = None,
+    ):
+        """
+        Apply a transformers pipeline generically.
+
+        .. code-block::
+
+            from transformers import pipeline
+            pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
+            ds.apply_transformers_pipeline(
+                text_fields, pipeline
+            )
+
+        """
+        from relevanceai.operations_new.processing.transformers.ops import (
+            TransformersPipelineOps,
+        )
+
+        ops = TransformersPipelineOps(
+            text_fields=text_fields,
+            pipeline=pipeline,
+            output_field=output_field,
+        )
+        return ops.run(self, filters=filters, select_fields=text_fields)

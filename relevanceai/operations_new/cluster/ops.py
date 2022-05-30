@@ -448,7 +448,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         encode_fn_or_model,
         n_closest: int = 5,
         highlight_output_field="_explain_",
-        algorithm: str = "centroid",
+        algorithm: str = "relational",
         model_kwargs: Optional[dict] = None,
     ):
         """
@@ -478,15 +478,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            raise NotImplementedError(
-                "Model strings not supported yet. Please supply a function."
-            )
-            # model_kwargs = {} if model_kwargs is None else model_kwargs
-            # self.vectorizer = self._get_model(encode_fn_or_model, model_kwargs)
-            # if hasattr(self.vectorizer, "encode"):
-            #     encode_fn = self.vectorizer.encode
-            # else:
-            #     raise AttributeError("Vectorizer is missing an `encode` function.")
+            from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
+
+            self.model = VectorizeTextBase._get_model(encode_fn_or_model)
+            encode_fn = self.model.encode
         else:
             encode_fn = encode_fn_or_model
 
