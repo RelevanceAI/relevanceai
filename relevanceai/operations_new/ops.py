@@ -234,6 +234,18 @@ class Operations(Write):
             label_field=label_field,
             label_vector_field=label_vector_field,
         )
+        # Add an exists filter
+        if filters is None:
+            filters = []
+
+        filters += [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+        ]
 
         res = ops.run(
             dataset=self,
