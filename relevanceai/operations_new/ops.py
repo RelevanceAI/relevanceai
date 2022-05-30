@@ -115,6 +115,12 @@ class Operations(Write):
             models=models,
         )
 
+        for model in models:
+            if model in ["tfidf"] and batched is True:
+                raise ValueError(
+                    f"If you are using {model}, you must set batched=False."
+                )
+
         res = ops.run(
             dataset=self,
             select_fields=fields,

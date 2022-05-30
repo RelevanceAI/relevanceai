@@ -68,3 +68,5 @@ SENTENCE_TRANSFORMER_MODELS: Dict[str, Dict[str, int]] = {
         "vector_length": 384,
     },
 }
+
+SKLEARN_MODELS = {"tfidf": {"vector_length": None}}

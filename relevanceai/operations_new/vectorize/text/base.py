@@ -55,6 +55,17 @@ class VectorizeTextBase(VectorizeBase):
                 )
 
                 return model
+            elif model in SKLEARN_MODELS:
+                from relevanceai.operations_new.vectorize.models.text.sklearn.tfidf import (
+                    TfIDFModel,
+                )
+
+                if len(self.fields) > 1:
+                    raise NotImplementedError(
+                        "Currently do not support more than 1 text field for TF-IDF."
+                    )
+                model = TfIDFModel(text_field=self.fields[0])
+                return model
 
             else:  # assume model is sentence transformer model
                 from relevanceai.operations_new.vectorize.models.text.sentence_transformers import (
