@@ -225,6 +225,7 @@ class Operations(Write):
 
         ops = LabelOps(
             credentials=self.credentials,
+            label_documents=label_documents,
             vector_field=vector_fields[0],
             expanded=expanded,
             max_number_of_labels=max_number_of_labels,
@@ -236,7 +237,6 @@ class Operations(Write):
 
         res = ops.run(
             dataset=self,
-            label_documents=label_documents,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
