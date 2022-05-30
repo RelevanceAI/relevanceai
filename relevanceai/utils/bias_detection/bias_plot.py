@@ -25,7 +25,7 @@ can be found below.
 
 from typing import List, Dict, Any, Callable
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 
 from relevanceai.constants.errors import MissingPackageError

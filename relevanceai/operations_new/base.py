@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 from typing import Any, Dict, List
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils import DocumentList
 
 

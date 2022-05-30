@@ -61,7 +61,7 @@ from copy import copy
 from abc import abstractmethod, ABC
 from typing import Union, List, Dict, Callable
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.doc_utils.doc_utils import DocumentList
 from relevanceai.utils.integration_checks import (
     is_hdbscan_available,

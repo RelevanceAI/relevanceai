@@ -11,7 +11,7 @@ Example
 """
 from typing import Union, Optional
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.dataset.dataset import Dataset
 

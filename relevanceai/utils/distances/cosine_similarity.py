@@ -6,7 +6,7 @@ import numpy as np
 
 from relevanceai.utils.integration_checks import is_scipy_available
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 @track

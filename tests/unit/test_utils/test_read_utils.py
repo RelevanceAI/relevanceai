@@ -1,6 +1,6 @@
 import pytest
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 def test_is_field(sample_document):

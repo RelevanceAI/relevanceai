@@ -17,7 +17,7 @@ from relevanceai.operations.cluster.base import (
     SklearnCentroidBase,
 )
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.integration_checks import (
     is_sklearn_available,
     is_hdbscan_available,

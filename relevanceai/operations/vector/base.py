@@ -6,7 +6,7 @@ import numpy as np
 
 from typing import List
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 BASE_2VEC_DEFINITON = {
     "vector_length": None,

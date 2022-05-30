@@ -18,6 +18,8 @@ import requests
 
 from relevanceai.constants.warning import Warning
 
+from relevanceai.utils.doc_utils.doc_utils import DocUtils, DocumentList, Document
+
 # Import useful utility if possible as well
 try:
     from jsonshower import show_json

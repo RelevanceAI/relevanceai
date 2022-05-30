@@ -3,7 +3,7 @@
 import numpy as np
 import itertools
 from typing import List, Callable
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 class BaseExplainer(DocUtils):

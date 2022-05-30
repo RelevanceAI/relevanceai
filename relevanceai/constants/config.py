@@ -1,7 +1,7 @@
 """Configuration Settings"""
 import configparser
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 class Config(DocUtils):

@@ -5,7 +5,7 @@ import traceback
 from uuid import uuid4
 from typing import Callable, Optional, Union
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.dataset import Dataset
 
 

@@ -8,7 +8,7 @@ If you need to get a field
 
 .. code-block::
 
-    from relevanceai.utils import DocUtils
+    from relevanceai import DocUtils
 
     document = {"field1": 1, "field2": 2}
 

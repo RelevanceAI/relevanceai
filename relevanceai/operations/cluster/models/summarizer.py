@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.logger import LoguruLogger
 
 from relevanceai.constants.errors import MissingPackageError

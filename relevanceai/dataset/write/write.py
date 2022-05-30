@@ -12,7 +12,7 @@ from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id

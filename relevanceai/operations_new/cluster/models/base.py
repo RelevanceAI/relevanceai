@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils import DocumentList
 
 

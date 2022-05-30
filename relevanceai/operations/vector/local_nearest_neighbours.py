@@ -1,4 +1,4 @@
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 from relevanceai.operations.cluster.constants import NEAREST_NEIGHBOURS

@@ -17,7 +17,7 @@ from relevanceai.operations.cluster.constants import (
 )
 
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 from typing import Optional, Dict, Callable
 from tqdm.auto import tqdm

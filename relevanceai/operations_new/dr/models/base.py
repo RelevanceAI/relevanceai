@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from typing import Any, List, Union
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 class DimReductionModelBase(ABC, DocUtils):

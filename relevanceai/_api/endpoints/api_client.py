@@ -13,7 +13,7 @@ from relevanceai.constants.errors import FieldNotFoundError
 
 from relevanceai.utils.datasets import ExampleDatasets
 from relevanceai.utils import make_id
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 
 
 class APIEndpointsClient(_Base, DocUtils):

@@ -111,7 +111,7 @@ import functools
 
 from typing import Union, List, Dict, Any, Optional
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils.decorators.analytics import track_event_usage
 from relevanceai.utils.integration_checks import (
     is_hdbscan_available,

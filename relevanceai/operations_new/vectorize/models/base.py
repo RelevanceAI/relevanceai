@@ -2,7 +2,7 @@ from abc import abstractmethod
 from pydoc import doc
 from typing import Any, Dict, List
 
-from relevanceai.utils import DocUtils
+from relevanceai import DocUtils
 from relevanceai.utils import DocumentList
 
 
