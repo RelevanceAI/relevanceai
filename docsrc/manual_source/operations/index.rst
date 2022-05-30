@@ -25,3 +25,4 @@ from an OperationsAPIBase.
     question_answer
     split_sentences
     Finetuning <finetuning/index>
+    Transformer Pipelines <transformers_pipelines>

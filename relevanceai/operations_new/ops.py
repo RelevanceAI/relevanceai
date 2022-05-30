@@ -468,3 +468,33 @@ class Operations(Write):
             min_abs_score=min_abs_score,
         )
         return ops.run(self, filters=filters)
+
+    def apply_transformers_pipeline(
+        self,
+        text_fields: list,
+        pipeline,
+        output_field: Optional[str] = None,
+        filters: Optional[list] = None,
+    ):
+        """
+        Apply a transformers pipeline generically.
+
+        .. code-block::
+
+            from transformers import pipeline
+            pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
+            ds.apply_transformers_pipeline(
+                text_fields, pipeline
+            )
+
+        """
+        from relevanceai.operations_new.processing.transformers.ops import (
+            TransformersPipelineOps,
+        )
+
+        ops = TransformersPipelineOps(
+            text_fields=text_fields,
+            pipeline=pipeline,
+            output_field=output_field,
+        )
+        return ops.run(self, filters=filters, select_fields=text_fields)
