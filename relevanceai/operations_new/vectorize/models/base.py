@@ -36,7 +36,7 @@ class VectorizeModelBase(DocUtils):
     ):
         for field in fields:
             self.print_vector_field_name(field)
-            values = self.get_field_across_documents(field=field, docs=documents)
+            values = self.get_field_across_documents(field=field, documents=documents)
             vectors = self.bulk_encode(values)
 
             self.set_field_across_documents(

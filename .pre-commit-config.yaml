@@ -18,5 +18,5 @@ repos:
     rev: 'v0.960'
     hooks:
     -   id: mypy
-        files: relevanceai
+        # files: relevanceai
         exclude: ^(relevanceai/|operations/|)
