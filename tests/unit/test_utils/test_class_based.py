@@ -1,7 +1,7 @@
 import pytest
 
-from doc_utils import Document
-from doc_utils import DocumentList
+from relevanceai.utils import Document
+from relevanceai.utils import DocumentList
 
 
 def test_document(sample_document):

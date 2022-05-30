@@ -3,7 +3,7 @@ from typing import Any, Set, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from doc_utils import DocUtils
+from relevanceai.utils import DocUtils
 from relevanceai.client.helpers import Credentials
 from relevanceai.operations import BaseOps
 from relevanceai.utils.decorators import beta, track, deprecated
