@@ -729,6 +729,7 @@ class Read(Statistics):
                     include_cursor=True,
                     after_id=docs["after_id"],
                     filters=filters,
+                    select_fields=select_fields,
                 )
                 pbar.update(1)
         return

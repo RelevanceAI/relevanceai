@@ -225,6 +225,7 @@ class Operations(Write):
 
         ops = LabelOps(
             credentials=self.credentials,
+            label_documents=label_documents,
             vector_field=vector_fields[0],
             expanded=expanded,
             max_number_of_labels=max_number_of_labels,
@@ -233,10 +234,21 @@ class Operations(Write):
             label_field=label_field,
             label_vector_field=label_vector_field,
         )
+        # Add an exists filter
+        if filters is None:
+            filters = []
+
+        filters += [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+        ]
 
         res = ops.run(
             dataset=self,
-            label_documents=label_documents,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
