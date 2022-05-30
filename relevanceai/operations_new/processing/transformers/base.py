@@ -30,4 +30,4 @@ class TransformersPipelineBase(OperationBase):
         return documents
 
     def _generate_output_field(self):
-        return f"_{self.task}_." + self.name
+        return f"_{self.task}_." + self.name + "." + ".".join(self.text_fields)
