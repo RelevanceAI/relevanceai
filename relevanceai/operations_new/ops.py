@@ -223,6 +223,10 @@ class Operations(Write):
 
         from relevanceai.operations_new.label.ops import LabelOps
 
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support on more than 1 vector length."
+            )
         ops = LabelOps(
             credentials=self.credentials,
             label_documents=label_documents,
