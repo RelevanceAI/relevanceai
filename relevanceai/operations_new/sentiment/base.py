@@ -19,6 +19,7 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
         text_fields: List[str],
         method: str = "attention",
         model: Optional[str] = None,
+        tokenizer: Optional[str] = None,
         highlight: bool = False,
         positive_sentiment_name: Optional[str] = None,
         max_number_of_shap_documents: Optional[int] = None,
@@ -38,7 +39,7 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
         self.method = method
 
         if method == "attention":
-            model = "" if model is None else model
+            model = "textattack/bert-base-uncased-SST-2" if model is None else model
             self.model = SentimentAttention(model=model)
 
         elif method == "shap":

@@ -2,14 +2,37 @@ from typing import List, Dict, Any, Optional
 
 from doc_utils import DocUtils
 
+from relevanceai.constants import MissingPackageError
+
+try:
+    from transformers import BertTokenizer
+    from transformers import AutoTokenizer
+
+except ModuleNotFoundError:
+    raise MissingPackageError("transformers")
+
+from modules.BERT.ExplanationGenerator import Generator
+from modules.BERT.BertForSequenceClassification import (
+    BertForSequenceClassification,
+)
+
+CLASSIFICATIONS = ["NEGATIVE", "POSITIVE"]
+
 
 class SentimentAttention(DocUtils):
 
     highlight: bool
     min_abs_score: float
 
-    def __init__(self, model):
-        self.model = model
+    def __init__(
+        self,
+        model: str = "textattack/bert-base-uncased-SST-2",
+    ):
+        self.model = BertForSequenceClassification.from_pretrained(model).to("cuda")
+        self.model.eval()
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
+        # initialize the explanations generator
+        self.explainer = Generator(self.model)
 
     @property
     def name(self):
