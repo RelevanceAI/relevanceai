@@ -1,12 +1,13 @@
 import os
 
+from typing import Union
 from relevanceai.constants.config import Config
 from relevanceai.constants.links import *
 
 CONFIG_PATH = os.path.dirname(os.path.abspath(__file__)) + "/config.ini"
 CONFIG = Config(CONFIG_PATH)
 
-MAX_CACHESIZE = (
+MAX_CACHESIZE: Union[int, None] = (
     int(CONFIG["cache.max_size"]) if CONFIG["cache.max_size"] != "None" else None
 )
 

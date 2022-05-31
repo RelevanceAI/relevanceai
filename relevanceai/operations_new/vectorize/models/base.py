@@ -15,7 +15,7 @@ class VectorizeModelBase(DocUtils):
         return model_name
 
     def vector_name(self, field):
-        return f"{field}_{self.model_name}_vector_"
+        return f"{field}_{self.model_name}_vector_".replace("/", "_")
 
     @abstractmethod
     def encode(self, *args, **kwargs):

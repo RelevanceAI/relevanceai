@@ -184,16 +184,29 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             explained_answer = self.explain(
                 encode_fn, query_text=result_texts[0], answer_text=query_text
             )
-            results["results"][0][highlight_output_field] = {
-                text_field: explained_answer
-            }
+
+            # results["results"][0][highlight_output_field] = {
+            #     text_field: explained_answer
+            # }
+            self.set_field(
+                highlight_output_field + "." + text_field,
+                results["results"][0],
+                explained_answer,
+            )
             for i, r in enumerate(result_texts):
                 explained_answer = self.explain(
                     encode_fn, query_text=query_text, answer_text=r
                 )
-                results["results"][i + 1][highlight_output_field] = {
-                    text_field: explained_answer
-                }
+                split_text_fields = text_field.split(".")
+                # Here we want to store nested fields
+                # For example "value.check": "this is answer"
+                # should be stored like this:
+                # {"value": {"check": "this is answer"}}
+                self.set_field(
+                    f"{highlight_output_field}.{text_field}",
+                    results["results"][i + 1],
+                    explained_answer,
+                )
 
             # Update explained results
             updated = self._update_documents(

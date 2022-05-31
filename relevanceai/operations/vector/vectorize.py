@@ -27,7 +27,9 @@ class VectorizeHelpers(APIClient):
         @log(fn=self.log_file)
         def get_encoder(model):
             if isinstance(model, str):
-                model = model.lower().replace(" ", "").replace("_", "")
+                model = (
+                    model.lower().replace(" ", "").replace("_", "").replace("/", "-")
+                )
                 model_name = model
             else:
                 model_name = str(model.__class__).split(".")[-1].split("'>")[0]

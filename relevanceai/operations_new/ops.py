@@ -225,6 +225,7 @@ class Operations(Write):
 
         ops = LabelOps(
             credentials=self.credentials,
+            label_documents=label_documents,
             vector_field=vector_fields[0],
             expanded=expanded,
             max_number_of_labels=max_number_of_labels,
@@ -233,10 +234,21 @@ class Operations(Write):
             label_field=label_field,
             label_vector_field=label_vector_field,
         )
+        # Add an exists filter
+        if filters is None:
+            filters = []
+
+        filters += [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+        ]
 
         res = ops.run(
             dataset=self,  # type: ignore
-            label_documents=label_documents,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
@@ -426,7 +438,7 @@ class Operations(Write):
     def extract_sentiment(
         self,
         text_fields: List[str],
-        model_name: str,
+        model_name: str = "siebert/sentiment-roberta-large-english",
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
