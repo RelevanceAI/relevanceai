@@ -82,15 +82,17 @@ class ClusterClient(_Base):
         self,
         dataset_id: str,
         vector_fields: List[str],
-        centroid_vector_fields: List[str],
         alias: str,
         cluster_ids: list,
+        centroid_vector_fields: List[str] = None,
     ):
         """
         Merge clusters together
         """
         endpoint = f"/datasets/{dataset_id}/cluster/merge"
         method = "POST"
+        if centroid_vector_fields is None:
+            centroid_vector_fields = []
         parameters = {
             "dataset_id": dataset_id,
             "vector_fields": vector_fields,
