@@ -3,19 +3,23 @@ import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-from relevanceai import Client
+from relevanceai.dataset import Dataset
 
 # from relevanceai.utils.datasets import get_online_ecommerce_dataset, get_iris_dataset, get_realestate_dataset
 
 
 class TestOps:
-    def test_reduce_dims(self, test_client: Client):
-        dataset = test_client.Dataset("sample_dataset")
-        dataset.reduce_dims(
-            alias="sample_2_reduction_",
+    def test_reduce_dims(self, test_dataset: Dataset):
+        alias = "sample_2_reduction_"
+
+        test_dataset.reduce_dims(
+            alias=alias,
             vector_fields=["sample_1_vector_"],
             model="pca",
         )
+
+        # since the operation is inserting a vector_field, the result will have _vector_ appended to alias
+        assert f"{alias}_vector_" in test_dataset.schema
 
     # def test_vectorize_text(self, test_client: Client):
     #    dataset = test_client.Dataset("sample_dataset")
