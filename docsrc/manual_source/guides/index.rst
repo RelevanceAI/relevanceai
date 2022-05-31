@@ -33,3 +33,8 @@ and machine learning engineers how best to unlock Relevance AI.
 
     advanced_search_guide
     text_to_image_guide
+
+.. toctree::
+    :caption: Transformers Integration
+
+    integration_with_pipelines_guide
