@@ -43,6 +43,7 @@ class TestLabelOps:
         from relevanceai.operations_new.label import LabelOps
 
         ops = LabelOps(
+            label_documents=label_documents,
             credentials=test_client.credentials,
             vector_field="sample_1_vector_",
             label_documents=label_documents,
