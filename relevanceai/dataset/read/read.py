@@ -201,7 +201,7 @@ class Read(Statistics):
 
     @track
     def head(
-        self, n: int = 5, raw_json: bool = False, **kw
+        self, n: int = 5, raw_json: bool = False, select_fields: list = None, **kw
     ) -> Union[dict, pd.DataFrame]:
         """
         Return the first `n` rows.
@@ -239,7 +239,7 @@ class Read(Statistics):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
         )
         head_documents = self.get_documents(
-            number_of_documents=n, include_after_id=False
+            number_of_documents=n, include_after_id=False, select_fields=select_fields
         )
         if raw_json:
             return head_documents
@@ -729,6 +729,7 @@ class Read(Statistics):
                     include_cursor=True,
                     after_id=docs["after_id"],
                     filters=filters,
+                    select_fields=select_fields,
                 )
                 pbar.update(1)
         return

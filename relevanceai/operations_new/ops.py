@@ -225,6 +225,7 @@ class Operations(Write):
 
         ops = LabelOps(
             credentials=self.credentials,
+            label_documents=label_documents,
             vector_field=vector_fields[0],
             expanded=expanded,
             max_number_of_labels=max_number_of_labels,
@@ -233,10 +234,21 @@ class Operations(Write):
             label_field=label_field,
             label_vector_field=label_vector_field,
         )
+        # Add an exists filter
+        if filters is None:
+            filters = []
+
+        filters += [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+        ]
 
         res = ops.run(
             dataset=self,
-            label_documents=label_documents,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
@@ -449,7 +461,7 @@ class Operations(Write):
     def extract_sentiment(
         self,
         text_fields: List[str],
-        model_name: str,
+        model_name: str = "siebert/sentiment-roberta-large-english",
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
@@ -468,3 +480,33 @@ class Operations(Write):
             min_abs_score=min_abs_score,
         )
         return ops.run(self, filters=filters)
+
+    def apply_transformers_pipeline(
+        self,
+        text_fields: list,
+        pipeline,
+        output_field: Optional[str] = None,
+        filters: Optional[list] = None,
+    ):
+        """
+        Apply a transformers pipeline generically.
+
+        .. code-block::
+
+            from transformers import pipeline
+            pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
+            ds.apply_transformers_pipeline(
+                text_fields, pipeline
+            )
+
+        """
+        from relevanceai.operations_new.processing.transformers.ops import (
+            TransformersPipelineOps,
+        )
+
+        ops = TransformersPipelineOps(
+            text_fields=text_fields,
+            pipeline=pipeline,
+            output_field=output_field,
+        )
+        return ops.run(self, filters=filters, select_fields=text_fields)

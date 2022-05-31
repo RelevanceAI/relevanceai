@@ -13,6 +13,7 @@ class LabelBase(OperationBase):
     def __init__(
         self,
         vector_field: str,
+        label_documents: list,
         expanded: bool = True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
@@ -28,6 +29,8 @@ class LabelBase(OperationBase):
         self.similarity_threshold = similarity_threshold
         self.label_field = label_field
         self.label_vector_field = label_vector_field
+        self.label_documents = label_documents
+        self.vector_fields = [vector_field]
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -35,7 +38,6 @@ class LabelBase(OperationBase):
     def transform(  # type: ignore
         self,
         documents,
-        label_documents,
     ) -> List[Dict[str, Any]]:
 
         """Get all vectors, search across
@@ -87,7 +89,7 @@ class LabelBase(OperationBase):
             # search across
             labels = self._get_nearest_labels(
                 vector=vector,
-                label_documents=label_documents,
+                label_documents=self.label_documents,
             )
             # TODO: add inplace=True
             self.set_field("_label_", documents[i], labels)

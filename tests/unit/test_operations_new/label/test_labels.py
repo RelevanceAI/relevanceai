@@ -45,6 +45,7 @@ class TestLabelOps:
         ops = LabelOps(
             credentials=test_client.credentials,
             vector_field="sample_1_vector_",
+            label_documents=label_documents,
             expanded=True,
         )
         # TODO: Test for expanded = True and False
@@ -52,6 +53,5 @@ class TestLabelOps:
         documents = mock_documents(100)
         docs = ops.transform(
             documents=documents,
-            label_documents=label_documents,
         )
         assert True
