@@ -1,3 +1,5 @@
+import re
+
 from relevanceai._api import APIClient
 
 
@@ -112,8 +114,26 @@ class Filter(APIClient):
         self.condition = condition
         self.condition_value = condition_value
 
+        self.date = Filter.is_date(condition_value)
+
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    @staticmethod
+    def is_date(value: str):
+        """
+        checks if value is of format
+
+        """
+        try:
+            value = value.replace("-", "")
+            expression = r"^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$"
+            if re.findall(expression, value):
+                return True
+            else:
+                return False
+        except:
+            return False
 
     @property
     def dtype(self):
@@ -125,6 +145,10 @@ class Filter(APIClient):
             filter_type = self.filter_type
         else:
             filter_type = "numeric" if self.dtype == "numeric" else "exact_match"
+
+        if self.date:
+            filter_type = "date"
+
         return [
             {
                 "field": self.field,
