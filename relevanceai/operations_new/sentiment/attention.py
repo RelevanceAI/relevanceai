@@ -23,7 +23,17 @@ class SentimentAttention(DocUtils):
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
     ):
-        raise NotImplementedError
+        sentiment = 0
+        max_score = 0
+        overall_sentiment = 0
+        shap_documents = 0
+
+        return {
+            "sentiment": sentiment,
+            "score": max_score,
+            "overall_sentiment": overall_sentiment,
+            "highlight_chunk_": shap_documents,
+        }
 
     def transform_attention(
         self,
@@ -39,5 +49,9 @@ class SentimentAttention(DocUtils):
             )
             for doc in documents
         ]
-        self.set_field_across_documents(output_field, sentiments, documents)
+        self.set_field_across_documents(
+            output_field,
+            sentiments,
+            documents,
+        )
         return documents

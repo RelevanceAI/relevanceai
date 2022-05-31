@@ -18,7 +18,11 @@ try:
 except ModuleNotFoundError:
     raise MissingPackageError("transformers")
 
-LABEL_MAPPING = {"LABEL_0": "negative", "LABEL_1": "neutral", "LABEL_2": "positive"}
+LABEL_MAPPING = {
+    "LABEL_0": "negative",
+    "LABEL_1": "neutral",
+    "LABEL_2": "positive",
+}
 
 
 class SentimentSHAP(DocUtils):
@@ -125,5 +129,9 @@ class SentimentSHAP(DocUtils):
             )
             for doc in documents
         ]
-        self.set_field_across_documents(output_field, sentiments, documents)
+        self.set_field_across_documents(
+            output_field,
+            sentiments,
+            documents,
+        )
         return documents
