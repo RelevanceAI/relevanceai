@@ -114,26 +114,8 @@ class Filter(APIClient):
         self.condition = condition
         self.condition_value = condition_value
 
-        self.date = Filter.is_date(condition_value)
-
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-    @staticmethod
-    def is_date(value: str):
-        """
-        checks if value is of format
-
-        """
-        try:
-            value = value.replace("-", "")
-            expression = r"^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$"
-            if re.findall(expression, value):
-                return True
-            else:
-                return False
-        except:
-            return False
 
     @property
     def dtype(self):
@@ -141,13 +123,19 @@ class Filter(APIClient):
         return schema[self.field]
 
     def get(self):
+        dtype = self.dtype
+
         if hasattr(self, "filter_type"):
             filter_type = self.filter_type
-        else:
-            filter_type = "numeric" if self.dtype == "numeric" else "exact_match"
 
-        if self.date:
+        elif dtype == "numeric":
+            filter_type = "numeric"
+
+        elif dtype == "date":
             filter_type = "date"
+
+        else:
+            filter_type = "exact_match"
 
         return [
             {
