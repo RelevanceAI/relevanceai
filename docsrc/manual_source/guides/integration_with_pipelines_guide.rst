@@ -1,3 +1,6 @@
+🤗 Hugging Face Pipelines
+=========================
+
 .. code:: ipython3
 
     In [1]: %load_ext autoreload
