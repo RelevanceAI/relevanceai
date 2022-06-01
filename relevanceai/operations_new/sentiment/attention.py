@@ -87,13 +87,13 @@ class SentimentAttention(DocUtils):
         for score, attention, text in zip(output, expl, texts):
             score = score.item()
 
+            sign = 1
             if score < -self.threshold:
                 class_name = "Negative"
                 sign = -1
 
             elif score > self.threshold:
                 class_name = "Positive"
-                sign = 1
 
             else:
                 class_name = "Neutral"
