@@ -1,10 +1,9 @@
 from typing import List, Any
 
-from modules.layers_ours import *
-from modules.BERT.BERT import BertModel
-
-from relevanceai.operations_new.sentiment.modules.model_utils import PaddedSequence
 from relevanceai.constants import MissingPackageError
+from relevanceai.operations_new.sentiment.modules.layers_ours import *
+from relevanceai.operations_new.sentiment.modules.BERT.BERT import BertModel
+from relevanceai.operations_new.sentiment.modules.model_utils import PaddedSequence
 
 try:
     import torch
