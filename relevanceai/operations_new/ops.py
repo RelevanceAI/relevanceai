@@ -472,6 +472,8 @@ class Operations(Write):
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
+        batched: bool = True,
+        chunksize: int = 20,
     ):
         """
         Extract sentiment from the dataset
@@ -490,6 +492,8 @@ class Operations(Write):
         return ops.run(
             self,
             filters=filters,
+            batched=batched,
+            chunksize=chunksize,
         )
 
     def apply_transformers_pipeline(

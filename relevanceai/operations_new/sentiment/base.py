@@ -13,7 +13,7 @@ from relevanceai.operations_new.sentiment.shap import SentimentSHAP
 from relevanceai.operations_new.sentiment.attention import SentimentAttention
 
 
-class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
+class SentimentBase(OperationBase):
     def __init__(
         self,
         text_fields: List[str],
@@ -36,13 +36,24 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
             The name of the model
 
         """
+        self.text_fields = text_fields
+        self.method = method
+        self.highlight = highlight
+        self.positive_sentiment_name = positive_sentiment_name
+        self.max_number_of_shap_documents = max_number_of_shap_documents
+        self.sentiment_ind = sentiment_ind
+        self.min_abs_score = min_abs_score
+
         self.method = "attention" if method is None else method
 
-        if method == "attention":
+        if self.method == "attention":
             model = "textattack/bert-base-uncased-SST-2" if model is None else model
-            self.model = SentimentAttention(model=model)
+            self.model = SentimentAttention(
+                model=model,
+                threshold=min_abs_score,
+            )
 
-        elif method == "shap":
+        elif self.method == "shap":
             model = (
                 "siebert/sentiment-roberta-large-english" if model is None else model
             )
@@ -88,24 +99,15 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
     def transform(
         self,
         documents: List[Dict[str, Any]],
-        method: str = "attention",
     ):
         for text_field in self.text_fields:
             output_field = self._get_output_field(text_field)
 
-            if method == "attention":
-                documents = self.transform_attention(
-                    documents, text_field, output_field
-                )
-
-            elif method == "shap":
-                # For each document, update the field
-                documents = self.transform_shap(documents, text_field, output_field)
-
-            else:
-                raise NotImplementedError(
-                    "Currently, RelevanceAI does not support sentiment extraction for this method type"
-                )
+            documents = self.model.transform(
+                documents,
+                text_field,
+                output_field,
+            )
 
         return documents
 

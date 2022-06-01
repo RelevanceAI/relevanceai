@@ -36,6 +36,7 @@ class SentimentSHAP(DocUtils):
         sentiment_ind: Optional[int] = None,
     ):
 
+        self.model_name = model
         self.sentiment_ind = 2 if sentiment_ind is None else sentiment_ind
         self.positive_sentiment_name = (
             "positive" if positive_sentiment_name is None else positive_sentiment_name
@@ -57,7 +58,10 @@ class SentimentSHAP(DocUtils):
 
     @property
     def name(self):
-        return type(self.classifier.__class__)
+        try:
+            return self.model_name.split("/")[-1]
+        except:
+            return self.model_name
 
     def get_shap_values(
         self,
@@ -83,7 +87,7 @@ class SentimentSHAP(DocUtils):
             ]
         return [d for d in sorted_scores if abs(d["score"]) > self.min_abs_score]
 
-    def analyze_sentiment_with_shap(
+    def extrace_sentiment(
         self,
         text: str,
     ):
@@ -114,17 +118,17 @@ class SentimentSHAP(DocUtils):
             "highlight_chunk_": shap_documents,
         }
 
-    def transform_shap(
+    def transform(
         self,
         documents: List[Dict[str, Any]],
         text_field: str,
         output_field: str,
     ):
         sentiments = [
-            self.analyze_sentiment_with_shap(
-                self.get_field(text_field, doc),
+            self.extrace_sentiment(
+                self.get_field(text_field, document),
             )
-            for doc in documents
+            for document in documents
         ]
         self.set_field_across_documents(
             output_field,
