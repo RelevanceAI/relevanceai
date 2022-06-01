@@ -20,7 +20,6 @@ If you need to change your token, simply run:
 """
 import os
 import re
-from tkinter import Label
 import uuid
 import getpass
 import pandas as pd
