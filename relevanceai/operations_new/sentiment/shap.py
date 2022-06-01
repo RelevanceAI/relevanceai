@@ -26,13 +26,27 @@ LABEL_MAPPING = {
 
 
 class SentimentSHAP(DocUtils):
+    def __init__(
+        self,
+        model: str,
+        highlight: Optional[bool] = None,
+        positive_sentiment_name: Optional[str] = None,
+        max_number_of_shap_documents: Optional[int] = None,
+        min_abs_score: Optional[float] = None,
+        sentiment_ind: Optional[int] = None,
+    ):
 
-    highlight: bool
-    max_number_of_shap_documents: Optional[int]
-    min_abs_score: float
-    classifier: Pipeline
-
-    def __init__(self, model: str):
+        self.sentiment_ind = 2 if sentiment_ind is None else sentiment_ind
+        self.positive_sentiment_name = (
+            "positive" if positive_sentiment_name is None else positive_sentiment_name
+        )
+        self.highlight = False if highlight is None else highlight
+        self.max_number_of_shap_documents = (
+            max_number_of_shap_documents
+            if max_number_of_shap_documents is None
+            else sentiment_ind
+        )
+        self.min_abs_score = 0.1 if min_abs_score is None else min_abs_score
 
         self.classifier = transformers.pipeline(
             return_all_scores=True,
@@ -48,39 +62,30 @@ class SentimentSHAP(DocUtils):
     def get_shap_values(
         self,
         text: str,
-        sentiment_ind: int = 2,
-        max_number_of_shap_documents: Optional[int] = None,
-        min_abs_score: float = 0.1,
     ):
         """Get SHAP values"""
         shap_values = self.explainer([text])
         cohorts = {"": shap_values}
-        cohort_labels = list(cohorts.keys())
         cohort_exps = list(cohorts.values())
-        features = cohort_exps[0].data
         feature_names = cohort_exps[0].feature_names
         values = np.array([cohort_exps[i].values for i in range(len(cohort_exps))])
         shap_docs = [
             {"text": v, "score": f}
             for f, v in zip(
-                [x[sentiment_ind] for x in values[0][0].tolist()], feature_names[0]
+                [x[self.sentiment_ind] for x in values[0][0].tolist()], feature_names[0]
             )
         ]
-        if max_number_of_shap_documents is not None:
+        if self.max_number_of_shap_documents is not None:
             sorted_scores = sorted(shap_docs, key=lambda x: x["score"], reverse=True)
         else:
             sorted_scores = sorted(shap_docs, key=lambda x: x["score"], reverse=True)[
-                :max_number_of_shap_documents
+                : self.max_number_of_shap_documents
             ]
-        return [d for d in sorted_scores if abs(d["score"]) > min_abs_score]
+        return [d for d in sorted_scores if abs(d["score"]) > self.min_abs_score]
 
     def analyze_sentiment_with_shap(
         self,
         text: str,
-        highlight: bool = False,
-        positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: Optional[int] = None,
-        min_abs_score: float = 0.1,
     ):
         labels = self.classifier([text])
         ind_max = np.argmax([l["score"] for l in labels[0]])
@@ -92,21 +97,16 @@ class SentimentSHAP(DocUtils):
         else:
             overall_sentiment = (
                 max_score
-                if sentiment.lower() == positive_sentiment_name
+                if sentiment.lower() == self.positive_sentiment_name
                 else -max_score
             )
-        if not highlight:
+        if not self.highlight:
             return {
                 "sentiment": sentiment,
                 "score": max_score,
                 "overall_sentiment": overall_sentiment,
             }
-        shap_documents = self.get_shap_values(
-            text,
-            sentiment_ind=ind_max,
-            max_number_of_shap_documents=max_number_of_shap_documents,
-            min_abs_score=min_abs_score,
-        )
+        shap_documents = self.get_shap_values(text)
         return {
             "sentiment": sentiment,
             "score": max_score,
@@ -123,9 +123,6 @@ class SentimentSHAP(DocUtils):
         sentiments = [
             self.analyze_sentiment_with_shap(
                 self.get_field(text_field, doc),
-                highlight=self.highlight,
-                max_number_of_shap_documents=self.max_number_of_shap_documents,
-                min_abs_score=self.min_abs_score,
             )
             for doc in documents
         ]

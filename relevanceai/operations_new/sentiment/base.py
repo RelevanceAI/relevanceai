@@ -17,13 +17,13 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
     def __init__(
         self,
         text_fields: List[str],
-        method: str = "attention",
+        method: Optional[str] = None,
         model: Optional[str] = None,
-        tokenizer: Optional[str] = None,
-        highlight: bool = False,
+        highlight: Optional[bool] = False,
         positive_sentiment_name: Optional[str] = None,
         max_number_of_shap_documents: Optional[int] = None,
-        min_abs_score: float = 0.1,
+        sentiment_ind: Optional[int] = None,
+        min_abs_score: Optional[float] = None,
         **kwargs,
     ):
         """
@@ -36,7 +36,7 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
             The name of the model
 
         """
-        self.method = method
+        self.method = "attention" if method is None else method
 
         if method == "attention":
             model = "textattack/bert-base-uncased-SST-2" if model is None else model
@@ -46,15 +46,16 @@ class SentimentBase(OperationBase, SentimentSHAP, SentimentAttention):
             model = (
                 "siebert/sentiment-roberta-large-english" if model is None else model
             )
-            self.model = SentimentSHAP(model=model)
+            self.model = SentimentSHAP(
+                model=model,
+                highlight=highlight,
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
+                positive_sentiment_name=positive_sentiment_name,
+                sentiment_ind=sentiment_ind,
+            )
 
         self.text_fields = text_fields
-        self.highlight = highlight
-        self.positive_sentiment_name = (
-            "positive" if positive_sentiment_name is None else positive_sentiment_name
-        )
-        self.max_number_of_shap_documents = max_number_of_shap_documents
-        self.min_abs_score = min_abs_score
         for k, v in kwargs.items():
             setattr(self, k, v)
 

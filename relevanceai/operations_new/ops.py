@@ -465,9 +465,11 @@ class Operations(Write):
     def extract_sentiment(
         self,
         text_fields: List[str],
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        method: Optional[str] = None,
+        model: Optional[str] = None,
         highlight: bool = False,
-        max_number_of_shap_documents: int = 1,
+        positive_sentiment_name: Optional[str] = None,
+        max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
     ):
@@ -478,12 +480,17 @@ class Operations(Write):
 
         ops = SentimentOps(
             text_fields=text_fields,
-            model_name=model_name,
+            model=model,
+            method=method,
             highlight=highlight,
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
+            positive_sentiment_name=positive_sentiment_name,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(
+            self,
+            filters=filters,
+        )
 
     def apply_transformers_pipeline(
         self,

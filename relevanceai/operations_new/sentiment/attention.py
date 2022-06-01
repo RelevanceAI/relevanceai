@@ -41,10 +41,6 @@ class SentimentAttention(DocUtils):
     def analyze_sentiment_with_attention(
         self,
         text: str,
-        highlight: bool = False,
-        positive_sentiment_name: str = "positive",
-        max_number_of_shap_documents: Optional[int] = None,
-        min_abs_score: float = 0.1,
     ):
         sentiment = 0
         max_score = 0
@@ -65,11 +61,7 @@ class SentimentAttention(DocUtils):
         output_field: str,
     ):
         sentiments = [
-            self.analyze_sentiment_with_attention(
-                self.get_field(text_field, doc),
-                highlight=self.highlight,
-                min_abs_score=self.min_abs_score,
-            )
+            self.analyze_sentiment_with_attention(self.get_field(text_field, doc))
             for doc in documents
         ]
         self.set_field_across_documents(
