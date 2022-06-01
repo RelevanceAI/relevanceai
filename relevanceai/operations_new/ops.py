@@ -470,6 +470,7 @@ class Operations(Write):
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
+        batched: bool = True,
     ):
         """
         Extract sentiment from the dataset
@@ -483,7 +484,7 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(self, filters=filters, batched=batched)
 
     def apply_transformers_pipeline(
         self,
