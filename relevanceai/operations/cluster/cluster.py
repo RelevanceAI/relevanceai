@@ -394,7 +394,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
     ) -> None:
         self.datasets.cluster.centroids.insert(
             dataset_id=dataset_id,
-            cluster_centers=centroid_documents,
+            cluster_centers=self.json_encoder(centroid_documents),
             vector_fields=vector_fields,
             alias=self.alias,
         )

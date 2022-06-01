@@ -95,6 +95,8 @@ class SentimentBase(OperationBase):
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
     ):
+        if text is None:
+            return None
         labels = self.classifier([text])
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]

@@ -1,3 +1,5 @@
+import re
+
 from relevanceai._api import APIClient
 
 
@@ -121,10 +123,20 @@ class Filter(APIClient):
         return schema[self.field]
 
     def get(self):
+        dtype = self.dtype
+
         if hasattr(self, "filter_type"):
             filter_type = self.filter_type
+
+        elif dtype == "numeric":
+            filter_type = "numeric"
+
+        elif dtype == "date":
+            filter_type = "date"
+
         else:
-            filter_type = "numeric" if self.dtype == "numeric" else "exact_match"
+            filter_type = "exact_match"
+
         return [
             {
                 "field": self.field,

@@ -223,6 +223,10 @@ class Operations(Write):
 
         from relevanceai.operations_new.label.ops import LabelOps
 
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support on more than 1 vector length."
+            )
         ops = LabelOps(
             credentials=self.credentials,
             label_documents=label_documents,
@@ -466,6 +470,7 @@ class Operations(Write):
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
+        batched: bool = True,
     ):
         """
         Extract sentiment from the dataset
@@ -479,7 +484,7 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(self, filters=filters, batched=batched)
 
     def apply_transformers_pipeline(
         self,
