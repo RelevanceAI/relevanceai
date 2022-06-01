@@ -1,18 +1,19 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 from doc_utils import DocUtils
 
 from relevanceai.constants import MissingPackageError
 
 try:
-    from transformers import BertTokenizer
     from transformers import AutoTokenizer
 
 except ModuleNotFoundError:
     raise MissingPackageError("transformers")
 
-from modules.BERT.ExplanationGenerator import Generator
-from modules.BERT.BertForSequenceClassification import (
+from relevanceai.operations_new.sentiment.modules.BERT.ExplanationGenerator import (
+    Generator,
+)
+from relevanceai.operations_new.sentiment.modules.BERT.BertForSequenceClassification import (
     BertForSequenceClassification,
 )
 

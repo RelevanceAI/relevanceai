@@ -3,7 +3,7 @@ from typing import List, Any
 from modules.layers_ours import *
 from modules.BERT.BERT import BertModel
 
-from relevanceai.operations_new.sentiment.model_utils import PaddedSequence
+from relevanceai.operations_new.sentiment.modules.model_utils import PaddedSequence
 from relevanceai.constants import MissingPackageError
 
 try:

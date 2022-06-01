@@ -4,7 +4,7 @@ from typing import List, Any
 from relevanceai.constants import MissingPackageError
 from relevanceai.operations_new.sentiment.modules.layers_lrp import *
 from relevanceai.operations_new.sentiment.modules.BERT.BERT_orig_lrp import BertModel
-from relevanceai.operations_new.sentiment.model_utils import PaddedSequence
+from relevanceai.operations_new.sentiment.modules.model_utils import PaddedSequence
 
 try:
     import torch

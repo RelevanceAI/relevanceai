@@ -4,7 +4,7 @@ import math
 
 from relevanceai.constants import MissingPackageError
 from relevanceai.operations_new.sentiment.modules.layers_ours import *
-from relevanceai.operations_new.sentiment.model_utils import (
+from relevanceai.operations_new.sentiment.modules.model_utils import (
     prune_linear_layer,
     find_pruneable_heads_and_indices,
 )
