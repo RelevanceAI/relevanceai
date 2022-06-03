@@ -1,9 +1,38 @@
-from typing import Dict
+from typing import Dict, Union
 
-CLIP_MODELS: Dict[str, Dict[str, int]] = {
+CLIP_MODELS: Dict[str, Dict[str, Union[str, int]]] = {
     "clip": {
         "vector_length": 512,
-    }
+        "url": "ViT-B/32",
+    },
+    "ViT-B/32": {
+        "vector_length": 512,
+        "url": "ViT-B/32",
+    },
+    "RN50": {
+        "vector_length": 512,
+        "url": "RN50",
+    },
+    # "RN101": {
+    #     "vector_length": 512,
+    #     "url": "RN101"
+    # },
+    # "RN50x4": {
+    #     "vector_length": 512,
+    #     "url": "RN50x4"
+    # },
+    # "RN50x16": {
+    #     "vector_length": 512,
+    #     "url": "RN50x16"
+    # },
+    # "RN50x64": {
+    #     "vector_length": 512,
+    #     "url": "RN50x64"
+    # },
+    # "RN50x64": {
+    #     "vector_length": 512,
+    #     "url": "RN50x64"
+    # }
 }
 
 TFHUB_MODELS: Dict[str, Dict[str, int]] = {

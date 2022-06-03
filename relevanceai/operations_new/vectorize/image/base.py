@@ -49,9 +49,11 @@ class VectorizeImageBase(VectorizeBase):
                     ClipImage2Vec,
                 )
 
-                vector_length = CLIP_MODELS[model]["vector_length"]
+                vector_length = int(CLIP_MODELS[model]["vector_length"])
+                url = str(CLIP_MODELS[model]["url"])
+
                 model = ClipImage2Vec(
-                    url=model,
+                    url=url,
                     vector_length=vector_length,
                 )
 

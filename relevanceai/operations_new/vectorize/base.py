@@ -1,6 +1,7 @@
-from typing import List, Dict, Any
-
+from copy import deepcopy
 from abc import abstractmethod
+
+from typing import List, Dict, Any
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.operations_new.run import OperationRun
@@ -41,7 +42,7 @@ class VectorizeBase(OperationRun):
 
         """
 
-        updated_documents = documents
+        updated_documents = deepcopy(documents)
 
         for model in self.models:
             updated_documents = model.encode_documents(
