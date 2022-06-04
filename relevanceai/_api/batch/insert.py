@@ -622,14 +622,12 @@ class BatchInsertClient(BatchRetrieveClient):
         self,
         dataset_id: str,
         filepath_or_buffer,
-        chunksize: int = 10000,
+        id_col: str = None,
+        create_id: bool = True,
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        index_col: int = None,
-        csv_args: Optional[dict] = None,
-        col_for_id: str = None,
-        create_id: bool = True,
+        **csv_kwargs
     ):
 
         """
@@ -641,20 +639,14 @@ class BatchInsertClient(BatchRetrieveClient):
             Unique name of dataset
         filepath_or_buffer :
             Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
-        chunksize : int
-            Number of lines to read from csv per iteration
+        id_col : str
+            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
+        create_id: bool = True
+            Automatically generateds UUID if create_id is True and if the '_id' field does not exist
         max_workers : int
             Number of workers active for multi-threading
         retry_chunk_mult: int
             Multiplier to apply to chunksize if upload fails
-        csv_args : dict
-            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/documents/reference/api/pandas.read_csv.html
-        index_col : None
-            Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
-        col_for_id : str
-            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
-        create_id: bool = True
-            Automatically generateds UUID if create_id is True and if the '_id' field does not exist
 
         Example
         ---------
@@ -664,12 +656,8 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> df.insert_csv("temp.csv")
 
         """
-        csv_args = {} if csv_args is None else csv_args
-
-        csv_args.pop("index_col", None)
-        csv_args.pop("chunksize", None)
         df = pd.read_csv(
-            filepath_or_buffer, index_col=index_col, chunksize=chunksize, **csv_args
+            filepath_or_buffer, **csv_kwargs
         )
 
         # Initialise output
@@ -682,11 +670,11 @@ class BatchInsertClient(BatchRetrieveClient):
             response = self._insert_csv_chunk(
                 chunk=chunk,
                 dataset_id=dataset_id,
+                id_col=id_col,
+                create_id=create_id,
                 max_workers=max_workers,
                 retry_chunk_mult=retry_chunk_mult,
                 show_progress_bar=show_progress_bar,
-                col_for_id=col_for_id,
-                create_id=create_id,
             )
             inserted += response["inserted"]
             failed_documents += response["failed_documents"]
@@ -702,19 +690,19 @@ class BatchInsertClient(BatchRetrieveClient):
         self,
         chunk,
         dataset_id,
+        id_col,
+        create_id,
         max_workers,
         retry_chunk_mult,
         show_progress_bar,
-        col_for_id,
-        create_id,
     ):
         # generate '_id' if possible
-        # col_for_id
-        if "_id" not in chunk.columns and col_for_id:
-            if col_for_id in chunk:
-                chunk.insert(0, "_id", chunk[col_for_id], False)
+        # id_col
+        if "_id" not in chunk.columns and id_col:
+            if id_col in chunk:
+                chunk.insert(0, "_id", chunk[id_col], False)
             else:
-                warnings.warn(Warning.COLUMN_DNE.format(col_for_id))
+                warnings.warn(Warning.COLUMN_DNE.format(id_col))
         # create_id
         if "_id" not in chunk.columns and create_id:
             index = chunk.index
