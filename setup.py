@@ -117,9 +117,9 @@ setup(
         "dev-vis": dev_vis_requirements,
         "dev-viz": dev_vis_requirements,
         "excel": excel_requirements,
-        # "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + requirements,
+        
         "umap": umap,
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,

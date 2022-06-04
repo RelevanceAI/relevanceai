@@ -23,7 +23,7 @@ class DatasetsClient(_Base):
 
     def schema(self, dataset_id: str):
         """
-        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a Relevance schema.
 
         Parameters
         ----------
@@ -60,7 +60,7 @@ class DatasetsClient(_Base):
     def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+        A powerful and core feature of Relevance is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -81,7 +81,7 @@ class DatasetsClient(_Base):
         >>>        "product_text_chunkvector_" : 1024
         >>>    }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+        You don't have to specify the schema of every single field when creating a dataset, as Relevance will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
 
