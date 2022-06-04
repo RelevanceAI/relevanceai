@@ -814,7 +814,7 @@ class BatchInsertClient(BatchRetrieveClient):
         inserted: List[str] = []
 
         # Initialise failed documents
-        failed_ids = [i["_id"] for i in documents]
+        failed_ids: List[str] = []
 
         # Initialise failed documents detailed
         failed_ids_detailed: List[str] = []
@@ -823,7 +823,7 @@ class BatchInsertClient(BatchRetrieveClient):
         cancelled_ids = []
 
         for i in range(int(self.config.get_option("retries.number_of_retries"))):
-            if len(failed_ids) > 0:
+            if len(documents) > 0:
                 self.logger.info(f"Inserting with chunksize {chunksize}")
                 if bulk_fn is not None:
                     insert_json = multiprocess(
