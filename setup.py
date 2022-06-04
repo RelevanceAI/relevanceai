@@ -37,24 +37,11 @@ requirements = [
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
-vis_requirements = requirements + [
-    # "matplotlib>=3.5.1",
-    # "plotly>=5.5.0",
-    # "typeguard",
-    # "dash",
-    # "pillow",
-    # "opencv-python",
-    # "scikit-image",
-    # "dash_bootstrap_components",
-]
-
 umap = ["umap-learn>=0.5.2"]
 # ivis_cpu = ["ivis[cpu]>=2.0.6"]
 # ivis_gpu = ["ivis[gpu]>=2.0.6"]
 kmedoids = ["scikit-learn-extra>=0.2.0"]
 hdbscan = ["hdbscan>=0.8.27"]
-
-# vis_extras = umap + ivis_cpu + ivis_gpu + kmedoids + hdbscan
 
 test_requirements = (
     [
@@ -69,9 +56,7 @@ test_requirements = (
         "pytest-rerunfailures",
     ]
     + excel_requirements
-    + vis_requirements
     + requirements
-    # + vis_extras
 )
 
 doc_requirements = [
@@ -91,9 +76,7 @@ dev_requirements = (
 dev_vis_requirements = (
     ["autopep8", "pylint", "jupyter"]
     + test_requirements
-    + vis_requirements
     + doc_requirements
-    # + vis_extras
 )
 
 from pathlib import Path
@@ -134,11 +117,9 @@ setup(
         "dev-vis": dev_vis_requirements,
         "dev-viz": dev_vis_requirements,
         "excel": excel_requirements,
-        "vis": vis_requirements,
-        "viz": vis_requirements,
         # "vis-all": vis_requirements + vis_extras,
         "tests": test_requirements,
-        "notebook": ["jsonshower"] + vis_requirements,
+        "notebook": ["jsonshower"] + requirements,
         "umap": umap,
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,
