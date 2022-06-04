@@ -686,7 +686,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 retry_chunk_mult=retry_chunk_mult,
                 show_progress_bar=show_progress_bar,
                 col_for_id=col_for_id,
-                auto_generate_id=auto_generate_id,
+                create_id=create_id,
             )
             inserted += response["inserted"]
             failed_documents += response["failed_documents"]
