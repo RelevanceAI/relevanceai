@@ -107,7 +107,6 @@ class BatchInsertClient(BatchRetrieveClient):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        # TODO: rename this function to convert_id_to_string
         self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
@@ -133,137 +132,6 @@ class BatchInsertClient(BatchRetrieveClient):
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
         )
-
-    def _insert_csv(
-        self,
-        dataset_id: str,
-        filepath_or_buffer,
-        chunksize: int = 10000,
-        max_workers: int = 8,
-        retry_chunk_mult: float = 0.5,
-        show_progress_bar: bool = False,
-        index_col: int = None,
-        csv_args: Optional[dict] = None,
-        col_for_id: str = None,
-        auto_generate_id: bool = True,
-    ):
-
-        """
-        Insert data from csv file
-
-        Parameters
-        ----------
-        dataset_id : string
-            Unique name of dataset
-        filepath_or_buffer :
-            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
-        chunksize : int
-            Number of lines to read from csv per iteration
-        max_workers : int
-            Number of workers active for multi-threading
-        retry_chunk_mult: int
-            Multiplier to apply to chunksize if upload fails
-        csv_args : dict
-            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/documents/reference/api/pandas.read_csv.html
-        index_col : None
-            Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
-        col_for_id : str
-            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
-        auto_generate_id: bool = True
-            Automatically generateds UUID if auto_generate_id is True and if the '_id' field does not exist
-
-        Example
-        ---------
-        >>> from relevanceai import Client
-        >>> client = Client()
-        >>> df = client.Dataset("sample_dataset_id")
-        >>> df.insert_csv("temp.csv")
-
-        """
-        csv_args = {} if csv_args is None else csv_args
-
-        csv_args.pop("index_col", None)
-        csv_args.pop("chunksize", None)
-        df = pd.read_csv(
-            filepath_or_buffer, index_col=index_col, chunksize=chunksize, **csv_args
-        )
-
-        # Initialise output
-        inserted = 0
-        failed_documents = []
-        failed_documents_detailed = []
-
-        # Chunk inserts
-        for chunk in df:
-            response = self._insert_csv_chunk(
-                chunk=chunk,
-                dataset_id=dataset_id,
-                max_workers=max_workers,
-                retry_chunk_mult=retry_chunk_mult,
-                show_progress_bar=show_progress_bar,
-                col_for_id=col_for_id,
-                auto_generate_id=auto_generate_id,
-            )
-            inserted += response["inserted"]
-            failed_documents += response["failed_documents"]
-            failed_documents_detailed += response["failed_documents_detailed"]
-
-        return {
-            "inserted": inserted,
-            "failed_documents": failed_documents,
-            "failed_documents_detailed": failed_documents_detailed,
-        }
-
-    def _insert_csv_chunk(
-        self,
-        chunk,
-        dataset_id,
-        max_workers,
-        retry_chunk_mult,
-        show_progress_bar,
-        col_for_id,
-        auto_generate_id,
-    ):
-        # generate '_id' if possible
-        # col_for_id
-        if "_id" not in chunk.columns and col_for_id:
-            if col_for_id in chunk:
-                chunk.insert(0, "_id", chunk[col_for_id], False)
-            else:
-                warnings.warn(Warning.COLUMN_DNE.format(col_for_id))
-        # auto_generate_id
-        if "_id" not in chunk.columns and auto_generate_id:
-            index = chunk.index
-            uuids = [
-                make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
-            ]
-            chunk.insert(0, "_id", uuids, False)
-            warnings.warn(Warning.AUTO_GENERATE_IDS)
-
-        # Check for _id
-        if "_id" not in chunk.columns:
-            raise FieldNotFoundError("Need _id as a column")
-
-        # add fix for when lists are read in as strings
-        EXCEPTION_COLUMNS = ("_vector_", "_chunk_")
-        vector_columns = [i for i in chunk.columns if i.endswith(EXCEPTION_COLUMNS)]
-        for i in vector_columns:
-            chunk[i] = chunk[i].apply(literal_eval)
-
-        chunk_json = chunk.to_dict(orient="records")
-
-        print(
-            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
-        )
-        response = self._insert_documents(
-            dataset_id=dataset_id,
-            documents=chunk_json,
-            max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
-            show_progress_bar=show_progress_bar,
-            verbose=False,
-        )
-        return response
 
     def _update_documents(
         self,
@@ -731,7 +599,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
     @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):
-        """Insert a dataframe for eachd doc"""
+        """Insert a dataframe for each doc"""
 
         def _is_valid(v):
             try:
@@ -749,6 +617,138 @@ class BatchInsertClient(BatchRetrieveClient):
         results = self._insert_documents(dataset_id, documents, *args, **kwargs)
         self.print_search_dashboard_url(dataset_id)
         return results
+
+    def _insert_csv(
+        self,
+        dataset_id: str,
+        filepath_or_buffer,
+        chunksize: int = 10000,
+        max_workers: int = 8,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
+        index_col: int = None,
+        csv_args: Optional[dict] = None,
+        col_for_id: str = None,
+        create_id: bool = True,
+    ):
+
+        """
+        Insert data from csv file
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        filepath_or_buffer :
+            Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, gs, and file.
+        chunksize : int
+            Number of lines to read from csv per iteration
+        max_workers : int
+            Number of workers active for multi-threading
+        retry_chunk_mult: int
+            Multiplier to apply to chunksize if upload fails
+        csv_args : dict
+            Optional arguments to use when reading in csv. For more info, see https://pandas.pydata.org/documents/reference/api/pandas.read_csv.html
+        index_col : None
+            Optional argument to specify if there is an index column to be skipped (e.g. index_col = 0)
+        col_for_id : str
+            Optional argument to use when a specific field is supposed to be used as the unique identifier ('_id')
+        create_id: bool = True
+            Automatically generateds UUID if create_id is True and if the '_id' field does not exist
+
+        Example
+        ---------
+        >>> from relevanceai import Client
+        >>> client = Client()
+        >>> df = client.Dataset("sample_dataset_id")
+        >>> df.insert_csv("temp.csv")
+
+        """
+        csv_args = {} if csv_args is None else csv_args
+
+        csv_args.pop("index_col", None)
+        csv_args.pop("chunksize", None)
+        df = pd.read_csv(
+            filepath_or_buffer, index_col=index_col, chunksize=chunksize, **csv_args
+        )
+
+        # Initialise output
+        inserted = 0
+        failed_documents = []
+        failed_documents_detailed = []
+
+        # Chunk inserts
+        for chunk in df:
+            response = self._insert_csv_chunk(
+                chunk=chunk,
+                dataset_id=dataset_id,
+                max_workers=max_workers,
+                retry_chunk_mult=retry_chunk_mult,
+                show_progress_bar=show_progress_bar,
+                col_for_id=col_for_id,
+                auto_generate_id=auto_generate_id,
+            )
+            inserted += response["inserted"]
+            failed_documents += response["failed_documents"]
+            failed_documents_detailed += response["failed_documents_detailed"]
+
+        return {
+            "inserted": inserted,
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
+
+    def _insert_csv_chunk(
+        self,
+        chunk,
+        dataset_id,
+        max_workers,
+        retry_chunk_mult,
+        show_progress_bar,
+        col_for_id,
+        create_id,
+    ):
+        # generate '_id' if possible
+        # col_for_id
+        if "_id" not in chunk.columns and col_for_id:
+            if col_for_id in chunk:
+                chunk.insert(0, "_id", chunk[col_for_id], False)
+            else:
+                warnings.warn(Warning.COLUMN_DNE.format(col_for_id))
+        # create_id
+        if "_id" not in chunk.columns and create_id:
+            index = chunk.index
+            uuids = [
+                make_id(chunk.iloc[chunk_index]) for chunk_index in range(len(index))
+            ]
+            chunk.insert(0, "_id", uuids, False)
+            warnings.warn(Warning.AUTO_GENERATE_IDS)
+
+        # Check for _id
+        if "_id" not in chunk.columns:
+            raise FieldNotFoundError("Need _id as a column")
+
+        # add fix for when lists are read in as strings
+        EXCEPTION_COLUMNS = ("_vector_", "_chunk_")
+        vector_columns = [i for i in chunk.columns if i.endswith(EXCEPTION_COLUMNS)]
+        for i in vector_columns:
+            chunk[i] = chunk[i].apply(literal_eval)
+
+        chunk_json = chunk.to_dict(orient="records")
+
+        print(
+            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+        )
+        response = self._insert_documents(
+            dataset_id=dataset_id,
+            documents=chunk_json,
+            max_workers=max_workers,
+            retry_chunk_mult=retry_chunk_mult,
+            show_progress_bar=show_progress_bar,
+            verbose=False,
+        )
+        return response
+
 
     def print_search_dashboard_url(self, dataset_id):
         search_url = (
