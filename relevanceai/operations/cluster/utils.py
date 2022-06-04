@@ -303,9 +303,7 @@ class ClusterUtils(APIClient, DocUtils):
 
     @staticmethod
     def _calculate_silhouette_grade(vectors, cluster_labels):
-        from relevanceai.reports.cluster.grading import (
-            get_silhouette_grade,
-        )
+        from relevanceai.reports.cluster.grading import get_silhouette_grade
         from sklearn.metrics import silhouette_samples
 
         score = silhouette_samples(vectors, cluster_labels, metric="euclidean").mean()

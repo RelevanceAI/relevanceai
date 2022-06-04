@@ -1,14 +1,4 @@
-import traceback
-
-from tqdm import tqdm
-
-from collections import defaultdict
-from typing import Optional
-
 from relevanceai.dataset.write.write import Write
-
-from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.logger import FileLogger
 
 
 class CommunityDetection(Write):

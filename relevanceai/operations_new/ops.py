@@ -1,37 +1,90 @@
+"""
+RelevanceAI Operations wrappers for use from a Dataset object
+
+.. code-block::
+
+    from relevanceai import Client
+
+    client = Client()
+
+    dataset = client.Dataset()
+
+    dataset.vectorize_text(*args, **kwargs)
+
+    dataset.reduce_dims(*args, **kwargs)
+
+    dataset.cluster(*args **kwarsgs)
+"""
+
 from typing import Any, Dict, List, Optional
+
 from relevanceai.dataset.write import Write
-from datetime import datetime
+from relevanceai.utils.decorators.analytics import track
 
 
 class Operations(Write):
-    def store_operation_metadata(self, operation: str, values: str):
-        """
-        Store metadata about operators
-        {
-            "_operationhistory_": {
-                "1-1-1-17-2-3": {
-                    "operation": "vector", "model_name": "miniLm"
-                },
-            }
-        }
+    @track
+    def reduce_dims(
+        self,
+        vector_fields: List[str],
+        n_components: int = 3,
+        batched: bool = False,
+        model: Optional[Any] = None,
+        model_kwargs: Optional[dict] = None,
+        alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = 100,
+    ):
+        """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
+        the DimReductionOps class on the documents in the dataset
+
+        Parameters
+        ----------
+        fields : List[str]
+            List[str]
+        models : Optional[List[Any]]
+            List[Any] = None,
+        filters : Optional[List[Dict[str, Any]]]
+            A list of dictionaries, each dictionary containing a filter.
+        chunksize : int, optional
+            The number of documents to process at a time.
+
+        Returns
+        -------
+            Nothing is being returned.
 
         """
-        print("Storing operation metadata...")
-        timestamp = str(datetime.now().timestamp()).replace(".", "-")
-        metadata = {
-            "_operationhistory_": {
-                timestamp: {"operation": operation, "parameters": values}
-            }
-        }
-        # Gets metadata and appends to the operation history
-        return self.upsert_metadata(metadata)
+        from relevanceai.operations_new.dr.ops import DimReductionOps
 
+        model = "pca" if model is None else model
+
+        ops = DimReductionOps(
+            credentials=self.credentials,
+            vector_fields=vector_fields,
+            n_components=n_components,
+            model=model,
+            model_kwargs=model_kwargs,
+            alias=alias,
+        )
+
+        res = ops.run(
+            dataset=self,
+            select_fields=vector_fields,
+            chunksize=chunksize,
+            filters=filters,
+            batched=batched,
+        )
+
+        return ops
+
+    @track
     def vectorize_text(
         self,
         fields: List[str],
+        batched: bool = True,
         models: Optional[List[Any]] = None,
-        filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = 20,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -56,26 +109,30 @@ class Operations(Write):
 
         models = ["all-mpnet-base-v2"] if models is None else models
 
-        ops = VectorizeTextOps(fields=fields, models=models)
-        for documents in self.chunk_dataset(
-            select_fields=fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
-        self.store_operation_metadata(
-            operation="vectorize_text",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+        ops = VectorizeTextOps(
+            credentials=self.credentials,
+            fields=fields,
+            models=models,
         )
-        return
 
+        res = ops.run(
+            dataset=self,
+            select_fields=fields,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
+        )
+
+        return ops
+
+    @track
     def vectorize_image(
         self,
         fields: List[str],
-        models: List[Any],
-        filters: Optional[List[Dict[str, Any]]] = None,
-        chunksize: int = 100,
+        models: Optional[List[Any]] = None,
+        batched: Optional[bool] = True,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -98,50 +155,55 @@ class Operations(Write):
         """
         from relevanceai.operations_new.vectorize.image.ops import VectorizeImageOps
 
-        ops = VectorizeImageOps(fields=fields, models=models)
-        for documents in self.chunk_dataset(
-            select_fields=fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(documents)
-            self.upsert_documents(
-                updated_documents,
-            )
+        models = ["clip"] if models is None else models
 
-        self.store_operation_metadata(
-            operation="vectorize_image",
-            values=str({"fields": fields, "models": models, "filters": filters}),
+        ops = VectorizeImageOps(
+            credentials=self.credentials,
+            fields=fields,
+            models=models,
         )
-        return
 
+        res = ops.run(
+            dataset=self,
+            select_fields=fields,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
+        )
+
+        return ops
+
+    @track
     def label(
         self,
         vector_fields: List[str],
-        label_documents,
-        expanded=True,
+        label_documents: List[Any],
+        expanded: bool = True,
         max_number_of_labels: int = 1,
         similarity_metric: str = "cosine",
-        filters: Optional[list] = None,
-        chunksize: int = 100,
         similarity_threshold: float = 0,
         label_field: str = "label",
-        label_vector_field="label_vector_",
+        label_vector_field: str = "label_vector_",
+        batched: bool = False,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = 100,
     ):
-        """
-        This function takes a list of documents and a list of labels, and adds the labels to the documents
+        """This function takes a list of documents, a list of vector fields, and a list of label documents,
+        and then it labels the documents with the label documents
 
         Parameters
         ----------
         vector_fields : List[str]
-            The name of the vector field to use for the label operation.
-        label_documents
-            A list of documents that contain the labels.
+            List[str]
+        label_documents : List[Any]
+            List[Any]
         expanded, optional
-            If True, the label field will be a list of labels. If False, the label field will be a single
-        label.
+            If True, the label_vector_field will be a list of vectors. If False, the label_vector_field
+        will be a single vector.
         max_number_of_labels : int, optional
-            The maximum number of labels to return for each document.
+            int = 1,
         similarity_metric : str, optional
-            The metric used to calculate the similarity between the document and the label.
+            str = "cosine",
         filters : Optional[list]
             A list of filters to apply to the documents.
         chunksize : int, optional
@@ -151,54 +213,63 @@ class Operations(Write):
         label_field : str, optional
             The name of the field that will contain the label.
         label_vector_field, optional
-            The field where the label vector will be stored.
+            The field that will be added to the documents that contain the label vector.
+
+        Returns
+        -------
+            The return value is a list of documents.
 
         """
+
         from relevanceai.operations_new.label.ops import LabelOps
 
-        ops = LabelOps()
-        for documents in self.chunk_dataset(
-            select_fields=vector_fields, filters=filters, chunksize=chunksize
-        ):
-            updated_documents = ops.run(
-                vector_field=vector_fields[0],
-                documents=documents,
-                label_documents=label_documents,
-                expanded=expanded,
-                max_number_of_labels=max_number_of_labels,
-                similarity_metric=similarity_metric,
-                similarity_threshold=similarity_threshold,
-                label_field=label_field,
-                label_vector_field=label_vector_field,
+        if len(vector_fields) > 1:
+            raise ValueError(
+                "We currently do not support on more than 1 vector length."
             )
-            self.upsert_documents(
-                updated_documents,
-            )
-
-        self.store_operation_metadata(
-            operation="vectorize_image",
-            values=str(
-                {
-                    "vector_fields": vector_fields,
-                    "expanded": expanded,
-                    "max_number_of_labels": max_number_of_labels,
-                    "similarity_metric": similarity_metric,
-                    "filters": filters,
-                    "chunksize": chunksize,
-                    "similarity_threshold": similarity_threshold,
-                    "label_field": label_field,
-                    "label_vector_field": label_vector_field,
-                    "label_documents": label_documents,
-                }
-            ),
+        ops = LabelOps(
+            credentials=self.credentials,
+            label_documents=label_documents,
+            vector_field=vector_fields[0],
+            expanded=expanded,
+            max_number_of_labels=max_number_of_labels,
+            similarity_metric=similarity_metric,
+            similarity_threshold=similarity_threshold,
+            label_field=label_field,
+            label_vector_field=label_vector_field,
         )
-        return
+        # Add an exists filter
+        if filters is None:
+            filters = []
 
+        filters += [
+            {
+                "field": vector_fields[0],
+                "filter_type": "exists",
+                "condition": "==",
+                "condition_value": " ",
+            }
+        ]
+
+        res = ops.run(
+            dataset=self,
+            filters=filters,
+            batched=batched,
+            chunksize=chunksize,
+        )
+
+        return ops
+
+    @track
     def split_sentences(
         self,
         text_fields: List[str],
         output_field="_splittextchunk_",
         language: str = "en",
+        inplace: bool = True,
+        batched: bool = False,
+        filters: Optional[list] = None,
+        chunksize: Optional[int] = 100,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -218,25 +289,229 @@ class Operations(Write):
             SentenceSplitterOps,
         )
 
-        ops = SentenceSplitterOps(language=language)
-        for c in self.chunk_dataset(select_fields=text_fields):
-            for text_field in text_fields:
-                c = ops.run(
-                    text_field=text_field,
-                    documents=c,
-                    inplace=True,
-                    output_field=output_field,
-                )
-            self.upsert_documents(c)
-
-        self.store_operation_metadata(
-            operation="sentence_splitting",
-            values=str(
-                {
-                    "text_field": text_field,
-                    "output_field": output_field,
-                    "language": language,
-                }
-            ),
+        ops = SentenceSplitterOps(
+            credentials=self.credentials,
+            text_fields=text_fields,
+            language=language,
+            inplace=inplace,
+            output_field=output_field,
         )
-        return
+
+        res = ops.run(
+            dataset=self,
+            select_fields=text_fields,
+            batched=batched,
+            filters=filters,
+            chunksize=chunksize,
+        )
+
+        return ops
+
+    @track
+    def cluster(
+        self,
+        vector_fields: List[str],
+        model: Optional[Any] = None,
+        alias: Optional[str] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        chunksize: Optional[int] = 100,
+        filters: Optional[list] = None,
+        batched: Optional[bool] = False,
+        include_cluster_report: bool = True,
+        **kwargs,
+    ):
+        """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
+        filters, a boolean value, a dictionary of model keyword arguments, and a list of keyword
+        arguments. It returns an object of type `ClusterOps`
+
+        Example
+        ----------
+        .. code-block::
+
+            from sklearn.cluster import KMeans
+            model = KMeans()
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.cluster(
+                model=model, vector_fields=["sample_vector_"],
+                alias="kmeans-8"
+            )
+
+        Parameters
+        ----------
+        vector_fields : List[str]
+            A list of possible vector fields
+        model : Optional[Any]
+            The clustering model to use. Currently, we support KMeans and MiniBatchKMeans.
+        alias : Optional[str]
+            The name of the cluster model.
+        filters : Optional[list]
+            Optional[list] = None,
+        include_cluster_report : bool, optional
+            bool = True
+        model_kwargs : Optional[Dict[str, Any]]
+            The cluster config to use
+            You can change the number of clusters for kmeans using:
+            `cluster_config={"n_clusters": 10}`. For a full list of
+            possible parameters for different models, simply check how
+            the cluster models are instantiated.
+
+        Returns
+        -------
+            The cluster object
+
+        """
+
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        model = "kmeans" if model is None else model
+        model_kwargs = {} if model_kwargs is None else model_kwargs
+
+        ops = ClusterOps(
+            model=model,
+            alias=alias,  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
+            verbose=False,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+
+        if filters is not None:
+            filters = ops._get_filters(filters, vector_fields)
+
+        # Create the cluster report
+        ops.run(
+            dataset=self,
+            select_fields=vector_fields,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+        )
+
+        print(
+            f"""You can now utilise the ClusterOps object using the below:
+
+    cluster_ops = client.ClusterOps(
+        alias='{ops.alias}',
+        vector_fields={ops.vector_fields},
+        dataset_id='{self.dataset_id}'
+    )"""
+        )
+
+        print("Configure your new cluster app below:")
+        print(
+            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
+        )
+        return ops
+
+    def _get_alias(self, alias: Any) -> str:
+        # Auto-generates alias here
+        if alias is None:
+            if hasattr(self.model, "n_clusters"):
+                n_clusters = (
+                    self.n_clusters
+                    if self.n_clusters is not None
+                    else self.model.n_clusters
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            elif hasattr(self.model, "k"):
+                n_clusters = (
+                    self.n_clusters if self.n_clusters is not None else self.model.k
+                )
+                alias = f"{self.model_name}-{n_clusters}"
+
+            else:
+                alias = self.model_name
+
+            Warning.MISSING_ALIAS.format(alias=alias)  # type: ignore
+
+        if self.verbose:
+            print(f"The alias is `{alias.lower()}`.")
+        return alias.lower()
+
+    @track
+    def batch_cluster(
+        self,
+        vector_fields: List[str],
+        model: Any = None,
+        alias: Optional[str] = None,
+        filters: Optional[list] = None,
+        include_cluster_report: bool = True,
+        model_kwargs: dict = None,
+        **kwargs,
+    ):
+        from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        cluster_ops = BatchClusterOps(
+            model=model,
+            alias=alias,
+            vector_fields=vector_fields,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+
+        if filters is not None:
+            filters = cluster_ops._get_filters(filters, vector_fields)
+
+        cluster_ops.run(self, filters)
+
+        return cluster_ops
+
+    def extract_sentiment(
+        self,
+        text_fields: List[str],
+        model_name: str = "siebert/sentiment-roberta-large-english",
+        highlight: bool = False,
+        max_number_of_shap_documents: int = 1,
+        min_abs_score: float = 0.1,
+        filters: Optional[list] = None,
+        batched: bool = True,
+    ):
+        """
+        Extract sentiment from the dataset
+        """
+        from relevanceai.operations_new.sentiment.ops import SentimentOps
+
+        ops = SentimentOps(
+            text_fields=text_fields,
+            model_name=model_name,
+            highlight=highlight,
+            max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
+        )
+        return ops.run(self, filters=filters, batched=batched)
+
+    def apply_transformers_pipeline(
+        self,
+        text_fields: list,
+        pipeline,
+        output_field: Optional[str] = None,
+        filters: Optional[list] = None,
+    ):
+        """
+        Apply a transformers pipeline generically.
+
+        .. code-block::
+
+            from transformers import pipeline
+            pipeline = pipeline("automatic-speech-recognition", model="facebook/wav2vec2-base-960h", device=0)
+            ds.apply_transformers_pipeline(
+                text_fields, pipeline
+            )
+
+        """
+        from relevanceai.operations_new.processing.transformers.ops import (
+            TransformersPipelineOps,
+        )
+
+        ops = TransformersPipelineOps(
+            text_fields=text_fields,
+            pipeline=pipeline,
+            output_field=output_field,
+        )
+        return ops.run(self, filters=filters, select_fields=text_fields)

@@ -201,7 +201,7 @@ class Read(Statistics):
 
     @track
     def head(
-        self, n: int = 5, raw_json: bool = False, **kw
+        self, n: int = 5, raw_json: bool = False, select_fields: list = None, **kw
     ) -> Union[dict, pd.DataFrame]:
         """
         Return the first `n` rows.
@@ -239,7 +239,7 @@ class Read(Statistics):
             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/dashboard/data?page=1"
         )
         head_documents = self.get_documents(
-            number_of_documents=n, include_after_id=False
+            number_of_documents=n, include_after_id=False, select_fields=select_fields
         )
         if raw_json:
             return head_documents
@@ -669,7 +669,7 @@ class Read(Statistics):
         """Insert metadata"""
         results = self.datasets.post_metadata(self.dataset_id, metadata)
         if results == {}:
-            print("✅ You have successfully inserted data.")
+            print("✅ You have successfully upserted metadata.")
         else:
             return results
 
@@ -683,7 +683,6 @@ class Read(Statistics):
             print("✅ You have successfully inserted metadata.")
         else:
             return results
-        return self.insert_metadata(metadata)
 
     @track
     def chunk_dataset(
@@ -730,6 +729,7 @@ class Read(Statistics):
                     include_cursor=True,
                     after_id=docs["after_id"],
                     filters=filters,
+                    select_fields=select_fields,
                 )
                 pbar.update(1)
         return

@@ -5,4 +5,5 @@ from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
 
 
 class VectorizeTextOps(VectorizeOps, VectorizeTextBase):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

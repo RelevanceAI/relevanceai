@@ -5,4 +5,5 @@ from relevanceai.operations_new.vectorize.image.base import VectorizeImageBase
 
 
 class VectorizeImageOps(VectorizeOps, VectorizeImageBase):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

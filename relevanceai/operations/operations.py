@@ -676,11 +676,11 @@ class Operations(Write, IO):
         )
 
     @track
-    def add_sentiment(
+    def analyze_sentiment(
         self,
-        field: str,
+        text_fields: list,
+        model_name: str = "siebert/sentiment-roberta-large-english",
         output_field: str = None,
-        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
@@ -695,7 +695,7 @@ class Operations(Write, IO):
 
         .. code-block::
 
-            ds.add_sentiment(field="sample_1_label")
+            ds.analyze_sentiment(field="sample_1_label")
 
         Parameters
         --------------
@@ -717,33 +717,17 @@ class Operations(Write, IO):
             The minimum absolute score for it to be considered important based on SHAP algorithm.
 
         """
-        from relevanceai.operations.text.sentiment import SentimentOps
+        from relevanceai.operations_new.sentiment.ops import SentimentOps
 
-        if output_field is None:
-            output_field = "_sentiment_." + field
-
-        ops = SentimentOps(model_name=model_name)
-
-        def analyze_sentiment(text):
-            return ops.analyze_sentiment(
-                text=text,
-                highlight=highlight,
-                positive_sentiment_name=positive_sentiment_name,
-                max_number_of_shap_documents=max_number_of_shap_documents,
-                min_abs_score=min_abs_score,
-            )
-
-        def analyze_sentiment_document(doc):
-            self.set_field(output_field, doc, ops.analyze_sentiment(doc.get(field, "")))
-            if doc is None:
-                return {}
-            return doc
-
-        return self.bulk_apply(
-            analyze_sentiment_document,
-            select_fields=[field],
-            **apply_args,
+        ops = SentimentOps(
+            text_fields=text_fields,
+            model_name=model_name,
+            highlight=highlight,
+            max_number_of_shap_documents=max_number_of_shap_documents,
+            min_abs_score=min_abs_score,
         )
+
+        return ops.run(self, batched=True)
 
         # return .fit_dataset(
         #     dataset=self,

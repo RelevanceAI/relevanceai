@@ -174,7 +174,7 @@ class Base2Vec(DocUtils):
         """Encode a chunk document"""
         chunk_docs = self.get_field(chunk_field, doc)
         if hasattr(self, "bulk_encode"):
-            return self.encode_documents_in_bulk(
+            return self.bulk_encode_documents(
                 [field],
                 chunk_docs,
                 field_type=field_type,
@@ -295,7 +295,7 @@ class Base2Vec(DocUtils):
             ]
         return documents
 
-    def encode_documents_in_bulk(
+    def bulk_encode_documents(
         self,
         fields: list,
         documents: list,

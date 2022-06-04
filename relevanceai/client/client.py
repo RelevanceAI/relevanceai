@@ -42,9 +42,10 @@ from relevanceai.utils.decorators.analytics import track, identify
 from relevanceai.utils.decorators.version import beta, added
 from relevanceai.utils.config_mixin import ConfigMixin
 from relevanceai.client.cache import CacheMixin
+from relevanceai.client.operators import Operators
 
 
-class Client(APIClient, ConfigMixin, CacheMixin):
+class Client(APIClient, ConfigMixin, CacheMixin, Operators):
     def __init__(
         self,
         token: Optional[str] = None,
@@ -186,7 +187,7 @@ class Client(APIClient, ConfigMixin, CacheMixin):
         return self.datasets.create(dataset_id, schema=schema)
 
     @track
-    def list_datasets(self):
+    def list_datasets(self, verbose=False):
         """List Datasets
 
         Example
@@ -199,9 +200,10 @@ class Client(APIClient, ConfigMixin, CacheMixin):
             client.list_datasets()
 
         """
-        self.print_dashboard_message(
-            "You can view all your datasets at https://cloud.relevance.ai/datasets/"
-        )
+        if verbose:
+            self.print_dashboard_message(
+                "You can view all your datasets at https://cloud.relevance.ai/datasets/"
+            )
         datasets = self.datasets.list()
         datasets["datasets"] = sorted(datasets["datasets"])
         return datasets
@@ -268,32 +270,20 @@ class Client(APIClient, ConfigMixin, CacheMixin):
     @track
     def ClusterOps(
         self,
+        dataset_id: str,
+        vector_fields: list,
+        alias: str,
         model=None,
         **kwargs,
     ):
-        from relevanceai.operations.cluster import ClusterOps
+        from relevanceai.operations_new.cluster.ops import ClusterOps
 
         return ClusterOps(
             credentials=self.credentials,
-            model=model,
-            **kwargs,
-        )
-
-    @track
-    def ClusterVizOps(
-        self,
-        vector_fields: List[str],
-        alias: str,
-        dataset_id: str,
-        **kwargs,
-    ):
-        from relevanceai.operations.viz import ClusterVizOps
-
-        return ClusterVizOps(
-            credentials=self.credentials,
+            dataset_id=dataset_id,
             vector_fields=vector_fields,
             alias=alias,
-            dataset_id=dataset_id,
+            model=model,
             **kwargs,
         )
 

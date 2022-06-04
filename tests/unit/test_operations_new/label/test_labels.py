@@ -38,18 +38,20 @@ def label_documents():
 
 
 class TestLabelOps:
-    def test_label_ops(test_client, label_documents):
+    def test_label_ops(self, test_client: Client, label_documents):
         # Add testing for label ops
         from relevanceai.operations_new.label import LabelOps
 
-        ops = LabelOps()
+        ops = LabelOps(
+            label_documents=label_documents,
+            credentials=test_client.credentials,
+            vector_field="sample_1_vector_",
+            expanded=True,
+        )
         # TODO: Test for expanded = True and False
         # Test for differnet label documents (is an intuitive error returned)
         documents = mock_documents(100)
-        docs = ops.run(
+        docs = ops.transform(
             documents=documents,
-            vector_field="sample_1_vector_",
-            label_documents=label_documents,
-            expanded=True,
         )
         assert True
