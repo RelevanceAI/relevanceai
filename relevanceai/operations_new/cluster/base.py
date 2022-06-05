@@ -33,7 +33,10 @@ class ClusterBase(OperationRun):
 
         self._check_vector_fields()
 
-    def _get_model(self, model: Any, model_kwargs: dict) -> Any:
+    def _get_model(self, model: Any, model_kwargs: Optional[dict]) -> Any:
+        if model_kwargs is None:
+            model_kwargs = {}
+
         if model is None:
             return model
         if isinstance(model, str):

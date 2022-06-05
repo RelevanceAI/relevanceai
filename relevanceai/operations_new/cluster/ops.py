@@ -32,7 +32,6 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         verbose: bool = False,
         model=None,
         model_kwargs=None,
-        *args,
         **kwargs,
     ):
         """

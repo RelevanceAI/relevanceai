@@ -227,6 +227,7 @@ class Operations(Write):
             raise ValueError(
                 "We currently do not support on more than 1 vector length."
             )
+
         ops = LabelOps(
             credentials=self.credentials,
             label_documents=label_documents,
@@ -470,7 +471,6 @@ class Operations(Write):
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
-        batched: bool = True,
     ):
         """
         Extract sentiment from the dataset
@@ -484,7 +484,7 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
         )
-        return ops.run(self, filters=filters, batched=batched)
+        return ops.run(self, filters=filters)
 
     def apply_transformers_pipeline(
         self,
@@ -515,3 +515,54 @@ class Operations(Write):
             output_field=output_field,
         )
         return ops.run(self, filters=filters, select_fields=text_fields)
+
+    def subcluster(
+        self,
+        vector_fields: List[str],
+        alias: str,
+        parent_field: str,
+        model: Any = "kmeans",
+        cluster_field: str = "_cluster_",
+        model_kwargs: Optional[dict] = None,
+        filters: Optional[list] = None,
+        **kwargs,
+    ):
+        from relevanceai.operations_new.cluster.sub.ops import SubClusterOps
+
+        ops = SubClusterOps(
+            model=model,
+            alias=alias,
+            vector_fields=vector_fields,
+            parent_field=parent_field,
+            model_kwargs=model_kwargs,
+            cluster_field=cluster_field,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            **kwargs,
+        )
+        select_fields = vector_fields + [parent_field]
+        if filters is None:
+            filters = []
+        filters += [
+            {
+                "field": vf,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vf in vector_fields
+        ]
+        filters += [
+            {
+                "field": parent_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+        ]
+
+        return ops.run(
+            self,
+            filters=filters,
+            select_fields=select_fields,
+        )
