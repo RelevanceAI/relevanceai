@@ -273,8 +273,8 @@ class DatasetsClient(_Base):
         ----------
         dataset_id : string
             Unique name of dataset
-        documents : list
-            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        document : dict
+            Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         insert_date : bool
             Whether to include insert date as a field 'insert_date_'.
         overwrite : bool
@@ -294,6 +294,8 @@ class DatasetsClient(_Base):
                 "update_schema": update_schema,
             },
         )
+
+    log = insert
 
     def bulk_insert(
         self,
