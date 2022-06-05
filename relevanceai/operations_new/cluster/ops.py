@@ -152,6 +152,8 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             The number of clusters
 
         """
+        if alias is None:
+            alias = self.alias
         # Mainly to be used for subclustering
         # Get the cluster alias
         cluster_field = self._get_cluster_field_name()
@@ -270,7 +272,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
 
     def get_centroid_documents(self):
         centroid_vectors = {}
-        if self.model._centroids is not None:
+        if hasattr(self.model, "_centroids") and self.model._centroids is not None:
             centroid_vectors = self.model._centroids
             # get the cluster label function
             labels = range(len(centroid_vectors))
@@ -285,7 +287,6 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             ]
         else:
             centroids = self.create_centroids()
-
         return centroids
 
     def list_closest(
