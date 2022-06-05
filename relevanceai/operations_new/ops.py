@@ -577,8 +577,18 @@ class Operations(Write):
             }
         ]
 
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=select_fields,
         )
+        print(
+            f"""You can now utilise the ClusterOps object based on subclustering.
+
+    cluster_ops = client.ClusterOps(
+        alias='{ops.alias}',
+        vector_fields={ops.vector_fields},
+        dataset_id='{self.dataset_id}'
+    )"""
+        )
+        return ops
