@@ -525,6 +525,7 @@ class Operations(Write):
         cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
         filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.sub.ops import SubClusterOps
@@ -538,11 +539,26 @@ class Operations(Write):
             cluster_field=cluster_field,
             credentials=self.credentials,
             dataset_id=self.dataset_id,
+            cluster_ids=cluster_ids,
             **kwargs,
         )
+
+        # Building an infinitely hackable SDK
+
+        # Add filters and select fields
         select_fields = vector_fields + [parent_field]
         if filters is None:
             filters = []
+        if cluster_ids is not None:
+            filters += [
+                {
+                    "field": parent_field,
+                    "filter_type": "exact_match",
+                    "condition": "==",
+                    "condition_value": cluster_id,
+                }
+                for cluster_id in cluster_ids
+            ]
         filters += [
             {
                 "field": vf,
