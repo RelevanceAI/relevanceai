@@ -121,7 +121,6 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         analytics.write_key = decode(self.mixpanel_write_key).decode("utf-8")
 
     def _get_token(self):
-        # TODO: either use cache or keyring package
         token = getpass.getpass(f"Activation token:")
         return token
 
@@ -133,7 +132,7 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
     def create_dataset(self, dataset_id: str, schema: Optional[Dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+        A powerful and core feature of RelevanceAI is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -157,15 +156,13 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
                 "product_text_chunkvector_" : 1024
             }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+        You don't have to specify the schema of every single field when creating a dataset, as RelevanceAI will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
 
             - A dataset name/id can only contain undercase letters, dash, underscore and numbers.
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
-
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------
