@@ -475,7 +475,7 @@ class Read(Statistics):
     @track
     def schema(self) -> Dict:
         """
-        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a Relevance schema.
 
         Example
         -----------------

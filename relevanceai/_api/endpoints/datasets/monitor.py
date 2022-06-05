@@ -19,7 +19,6 @@ class MonitorClient(_Base):
         dataset_id : string
             Unique name of dataset
         """
-        # https://cloud.relevance.ai/dataset/demo-movies/dashboard/monitor/
         self._link_to_dataset_dashboard(dataset_id, "monitor/schema")
         return self.make_http_request(
             endpoint=f"/datasets/{dataset_id}/monitor/health", method="GET"

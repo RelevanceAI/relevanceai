@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
 from relevanceai.utils import DocUtils
+from relevanceai.client import Credentials
 
 
 class OperationBase(ABC, DocUtils):
@@ -35,9 +36,14 @@ class OperationBase(ABC, DocUtils):
 
     def get_operation_metadata(self, *args, **kwargs) -> Dict[str, Any]:
         """abstractmethod for return metadata for upsertion"""
+
+        values = {
+            k: v for k, v in self.__dict__.items() if k not in Credentials.__slots__
+        }
+
         return dict(
             operation=self.name,
-            values=self.__dict__,
+            values=values,
         )
 
     def _check_vector_field_type(self):
