@@ -20,6 +20,7 @@ class SubClusterBase(ClusterBase):
         model_kwargs: Optional[dict] = None,
         cluster_field: str = "_cluster_",
         outlier_value: Union[int, str] = -1,
+        outlier_label: str = "outlier",
         **kw
     ):
         self.model = model
@@ -34,6 +35,7 @@ class SubClusterBase(ClusterBase):
         self.cluster_field = cluster_field
         self.model = self._get_model(model=model, model_kwargs=model_kwargs)
         self.outlier_value = outlier_value
+        self.outlier_label = outlier_label
         for k, v in kw.items():
             setattr(self, k, v)
 

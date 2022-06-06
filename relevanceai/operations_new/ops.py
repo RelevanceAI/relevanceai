@@ -526,6 +526,7 @@ class Operations(Write):
         model_kwargs: Optional[dict] = None,
         filters: Optional[list] = None,
         cluster_ids: Optional[list] = None,
+        min_parent_cluster_size: int = 0,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.sub.ops import SubClusterOps
@@ -540,6 +541,7 @@ class Operations(Write):
             credentials=self.credentials,
             dataset_id=self.dataset_id,
             cluster_ids=cluster_ids,
+            min_parent_cluster_size=min_parent_cluster_size,
             **kwargs,
         )
 
@@ -590,5 +592,21 @@ class Operations(Write):
         vector_fields={ops.vector_fields},
         dataset_id='{self.dataset_id}'
     )"""
+        )
+
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        model = "kmeans" if model is None else model
+        model_kwargs = {} if model_kwargs is None else model_kwargs
+
+        ops = ClusterOps(
+            model=model,
+            alias=alias,  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
+            verbose=False,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            model_kwargs=model_kwargs,
+            **kwargs,
         )
         return ops

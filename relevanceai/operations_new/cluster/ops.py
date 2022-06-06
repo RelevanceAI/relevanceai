@@ -215,7 +215,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             alias=self.alias,
         )
 
-    def create_centroids(self):
+    def create_centroids(self, insert: bool = True):
         """
         Calculate centroids from your vectors
 
@@ -243,9 +243,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         # calculate the centroids
         centroid_vectors = self.calculate_centroids()
 
-        self.insert_centroids(
-            centroid_documents=centroid_vectors,
-        )
+        if insert:
+            self.insert_centroids(
+                centroid_documents=centroid_vectors,
+            )
         return centroid_vectors
 
     def calculate_centroids(self):
