@@ -73,9 +73,10 @@ class SubClusterOps(SubClusterBase, ClusterOps):
             ]
             super().run(filters=new_filters, *args, **kwargs)
 
+        subcluster_field_name = self._get_cluster_field_name()
         # Store the relevant metadata
         self.store_subcluster_metadata(
-            parent_field=self.parent_field, cluster_field=self.cluster_field
+            parent_field=self.parent_field, cluster_field=subcluster_field_name
         )
 
     def store_subcluster_metadata(self, parent_field: str, cluster_field: str):
