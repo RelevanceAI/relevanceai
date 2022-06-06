@@ -41,7 +41,7 @@ class OperationRun(OperationBase):
 
         # store this
         if hasattr(dataset, "dataset_id"):
-            self.dataset_d = dataset.dataset_id
+            self.dataset_id = dataset.dataset_id
 
         with OperationManager(
             dataset=dataset,
