@@ -109,7 +109,7 @@ class SubClusterOps(SubClusterBase, ClusterOps):
                 for k, v in zip(cluster_ids, centroid_vectors)
             ]
         else:
-            centroids = self.create_subcluster_centroids(self)
+            centroids = self.create_subcluster_centroids()
         return centroids
 
     def create_subcluster_centroids(self):
