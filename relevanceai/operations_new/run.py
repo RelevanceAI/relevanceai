@@ -37,6 +37,10 @@ class OperationRun(OperationBase):
 
         """
 
+        if isinstance(select_fields, list):
+            if any(field not in dataset.schema for field in select_fields):
+                raise ValueError("field not in Dataset")
+
         from relevanceai.operations_new.manager import OperationManager
 
         with OperationManager(

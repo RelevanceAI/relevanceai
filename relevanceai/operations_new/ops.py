@@ -515,3 +515,38 @@ class Operations(Write):
             output_field=output_field,
         )
         return ops.run(self, filters=filters, select_fields=text_fields)
+
+    def scale(
+        self,
+        vector_fields: List[str],
+        model: Optional[str] = None,
+        alias: Optional[str] = None,
+        model_kwargs: Optional[dict] = None,
+        filters: Optional[list] = None,
+        batched: Optional[bool] = None,
+        chunksize: Optional[int] = None,
+    ):
+
+        from relevanceai.operations_new.scaling.ops import ScaleOps
+
+        model = "standard" if model is None else model
+        chunksize = chunksize if batched is None else batched
+        filters = [] if filters is None else filters
+        batched = False if batched is None else batched
+
+        ops = ScaleOps(
+            vector_fields=vector_fields,
+            model=model,
+            alias=alias,
+            model_kwargs=model_kwargs,
+        )
+
+        ops.run(
+            dataset=self,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=vector_fields,
+        )
+
+        return ops
