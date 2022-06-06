@@ -115,6 +115,9 @@ class Operations(Write):
             models=models,
         )
 
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
+
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -162,6 +165,9 @@ class Operations(Write):
             fields=fields,
             models=models,
         )
+
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
 
         res = ops.run(
             dataset=self,
