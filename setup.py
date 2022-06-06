@@ -74,9 +74,7 @@ dev_requirements = (
 
 
 dev_vis_requirements = (
-    ["autopep8", "pylint", "jupyter"]
-    + test_requirements
-    + doc_requirements
+    ["autopep8", "pylint", "jupyter"] + test_requirements + doc_requirements
 )
 
 from pathlib import Path
@@ -119,7 +117,6 @@ setup(
         "excel": excel_requirements,
         "tests": test_requirements,
         "notebook": ["jsonshower"] + requirements,
-        
         "umap": umap,
         # "ivis-cpu": ivis_cpu,
         # "ivis-gpu": ivis_gpu,

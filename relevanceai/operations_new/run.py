@@ -39,6 +39,9 @@ class OperationRun(OperationBase):
 
         from relevanceai.operations_new.manager import OperationManager
 
+        # store this
+        if hasattr(dataset, "dataset_id"):
+            self.dataset_id = dataset.dataset_id
         schema = dataset.schema
         if select_fields is not None:
             for field in select_fields:
