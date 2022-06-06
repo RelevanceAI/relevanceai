@@ -115,6 +115,9 @@ class Operations(Write):
             models=models,
         )
 
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
+
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -132,7 +135,7 @@ class Operations(Write):
         models: Optional[List[Any]] = None,
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 20,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -162,6 +165,9 @@ class Operations(Write):
             fields=fields,
             models=models,
         )
+
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
 
         res = ops.run(
             dataset=self,

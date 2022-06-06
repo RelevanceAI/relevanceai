@@ -83,9 +83,7 @@ class APIEndpointsClient(_Base, DocUtils):
             )
         except KeyError:
             if create_id:
-                self.set_field_across_documents(
-                    "_id", [make_id(document) for document in documents], documents
-                )
+                pass
             else:
                 raise FieldNotFoundError(
                     "Missing _id field. Set `create_id=True` to automatically generate IDs."

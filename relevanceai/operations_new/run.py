@@ -42,6 +42,11 @@ class OperationRun(OperationBase):
         # store this
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
+        schema = dataset.schema
+        if select_fields is not None:
+            for field in select_fields:
+                if field not in schema:
+                    raise ValueError(f"{field} not in Dataset schema")
 
         with OperationManager(
             dataset=dataset,

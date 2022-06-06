@@ -7,9 +7,9 @@ from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
 
 try:
+    import traceback
     import clip
     import torch
-    import numpy as np
     import requests
     import cv2
     from PIL import Image
@@ -24,10 +24,14 @@ class ClipImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, context_length=77):
 
         self.context_length = context_length
+        self.device = "cuda" if torch.cuda.is_available else "cpu"
         self.model, self.preprocess = clip.load(url, device=self.device)
         self.vector_length = vector_length
         self.url = url
-        self.device = "cuda" if torch.cuda.is_available else "cpu"
+
+    @property
+    def model_name(self):
+        return "clip"
 
     def read(self, image_url):
         """It takes an image url, and returns an image object
@@ -217,8 +221,6 @@ class ClipImage2Vec(VectorizeModelBase):
         # Parallel process the encoding
         future = self.parallel_preprocess_image(images)
         results = self.model.encode_image(torch.cat(list(future))).tolist()
-        # Replace NANs with default vector value
-        results[results != results] = 1e-7
         return results
 
     def encode(self, data: str, data_type="image"):
@@ -234,3 +236,18 @@ class ClipImage2Vec(VectorizeModelBase):
         elif data_type == "text":
             return self.bulk_encode_text(data)
         raise ValueError("data_type must be either `image` or `text`")
+
+    def is_greyscale(self, img_path: str):
+        """Determine if an image is grayscale or not"""
+        try:
+            img = Image.open(requests.get(img_path, stream=True).raw)
+        except MissingSchema:
+            img = Image.open(img_path)
+        img = img.convert("RGB")
+        w, h = img.size
+        for i in range(w):
+            for j in range(h):
+                r, g, b = img.getpixel((i, j))
+                if r != g != b:
+                    return False
+        return True
