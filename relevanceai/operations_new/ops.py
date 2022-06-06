@@ -551,6 +551,7 @@ class Operations(Write):
         select_fields = vector_fields + [parent_field]
         if filters is None:
             filters = []
+
         if cluster_ids is not None:
             filters += [
                 {
