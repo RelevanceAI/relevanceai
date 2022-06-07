@@ -9,6 +9,7 @@ from relevanceai.constants import (
     GLOBAL_DATASETS,
     SEARCH_APP_LINK,
     PROJECTOR_APP_LINK,
+    EXPLORER_APP_LINK,
 )
 
 
@@ -124,7 +125,7 @@ class Dataset(OperationsNew, Operations):
             ds.launch_search_app()
 
         """
-        return SEARCH_APP_LINK.format(self.dataset_id)
+        print(SEARCH_APP_LINK.format(self.dataset_id))
 
     @track
     def launch_projector_app(self):
@@ -136,7 +137,11 @@ class Dataset(OperationsNew, Operations):
             ds.launch_projector_app()
 
         """
-        return PROJECTOR_APP_LINK.format(self.dataset_id)
+        print(PROJECTOR_APP_LINK.format(self.dataset_id))
+
+    @track
+    def launch_explore_app(self):
+        print(EXPLORER_APP_LINK.format(self.dataset_id))
 
     def set_dtypes(self, mapping: dict):
         unstruc_types = ["_numeric_", "_category_", "_text_", "_image_"]

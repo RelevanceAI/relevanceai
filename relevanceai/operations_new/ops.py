@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional
 
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.constants import EXPLORER_APP_LINK
 
 
 class Operations(Write):
@@ -117,7 +118,6 @@ class Operations(Write):
 
         filters = [] if filters is None else filters
         filters += ops._get_base_filters()
-
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -410,9 +410,8 @@ class Operations(Write):
         )
 
         print("Configure your new cluster app below:")
-        print(
-            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
-        )
+        print()
+        print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 
     def _get_alias(self, alias: Any) -> str:
