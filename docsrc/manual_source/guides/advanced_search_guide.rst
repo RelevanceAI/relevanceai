@@ -14,7 +14,7 @@ Developer-first vector platform for ML teams
    :target: https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/main/guides/advanced_search_guide.ipynb
 
 🔍 Advanced Search
-==================
+=================
 
 Fast Search is Relevance AI’s most complex search endpoint. It combines
 functionality to search using vectors, exact text search with ability to
@@ -29,14 +29,14 @@ your search!
 
 .. parsed-literal::
 
-    [K     |████████████████████████████████| 299 kB 16.0 MB/s 
-    [K     |████████████████████████████████| 1.1 MB 61.6 MB/s 
-    [K     |████████████████████████████████| 253 kB 53.2 MB/s 
-    [K     |████████████████████████████████| 58 kB 6.5 MB/s 
-    [K     |████████████████████████████████| 144 kB 49.1 MB/s 
-    [K     |████████████████████████████████| 94 kB 3.1 MB/s 
-    [K     |████████████████████████████████| 271 kB 48.8 MB/s 
-    [K     |████████████████████████████████| 112 kB 47.4 MB/s 
+    [K     |████████████████████████████████| 299 kB 16.0 MB/s
+    [K     |████████████████████████████████| 1.1 MB 61.6 MB/s
+    [K     |████████████████████████████████| 253 kB 53.2 MB/s
+    [K     |████████████████████████████████| 58 kB 6.5 MB/s
+    [K     |████████████████████████████████| 144 kB 49.1 MB/s
+    [K     |████████████████████████████████| 94 kB 3.1 MB/s
+    [K     |████████████████████████████████| 271 kB 48.8 MB/s
+    [K     |████████████████████████████████| 112 kB 47.4 MB/s
     [?25h  Building wheel for fuzzysearch (setup.py) ... [?25l[?25hdone
 
 
@@ -56,8 +56,8 @@ value under ``Authorization token`` and paste it here
 
     import pandas as pd
     from relevanceai import Client
-    client = Client()
 
+    client = Client()
 
 
 .. parsed-literal::
@@ -66,7 +66,7 @@ value under ``Authorization token`` and paste it here
 
 
 🚣 Inserting data
------------------
+----------------
 
 We use a sample ecommerce dataset - with vectors
 ``product_image_clip_vector_`` and ``product_title_clip_vector_``
@@ -75,6 +75,7 @@ already encoded for us.
 .. code:: ipython3
 
     from relevanceai.utils.datasets import get_ecommerce_dataset_encoded
+
     docs = get_ecommerce_dataset_encoded()
 
 .. code:: ipython3
@@ -140,7 +141,7 @@ Simple Text Search
 
 .. raw:: html
 
-    
+
       <div id="df-28223bf4-f936-48dd-819e-9ae525fc8622">
         <div class="colab-df-container">
           <div>
@@ -148,11 +149,11 @@ Simple Text Search
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -233,21 +234,21 @@ Simple Text Search
           <button class="colab-df-convert" onclick="convertToInteractive('df-28223bf4-f936-48dd-819e-9ae525fc8622')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-    
+
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-    
+
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-    
+
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -259,18 +260,18 @@ Simple Text Search
           padding: 0 0 0 0;
           width: 32px;
         }
-    
+
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-    
+
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-    
+
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -278,20 +279,20 @@ Simple Text Search
           fill: #FFFFFF;
         }
       </style>
-    
+
           <script>
             const buttonEl =
               document.querySelector('#df-28223bf4-f936-48dd-819e-9ae525fc8622 button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-    
+
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-28223bf4-f936-48dd-819e-9ae525fc8622');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-    
+
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -320,10 +321,10 @@ Let’s prepare some functions to help us encode our data!
     import clip
     import requests
     from PIL import Image
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load("ViT-B/32", device=device)
-    
+
     # First - let's encode the image based on CLIP
     def encode_image(image):
         # Let us download the image and then preprocess it
@@ -337,8 +338,8 @@ Let’s prepare some functions to help us encode our data!
             image_features = model.encode_image(image)
         # Lastly we convert it to a list so that we can send it through the SDK
         return image_features.tolist()[0]
-    
-    
+
+
     # Next - let's encode text based on CLIP
     def encode_text(text):
         # let us get text and then tokenize it
@@ -358,14 +359,14 @@ Let’s prepare some functions to help us encode our data!
 
     # Encoding the query
     query_vector = encode_text("nike")
-    
+
     results = ds.advanced_search(
         vector_search_query=[
             {"vector": query_vector, "field": "product_title_clip_vector_"}
         ],
         select_fields=["product_title"],
     )
-    
+
     pd.DataFrame(results["results"])
 
 
@@ -373,7 +374,7 @@ Let’s prepare some functions to help us encode our data!
 
 .. raw:: html
 
-    
+
       <div id="df-0917fed9-d37c-4e5c-be06-9b0aa4f46786">
         <div class="colab-df-container">
           <div>
@@ -381,11 +382,11 @@ Let’s prepare some functions to help us encode our data!
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -466,21 +467,21 @@ Let’s prepare some functions to help us encode our data!
           <button class="colab-df-convert" onclick="convertToInteractive('df-0917fed9-d37c-4e5c-be06-9b0aa4f46786')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-    
+
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-    
+
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-    
+
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -492,18 +493,18 @@ Let’s prepare some functions to help us encode our data!
           padding: 0 0 0 0;
           width: 32px;
         }
-    
+
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-    
+
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-    
+
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -511,20 +512,20 @@ Let’s prepare some functions to help us encode our data!
           fill: #FFFFFF;
         }
       </style>
-    
+
           <script>
             const buttonEl =
               document.querySelector('#df-0917fed9-d37c-4e5c-be06-9b0aa4f46786 button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-    
+
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-0917fed9-d37c-4e5c-be06-9b0aa4f46786');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-    
+
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -559,7 +560,7 @@ below.
         ],
         select_fields=["product_title"],  # results to return
     )
-    
+
     pd.DataFrame(results["results"])
 
 
@@ -567,7 +568,7 @@ below.
 
 .. raw:: html
 
-    
+
       <div id="df-2ee11e7b-1ff0-47f3-808f-81c738ffe817">
         <div class="colab-df-container">
           <div>
@@ -575,11 +576,11 @@ below.
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -660,21 +661,21 @@ below.
           <button class="colab-df-convert" onclick="convertToInteractive('df-2ee11e7b-1ff0-47f3-808f-81c738ffe817')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-    
+
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-    
+
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-    
+
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -686,18 +687,18 @@ below.
           padding: 0 0 0 0;
           width: 32px;
         }
-    
+
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-    
+
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-    
+
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -705,20 +706,20 @@ below.
           fill: #FFFFFF;
         }
       </style>
-    
+
           <script>
             const buttonEl =
               document.querySelector('#df-2ee11e7b-1ff0-47f3-808f-81c738ffe817 button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-    
+
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-2ee11e7b-1ff0-47f3-808f-81c738ffe817');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-    
+
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -753,7 +754,7 @@ you! Simply add a ``weight`` parameter your dictionary inside
         ],
         select_fields=["product_title"],  # results to return
     )
-    
+
     pd.DataFrame(results["results"])
 
 
@@ -761,7 +762,7 @@ you! Simply add a ``weight`` parameter your dictionary inside
 
 .. raw:: html
 
-    
+
       <div id="df-b8c85355-7961-40db-be70-8d8ab54af2c7">
         <div class="colab-df-container">
           <div>
@@ -769,11 +770,11 @@ you! Simply add a ``weight`` parameter your dictionary inside
         .dataframe tbody tr th:only-of-type {
             vertical-align: middle;
         }
-    
+
         .dataframe tbody tr th {
             vertical-align: top;
         }
-    
+
         .dataframe thead th {
             text-align: right;
         }
@@ -854,21 +855,21 @@ you! Simply add a ``weight`` parameter your dictionary inside
           <button class="colab-df-convert" onclick="convertToInteractive('df-b8c85355-7961-40db-be70-8d8ab54af2c7')"
                   title="Convert this dataframe to an interactive table."
                   style="display:none;">
-    
+
       <svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
            width="24px">
         <path d="M0 0h24v24H0V0z" fill="none"/>
         <path d="M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z"/><path d="M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z"/>
       </svg>
           </button>
-    
+
       <style>
         .colab-df-container {
           display:flex;
           flex-wrap:wrap;
           gap: 12px;
         }
-    
+
         .colab-df-convert {
           background-color: #E8F0FE;
           border: none;
@@ -880,18 +881,18 @@ you! Simply add a ``weight`` parameter your dictionary inside
           padding: 0 0 0 0;
           width: 32px;
         }
-    
+
         .colab-df-convert:hover {
           background-color: #E2EBFA;
           box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
           fill: #174EA6;
         }
-    
+
         [theme=dark] .colab-df-convert {
           background-color: #3B4455;
           fill: #D2E3FC;
         }
-    
+
         [theme=dark] .colab-df-convert:hover {
           background-color: #434B5C;
           box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
@@ -899,20 +900,20 @@ you! Simply add a ``weight`` parameter your dictionary inside
           fill: #FFFFFF;
         }
       </style>
-    
+
           <script>
             const buttonEl =
               document.querySelector('#df-b8c85355-7961-40db-be70-8d8ab54af2c7 button.colab-df-convert');
             buttonEl.style.display =
               google.colab.kernel.accessAllowed ? 'block' : 'none';
-    
+
             async function convertToInteractive(key) {
               const element = document.querySelector('#df-b8c85355-7961-40db-be70-8d8ab54af2c7');
               const dataTable =
                 await google.colab.kernel.invokeFunction('convertToInteractive',
                                                          [key], {});
               if (!dataTable) return;
-    
+
               const docLinkHtml = 'Like what you see? Visit the ' +
                 '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
                 + ' to learn more about interactive tables.';
@@ -941,7 +942,7 @@ query as belows.
     from PIL import Image
     import requests
     import numpy as np
-    
+
     image_url = "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e6ea66d1-fd36-4436-bcac-72ed14d8308d/wearallday-younger-shoes-5bnMmp.png"
 
 .. raw:: html
@@ -957,9 +958,9 @@ Sample Query Image
 .. code:: ipython3
 
     from relevanceai import show_json
-    
+
     image_vector = encode_image(image_url)
-    
+
     results = ds.advanced_search(
         query="nike",
         fields_to_search=["product_title"],
@@ -977,10 +978,10 @@ Sample Query Image
             "query",
             "product_price",
         ],  # results to return
-        queryConfig={"weight": 0.1} # Adjust the weight of the traditional configuration
+        queryConfig={"weight": 0.1},  # Adjust the weight of the traditional configuration
     )
-    
-    
+
+
     display(
         show_json(
             results["results"],
@@ -988,7 +989,7 @@ Sample Query Image
             image_fields=["product_image"],
         )
     )
-    
+
     # pd.DataFrame(results['results'])
 
 
@@ -1101,8 +1102,9 @@ query is shown below.
 .. code:: ipython3
 
     from relevanceai import mock_documents
+
     documents = mock_documents()
-    
+
     ds = client.Dataset("mock_dataset")
     ds.upsert_documents(documents)
 
@@ -1142,23 +1144,22 @@ query is shown below.
 
 .. code:: ipython3
 
-    # Provide a chunk search 
+    # Provide a chunk search
     ds.advanced_search(
         vector_search_query=[
             {
-             "vector": [1, 1, 1, 1, 1],
-             "field": "label_chunkvector_", 
-             "weight": 1,
-             "chunkConfig": {
-                 "chunkField": "_chunk_",
-                 "page": 0,
-                 # the number of chunk results to return 
-                 # - stored in `_chunk_results` key
-                 "pageSize": 3 
-             }
+                "vector": [1, 1, 1, 1, 1],
+                "field": "label_chunkvector_",
+                "weight": 1,
+                "chunkConfig": {
+                    "chunkField": "_chunk_",
+                    "page": 0,
+                    # the number of chunk results to return
+                    # - stored in `_chunk_results` key
+                    "pageSize": 3,
+                },
             },
         ],
-    
     )
 
 
@@ -1521,5 +1522,3 @@ query is shown below.
         0.540170037829761,
         0.6652872417327402]}],
      'resultsSize': 100}
-
-
