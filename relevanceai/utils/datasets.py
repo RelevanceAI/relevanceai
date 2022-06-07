@@ -12,6 +12,7 @@ import random
 import string
 import sys
 import uuid
+from numpy import number
 import pandas as pd
 import requests
 
@@ -721,7 +722,7 @@ def list_example_datasets():
         return client.list_datasets()
 
 
-def example_documents(dataset_id: str):
+def example_documents(dataset_id: str, number_of_documents: int = None):
     project = "3a4b969f4d5fae6f850e"
     api_key = (
         "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
@@ -735,7 +736,12 @@ def example_documents(dataset_id: str):
         from relevanceai import Client
 
         client = Client(token=token)
-        return client._get_all_documents(dataset_id)
+        if number_of_documents is None:
+            return client._get_all_documents(dataset_id)
+        else:
+            return client._get_documents(
+                dataset_id=dataset_id, number_of_documents=number_of_documents
+            )
 
 
 ### For backwards compatability
