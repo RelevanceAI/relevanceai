@@ -47,7 +47,7 @@ class Dataset(OperationsNew, Operations):
         # add global datasets
         if self.dataset_id in GLOBAL_DATASETS:
             # avoid re-inserting if it already exists
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 from relevanceai.utils.datasets import mock_documents
                 from relevanceai.utils.decorators.analytics import fire_and_forget
 
@@ -61,7 +61,7 @@ class Dataset(OperationsNew, Operations):
     def is_empty(self):
         """Check if a dataset is empty."""
         try:
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 try:
                     print("⚠️ Your dataset has no documents. Make sure to insert some!")
                 except:

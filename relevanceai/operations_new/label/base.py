@@ -20,6 +20,7 @@ class LabelBase(OperationBase):
         similarity_threshold: float = 0.1,
         label_field="label",
         label_vector_field="label_vector_",
+        output_field: str = "_label_",
         **kwargs,
     ):
         self.vector_field = vector_field
@@ -31,6 +32,7 @@ class LabelBase(OperationBase):
         self.label_vector_field = label_vector_field
         self.label_documents = label_documents
         self.vector_fields = [vector_field]
+        self.output_field = output_field
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -92,7 +94,7 @@ class LabelBase(OperationBase):
                 label_documents=self.label_documents,
             )
             # TODO: add inplace=True
-            self.set_field("_label_", documents[i], labels)
+            self.set_field(self.output_field, documents[i], labels)
         return documents
 
     @property

@@ -918,3 +918,21 @@ class Write(Read):
         return self.datasets.documents.update_where(
             dataset_id=self.dataset_id, update=update, filters=filters
         )
+
+    def insert_list(self, labels: list, label_field: str = "label", **kwargs):
+        """It takes a list of labels, and inserts them into the database as documents
+
+        Parameters
+        ----------
+        labels : list
+            list of labels to insert
+        label_field : str, optional
+            The field in the document that contains the label.
+
+        Returns
+        -------
+            A list of the ids of the documents that were inserted.
+
+        """
+        documents = [{label_field: l} for l in labels]
+        return self.insert_documents(documents=documents, **kwargs)

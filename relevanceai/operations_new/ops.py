@@ -86,6 +86,7 @@ class Operations(Write):
         models: Optional[List[Any]] = None,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        output_fields: list = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -114,6 +115,7 @@ class Operations(Write):
             credentials=self.credentials,
             fields=fields,
             models=models,
+            output_fields=output_fields,
         )
 
         filters = [] if filters is None else filters
@@ -193,6 +195,7 @@ class Operations(Write):
         batched: bool = False,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        output_field: str = None,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -244,6 +247,7 @@ class Operations(Write):
             similarity_threshold=similarity_threshold,
             label_field=label_field,
             label_vector_field=label_vector_field,
+            output_field=output_field,
         )
         # Add an exists filter
         if filters is None:
@@ -266,6 +270,43 @@ class Operations(Write):
         )
 
         return ops
+
+    @track
+    def label_from_dataset(
+        self,
+        vector_fields: list,
+        label_dataset,
+        max_number_of_labels: int = 1,
+        label_vector_field="label_vector_",
+        expanded: bool = False,
+        similarity_metric: str = "cosine",
+        label_field: str = "label",
+        batched: bool = True,
+        filters: list = None,
+        similarity_threshold=0.1,
+        chunksize: int = 100,
+        output_field: str = None,
+    ):
+        """
+        Label from another dataset
+        """
+        if output_field is None:
+            output_field = "_label_." + label_dataset.dataset_id + "." + label_field
+        label_documents = label_dataset.get_all_documents()
+        return self.label(
+            vector_fields=vector_fields,
+            label_documents=label_documents,
+            expanded=expanded,
+            output_field=None,
+            max_number_of_labels=max_number_of_labels,
+            similarity_metric=similarity_metric,
+            similarity_threshold=similarity_threshold,
+            label_field=label_field,
+            label_vector_field=label_vector_field,
+            batched=batched,
+            filters=filters,
+            chunksize=chunksize,
+        )
 
     @track
     def split_sentences(
