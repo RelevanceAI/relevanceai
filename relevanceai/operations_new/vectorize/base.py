@@ -12,13 +12,25 @@ class VectorizeBase(OperationRun):
     models: List[VectorizeModelBase]
     fields: List[str]
 
-    def __init__(self, fields: List[str], models: List[VectorizeModelBase], **kwargs):
+    def __init__(
+        self,
+        fields: List[str],
+        models: List[VectorizeModelBase],
+        output_fields: list = None,
+        **kwargs
+    ):
         self.fields = fields
         self.models = [self._get_model(model) for model in models]
         self.vector_fields = []
         for model in self.models:
             for field in self.fields:
                 self.vector_fields.append(model.vector_name(field))
+        if output_fields is not None:
+            if len(output_fields) != len(models) * len(fields):
+                raise NotImplementedError(
+                    "Output fields only supported for 1 model for now."
+                )
+            self.output_fields = output_fields
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -52,6 +64,7 @@ class VectorizeBase(OperationRun):
             updated_documents = model.encode_documents(
                 documents=updated_documents,
                 fields=self.fields,
+                output_fields=self.output_fields,
             )
 
         # removes unnecessary info for updated_where

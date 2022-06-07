@@ -5,7 +5,6 @@ from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.dataset.read import Read
 from relevanceai.constants import (
     GLOBAL_DATASETS,
     SEARCH_APP_LINK,
@@ -14,7 +13,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(OperationsNew, Operations, Read):
+class Dataset(OperationsNew, Operations):
     @track
     def __init__(
         self,
