@@ -43,6 +43,7 @@ bring your own model(s).
 .. code:: ipython3
 
     from relevanceai.utils import get_ecommerce_1_dataset
+
     dataset_id = "ecommerce-2"
     documents = get_ecommerce_1_dataset(number_of_documents=100)
 
@@ -55,6 +56,5 @@ bring your own model(s).
 .. code:: ipython3
 
     ds.vectorize_text(
-        models=["princeton-nlp/sup-simcse-roberta-large"],
-        fields=["product_text"]
+        models=["princeton-nlp/sup-simcse-roberta-large"], fields=["product_text"]
     )

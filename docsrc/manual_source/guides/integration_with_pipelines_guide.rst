@@ -3,9 +3,9 @@
 
 .. code:: ipython3
 
-    In [1]: %load_ext autoreload
+    %load_ext autoreload
 
-    In [2]: %autoreload 2
+    %autoreload 2
 
 Set-up
 ======
@@ -67,9 +67,7 @@ Running Transformers
 .. code:: ipython3
 
     # We can apply HuggingFace Pipelines
-    ds.apply_transformers_pipeline(
-        text_fields=["product_title"], pipeline=nlp
-    )
+    ds.apply_transformers_pipeline(text_fields=["product_title"], pipeline=nlp)
 
 
 
@@ -123,7 +121,7 @@ We can see how they are stored below!
 
 .. code:: ipython3
 
-    ds.head(select_fields=['product_title', '_ner_.dslim/bert-base-NER.product_title'])
+    ds.head(select_fields=["product_title", "_ner_.dslim/bert-base-NER.product_title"])
 
 
 .. parsed-literal::
