@@ -704,6 +704,40 @@ def get_iris_dataset(
     return iris_data
 
 
+def list_example_datasets():
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        return client.list_datasets()
+
+
+def example_documents(dataset_id: str):
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        return client._get_all_documents(dataset_id)
+
+
 ### For backwards compatability
 
 get_ecommerce_1_dataset = get_dummy_ecommerce_dataset = get_ecommerce_dataset_encoded
