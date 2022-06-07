@@ -12,6 +12,7 @@ import random
 import string
 import sys
 import uuid
+from numpy import number
 import pandas as pd
 import requests
 
@@ -702,6 +703,45 @@ def get_iris_dataset(
     if shuffle:
         random.shuffle(iris_data)
     return iris_data
+
+
+def list_example_datasets():
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        return client.list_datasets()
+
+
+def example_documents(dataset_id: str, number_of_documents: int = None):
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        if number_of_documents is None:
+            return client._get_all_documents(dataset_id)
+        else:
+            return client._get_documents(
+                dataset_id=dataset_id, number_of_documents=number_of_documents
+            )
 
 
 ### For backwards compatability
