@@ -68,7 +68,7 @@ class VectorizeBase(OperationRun):
 
     def _get_base_filters(
         self,
-    ) -> List[Dict[str, Any]]:
+    ) -> List:
 
         """
         Creates the filters necessary to search all documents
@@ -105,10 +105,10 @@ class VectorizeBase(OperationRun):
                 A list of filters.
         """
 
-        filters = []
         if len(self.fields) > 1:
             iters = len(self.fields) ** 2
 
+            filters: list = []
             for i in range(iters):
                 binary_array = [character for character in str(bin(i))][2:]
                 mixed_mask = ["0"] * (
@@ -129,9 +129,7 @@ class VectorizeBase(OperationRun):
                         zip(self.fields, self.vector_fields)
                     )
                 ]
-                filters.append(
-                    {"filter_type": "or", "condition_value": condition_value}
-                )
+                filters += [{"filter_type": "or", "condition_value": condition_value}]
 
         else:  # Special Case when only 1 field is provided
             condition_value = [
@@ -139,15 +137,15 @@ class VectorizeBase(OperationRun):
                     "field": self.fields[0],
                     "filter_type": "exists",
                     "condition": "==",
-                    "condition_value": "",
+                    "condition_value": " ",
                 },
                 {
                     "field": self.vector_fields[0],
                     "filter_type": "exists",
                     "condition": "!=",
-                    "condition_value": "",
+                    "condition_value": " ",
                 },
             ]
-            filters.append({"filter_type": "or", "condition_value": condition_value})
+            filters = condition_value
 
         return filters
