@@ -32,7 +32,6 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         verbose: bool = False,
         model=None,
         model_kwargs=None,
-        *args,
         **kwargs,
     ):
         """
@@ -153,6 +152,8 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             The number of clusters
 
         """
+        if alias is None:
+            alias = self.alias
         # Mainly to be used for subclustering
         # Get the cluster alias
         cluster_field = self._get_cluster_field_name()
@@ -214,7 +215,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             alias=self.alias,
         )
 
-    def create_centroids(self):
+    def create_centroids(self, insert: bool = True):
         """
         Calculate centroids from your vectors
 
@@ -242,9 +243,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         # calculate the centroids
         centroid_vectors = self.calculate_centroids()
 
-        self.insert_centroids(
-            centroid_documents=centroid_vectors,
-        )
+        if insert:
+            self.insert_centroids(
+                centroid_documents=centroid_vectors,
+            )
         return centroid_vectors
 
     def calculate_centroids(self):
@@ -271,7 +273,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
 
     def get_centroid_documents(self):
         centroid_vectors = {}
-        if self.model._centroids is not None:
+        if hasattr(self.model, "_centroids") and self.model._centroids is not None:
             centroid_vectors = self.model._centroids
             # get the cluster label function
             labels = range(len(centroid_vectors))
@@ -286,7 +288,6 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             ]
         else:
             centroids = self.create_centroids()
-
         return centroids
 
     def list_closest(

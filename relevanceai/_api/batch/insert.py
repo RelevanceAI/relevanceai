@@ -627,7 +627,7 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: int = 8,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        **csv_kwargs
+        **csv_kwargs,
     ):
 
         """
@@ -656,9 +656,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> df.insert_csv("temp.csv")
 
         """
-        df = pd.read_csv(
-            filepath_or_buffer, **csv_kwargs
-        )
+        df = pd.read_csv(filepath_or_buffer, **csv_kwargs)
 
         # Initialise output
         inserted = 0
@@ -736,7 +734,6 @@ class BatchInsertClient(BatchRetrieveClient):
             verbose=False,
         )
         return response
-
 
     def print_search_dashboard_url(self, dataset_id):
         search_url = (

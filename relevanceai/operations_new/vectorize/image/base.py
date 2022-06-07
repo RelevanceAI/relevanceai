@@ -31,13 +31,15 @@ class VectorizeImageBase(VectorizeBase):
                 )
 
                 vector_length = TFHUB_MODELS[model]["vector_length"]
+                url = TFHUB_MODELS[model]["url"]
+
                 image_dimensions = (
                     TFHUB_MODELS[model]["image_dimensions"]
                     if "image_dimensions" in TFHUB_MODELS[model]
                     else None
                 )
                 model = TFHubImage2Vec(
-                    url=model,
+                    url=url,
                     vector_length=vector_length,
                     image_dimensions=image_dimensions,
                 )
@@ -50,8 +52,10 @@ class VectorizeImageBase(VectorizeBase):
                 )
 
                 vector_length = CLIP_MODELS[model]["vector_length"]
+                url = CLIP_MODELS[model]["url"]
+
                 model = ClipImage2Vec(
-                    url=model,
+                    url=url,
                     vector_length=vector_length,
                 )
 
