@@ -5,6 +5,7 @@ from relevanceai.dataset.series import Series
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.dataset.read import Read
 from relevanceai.constants import (
     GLOBAL_DATASETS,
     SEARCH_APP_LINK,
@@ -13,7 +14,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(OperationsNew, Operations):
+class Dataset(OperationsNew, Operations, Read):
     @track
     def __init__(
         self,
@@ -47,7 +48,7 @@ class Dataset(OperationsNew, Operations):
         # add global datasets
         if self.dataset_id in GLOBAL_DATASETS:
             # avoid re-inserting if it already exists
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 from relevanceai.utils.datasets import mock_documents
                 from relevanceai.utils.decorators.analytics import fire_and_forget
 
@@ -61,7 +62,7 @@ class Dataset(OperationsNew, Operations):
     def is_empty(self):
         """Check if a dataset is empty."""
         try:
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 try:
                     print("⚠️ Your dataset has no documents. Make sure to insert some!")
                 except:
