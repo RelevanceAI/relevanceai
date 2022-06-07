@@ -379,8 +379,8 @@ You can view an example of our text search below.
 
    Text Search
 
-Extract Sentiment
------------------
+🌹 Extract Sentiment
+--------------------
 
 You can add sentiment to your dataset. After adding sentiment
 
@@ -388,8 +388,8 @@ You can add sentiment to your dataset. After adding sentiment
 
     dataset.extract_sentiment(text_fields=["reviews.text"]
 
-Add Labels To Your Dataset
---------------------------
+🏷️ Add Labels To Your Dataset
+-----------------------------
 
 Labelling refers to when you apply a vector search from one tag to
 another.
@@ -417,63 +417,12 @@ another.
         output_fields=["label_vector_"]
     )
 
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    Vector field is `label_vector_`
-    ✅ All documents inserted/edited successfully.
-    Storing operation metadata...
-    ✅ You have successfully inserted metadata.
-
-
-
-
-.. parsed-literal::
-
-    <relevanceai.operations_new.vectorize.text.ops.VectorizeTextOps at 0x284649f70>
-
-
-
 .. code:: ipython3
 
     dataset.label_from_dataset(
         vector_fields=dataset.list_vector_fields(),
         label_dataset=label_dataset
     )
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-
-.. parsed-literal::
-
-      0%|          | 0/1 [00:00<?, ?it/s]
-
-
-.. parsed-literal::
-
-    ✅ All documents inserted/edited successfully.
-    Storing operation metadata...
-    ✅ You have successfully inserted metadata.
-
-
-
-
-.. parsed-literal::
-
-    <relevanceai.operations_new.label.ops.LabelOps at 0x1774ff5b0>
-
-
 
 You can now see the labels on your dataset on Relevance AI.
 
