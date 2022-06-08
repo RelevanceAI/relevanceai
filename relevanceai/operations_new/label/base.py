@@ -96,7 +96,7 @@ class LabelBase(OperationBase):
             )
             # TODO: add inplace=True
             self.set_field(self.output_field, label_docs[i], labels)
-        return documents
+        return label_docs
 
     @property
     def name(self):
