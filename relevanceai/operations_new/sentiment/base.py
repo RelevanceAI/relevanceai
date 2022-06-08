@@ -60,18 +60,18 @@ class SentimentBase(OperationBase):
             )
         return self._classifier
 
-    def _get_model(self):
-        try:
-            import transformers
-        except ModuleNotFoundError:
-            print(
-                "Need to install transformers by running `pip install -q transformers`."
-            )
-        self.classifier = transformers.pipeline(
-            "sentiment-analysis",
-            return_all_scores=True,
-            model="cardiffnlp/twitter-roberta-base-sentiment",
-        )
+    # def _get_model(self):
+    #     try:
+    #         import transformers
+    #     except ModuleNotFoundError:
+    #         print(
+    #             "Need to install transformers by running `pip install -q transformers`."
+    #         )
+    #     self.classifier = transformers.pipeline(
+    #         "sentiment-analysis",
+    #         return_all_scores=True,
+    #         model="cardiffnlp/twitter-roberta-base-sentiment",
+    #     )
 
     def _get_label_mapping(self, task: str):
         # Note: this is specific to the current model
@@ -97,7 +97,7 @@ class SentimentBase(OperationBase):
     ):
         if text is None:
             return None
-        labels = self.classifier([text])
+        labels = self.classifier([text], truncation=True)
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
