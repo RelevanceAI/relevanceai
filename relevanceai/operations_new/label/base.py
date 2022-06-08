@@ -87,7 +87,7 @@ class LabelBase(OperationBase):
 
         # Get all vectors
         vectors = self.get_field_across_documents(self.vector_field, documents)
-        label_docs = [{"_id": d["_id"] for d in documents}]
+        label_docs = [{"_id": d["_id"]} for d in documents]
         for i, vector in enumerate(vectors):
             # search across
             labels = self._get_nearest_labels(
