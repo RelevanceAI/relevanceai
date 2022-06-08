@@ -186,6 +186,7 @@ class LabelBase(OperationBase):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
             :max_number_of_labels
         ]
+        labels = [l for l in labels if l[score_field] > similarity_threshold]
         labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in labels]
