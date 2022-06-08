@@ -17,7 +17,7 @@ def chunk(iterables, n=20):
 
 
 def multithread(
-    func, iterables, max_workers=8, chunksize=20, show_progress_bar: bool = False
+    func, iterables, max_workers=2, chunksize=20, show_progress_bar: bool = False
 ):
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         progress_tracker = progress_bar(
@@ -41,7 +41,7 @@ def multithread(
 def multiprocess(
     func,
     iterables,
-    max_workers=8,
+    max_workers=2,
     chunksize=20,
     post_func_hook: Callable = None,
     show_progress_bar: bool = False,

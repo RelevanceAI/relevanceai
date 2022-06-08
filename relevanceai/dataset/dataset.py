@@ -9,6 +9,7 @@ from relevanceai.constants import (
     GLOBAL_DATASETS,
     SEARCH_APP_LINK,
     PROJECTOR_APP_LINK,
+    EXPLORER_APP_LINK,
 )
 
 
@@ -46,7 +47,7 @@ class Dataset(OperationsNew, Operations):
         # add global datasets
         if self.dataset_id in GLOBAL_DATASETS:
             # avoid re-inserting if it already exists
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 from relevanceai.utils.datasets import mock_documents
                 from relevanceai.utils.decorators.analytics import fire_and_forget
 
@@ -60,7 +61,7 @@ class Dataset(OperationsNew, Operations):
     def is_empty(self):
         """Check if a dataset is empty."""
         try:
-            if self.dataset_id not in self.datasets.list()["datasets"]:
+            if self.shape[0] == 0:
                 try:
                     print("⚠️ Your dataset has no documents. Make sure to insert some!")
                 except:
@@ -124,7 +125,7 @@ class Dataset(OperationsNew, Operations):
             ds.launch_search_app()
 
         """
-        return SEARCH_APP_LINK.format(self.dataset_id)
+        print(SEARCH_APP_LINK.format(self.dataset_id))
 
     @track
     def launch_projector_app(self):
@@ -136,7 +137,11 @@ class Dataset(OperationsNew, Operations):
             ds.launch_projector_app()
 
         """
-        return PROJECTOR_APP_LINK.format(self.dataset_id)
+        print(PROJECTOR_APP_LINK.format(self.dataset_id))
+
+    @track
+    def launch_explore_app(self):
+        print(EXPLORER_APP_LINK.format(self.dataset_id))
 
     def set_dtypes(self, mapping: dict):
         unstruc_types = ["_numeric_", "_category_", "_text_", "_image_"]

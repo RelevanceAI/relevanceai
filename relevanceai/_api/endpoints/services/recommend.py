@@ -105,7 +105,7 @@ class RecommendClient(_Base):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         """
@@ -261,7 +261,7 @@ class RecommendClient(_Base):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         search_history_id: str

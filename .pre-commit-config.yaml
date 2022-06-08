@@ -19,3 +19,9 @@ repos:
     hooks:
     -   id: mypy
         files: relevanceai
+
+# -   repo: https://github.com/yunojuno/pre-commit-xenon
+#     rev: cc59b0431a5d072786b59430e9b342b2881064f6
+#     hooks:
+#     - id: xenon
+#       args: ["--max-absolute=B",  "--max-modules=A", "--max-average=A", "--exclude relevanceai/operations/*,relevanceai/_api/*,relevanceai/operations_new/cluster/models/sentence_transformers/community_detection.py,relevanceai/utils/transport.py,relevanceai/utils/transport.py,relevanceai/utils/json_encoder.py,relevanceai/utils/logger.py,relevanceai/utils/doc_utils/read_utils.py,relevanceai/dataset/read/read.py,relevanceai/dataset/read/statistics/statistics.py,relevanceai/workflow/sequential.py,relevanceai/operations_new/cluster/batch/ops.py,relevanceai/utils/json_encoder.py,relevanceai/utils/migration/migrate.py,relevanceai/dataset/io/export/export.py relevanceai"]

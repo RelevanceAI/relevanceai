@@ -241,6 +241,9 @@ class Statistics(APIClient):
             df.health
 
         """
+        print(
+            "To see all rows, run `pd.set_option('display.max_rows', None)` (where `pd` is pandas)."
+        )
         results = self.datasets.monitor.health(self.dataset_id)
         if output_format == "dataframe":
             return pd.DataFrame(results).T

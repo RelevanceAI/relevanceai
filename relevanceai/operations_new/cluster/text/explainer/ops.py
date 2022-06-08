@@ -219,4 +219,17 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
         print(
             f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
+        self.datasets.post_settings(
+            settings={
+                "settings": {
+                    "highlightingRules": [
+                        {
+                            "substringField": highlight_output_field,
+                            "weightField": "",
+                            "fullField": text_field,
+                        }
+                    ]
+                }
+            }
+        )
         return closest

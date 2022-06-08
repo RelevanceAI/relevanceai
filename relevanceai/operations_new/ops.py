@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional
 
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
+from relevanceai.constants import EXPLORER_APP_LINK
 
 
 class Operations(Write):
@@ -85,6 +86,7 @@ class Operations(Write):
         models: Optional[List[Any]] = None,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        output_fields: list = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -113,8 +115,11 @@ class Operations(Write):
             credentials=self.credentials,
             fields=fields,
             models=models,
+            output_fields=output_fields,
         )
 
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -132,7 +137,7 @@ class Operations(Write):
         models: Optional[List[Any]] = None,
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = None,
+        chunksize: Optional[int] = 20,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -163,6 +168,9 @@ class Operations(Write):
             models=models,
         )
 
+        filters = [] if filters is None else filters
+        filters += ops._get_base_filters()
+
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -187,6 +195,7 @@ class Operations(Write):
         batched: bool = False,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        output_field: str = None,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -227,6 +236,7 @@ class Operations(Write):
             raise ValueError(
                 "We currently do not support on more than 1 vector length."
             )
+
         ops = LabelOps(
             credentials=self.credentials,
             label_documents=label_documents,
@@ -237,6 +247,7 @@ class Operations(Write):
             similarity_threshold=similarity_threshold,
             label_field=label_field,
             label_vector_field=label_vector_field,
+            output_field=output_field,
         )
         # Add an exists filter
         if filters is None:
@@ -259,6 +270,43 @@ class Operations(Write):
         )
 
         return ops
+
+    @track
+    def label_from_dataset(
+        self,
+        vector_fields: list,
+        label_dataset,
+        max_number_of_labels: int = 1,
+        label_vector_field="label_vector_",
+        expanded: bool = False,
+        similarity_metric: str = "cosine",
+        label_field: str = "label",
+        batched: bool = True,
+        filters: list = None,
+        similarity_threshold=0.1,
+        chunksize: int = 100,
+        output_field: str = None,
+    ):
+        """
+        Label from another dataset
+        """
+        if output_field is None:
+            output_field = "_label_." + label_dataset.dataset_id + "." + label_field
+        label_documents = label_dataset.get_all_documents()
+        return self.label(
+            vector_fields=vector_fields,
+            label_documents=label_documents,
+            expanded=expanded,
+            output_field=None,
+            max_number_of_labels=max_number_of_labels,
+            similarity_metric=similarity_metric,
+            similarity_threshold=similarity_threshold,
+            label_field=label_field,
+            label_vector_field=label_vector_field,
+            batched=batched,
+            filters=filters,
+            chunksize=chunksize,
+        )
 
     @track
     def split_sentences(
@@ -403,9 +451,8 @@ class Operations(Write):
         )
 
         print("Configure your new cluster app below:")
-        print(
-            f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster/"
-        )
+        print()
+        print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 
     def _get_alias(self, alias: Any) -> str:
@@ -514,3 +561,99 @@ class Operations(Write):
             output_field=output_field,
         )
         return ops.run(self, filters=filters, select_fields=text_fields)
+
+    def subcluster(
+        self,
+        vector_fields: List[str],
+        alias: str,
+        parent_field: str,
+        model: Any = "kmeans",
+        cluster_field: str = "_cluster_",
+        model_kwargs: Optional[dict] = None,
+        filters: Optional[list] = None,
+        cluster_ids: Optional[list] = None,
+        min_parent_cluster_size: int = 0,
+        **kwargs,
+    ):
+        from relevanceai.operations_new.cluster.sub.ops import SubClusterOps
+
+        ops = SubClusterOps(
+            model=model,
+            alias=alias,
+            vector_fields=vector_fields,
+            parent_field=parent_field,
+            model_kwargs=model_kwargs,
+            cluster_field=cluster_field,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            cluster_ids=cluster_ids,
+            min_parent_cluster_size=min_parent_cluster_size,
+            **kwargs,
+        )
+
+        # Building an infinitely hackable SDK
+
+        # Add filters and select fields
+        select_fields = vector_fields + [parent_field]
+        if filters is None:
+            filters = []
+
+        if cluster_ids is not None:
+            filters += [
+                {
+                    "field": parent_field,
+                    "filter_type": "exact_match",
+                    "condition": "==",
+                    "condition_value": cluster_id,
+                }
+                for cluster_id in cluster_ids
+            ]
+        filters += [
+            {
+                "field": vf,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for vf in vector_fields
+        ]
+        filters += [
+            {
+                "field": parent_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+        ]
+
+        ops.run(
+            self,
+            filters=filters,
+            select_fields=select_fields,
+        )
+        print(
+            f"""You can now utilise the ClusterOps object based on subclustering.
+
+    cluster_ops = client.ClusterOps(
+        alias='{ops.alias}',
+        vector_fields={ops.vector_fields},
+        dataset_id='{self.dataset_id}'
+    )"""
+        )
+
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        model = "kmeans" if model is None else model
+        model_kwargs = {} if model_kwargs is None else model_kwargs
+
+        ops = ClusterOps(
+            model=model,
+            alias=alias,  # type: ignore
+            vector_fields=vector_fields,  # type: ignore
+            verbose=False,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
+        return ops

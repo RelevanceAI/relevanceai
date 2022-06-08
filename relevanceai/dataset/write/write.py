@@ -29,7 +29,7 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
@@ -107,7 +107,7 @@ class Write(Read):
         self,
         filepath_or_buffer,
         chunksize: int = 10000,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
@@ -305,7 +305,7 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
         show_progress_bar=False,
@@ -610,7 +610,7 @@ class Write(Read):
     def create(self, schema: Optional[dict] = None) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+        A powerful and core feature of Relevance is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -634,7 +634,7 @@ class Write(Read):
                 "product_text_chunkvector_" : 1024
             }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+        You don't have to specify the schema of every single field when creating a dataset, as Relevance will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
 
@@ -918,3 +918,21 @@ class Write(Read):
         return self.datasets.documents.update_where(
             dataset_id=self.dataset_id, update=update, filters=filters
         )
+
+    def insert_list(self, labels: list, label_field: str = "label", **kwargs):
+        """It takes a list of labels, and inserts them into the database as documents
+
+        Parameters
+        ----------
+        labels : list
+            list of labels to insert
+        label_field : str, optional
+            The field in the document that contains the label.
+
+        Returns
+        -------
+            A list of the ids of the documents that were inserted.
+
+        """
+        documents = [{label_field: l} for l in labels]
+        return self.insert_documents(documents=documents, **kwargs)
