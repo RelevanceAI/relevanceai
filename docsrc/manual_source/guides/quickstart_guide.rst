@@ -12,9 +12,9 @@ unstructured data With just a few lines of code, you’ll get rich,
 interactive, shareable dashboards
 
 .. figure:: dashboard_screenshot.png
-   :alt: dashboard_screenshot.png
+   :alt: Dashboard screenshot
 
-   dashboard_screenshot.png
+   Dashboard screenshot
 
 🔒 Data & Privacy
 ~~~~~~~~~~~~~~~~~
