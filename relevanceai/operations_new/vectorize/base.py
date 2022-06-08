@@ -30,7 +30,7 @@ class VectorizeBase(OperationRun):
                 raise NotImplementedError(
                     "Output fields only supported for 1 model for now."
                 )
-            self.output_fields = output_fields
+        self.output_fields = output_fields
 
         for key, value in kwargs.items():
             setattr(self, key, value)
