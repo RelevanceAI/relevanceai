@@ -8,7 +8,7 @@ and machine learning engineers how best to unlock Relevance AI.
 .. toctree::
     :caption: Start Here
 
-    QuickStart <quickstart_guide>
+    🏃‍♀️ QuickStart <quickstart_guide>
     feature_tour_guide
 
 .. toctree::
