@@ -261,6 +261,16 @@ class Operations(Write):
                 "condition_value": " ",
             }
         ]
+        # Check if output field already exists
+        if output_field is not None:
+            filters += [
+                {
+                    "field": output_field,
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": " ",
+                }
+            ]
 
         res = ops.run(
             dataset=self,
