@@ -535,6 +535,7 @@ class Operations(Write):
         min_abs_score: float = 0.1,
         filters: Optional[list] = None,
         output_fields: list = None,
+        chunksize: int = 100,
     ):
         """
         Extract sentiment from the dataset
@@ -549,7 +550,9 @@ class Operations(Write):
             min_abs_score=min_abs_score,
             output_fields=output_fields,
         )
-        return ops.run(self, filters=filters)
+        return ops.run(
+            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+        )
 
     def apply_transformers_pipeline(
         self,

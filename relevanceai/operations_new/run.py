@@ -85,6 +85,7 @@ class OperationRun(OperationBase):
         filters: list = None,
         chunksize: int = None,
         max_active_threads: int = 2,
+        timeout: int = 120,
         *args,
         **kwargs,
     ):
@@ -110,9 +111,14 @@ class OperationRun(OperationBase):
                 thread_count += 1
                 if thread_count >= max_active_threads:
                     # Check if thread count decreases
+                    checker = 0
                     curr_thread_count = threading.active_count()
-                    while threading.active_count() >= curr_thread_count:
+                    while (
+                        threading.active_count() >= curr_thread_count
+                        and checker < timeout
+                    ):
                         time.sleep(1)
+                        checker += 1
                     thread_count -= 1
 
                 fire_upsert_docs()
