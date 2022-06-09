@@ -1,11 +1,15 @@
 """
 All functions related to running operations on datasets
 """
+import threading
+import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.base import OperationBase
+
+from relevanceai.utils import fire_and_forget
 
 
 class OperationRun(OperationBase):
@@ -71,6 +75,7 @@ class OperationRun(OperationBase):
                     *args,
                     **kwargs,
                 )
+
                 dataset.upsert_documents(updated_documents)
 
     def batch_transform_upsert(
@@ -79,9 +84,13 @@ class OperationRun(OperationBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
+        max_active_threads: int = 2,
         *args,
         **kwargs,
     ):
+        # Here we limit the number of threadsA
+        thread_count = 0
+
         for chunk in dataset.chunk_dataset(
             select_fields=select_fields,
             filters=filters,
@@ -93,7 +102,20 @@ class OperationRun(OperationBase):
                 **kwargs,
             )
             if updated_chunk is not None and len(updated_chunk) > 0:
-                dataset.upsert_documents(updated_chunk)
+
+                @fire_and_forget
+                def fire_upsert_docs():
+                    dataset.upsert_documents(updated_chunk)
+
+                thread_count += 1
+                if thread_count >= max_active_threads:
+                    # Check if thread count decreases
+                    curr_thread_count = threading.active_count()
+                    while threading.active_count() >= curr_thread_count:
+                        time.sleep(1)
+                    thread_count -= 1
+
+                fire_upsert_docs()
 
     def store_operation_metadata(
         self,
