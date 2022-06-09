@@ -57,6 +57,7 @@ test_requirements = (
     ]
     + excel_requirements
     + requirements
+    + umap
 )
 
 doc_requirements = [
