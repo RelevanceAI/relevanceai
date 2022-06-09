@@ -123,15 +123,15 @@ class Filter(APIClient):
         return schema[self.field]
 
     def get(self):
-        dtype = self.dtype
-
+        # get dtype in elif statements to avoid
+        # schema errors if field does not exist yet
         if hasattr(self, "filter_type"):
             filter_type = self.filter_type
 
-        elif dtype == "numeric":
+        elif self.dtype == "numeric":
             filter_type = "numeric"
 
-        elif dtype == "date":
+        elif self.dtype == "date":
             filter_type = "date"
 
         else:
