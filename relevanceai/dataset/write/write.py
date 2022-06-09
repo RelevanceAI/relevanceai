@@ -521,7 +521,7 @@ class Write(Read):
         select_fields = [] if select_fields is None else select_fields
 
         for chunk in self.chunk_dataset(
-            eelect_fields=select_fields,
+            select_fields=select_fields,
             filters=filters,
             chunksize=retrieve_chunksize,
         ):
