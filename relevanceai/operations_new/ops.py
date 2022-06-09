@@ -192,7 +192,7 @@ class Operations(Write):
         similarity_threshold: float = 0,
         label_field: str = "label",
         label_vector_field: str = "label_vector_",
-        batched: bool = False,
+        batched: bool = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
