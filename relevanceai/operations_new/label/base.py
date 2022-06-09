@@ -87,17 +87,25 @@ class LabelBase(OperationBase):
 
         # Get all vectors
         vectors = self.get_field_across_documents(self.vector_field, documents)
-        label_docs = []
-        for i, vector in enumerate(vectors):
-            labels = self._get_nearest_labels(
-                vector=vector,
-                label_documents=self.label_documents,
-            )
-            if len(labels) > 0:
-                doc: dict = {"_id": documents[i]["_id"]}
-                self.set_field(self.output_field, doc, labels)
-                label_docs.append(doc)
+
+        # TODO switch this to multiprocessing
+        from relevanceai.utils import multiprocess_list
+
+        # label_docs = multiprocess_list(self.get_label_document, documents)
+        label_docs = [
+            self.get_label_document(document) for i, document in enumerate(documents)
+        ]
+
         return label_docs
+
+    def get_label_document(self, document, *args, **kwargs):
+        labels = self._get_nearest_labels(
+            vector=self.get_field(self.vector_field, document),
+            label_documents=self.label_documents,
+        )
+        doc: dict = {"_id": document["_id"]}
+        self.set_field(self.output_field, doc, labels)
+        return doc
 
     @property
     def name(self):

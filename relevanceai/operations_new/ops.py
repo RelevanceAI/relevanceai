@@ -283,6 +283,7 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
+            select_fields=vector_fields,
         )
 
         return ops
