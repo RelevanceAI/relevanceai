@@ -131,7 +131,11 @@ class DimReductionBase(OperationRun):
                 docs=documents,
                 missing_treatment="return_empty_string",
             )
-            vector_length = [len(v) for v in vectors if v != ""][0]
+            vector_length = self.get_field_across_documents(
+                field=vector_field,
+                docs=documents,
+                missing_treatment="skip",
+            )[1]
 
             for vector, concat_vector in zip(vectors, concat_vectors):
                 if len(vector) == 0:

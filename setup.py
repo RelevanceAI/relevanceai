@@ -68,7 +68,7 @@ doc_requirements = [
 ]
 
 dev_requirements = (
-    ["autopep8", "pylint", "jupyter", "pre-commit", "black", "mypy"]
+    ["autopep8", "pylint", "jupyter", "pre-commit", "black", "mypy", "xenon"]
     + test_requirements
     + doc_requirements
 )
