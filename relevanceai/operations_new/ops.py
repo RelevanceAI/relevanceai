@@ -35,6 +35,7 @@ class Operations(Write):
         alias: Optional[str] = None,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        output_field: str = None,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -66,6 +67,7 @@ class Operations(Write):
             model=model,
             model_kwargs=model_kwargs,
             alias=alias,
+            output_field=output_field,
         )
 
         res = ops.run(
