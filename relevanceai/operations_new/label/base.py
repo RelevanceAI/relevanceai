@@ -87,17 +87,23 @@ class LabelBase(OperationBase):
 
         # Get all vectors
         vectors = self.get_field_across_documents(self.vector_field, documents)
-        label_docs = []
-        for i, vector in enumerate(vectors):
-            labels = self._get_nearest_labels(
-                vector=vector,
-                label_documents=self.label_documents,
-            )
-            if len(labels) > 0:
-                doc: dict = {"_id": documents[i]["_id"]}
-                self.set_field(self.output_field, doc, labels)
-                label_docs.append(doc)
+
+        # TODO switch this to multiprocessing
+        label_docs = [
+            self.get_label_document(vector, documents[i]["_id"])
+            for i, vector in enumerate(vectors)
+        ]
+
         return label_docs
+
+    def get_label_document(self, vector, document_id):
+        labels = self._get_nearest_labels(
+            vector=vector,
+            label_documents=self.label_documents,
+        )
+        doc: dict = {"_id": document_id}
+        self.set_field(self.output_field, doc, labels)
+        return doc
 
     @property
     def name(self):
