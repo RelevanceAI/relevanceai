@@ -87,15 +87,16 @@ class LabelBase(OperationBase):
 
         # Get all vectors
         vectors = self.get_field_across_documents(self.vector_field, documents)
-        label_docs = [{"_id": d["_id"]} for d in documents]
+        label_docs = []
         for i, vector in enumerate(vectors):
-            # search across
             labels = self._get_nearest_labels(
                 vector=vector,
                 label_documents=self.label_documents,
             )
-            # TODO: add inplace=True
-            self.set_field(self.output_field, label_docs[i], labels)
+            if len(labels) > 0:
+                doc: dict = {}
+                self.set_field(self.output_field, doc, labels)
+                label_docs.append(doc)
         return label_docs
 
     @property

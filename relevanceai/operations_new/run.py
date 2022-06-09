@@ -54,17 +54,13 @@ class OperationRun(OperationBase):
         ) as dataset:
 
             if batched:
-                for chunk in dataset.chunk_dataset(
+                self.batch_transform_upsert(
+                    dataset=dataset,
                     select_fields=select_fields,
                     filters=filters,
                     chunksize=chunksize,
-                ):
-                    updated_chunk = self.transform(
-                        chunk,
-                        *args,
-                        **kwargs,
-                    )
-                    dataset.upsert_documents(updated_chunk)
+                    **kwargs,
+                )
             else:
                 documents = dataset.get_all_documents(
                     select_fields=select_fields,
@@ -76,6 +72,28 @@ class OperationRun(OperationBase):
                     **kwargs,
                 )
                 dataset.upsert_documents(updated_documents)
+
+    def batch_transform_upsert(
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        chunksize: int = None,
+        *args,
+        **kwargs,
+    ):
+        for chunk in dataset.chunk_dataset(
+            select_fields=select_fields,
+            filters=filters,
+            chunksize=chunksize,
+        ):
+            updated_chunk = self.transform(
+                chunk,
+                *args,
+                **kwargs,
+            )
+            if updated_chunk is not None and len(updated_chunk) > 0:
+                dataset.upsert_documents(updated_chunk)
 
     def store_operation_metadata(
         self,
