@@ -23,9 +23,12 @@ class _ModelUtils(DocUtils):
         documents: List[Dict[str, Any]],
         warm_start: bool = False,
     ):
+        if warm_start:
+            raise NotImplementedError("`warm_start` is not supported.")
+
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
-            cluster_labels = self.fit_predict(vectors, warm_start)
+            cluster_labels = self.fit_predict(vectors)
             return self.format_cluster_labels(cluster_labels)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
