@@ -20,6 +20,7 @@ class SentimentBase(OperationBase):
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
+        output_fields: list = None,
         **kwargs,
     ):
         """
@@ -38,6 +39,7 @@ class SentimentBase(OperationBase):
         self.positive_sentiment_name = positive_sentiment_name
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
+        self.output_fields = output_fields
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -181,8 +183,11 @@ class SentimentBase(OperationBase):
     def transform(self, documents):
         # For each document, update the field
         sentiment_docs = [{"_id": d["_id"]} for d in documents]
-        for t in self.text_fields:
-            output_field = self._get_output_field(t)
+        for i, t in enumerate(self.text_fields):
+            if self.output_fields is not None:
+                output_field = self.output_fields[i]
+            else:
+                output_field = self._get_output_field(t)
             sentiments = [
                 self.analyze_sentiment(
                     self.get_field(t, doc),
