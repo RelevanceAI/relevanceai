@@ -237,6 +237,10 @@ class Operations(Write):
                 "We currently do not support on more than 1 vector length."
             )
 
+        self.datasets.create(
+            dataset_id=self.dataset_id, schema={output_field: "chunks"}
+        )
+
         ops = LabelOps(
             credentials=self.credentials,
             label_documents=label_documents,
