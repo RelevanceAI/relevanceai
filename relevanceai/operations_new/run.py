@@ -59,8 +59,7 @@ class OperationRun(OperationBase):
                     select_fields=select_fields,
                     filters=filters,
                     chunksize=chunksize,
-                    # *args,
-                    # **kwargs,
+                    **kwargs,
                 )
             else:
                 documents = dataset.get_all_documents(
