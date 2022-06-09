@@ -64,7 +64,8 @@ class OperationRun(OperationBase):
                         *args,
                         **kwargs,
                     )
-                    dataset.upsert_documents(updated_chunk)
+                    if updated_chunk is not None and len(updated_chunk) > 0:
+                        dataset.upsert_documents(updated_chunk)
             else:
                 documents = dataset.get_all_documents(
                     select_fields=select_fields,
