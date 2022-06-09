@@ -94,7 +94,7 @@ class LabelBase(OperationBase):
                 label_documents=self.label_documents,
             )
             if len(labels) > 0:
-                doc: dict = {}
+                doc: dict = {"_id": documents[i]["_id"]}
                 self.set_field(self.output_field, doc, labels)
                 label_docs.append(doc)
         return label_docs
