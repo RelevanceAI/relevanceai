@@ -180,6 +180,7 @@ class SentimentBase(OperationBase):
 
     def transform(self, documents):
         # For each document, update the field
+        sentiment_docs = [{"_id": d["_id"]} for d in documents]
         for t in self.text_fields:
             output_field = self._get_output_field(t)
             sentiments = [
@@ -191,8 +192,8 @@ class SentimentBase(OperationBase):
                 )
                 for doc in documents
             ]
-            self.set_field_across_documents(output_field, sentiments, documents)
-        return documents
+            self.set_field_across_documents(output_field, sentiments, sentiment_docs)
+        return sentiment_docs
 
     # def analyze_sentiment(self, text, highlight:bool= True):
     #     try:
