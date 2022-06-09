@@ -22,7 +22,9 @@ class CommunityDetection(ModelBase):
     def __call__(self, *args, **kwargs):
         return self.fit_predict(*args, **kwargs)
 
-    def fit_predict(self, vectors):
+    def fit_predict(self, vectors, **kwargs):
+        if isinstance(vectors, list):
+            vectors = np.array(vectors)
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
         else:
