@@ -9,7 +9,9 @@ class DimReductionModelBase(ABC, DocUtils):
     model_name: str
     alias: Union[str, None]
 
-    def vector_name(self, fields: List[str]) -> str:
+    def vector_name(self, fields: List[str], output_field: str = None) -> str:
+        if output_field is not None:
+            return output_field
         if isinstance(self.alias, str):
             if "_vector_" in self.alias:
                 return self.alias
