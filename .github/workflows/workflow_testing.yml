@@ -2,7 +2,7 @@ name: Testing workflow branch creation upon release
 
 on:
   pull_request:
-    # branches: [main]
+    branches: [main]
 
 jobs:
   setup-tests:
@@ -23,14 +23,12 @@ jobs:
           cd workflows
 
           NOTEBOOKS=$(cat 'workflows/.workflowsignore' | grep '#' | sed 's/# //g')
-          NOTEBOOK_FPATHS=$( grep -Fx "$NOTEBOOKS" <<< "$DIFF_NOTEBOOKS" | jq -Rsc '. / "\n" - [""]' )
-
+          NOTEBOOK_FPATHS=$(for n in $NOTEBOOKS; do echo $n; done |  jq -Rsc '. / "\n" - [""]' )
           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
 
   test-notebooks:
     name: Test ${{ matrix.notebook }}
     needs: setup-tests
-    if: ${{ needs.setup-tests.outputs.notebook-fpaths }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
