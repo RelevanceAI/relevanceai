@@ -8,6 +8,10 @@ from abc import abstractmethod
 # from relevanceai.constants import CONFIG
 from relevanceai.utils.config_mixin import ConfigMixin
 
+# suppressing warnings and errors
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from os import devnull
+
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -62,6 +66,8 @@ class FileLogger:
 
     def __init__(self, fn: str = "logs.txt", verbose: bool = False, log_to_file=True):
         self.fn = fn
+        if verbose:
+            print(f"Logging to {self.fn}")
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
         self.verbose = verbose
@@ -125,3 +131,11 @@ class FileLogger:
         if len(lines) > 1:
             return True
         return False
+
+
+@contextmanager
+def suppress_stdout_stderr():
+    """A context manager that redirects stdout and stderr to devnull"""
+    with open(devnull, "w") as fnull:
+        with redirect_stderr(fnull) as err, redirect_stdout(fnull) as out:
+            yield (err, out)

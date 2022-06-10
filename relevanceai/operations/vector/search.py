@@ -44,7 +44,7 @@ class SearchOps(APIClient):
         query: str = None,
     ):
         """
-        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of VecDB vector search:
+        Allows you to leverage vector similarity search to create a semantic search engine. Powerful features of Relevance vector search:
 
         1. Multivector search that allows you to search with multiple vectors and give each vector a different weight.
         e.g. Search with a product image vector and text description vector to find the most similar products by what it looks like and what its described to do.
@@ -127,7 +127,7 @@ class SearchOps(APIClient):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         search_history_id: string
@@ -252,7 +252,7 @@ class SearchOps(APIClient):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         search_history_id: string
@@ -382,7 +382,7 @@ class SearchOps(APIClient):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         query: string
@@ -474,7 +474,7 @@ class SearchOps(APIClient):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         first_step_multivector_query: list

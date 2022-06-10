@@ -20,6 +20,7 @@ class LabelBase(OperationBase):
         similarity_threshold: float = 0.1,
         label_field="label",
         label_vector_field="label_vector_",
+        output_field: str = "_label_",
         **kwargs,
     ):
         self.vector_field = vector_field
@@ -31,6 +32,7 @@ class LabelBase(OperationBase):
         self.label_vector_field = label_vector_field
         self.label_documents = label_documents
         self.vector_fields = [vector_field]
+        self.output_field = output_field
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -85,15 +87,25 @@ class LabelBase(OperationBase):
 
         # Get all vectors
         vectors = self.get_field_across_documents(self.vector_field, documents)
-        for i, vector in enumerate(vectors):
-            # search across
-            labels = self._get_nearest_labels(
-                vector=vector,
-                label_documents=self.label_documents,
-            )
-            # TODO: add inplace=True
-            self.set_field("_label_", documents[i], labels)
-        return documents
+
+        # TODO switch this to multiprocessing
+        from relevanceai.utils import multiprocess_list
+
+        # label_docs = multiprocess_list(self.get_label_document, documents)
+        label_docs = [
+            self.get_label_document(document) for i, document in enumerate(documents)
+        ]
+
+        return label_docs
+
+    def get_label_document(self, document, *args, **kwargs):
+        labels = self._get_nearest_labels(
+            vector=self.get_field(self.vector_field, document),
+            label_documents=self.label_documents,
+        )
+        doc: dict = {"_id": document["_id"]}
+        self.set_field(self.output_field, doc, labels)
+        return doc
 
     @property
     def name(self):
@@ -184,6 +196,7 @@ class LabelBase(OperationBase):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
             :max_number_of_labels
         ]
+        labels = [l for l in labels if l[score_field] > similarity_threshold]
         labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in labels]

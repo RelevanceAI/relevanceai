@@ -1,11 +1,15 @@
 """
 All functions related to running operations on datasets
 """
+import threading
+import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.base import OperationBase
+
+from relevanceai.utils import fire_and_forget
 
 
 class OperationRun(OperationBase):
@@ -39,23 +43,28 @@ class OperationRun(OperationBase):
 
         from relevanceai.operations_new.manager import OperationManager
 
+        # store this
+        if hasattr(dataset, "dataset_id"):
+            self.dataset_id = dataset.dataset_id
+        schema = dataset.schema
+        if select_fields is not None:
+            for field in select_fields:
+                if field not in schema:
+                    raise ValueError(f"{field} not in Dataset schema")
+
         with OperationManager(
             dataset=dataset,
             operation=self,
         ) as dataset:
 
             if batched:
-                for chunk in dataset.chunk_dataset(
+                self.batch_transform_upsert(
+                    dataset=dataset,
                     select_fields=select_fields,
                     filters=filters,
                     chunksize=chunksize,
-                ):
-                    updated_chunk = self.transform(
-                        chunk,
-                        *args,
-                        **kwargs,
-                    )
-                    dataset.upsert_documents(updated_chunk)
+                    **kwargs,
+                )
             else:
                 documents = dataset.get_all_documents(
                     select_fields=select_fields,
@@ -66,7 +75,57 @@ class OperationRun(OperationBase):
                     *args,
                     **kwargs,
                 )
+
                 dataset.upsert_documents(updated_documents)
+
+    def batch_transform_upsert(
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        chunksize: int = None,
+        max_active_threads: int = 2,
+        timeout: int = 120,
+        *args,
+        **kwargs,
+    ):
+        # Here we limit the number of threadsA
+        thread_count = 0
+
+        for chunk in dataset.chunk_dataset(
+            select_fields=select_fields,
+            filters=filters,
+            chunksize=chunksize,
+        ):
+            updated_chunk = self.transform(
+                chunk,
+                *args,
+                **kwargs,
+            )
+            if self.is_chunk_valid(updated_chunk):
+
+                @fire_and_forget
+                def fire_upsert_docs():
+                    dataset.upsert_documents(updated_chunk)
+
+                # Add a check for timecount
+                thread_count += 1
+                if thread_count >= max_active_threads:
+                    # Check if thread count decreases
+                    checker = 0
+                    curr_thread_count = threading.active_count()
+                    while (
+                        threading.active_count() >= curr_thread_count
+                        and checker < timeout
+                    ):
+                        time.sleep(1)
+                        checker += 1
+                    thread_count -= 1
+
+                fire_upsert_docs()
+
+    def is_chunk_valid(self, chunk):
+        return chunk is not None and len(chunk) > 0
 
     def store_operation_metadata(
         self,

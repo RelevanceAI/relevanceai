@@ -63,7 +63,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         else:
             self.hooks = None
 
-    def log(self, response, *args, **kwargs):
+    def log_response_to_file(self, response, *args, **kwargs):
         """It takes the response from the request and logs the url, path_url, method, status_code, headers,
         content, time, and elapsed time
 
@@ -405,7 +405,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 ) as response:
 
                     if os.getenv("DEBUG_REQUESTS") == "TRUE":
-                        self.log(response)
+                        self.log_response_to_file(response)
 
                     if response.status == 200:
                         self._log_response_success(base_url, endpoint)
