@@ -22,7 +22,7 @@ jobs:
         run: |
           cd workflows
 
-          NOTEBOOKS=$(cat 'workflows/.workflowsignore' | grep '#' | sed ')
+          NOTEBOOKS=$(cat 'workflows/.workflowsignore' | grep '#' | sed 's/# //g')
           NOTEBOOK_FPATHS=$( grep -Fx "$NOTEBOOKS" <<< "$DIFF_NOTEBOOKS" | jq -Rsc '. / "\n" - [""]' )
 
           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
