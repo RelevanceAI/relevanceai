@@ -127,9 +127,21 @@ class DimReductionBase(OperationRun):
 
         for vector_field in self.vector_fields:
             vectors = self.get_field_across_documents(
-                field=vector_field, docs=documents
+                field=vector_field,
+                docs=documents,
+                missing_treatment="return_empty_string",
             )
+            vector_length = len(
+                self.get_field_across_documents(
+                    field=vector_field,
+                    docs=documents,
+                    missing_treatment="skip",
+                )[0]
+            )
+
             for vector, concat_vector in zip(vectors, concat_vectors):
+                if len(vector) == 0:
+                    vector = [0] * vector_length
                 concat_vector.extend(vector)
 
         reduced_vectors = self.model.fit_transform(concat_vectors)
