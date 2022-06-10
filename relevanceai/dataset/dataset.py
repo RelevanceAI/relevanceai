@@ -164,3 +164,36 @@ class Dataset(OperationsNew, Operations):
             if key.startswith("_") and key.endswith("_")
         }
         return metadata
+
+    def label_clusters(self, cluster_labels: dict, alias: str, vector_fields: list):
+        """
+        Label your clusters programatiically
+
+        Example
+        ----------
+
+        .. code-block::
+
+            ds.label_clusters(
+                {"cluster_1" : "nice reviews"},
+                alias=...,
+                vector_fields=...
+            )
+
+        """
+        metadata = self.metadata
+        metadata_doc = metadata.to_dict()
+
+        if "cluster_metadata" not in metadata_doc:
+            metadata_doc["cluster_metadata"] = {"labels": {}}
+
+        cluster_field = "_cluster_." + ".".join(vector_fields) + "." + alias
+
+        if cluster_field not in metadata_doc["cluster_metadata"]["labels"]:
+            labels = metadata_doc["cluster_metadata"]["labels"]
+            labels.update({cluster_field: {"labels": cluster_labels}})
+        else:
+            metadata_doc["cluster_metadata"]["labels"][cluster_field][
+                "labels"
+            ] = cluster_labels
+        return self.upsert_metadata(metadata_doc)

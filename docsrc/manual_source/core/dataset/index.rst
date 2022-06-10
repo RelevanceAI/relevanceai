@@ -24,6 +24,11 @@ It is instantiated like this:
     useful_utilities
     launch_applications
 
+
+.. automodule:: relevanceai.dataset.dataset
+    :members:
+    :exclude-members: __init__
+
 .. automodule:: relevanceai.dataset.read.read
     :members:
     :exclude-members: __init__
