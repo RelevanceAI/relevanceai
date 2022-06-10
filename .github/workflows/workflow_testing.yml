@@ -30,6 +30,7 @@ jobs:
   test-notebooks:
     name: Test ${{ matrix.notebook }}
     needs: setup-tests
+    if: ${{ needs.setup-tests.outputs.notebook-fpaths }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
