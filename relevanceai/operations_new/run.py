@@ -102,12 +102,13 @@ class OperationRun(OperationBase):
                 *args,
                 **kwargs,
             )
-            if updated_chunk is not None and len(updated_chunk) > 0:
+            if self.is_chunk_valid(updated_chunk):
 
                 @fire_and_forget
                 def fire_upsert_docs():
                     dataset.upsert_documents(updated_chunk)
 
+                # Add a check for timecount
                 thread_count += 1
                 if thread_count >= max_active_threads:
                     # Check if thread count decreases
@@ -122,6 +123,9 @@ class OperationRun(OperationBase):
                     thread_count -= 1
 
                 fire_upsert_docs()
+
+    def is_chunk_valid(self, chunk):
+        return chunk is not None and len(chunk) > 0
 
     def store_operation_metadata(
         self,
