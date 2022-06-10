@@ -4,9 +4,10 @@ Base class for clustering
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ModelBase
 from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.cluster.alias import ClusterAlias
 
 
-class ClusterBase(OperationRun):
+class ClusterBase(OperationRun, ClusterAlias):
 
     model: ModelBase
 

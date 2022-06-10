@@ -12,20 +12,23 @@ class ClusterAlias:
     verbose: bool = False
 
     def _get_alias(self, alias: Any) -> str:
-        # Depending a package
-        # Get the alias
+        # Return the alias
         if alias is not None:
             self.alias = alias
             return alias
+        alias = self._get_alias_from_package()
+
+        if alias is not None and isinstance(alias, str):
+            return alias
+        alias = self._generate_alias()
+        return alias.lower()
+
+    def _get_alias_from_package(self):
         self._get_package_from_model(self.model)
         if self.package == "sklearn":
             self.alias = self._get_alias_from_sklearn()
             if self.alias is not None:
                 return self.alias
-        if alias is not None and isinstance(alias, str):
-            return alias
-        alias = self._generate_alias()
-        return alias.lower()
 
     def _get_alias_from_sklearn(self):
         if hasattr(self.model, "name"):
@@ -54,12 +57,15 @@ class ClusterAlias:
         # is a default model like kmeans or community detection
         n_clusters = self._get_n_clusters()
         if hasattr(self.model, "alias"):
-            return self.model.alias
+            alias = self.model.alias
+            if alias is not None:
+                return alias
 
         if n_clusters is not None:
             alias = f"{self.model_name}-{n_clusters}"
         else:
             alias = f"{self.model_name}"
+
         if self.verbose:
             print(f"The alias is `{alias.lower()}`.")
 
