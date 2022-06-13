@@ -314,7 +314,7 @@ class Operations(Write):
             vector_fields=vector_fields,
             label_documents=label_documents,
             expanded=expanded,
-            output_field=None,
+            output_field=output_field,
             max_number_of_labels=max_number_of_labels,
             similarity_metric=similarity_metric,
             similarity_threshold=similarity_threshold,
