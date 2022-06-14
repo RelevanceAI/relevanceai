@@ -67,6 +67,13 @@ class BaseTextProcessing:
         return " ".join([wordnet_lemmatizer.lemmatize(w) for w in word_tokens])
 
     @staticmethod
+    def replace_words(text, replace_words: dict):
+        for old, new in replace_words.items():
+            if old in text:
+                text = text.replace(old, new)
+        return text
+
+    @staticmethod
     def get_word_frequency(
         str_list: List[str],
         remove_stop_words: bool = True,

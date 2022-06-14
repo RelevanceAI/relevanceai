@@ -737,7 +737,11 @@ class Operations(Write):
         remove_stopwords: list = None,
         lemmatize: bool = False,
         filters: list = None,
+        replace_words: dict = None,
     ):
+        """
+        Cleans text for you!
+        """
         from relevanceai.operations_new.processing.text.clean.ops import CleanTextOps
 
         ops = CleanTextOps(
@@ -749,10 +753,24 @@ class Operations(Write):
             remove_digits=remove_digits,
             remove_stopword=remove_stopwords,
             lemmatize=lemmatize,
+            replace_words=replace_words,
         )
         # Filter for whether the text field exists
         if filters is None:
-            filters = []
+            filters = [
+                {
+                    "filter_type": "or",
+                    "condition_value": [
+                        {
+                            "field": text_field,
+                            "filter_type": "exists",
+                            "condition": ">=",
+                            "condition_value": " ",
+                        }
+                        for text_field in text_fields
+                    ],
+                }
+            ]
 
         ops.run(
             self,

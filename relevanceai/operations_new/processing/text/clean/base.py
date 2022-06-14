@@ -17,6 +17,8 @@ class CleanTextBase(OperationBase):
         remove_digits=True,
         remove_stopwords: list = None,
         lemmatize: bool = False,
+        replace_words: dict = None,
+        **kwargs
     ):
         if len(text_fields) != len(output_fields):
             raise ValueError("Text fields and output fields are not equal!")
@@ -28,23 +30,34 @@ class CleanTextBase(OperationBase):
         self.remove_digits = remove_digits
         self.remove_stopwords = remove_stopwords
         self.lemmatize = lemmatize
+        self.replace_words = replace_words
+        # Set all the other kwargs!
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def clean_text(self, text):
         """
         Clean the text of the individuals
         """
-        if self.lower:
-            text = BaseTextProcessing.lower_text(text)
-        if self.remove_punctuation:
-            text = BaseTextProcessing.remove_punctuation(text)
-        if self.remove_html_tags:
-            text = BaseTextProcessing.remove_html_tags(text)
-        if self.remove_digits:
-            text = BaseTextProcessing.remove_digits(text)
-        if self.remove_stopwords:
-            text = BaseTextProcessing.remove_stopwords(text)
-        if self.lemmatize:
-            text = BaseTextProcessing.lemmatize(text)
+        try:
+            if self.lower:
+                text = BaseTextProcessing.lower_text(text)
+            if self.remove_punctuation:
+                text = BaseTextProcessing.remove_punctuation(text)
+            if self.remove_html_tags:
+                text = BaseTextProcessing.remove_html_tags(text)
+            if self.remove_digits:
+                text = BaseTextProcessing.remove_digits(text)
+            if self.remove_stopwords:
+                text = BaseTextProcessing.remove_stopwords(text)
+            if self.lemmatize:
+                text = BaseTextProcessing.lemmatize(text)
+            if self.replace_words:
+                text = BaseTextProcessing.replace_words(text, self.replace_words)
+        except Exception as e:
+            import traceback
+
+            traceback.print_exc()
         return text
 
     def clean_text_document(self, text_field, document, output_field):
