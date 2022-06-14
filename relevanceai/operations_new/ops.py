@@ -729,7 +729,7 @@ class Operations(Write):
     def clean_text(
         self,
         text_fields: list,
-        output_fields: list,
+        output_fields: list = None,
         remove_html_tags: bool = True,
         lower=False,
         remove_punctuation=True,
@@ -743,6 +743,10 @@ class Operations(Write):
         Cleans text for you!
         """
         from relevanceai.operations_new.processing.text.clean.ops import CleanTextOps
+
+        if output_fields is None:
+            output_fields = [t + "_clean" for t in text_fields]
+            print(f"The output fields are {output_fields}.")
 
         ops = CleanTextOps(
             text_fields=text_fields,
