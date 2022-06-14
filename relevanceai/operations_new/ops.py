@@ -680,7 +680,13 @@ class Operations(Write):
         )
         return ops
 
-    def byo_cluster(self, vector_fields: list, alias: str, byo_cluster_field: str):
+    def byo_cluster(
+        self,
+        vector_fields: list,
+        alias: str,
+        byo_cluster_field: str,
+        centroids: list = None,
+    ):
         """
         Bring your own clusters and we can calculate the centroids for you.
 
@@ -709,5 +715,13 @@ class Operations(Write):
             byo_cluster_field=byo_cluster_field,
         )
         # here we create the centroids for the clusters
-        results = ops.create_centroids()
+        if centroids is None:
+            results = ops.create_centroids()
+        else:
+            results = self.datasets.cluster.centroids.insert(
+                dataset_id=self.dataset_id,
+                cluster_centers=centroids,
+                vector_fields=vector_fields,
+                alias=alias,
+            )
         return ops
