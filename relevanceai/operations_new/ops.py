@@ -679,3 +679,35 @@ class Operations(Write):
             **kwargs,
         )
         return ops
+
+    def byo_cluster(self, vector_fields: list, alias: str, byo_cluster_field: str):
+        """
+        Bring your own clusters and we can calculate the centroids for you.
+
+        Example
+        =========
+
+        .. code-block::
+
+            dataset = client.Dataset("retail_reviews")
+            cluster_ops = dataset.byo_cluster(
+                vector_fields=['reviews.title_mpnet_vector_'],
+                alias="manufacturer_two",
+                byo_cluster_field="manufacturer"
+            )
+
+        """
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        ops = ClusterOps(
+            model=None,
+            alias=alias,
+            verbose=False,
+            vector_fields=vector_fields,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            byo_cluster_field=byo_cluster_field,
+        )
+        # here we create the centroids for the clusters
+        results = ops.create_centroids()
+        return ops
