@@ -47,6 +47,9 @@ class OperationRun(OperationBase):
 
         from relevanceai.operations_new.manager import OperationManager
 
+        if filters is None:
+            filters = []
+
         # store this
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
@@ -56,24 +59,22 @@ class OperationRun(OperationBase):
                 if field not in schema:
                     raise ValueError(f"{field} not in Dataset schema")
 
-        if filters is None:
-            filters = []
+            # Only get fields that matter
+            filters += [
+                {
+                    "filter_type": "or",
+                    "condition_value": [
+                        {
+                            "field": field,
+                            "filter_type": "exists",
+                            "condition": ">=",
+                            "condition_value": " ",
+                        }
+                        for field in select_fields
+                    ],
+                }
+            ]
 
-        # Add check for select_fields
-        filters += [
-            {
-                "filter_type": "or",
-                "condition_value": [
-                    {
-                        "field": field,
-                        "filter_type": "exists",
-                        "condition": ">=",
-                        "condition_value": " ",
-                    }
-                    for field in select_fields
-                ],
-            }
-        ]
         # add a checkmark for output fields
         if output_fields is not None and len(output_fields) > 0:
             filters += [
