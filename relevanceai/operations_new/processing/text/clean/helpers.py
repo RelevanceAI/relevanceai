@@ -2,6 +2,7 @@
 Clean HTML
 """
 import string
+import re
 import warnings
 
 from typing import List, Optional
@@ -14,24 +15,56 @@ class BaseTextProcessing:
     """Base text processing"""
 
     @staticmethod
-    def normalize_text(
-        txt: str,
-        lower: bool = True,
-        remove_digit: bool = True,
-        remove_punct: bool = True,
-    ) -> str:
-        """
-        * Lower-casing
-        * Digit removal
-        * Punctuation removal
-        """
-        if lower:
-            txt = txt.lower()
-        if remove_digit:
-            txt = "".join([ch for ch in txt if ch not in string.digits])
-        if remove_punct:
-            txt = "".join([ch for ch in txt if ch not in string.punctuation])
-        return txt
+    def remove_punctuation(text):
+        return "".join([ch for ch in text if ch not in string.punctuation])
+
+    @staticmethod
+    def lower_text(text):
+        return text.lower()
+
+    @staticmethod
+    def remove_html_tags(text):
+        stripper = MLStripper()
+        return stripper.clean(text)
+
+    @staticmethod
+    def remove_digits(text):
+        return "".join([ch for ch in text if ch not in string.digits])
+
+    @staticmethod
+    def remove_stopwords(text: str, additional_stp_wrds: List[str] = None):
+        import nltk
+        from nltk.corpus import stopwords
+        from nltk.tokenize import word_tokenize
+
+        nltk.download("punkt")
+        nltk.download("wordnet")
+        nltk.download("omw-1.4")
+        nltk.download("stopwords")
+        stop_words = set(stopwords.words("english"))
+        if additional_stp_wrds:
+            stop_words = stop_words.union(set([w.lower() for w in additional_stp_wrds]))
+        word_tokens = word_tokenize(text)
+        return " ".join([w for w in word_tokens if w.lower() not in stop_words])
+
+    @staticmethod
+    def remove_url(text):
+        return re.sub(
+            "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+            "",
+            text,
+            flags=re.MULTILINE,
+        )
+
+    @staticmethod
+    def lemmatize(text: str):
+        from nltk.stem import WordNetLemmatizer
+        from nltk.tokenize import word_tokenize
+
+        # todo: find a better one => (NLTK changes less to le !!!)
+        wordnet_lemmatizer = WordNetLemmatizer()
+        word_tokens = word_tokenize(text)
+        return " ".join([wordnet_lemmatizer.lemmatize(w) for w in word_tokens])
 
     @staticmethod
     def get_word_frequency(

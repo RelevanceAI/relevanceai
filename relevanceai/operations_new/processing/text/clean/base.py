@@ -1,0 +1,63 @@
+from relevanceai.operations_new.processing.text.clean.helpers import (
+    BaseTextProcessing,
+    MLStripper,
+)
+
+from relevanceai.operations_new.base import OperationBase
+
+
+class CleanTextBase(OperationBase):
+    def __init__(
+        self,
+        text_fields: list,
+        output_fields: list,
+        remove_html_tags: bool = True,
+        lower=False,
+        remove_punctuation=True,
+        remove_digits=True,
+        remove_stopwords: list = None,
+        lemmatize: bool = False,
+    ):
+        if len(text_fields) != len(output_fields):
+            raise ValueError("Text fields and output fields are not equal!")
+        self.text_fields = text_fields
+        self.output_fields = output_fields
+        self.remove_html_tags = remove_html_tags
+        self.lower = lower
+        self.remove_punctuation = remove_punctuation
+        self.remove_digits = remove_digits
+        self.remove_stopwords = remove_stopwords
+        self.lemmatize = lemmatize
+
+    def clean_text(self, text):
+        """
+        Clean the text of the individuals
+        """
+        if self.lower:
+            text = BaseTextProcessing.lower_text(text)
+        if self.remove_punctuation:
+            text = BaseTextProcessing.remove_punctuation(text)
+        if self.remove_html_tags:
+            text = BaseTextProcessing.remove_html_tags(text)
+        if self.remove_digits:
+            text = BaseTextProcessing.remove_digits(text)
+        if self.remove_stopwords:
+            text = BaseTextProcessing.remove_stopwords(text)
+        if self.lemmatize:
+            text = BaseTextProcessing.lemmatize(text)
+        return text
+
+    def clean_text_document(self, text_field, document, output_field):
+        """
+        Split a text field and store it in other values
+        """
+        t = self.get_field(text_field, document)
+        clean_text = self.clean_text(t)
+        # Format the split text into documents
+        self.set_field(output_field, document, clean_text)
+        return document
+
+    def transform(self, documents):
+        for i, t in enumerate(self.text_fields):
+            self.clean_text_document(t, documents, self.text_fields)
+        return documents
