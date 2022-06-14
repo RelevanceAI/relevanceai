@@ -18,6 +18,7 @@ class ClusterBase(OperationRun, ClusterAlias):
         model: Any,
         cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
+        byo_cluster_name: str = None,
         **kwargs,
     ):
 
@@ -28,7 +29,7 @@ class ClusterBase(OperationRun, ClusterAlias):
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
         self.cluster_field = cluster_field
-
+        self.byo_cluster_name = byo_cluster_name
         for k, v in kwargs.items():
             setattr(self, k, v)
 
