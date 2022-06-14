@@ -769,7 +769,7 @@ class DatasetsClient(_Base):
             parameters=parameters,
         )
 
-    def recommend(self, documents_to_recommend: list):
+    def recommend(self, dataset_id, documents_to_recommend: list):
         """
         Recommend documents similar to specific documents. Specify which vector field must be used for recommendation using the documentsToRecommend property.
         Parameters
@@ -782,18 +782,18 @@ class DatasetsClient(_Base):
         """
         parameters = {"documentsToRecommend": documents_to_recommend}
         return self.make_http_request(
-            endpoint="/datasets/{dataset_id}/recommend",
+            endpoint=f"/datasets/{dataset_id}/recommend",
             method="POST",
             parameters=parameters,
         )
 
-    def post_settings(self, settings: dict):
+    def post_settings(self, dataset_id, settings: dict):
         """
         Update settings
         """
         parameters = {"settings": settings}
         return self.make_http_request(
-            endpoint="/datasets/{dataset_id}/settings",
+            endpoint=f"/datasets/{dataset_id}/settings",
             method="POST",
             parameters=parameters,
         )
