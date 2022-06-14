@@ -156,7 +156,7 @@ class ClusterBase(OperationRun, ClusterAlias):
                 )
                 cluster_labels = self.model.fit_predict(
                     vectors,
-                    warm_start=warm_start,
+                    # warm_start=warm_start,
                 )
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
