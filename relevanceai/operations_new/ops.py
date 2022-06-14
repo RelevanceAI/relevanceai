@@ -759,42 +759,13 @@ class Operations(Write):
             lemmatize=lemmatize,
             replace_words=replace_words,
         )
-        # Filter for whether the text field exists
-        if filters is None:
-            filters = []
-
-        # Filter for only where the text fields exist
-        # and where the output fields does not exist
-        filters += [
-            {
-                "filter_type": "or",
-                "condition_value": [
-                    {
-                        "field": text_field,
-                        "filter_type": "exists",
-                        "condition": ">=",
-                        "condition_value": " ",
-                    }
-                    for text_field in text_fields
-                ],
-            }
-        ]
-
-        # Filter for only when the first output field does not exist for now
-        filters += [
-            {
-                "field": output_fields[0],
-                "filter_type": "exists",
-                "condition": "!=",
-                "condition_value": " ",
-            }
-        ]
 
         ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             batched=True,
+            output_fields=output_fields,
         )
 
         return ops

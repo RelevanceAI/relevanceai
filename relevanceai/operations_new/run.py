@@ -24,6 +24,7 @@ class OperationRun(OperationBase):
         chunksize: Optional[int] = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
+        output_fields: Optional[list] = None,
         *args,
         **kwargs,
     ):
@@ -35,7 +36,10 @@ class OperationRun(OperationBase):
         dataset : Dataset
             Dataset,
         select_fields : list
-            list = None,
+            Used to determine which fields to retrieve for filters
+        output_fields: list
+            Used to determine which output fields are missing to continue running operation
+
         filters : list
             list = None,
 
@@ -51,6 +55,35 @@ class OperationRun(OperationBase):
             for field in select_fields:
                 if field not in schema:
                     raise ValueError(f"{field} not in Dataset schema")
+
+        if filters is None:
+            filters = []
+
+        # Add check for select_fields
+        filters += [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    {
+                        "field": field,
+                        "filter_type": "exists",
+                        "condition": ">=",
+                        "condition_value": " ",
+                    }
+                    for field in select_fields
+                ],
+            }
+        ]
+        # add a checkmark for output fields
+        if output_fields is not None and len(output_fields) > 0:
+            filters += [
+                {
+                    "field": output_fields[0],
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                }
+            ]
 
         with OperationManager(
             dataset=dataset,
