@@ -119,7 +119,7 @@ class OperationRun(OperationBase):
         filters: list = None,
         chunksize: int = None,
         max_active_threads: int = 2,
-        timeout: int = 120,
+        timeout: int = 30,
         *args,
         **kwargs,
     ):
