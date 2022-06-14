@@ -9,7 +9,6 @@ and machine learning engineers how best to unlock Relevance AI.
     :caption: Start Here
 
     🏃‍♀️ QuickStart <quickstart_guide>
-    feature_tour_guide
 
 .. toctree::
     :caption: Vectorize

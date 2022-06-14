@@ -314,7 +314,7 @@ class Operations(Write):
             vector_fields=vector_fields,
             label_documents=label_documents,
             expanded=expanded,
-            output_field=None,
+            output_field=output_field,
             max_number_of_labels=max_number_of_labels,
             similarity_metric=similarity_metric,
             similarity_threshold=similarity_threshold,
@@ -678,4 +678,50 @@ class Operations(Write):
             model_kwargs=model_kwargs,
             **kwargs,
         )
+        return ops
+
+    def byo_cluster(
+        self,
+        vector_fields: list,
+        alias: str,
+        byo_cluster_field: str,
+        centroids: list = None,
+    ):
+        """
+        Bring your own clusters and we can calculate the centroids for you.
+
+        Example
+        =========
+
+        .. code-block::
+
+            dataset = client.Dataset("retail_reviews")
+            cluster_ops = dataset.byo_cluster(
+                vector_fields=['reviews.title_mpnet_vector_'],
+                alias="manufacturer_two",
+                byo_cluster_field="manufacturer"
+            )
+
+        """
+        from relevanceai.operations_new.cluster.ops import ClusterOps
+
+        ops = ClusterOps(
+            model=None,
+            alias=alias,
+            verbose=False,
+            vector_fields=vector_fields,
+            credentials=self.credentials,
+            dataset_id=self.dataset_id,
+            byo_cluster_field=byo_cluster_field,
+        )
+        # here we create the centroids for the clusters
+        if centroids is None:
+            results = ops.create_centroids()
+        else:
+            results = self.datasets.cluster.centroids.insert(
+                dataset_id=self.dataset_id,
+                cluster_centers=centroids,
+                vector_fields=vector_fields,
+                alias=alias,
+            )
         return ops
