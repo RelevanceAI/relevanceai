@@ -39,6 +39,7 @@ class CleanTextBase(OperationBase):
         """
         Clean the text of the individuals
         """
+        # TODO: Make this faster by moving the operations into the folder
         try:
             if self.lower:
                 text = BaseTextProcessing.lower_text(text)
@@ -64,13 +65,24 @@ class CleanTextBase(OperationBase):
         """
         Split a text field and store it in other values
         """
-        t = self.get_field(text_field, document)
+        t = self.get_field(
+            text_field, document, missing_treatment="return_empty_string"
+        )
         clean_text = self.clean_text(t)
         # Format the split text into documents
-        self.set_field(output_field, document, clean_text)
-        return document
+        new_doc = {"_id": document["_id"]}
+        self.set_field(output_field, new_doc, clean_text)
+        return new_doc
+
+    def clean_text_documents(self, text_field, documents, output_field):
+        return [
+            self.clean_text_document(
+                text_field=text_field, document=document, output_field=output_field
+            )
+            for document in documents
+        ]
 
     def transform(self, documents):
         for i, t in enumerate(self.text_fields):
-            self.clean_text_document(t, documents, self.text_fields)
+            self.clean_text_document(t, documents[i], self.output_fields[i])
         return documents
