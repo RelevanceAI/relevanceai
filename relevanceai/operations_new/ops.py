@@ -760,6 +760,7 @@ class Operations(Write):
             replace_words=replace_words,
         )
 
+        print("🥸 A clean house is a sign of no Internet connection.")
         ops.run(
             self,
             filters=filters,

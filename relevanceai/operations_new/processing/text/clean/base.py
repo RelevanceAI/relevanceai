@@ -84,7 +84,7 @@ class CleanTextBase(OperationBase):
 
     def transform(self, documents):
         for i, t in enumerate(self.text_fields):
-            new_documents = self.clean_text_document(
-                t, documents[i], self.output_fields[i]
+            new_documents = self.clean_text_documents(
+                t, documents, self.output_fields[i]
             )
         return new_documents

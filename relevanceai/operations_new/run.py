@@ -80,7 +80,7 @@ class OperationRun(OperationBase):
                 {
                     "field": output_fields[0],
                     "filter_type": "exists",
-                    "condition": ">=",
+                    "condition": "!=",
                     "condition_value": " ",
                 }
             ]
