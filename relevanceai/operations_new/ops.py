@@ -868,7 +868,6 @@ class Operations(Write):
                     count_sentences=True,
                     filters=filters,
                 )
-                raise NotImplementedError("Have not implemented emotion yet")
             except:
                 pass
 
