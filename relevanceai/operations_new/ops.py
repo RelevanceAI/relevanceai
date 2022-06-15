@@ -800,7 +800,6 @@ class Operations(Write):
     def analyze_text(
         self,
         text_fields: list,
-        # vector_fields: list=None, # These vector fields will be used throughout
         vector_fields: list = None,
         vectorize=False,
         vectorize_models: list = None,
@@ -839,6 +838,7 @@ class Operations(Write):
                 subcluster=subcluster,
                 subcluster_alias=subcluster_alias,
                 subcluster_parent_field=subcluster_parent_field,
+                subcluster_model=subcluster_model,
                 filters=filters,
             )
         except:
@@ -880,7 +880,7 @@ class Operations(Write):
         cluster: bool = False,
         cluster_model=None,
         subcluster: bool = False,
-        subcluster_alias: str = "_subcluster_",
+        subcluster_alias: str = None,
         subcluster_parent_field: str = None,
         subcluster_model=None,
         filters: list = None,
