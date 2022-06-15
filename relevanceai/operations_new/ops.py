@@ -771,6 +771,31 @@ class Operations(Write):
 
         return ops
 
+    def count_text(
+        self,
+        text_fields: list,
+        count_words: bool = True,
+        count_characters: bool = True,
+        count_sentences: bool = True,
+        filters: list = None,
+        chunksize: int = 1000,
+    ):
+        from relevanceai.operations_new.processing.text.count.ops import CountTextOps
+
+        ops = CountTextOps(
+            text_fields=text_fields,
+            include_char_count=count_characters,
+            include_word_count=count_words,
+            include_sentence_count=count_sentences,
+        )
+        res = ops.run(
+            dataset=self,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            filters=filters,
+            batched=True,
+        )
+
     def analyze_text(
         self,
         text_fields: list,
@@ -787,9 +812,13 @@ class Operations(Write):
         extract_sentiment: bool = True,
         extract_emotion: bool = False,
         count: bool = False,
+        verbose: bool = False,
     ):
         # is it worth separating
         # analyze text and analyze text vectors?
+        if verbose:
+            print("⚛️ Why can't you trust atoms?")
+            print("Because they make up everything!")
 
         if vectorize:
             if vector_fields is None:
