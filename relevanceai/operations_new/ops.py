@@ -795,6 +795,7 @@ class Operations(Write):
             filters=filters,
             batched=True,
         )
+        return ops
 
     def analyze_text(
         self,
@@ -813,6 +814,7 @@ class Operations(Write):
         extract_emotion: bool = False,
         count: bool = False,
         verbose: bool = False,
+        filters: list = None,
     ):
         # is it worth separating
         # analyze text and analyze text vectors?
@@ -824,7 +826,9 @@ class Operations(Write):
             if vector_fields is None:
                 vector_fields = [text_field + "_vector_" for text_field in text_fields]
                 print(f"Outputting to: {vector_fields}")
-            self.vectorize_text(fields=text_fields, models=[vectorize_models])
+            self.vectorize_text(
+                fields=text_fields, models=[vectorize_models], filters=filters
+            )
 
         try:
             # Runs clustering and subclustering first
@@ -835,6 +839,7 @@ class Operations(Write):
                 subcluster=subcluster,
                 subcluster_alias=subcluster_alias,
                 subcluster_parent_field=subcluster_parent_field,
+                filters=filters,
             )
         except:
             pass
@@ -849,15 +854,20 @@ class Operations(Write):
         if extract_sentiment:
             print("Extracting sentiment...")
             try:
-                self.extract_sentiment(
-                    text_fields=text_fields,
-                )
+                self.extract_sentiment(text_fields=text_fields, filters=filters)
             except:
                 pass
 
         if count:
             try:
                 print("Extracting count...")
+                self.count_text(
+                    text_fields=text_fields,
+                    count_words=True,
+                    count_characters=True,
+                    count_sentences=True,
+                    filters=filters,
+                )
                 raise NotImplementedError("Have not implemented emotion yet")
             except:
                 pass
@@ -873,18 +883,35 @@ class Operations(Write):
         subcluster_alias: str = "_subcluster_",
         subcluster_parent_field: str = None,
         subcluster_model=None,
+        filters: list = None,
     ):
         # is it worth separating
         # analyze text and analyze text vectors?
         if cluster:
-            self.cluster(vector_fields=vector_fields, model=cluster_model)
+            if vector_fields is None or cluster_model is None:
+                raise ValueError(
+                    "Vector fields and cluster_models need to not be None."
+                )
+            self.cluster(
+                vector_fields=vector_fields, model=cluster_model, filters=filters
+            )
 
         if subcluster:
             # How do I get the cluster parent field
             # TODO - how do you set the alias and parent field?
+            if (
+                vector_fields is None
+                or subcluster_alias is None
+                or subcluster_parent_field is None
+                or subcluster_model is None
+            ):
+                raise ValueError(
+                    "Vector fields and subcluster_models and subcluster_parent_field and subcluster_alias need to not be None."
+                )
             self.subcluster(
                 vector_fields=vector_fields,
                 alias=subcluster_alias,
                 parent_field=subcluster_parent_field,
                 model=subcluster_model,
+                filters=filters,
             )
