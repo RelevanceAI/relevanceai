@@ -770,44 +770,92 @@ class Operations(Write):
         )
 
         return ops
-    
+
     def analyze_text(
-        self, 
-        text_fields: list=None,
+        self,
+        text_fields: list,
+        # vector_fields: list=None, # These vector fields will be used throughout
+        vector_fields: list = None,
         vectorize=False,
-        vectorize_models: list=None,
-        cluster: bool=False,
+        vectorize_models: list = None,
+        cluster: bool = False,
         cluster_model=None,
-        extract_sentiment: bool=True,
-        extract_emotion: bool=False,
-        count: bool=False,
+        subcluster: bool = False,
+        subcluster_model=None,
+        subcluster_alias: str = None,
+        subcluster_parent_field: str = None,
+        extract_sentiment: bool = True,
+        extract_emotion: bool = False,
+        count: bool = False,
     ):
+        # is it worth separating
+        # analyze text and analyze text vectors?
+
         if vectorize:
-            vectorize_output_fields = [
-                text_field + "_vector_" for text_field in text_fields
-            ]
-            self.vectorize_text(
-                fields=text_fields,
-                models=[vectorize_models]
+            if vector_fields is None:
+                vector_fields = [text_field + "_vector_" for text_field in text_fields]
+                print(f"Outputting to: {vector_fields}")
+            self.vectorize_text(fields=text_fields, models=[vectorize_models])
+
+        try:
+            # Runs clustering and subclustering first
+            self.analyze_text_vectors(
+                vector_fields=vector_fields,
+                cluster=cluster,
+                cluster_model=cluster_model,
+                subcluster=subcluster,
+                subcluster_alias=subcluster_alias,
+                subcluster_parent_field=subcluster_parent_field,
             )
-        if cluster:
-            self.cluster(
-                vector_fields=vectorize_output_fields,
-                model=cluster_model
-            )
+        except:
+            pass
 
         if extract_emotion:
-            print("Extracting emotion...")
-            raise NotImplementedError("Have not implemented emotion yet")
+            try:
+                print("Extracting emotion...")
+                raise NotImplementedError("Have not implemented emotion yet")
+            except:
+                pass
 
         if extract_sentiment:
             print("Extracting sentiment...")
-            self.extract_sentiment(
-                text_fields=text_fields,
-            )
+            try:
+                self.extract_sentiment(
+                    text_fields=text_fields,
+                )
+            except:
+                pass
 
         if count:
-            print("Extracting count...")
-            raise NotImplementedError("Have not implemented emotion yet")
+            try:
+                print("Extracting count...")
+                raise NotImplementedError("Have not implemented emotion yet")
+            except:
+                pass
 
         return
+
+    def analyze_text_vectors(
+        self,
+        vector_fields: list = None,  # These vector fields will be used throughout
+        cluster: bool = False,
+        cluster_model=None,
+        subcluster: bool = False,
+        subcluster_alias: str = "_subcluster_",
+        subcluster_parent_field: str = None,
+        subcluster_model=None,
+    ):
+        # is it worth separating
+        # analyze text and analyze text vectors?
+        if cluster:
+            self.cluster(vector_fields=vector_fields, model=cluster_model)
+
+        if subcluster:
+            # How do I get the cluster parent field
+            # TODO - how do you set the alias and parent field?
+            self.subcluster(
+                vector_fields=vector_fields,
+                alias=subcluster_alias,
+                parent_field=subcluster_parent_field,
+                model=subcluster_model,
+            )
