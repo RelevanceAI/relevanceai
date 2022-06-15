@@ -884,6 +884,7 @@ class Operations(Write):
         vector_fields: list = None,  # These vector fields will be used throughout
         cluster: bool = False,
         cluster_model=None,
+        cluster_alias: str = None,
         subcluster: bool = False,
         subcluster_alias: str = None,
         subcluster_parent_field: str = None,
@@ -898,7 +899,10 @@ class Operations(Write):
                     "Vector fields and cluster_models need to not be None."
                 )
             self.cluster(
-                vector_fields=vector_fields, model=cluster_model, filters=filters
+                vector_fields=vector_fields,
+                model=cluster_model,
+                filters=filters,
+                alias=cluster_alias,
             )
 
         if subcluster:
