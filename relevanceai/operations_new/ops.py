@@ -803,15 +803,16 @@ class Operations(Write):
         vector_fields: list = None,
         vectorize=False,
         vectorize_models: list = None,
-        cluster: bool = False,
+        cluster: bool = True,
         cluster_model=None,
-        subcluster: bool = False,
+        cluster_alias: str = None,
+        subcluster: bool = True,
         subcluster_model=None,
         subcluster_alias: str = None,
         subcluster_parent_field: str = None,
         extract_sentiment: bool = True,
         extract_emotion: bool = False,
-        count: bool = False,
+        count: bool = True,
         verbose: bool = False,
         filters: list = None,
     ):
@@ -826,7 +827,10 @@ class Operations(Write):
                 vector_fields = [text_field + "_vector_" for text_field in text_fields]
                 print(f"Outputting to: {vector_fields}")
             self.vectorize_text(
-                fields=text_fields, models=[vectorize_models], filters=filters
+                fields=text_fields,
+                models=vectorize_models,
+                filters=filters,
+                output_fields=vector_fields,
             )
 
         try:
@@ -835,6 +839,7 @@ class Operations(Write):
                 vector_fields=vector_fields,
                 cluster=cluster,
                 cluster_model=cluster_model,
+                cluster_alias=cluster_alias,
                 subcluster=subcluster,
                 subcluster_alias=subcluster_alias,
                 subcluster_parent_field=subcluster_parent_field,
