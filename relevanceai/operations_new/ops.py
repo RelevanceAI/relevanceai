@@ -875,7 +875,8 @@ class Operations(Write):
                 )
             except:
                 pass
-
+        # TODO:
+        # Launch an explorer app with the right settings
         return
 
     def analyze_text_vectors(
