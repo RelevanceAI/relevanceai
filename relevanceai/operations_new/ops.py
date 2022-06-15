@@ -770,3 +770,44 @@ class Operations(Write):
         )
 
         return ops
+    
+    def analyze_text(
+        self, 
+        text_fields: list=None,
+        vectorize=False,
+        vectorize_models: list=None,
+        cluster: bool=False,
+        cluster_model=None,
+        extract_sentiment: bool=True,
+        extract_emotion: bool=False,
+        count: bool=False,
+    ):
+        if vectorize:
+            vectorize_output_fields = [
+                text_field + "_vector_" for text_field in text_fields
+            ]
+            self.vectorize_text(
+                fields=text_fields,
+                models=[vectorize_models]
+            )
+        if cluster:
+            self.cluster(
+                vector_fields=vectorize_output_fields,
+                model=cluster_model
+            )
+
+        if extract_emotion:
+            print("Extracting emotion...")
+            raise NotImplementedError("Have not implemented emotion yet")
+
+        if extract_sentiment:
+            print("Extracting sentiment...")
+            self.extract_sentiment(
+                text_fields=text_fields,
+            )
+
+        if count:
+            print("Extracting count...")
+            raise NotImplementedError("Have not implemented emotion yet")
+
+        return
