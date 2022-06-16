@@ -725,3 +725,48 @@ class Operations(Write):
                 alias=alias,
             )
         return ops
+
+    def clean_text(
+        self,
+        text_fields: list,
+        output_fields: list = None,
+        remove_html_tags: bool = True,
+        lower=False,
+        remove_punctuation=True,
+        remove_digits=True,
+        remove_stopwords: list = None,
+        lemmatize: bool = False,
+        filters: list = None,
+        replace_words: dict = None,
+    ):
+        """
+        Cleans text for you!
+        """
+        from relevanceai.operations_new.processing.text.clean.ops import CleanTextOps
+
+        if output_fields is None:
+            output_fields = [t + "_clean" for t in text_fields]
+            print(f"The output fields are {output_fields}.")
+
+        ops = CleanTextOps(
+            text_fields=text_fields,
+            output_fields=output_fields,
+            remove_html_tags=remove_html_tags,
+            lower=lower,
+            remove_punctuation=remove_punctuation,
+            remove_digits=remove_digits,
+            remove_stopword=remove_stopwords,
+            lemmatize=lemmatize,
+            replace_words=replace_words,
+        )
+
+        print("🥸 A clean house is a sign of no Internet connection.")
+        ops.run(
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            batched=True,
+            output_fields=output_fields,
+        )
+
+        return ops
