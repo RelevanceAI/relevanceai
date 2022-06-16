@@ -5,7 +5,6 @@ import pytest
 from relevanceai.dataset import Dataset
 
 
-@pytest.mark.skip(reason="Slow to run")
 def test_analyze_text(test_dataset: Dataset):
     test_dataset.analyze_text(
         fields=["sample_1_label"],
