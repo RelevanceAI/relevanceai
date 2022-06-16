@@ -2,7 +2,7 @@ name: Testing workflow branch creation upon release
 
 on:
   pull_request:
-    branches: [main]
+    # branches: [main]
 
 jobs:
   setup-tests:
