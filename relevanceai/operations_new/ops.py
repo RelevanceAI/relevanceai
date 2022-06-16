@@ -529,7 +529,7 @@ class Operations(Write):
     def extract_sentiment(
         self,
         text_fields: List[str],
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,

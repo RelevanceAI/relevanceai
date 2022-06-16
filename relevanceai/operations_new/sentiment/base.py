@@ -14,7 +14,7 @@ class SentimentBase(OperationBase):
     def __init__(
         self,
         text_fields: list,
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
@@ -57,7 +57,7 @@ class SentimentBase(OperationBase):
 
             self._classifier = transformers.pipeline(
                 return_all_scores=True,
-                model="siebert/sentiment-roberta-large-english",
+                model=self.model_name,
             )
         return self._classifier
 
