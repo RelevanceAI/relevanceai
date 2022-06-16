@@ -799,9 +799,9 @@ class Operations(Write):
 
     def analyze_text(
         self,
-        text_fields: list,
+        fields: list,
         vector_fields: list = None,
-        vectorize=False,
+        vectorize=True,
         vectorize_models: list = None,
         cluster: bool = True,
         cluster_model=None,
@@ -824,10 +824,10 @@ class Operations(Write):
 
         if vectorize:
             if vector_fields is None:
-                vector_fields = [text_field + "_vector_" for text_field in text_fields]
+                vector_fields = [text_field + "_vector_" for text_field in fields]
                 print(f"Outputting to: {vector_fields}")
             self.vectorize_text(
-                fields=text_fields,
+                fields=fields,
                 models=vectorize_models,
                 filters=filters,
                 output_fields=vector_fields,
@@ -835,7 +835,7 @@ class Operations(Write):
 
         try:
             # Runs clustering and subclustering first
-            self.analyze_text_vectors(
+            self.analyze_vectors(
                 vector_fields=vector_fields,
                 cluster=cluster,
                 cluster_model=cluster_model,
@@ -859,7 +859,7 @@ class Operations(Write):
         if extract_sentiment:
             print("Extracting sentiment...")
             try:
-                self.extract_sentiment(text_fields=text_fields, filters=filters)
+                self.extract_sentiment(text_fields=fields, filters=filters)
             except:
                 pass
 
@@ -867,7 +867,7 @@ class Operations(Write):
             try:
                 print("Extracting count...")
                 self.count_text(
-                    text_fields=text_fields,
+                    text_fields=fields,
                     count_words=True,
                     count_characters=True,
                     count_sentences=True,
@@ -879,7 +879,7 @@ class Operations(Write):
         # Launch an explorer app with the right settings
         return
 
-    def analyze_text_vectors(
+    def analyze_vectors(
         self,
         vector_fields: list = None,  # These vector fields will be used throughout
         cluster: bool = False,

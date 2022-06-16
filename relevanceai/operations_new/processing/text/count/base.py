@@ -1,3 +1,4 @@
+from relevanceai.utils import MissingPackageError
 from relevanceai.operations_new.base import OperationBase
 
 
@@ -18,12 +19,6 @@ class CountTextBase(OperationBase):
         self.include_sentence_count = include_sentence_count
         self.output_fields = output_fields
 
-    def _init_counting_sentences(self):
-        import nltk
-
-        nltk.download("punkt")
-        self._imported_nltk = True
-
     def count_characters(self, text):
         return len(text)
 
@@ -31,12 +26,15 @@ class CountTextBase(OperationBase):
         return len(text.split())
 
     def count_sentences(self, text):
-        if not self._imported_nltk:
-            self._init_counting_sentences()
-        from nltk.tokenize import sent_tokenize
-
-        number_of_sentences = sent_tokenize(text)
-        return len(number_of_sentences)
+        try:
+            from sentence_splitter import split_text_into_sentences
+        except ModuleNotFoundError:
+            raise MissingPackageError("sentence-splitter")
+        sentences = split_text_into_sentences(
+            text='This is a paragraph. It contains several sentences. "But why," you ask?',
+            language="en",
+        )
+        return len(sentences)
 
     def count_text_document(self, document):
         output_doc = {"_id": document["_id"]}
