@@ -58,6 +58,11 @@ class BaseTextProcessing:
 
     @staticmethod
     def lemmatize(text: str):
+        import nltk
+
+        nltk.download("punkt")
+        nltk.download("omw-1.4")
+        nltk.download("wordnet")
         from nltk.stem import WordNetLemmatizer
         from nltk.tokenize import word_tokenize
 
