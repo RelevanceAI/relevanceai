@@ -64,7 +64,7 @@ jobs:
       - name: Cache Python deps
         uses: actions/cache@v2
         with:
-          path: ${{ matrix.path }}
+          path: ${{ matrix.notebook }}
           key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.pythonLocation }}-pip-
