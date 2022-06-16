@@ -65,9 +65,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.notebook }}
-          key: ${{ runner.os }}-${{ env.pythonLocation }}-pip-${{ hashFiles('setup.py') }}
+          key: ${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-pip-
           restore-keys: |
-            ${{ runner.os }}-${{ env.pythonLocation }}-pip-
+            ${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-pip-
             ${{ runner.os }}-${{ env.pythonLocation }}-
 
       - name: Set SDK version as Github env var
