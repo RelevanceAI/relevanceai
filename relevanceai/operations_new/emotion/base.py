@@ -54,7 +54,7 @@ class EmotionBase(OperationBase):
         """
         if text is None:
             return {}
-        return self._classifier(text)
+        return self.classifier(text)
 
     @property
     def name(self):
