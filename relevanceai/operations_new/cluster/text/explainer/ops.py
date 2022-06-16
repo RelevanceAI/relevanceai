@@ -220,6 +220,7 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         self.datasets.post_settings(
+            dataset_id=cluster_ops.dataset_id,
             settings={
                 "settings": {
                     "highlightingRules": [
@@ -230,6 +231,6 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
                         }
                     ]
                 }
-            }
+            },
         )
         return closest

@@ -24,6 +24,7 @@ class OperationRun(OperationBase):
         chunksize: Optional[int] = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
+        output_fields: Optional[list] = None,
         *args,
         **kwargs,
     ):
@@ -35,13 +36,19 @@ class OperationRun(OperationBase):
         dataset : Dataset
             Dataset,
         select_fields : list
-            list = None,
+            Used to determine which fields to retrieve for filters
+        output_fields: list
+            Used to determine which output fields are missing to continue running operation
+
         filters : list
             list = None,
 
         """
 
         from relevanceai.operations_new.manager import OperationManager
+
+        if filters is None:
+            filters = []
 
         # store this
         if hasattr(dataset, "dataset_id"):
@@ -51,6 +58,33 @@ class OperationRun(OperationBase):
             for field in select_fields:
                 if field not in schema:
                     raise ValueError(f"{field} not in Dataset schema")
+
+            # Only get fields that matter
+            filters += [
+                {
+                    "filter_type": "or",
+                    "condition_value": [
+                        {
+                            "field": field,
+                            "filter_type": "exists",
+                            "condition": ">=",
+                            "condition_value": " ",
+                        }
+                        for field in select_fields
+                    ],
+                }
+            ]
+
+        # add a checkmark for output fields
+        if output_fields is not None and len(output_fields) > 0:
+            filters += [
+                {
+                    "field": output_fields[0],
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": " ",
+                }
+            ]
 
         with OperationManager(
             dataset=dataset,
@@ -85,7 +119,7 @@ class OperationRun(OperationBase):
         filters: list = None,
         chunksize: int = None,
         max_active_threads: int = 2,
-        timeout: int = 120,
+        timeout: int = 30,
         *args,
         **kwargs,
     ):
