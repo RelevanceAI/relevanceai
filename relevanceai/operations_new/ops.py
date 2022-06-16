@@ -554,6 +554,33 @@ class Operations(Write):
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
         )
 
+    def extract_emotion(
+        self,
+        text_fields: list,
+        model_name="joeddav/distilbert-base-uncased-go-emotions-student",
+        filters: list = None,
+        chunksize: int = 100,
+    ):
+        """
+        Extract an emotion.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.extract_emotion(
+                text_fields=["sample_1_label"],
+            )
+
+        """
+        from relevanceai.operations_new.emotion.ops import EmotionOps
+
+        ops = EmotionOps(text_fields=text_fields, model_name=model_name)
+        return ops.run(
+            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+        )
+
     def apply_transformers_pipeline(
         self,
         text_fields: list,
