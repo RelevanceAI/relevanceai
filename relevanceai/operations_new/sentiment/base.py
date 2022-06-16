@@ -2,7 +2,6 @@
 """
 
 # Running a function across each subcluster
-from sre_constants import MAX_UNTIL
 import numpy as np
 import csv
 from typing import Optional
@@ -190,7 +189,7 @@ class SentimentBase(OperationBase):
                 output_field = self._get_output_field(t)
             sentiments = [
                 self.analyze_sentiment(
-                    self.get_field(t, doc),
+                    self.get_field(t, doc, missing_treatment="return_empty_string"),
                     highlight=self.highlight,
                     max_number_of_shap_documents=self.max_number_of_shap_documents,
                     min_abs_score=self.min_abs_score,
