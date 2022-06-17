@@ -536,6 +536,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         output_fields: list = None,
         chunksize: int = 100,
+        batched: bool=True,
     ):
         """
         Extract sentiment from the dataset
@@ -551,7 +552,8 @@ class Operations(Write):
             output_fields=output_fields,
         )
         return ops.run(
-            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+            self, filters=filters, select_fields=text_fields, chunksize=chunksize,
+            batched=batched
         )
 
     def extract_emotion(
