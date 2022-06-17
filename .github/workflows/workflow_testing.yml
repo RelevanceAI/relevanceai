@@ -78,7 +78,7 @@ jobs:
           echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
       - name: Install requirements
-        if: steps.cache.outputs.cache-hit != 'true'
+        # if: steps.cache.outputs.cache-hit != 'true'
         run: |
           pip install --upgrade pip
           python -c "import sys; print(sys.version)"
