@@ -529,7 +529,7 @@ class Operations(Write):
     def extract_sentiment(
         self,
         text_fields: List[str],
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
@@ -550,6 +550,33 @@ class Operations(Write):
             min_abs_score=min_abs_score,
             output_fields=output_fields,
         )
+        return ops.run(
+            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+        )
+
+    def extract_emotion(
+        self,
+        text_fields: list,
+        model_name="joeddav/distilbert-base-uncased-go-emotions-student",
+        filters: list = None,
+        chunksize: int = 100,
+    ):
+        """
+        Extract an emotion.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            ds.extract_emotion(
+                text_fields=["sample_1_label"],
+            )
+
+        """
+        from relevanceai.operations_new.emotion.ops import EmotionOps
+
+        ops = EmotionOps(text_fields=text_fields, model_name=model_name)
         return ops.run(
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
         )
@@ -770,3 +797,157 @@ class Operations(Write):
         )
 
         return ops
+
+    def count_text(
+        self,
+        text_fields: list,
+        count_words: bool = True,
+        count_characters: bool = True,
+        count_sentences: bool = True,
+        filters: list = None,
+        chunksize: int = 1000,
+    ):
+        from relevanceai.operations_new.processing.text.count.ops import CountTextOps
+
+        ops = CountTextOps(
+            text_fields=text_fields,
+            include_char_count=count_characters,
+            include_word_count=count_words,
+            include_sentence_count=count_sentences,
+        )
+        res = ops.run(
+            dataset=self,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            filters=filters,
+            batched=True,
+        )
+        return ops
+
+    def analyze_text(
+        self,
+        fields: list,
+        vector_fields: list = None,
+        vectorize=True,
+        vectorize_models: list = None,
+        cluster: bool = True,
+        cluster_model=None,
+        cluster_alias: str = None,
+        subcluster: bool = True,
+        subcluster_model=None,
+        subcluster_alias: str = None,
+        subcluster_parent_field: str = None,
+        extract_sentiment: bool = True,
+        extract_emotion: bool = False,
+        count: bool = True,
+        verbose: bool = False,
+        filters: list = None,
+    ):
+        # is it worth separating
+        # analyze text and analyze text vectors?
+        if verbose:
+            print("⚛️ Why can't you trust atoms?")
+            print("Because they make up everything!")
+
+        if vectorize:
+            if vector_fields is None:
+                vector_fields = [text_field + "_vector_" for text_field in fields]
+                print(f"Outputting to: {vector_fields}")
+            self.vectorize_text(
+                fields=fields,
+                models=vectorize_models,
+                filters=filters,
+                output_fields=vector_fields,
+            )
+
+        try:
+            # Runs clustering and subclustering first
+            self.analyze_vectors(
+                vector_fields=vector_fields,
+                cluster=cluster,
+                cluster_model=cluster_model,
+                cluster_alias=cluster_alias,
+                subcluster=subcluster,
+                subcluster_alias=subcluster_alias,
+                subcluster_parent_field=subcluster_parent_field,
+                subcluster_model=subcluster_model,
+                filters=filters,
+            )
+        except:
+            pass
+
+        if extract_emotion:
+            try:
+                print("Extracting emotion...")
+                raise NotImplementedError("Have not implemented emotion yet")
+            except:
+                pass
+
+        if extract_sentiment:
+            print("Extracting sentiment...")
+            try:
+                self.extract_sentiment(text_fields=fields, filters=filters)
+            except:
+                pass
+
+        if count:
+            try:
+                print("Extracting count...")
+                self.count_text(
+                    text_fields=fields,
+                    count_words=True,
+                    count_characters=True,
+                    count_sentences=True,
+                    filters=filters,
+                )
+            except:
+                pass
+        # TODO:
+        # Launch an explorer app with the right settings
+        return
+
+    def analyze_vectors(
+        self,
+        vector_fields: list = None,  # These vector fields will be used throughout
+        cluster: bool = False,
+        cluster_model=None,
+        cluster_alias: str = None,
+        subcluster: bool = False,
+        subcluster_alias: str = None,
+        subcluster_parent_field: str = None,
+        subcluster_model=None,
+        filters: list = None,
+    ):
+        # is it worth separating
+        # analyze text and analyze text vectors?
+        if cluster:
+            if vector_fields is None or cluster_model is None:
+                raise ValueError(
+                    "Vector fields and cluster_models need to not be None."
+                )
+            self.cluster(
+                vector_fields=vector_fields,
+                model=cluster_model,
+                filters=filters,
+                alias=cluster_alias,
+            )
+
+        if subcluster:
+            # How do I get the cluster parent field
+            # TODO - how do you set the alias and parent field?
+            if (
+                vector_fields is None
+                or subcluster_alias is None
+                or subcluster_parent_field is None
+                or subcluster_model is None
+            ):
+                raise ValueError(
+                    "Vector fields and subcluster_models and subcluster_parent_field and subcluster_alias need to not be None."
+                )
+            self.subcluster(
+                vector_fields=vector_fields,
+                alias=subcluster_alias,
+                parent_field=subcluster_parent_field,
+                model=subcluster_model,
+                filters=filters,
+            )

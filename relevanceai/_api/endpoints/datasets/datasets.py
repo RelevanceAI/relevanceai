@@ -787,6 +787,16 @@ class DatasetsClient(_Base):
             parameters=parameters,
         )
 
+    def get_settings(self, dataset_id):
+        """
+        Get settings for a dataset
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/settings",
+            method="GET",
+            parameters={},
+        )
+
     def post_settings(self, dataset_id, settings: dict):
         """
         Update settings
