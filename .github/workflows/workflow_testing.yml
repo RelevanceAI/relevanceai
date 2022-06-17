@@ -138,6 +138,10 @@ jobs:
 
           git checkout $GIT_BRANCH_VERSION 2>/dev/null && git pull || git checkout -b $GIT_BRANCH_VERSION
 
+          PACKAGE_VERSIONS_FNAME="$PWD/workflows/package_versions.yaml"
+
+          sed -i "s/RelevanceAI:.*/RelevanceAI: $GIT_BRANCH_VERSION/" $PACKAGE_VERSIONS_FNAME
+
           git add .
           git status | grep -q "Changes to be committed"
           git commit -m "New workflows version for RelevanceAI $GIT_BRANCH_VERSION"
