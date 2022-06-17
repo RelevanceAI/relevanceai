@@ -59,7 +59,17 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          # cache: 'pip'
+
+      - name: Cache Python deps
+        id:   cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.notebook }}
+          key: ${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-pip-
+          restore-keys: |
+            ${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-pip-
+            ${{ runner.os }}-${{ env.pythonLocation }}-
 
       - name: Set SDK version as Github env var
         run: |
@@ -68,9 +78,11 @@ jobs:
           echo "RELEVANCEAI_VERSION=$RELEVANCEAI_VERSION" >> $GITHUB_ENV
 
       - name: Install requirements
+        # if: steps.cache.outputs.cache-hit != 'true'
         run: |
           pip install --upgrade pip
           python -c "import sys; print(sys.version)"
+          python -m pip install -e .[tests]
 
           cd workflows
           pip install pyyaml

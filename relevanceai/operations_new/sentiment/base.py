@@ -2,7 +2,6 @@
 """
 
 # Running a function across each subcluster
-from sre_constants import MAX_UNTIL
 import numpy as np
 import csv
 from typing import Optional
@@ -15,7 +14,7 @@ class SentimentBase(OperationBase):
     def __init__(
         self,
         text_fields: list,
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
@@ -58,7 +57,7 @@ class SentimentBase(OperationBase):
 
             self._classifier = transformers.pipeline(
                 return_all_scores=True,
-                model="siebert/sentiment-roberta-large-english",
+                model=self.model_name,
             )
         return self._classifier
 
@@ -105,7 +104,7 @@ class SentimentBase(OperationBase):
         max_score = labels[0][ind_max]["score"]
         sentiment = self.label_mapping.get(sentiment, sentiment)
         if sentiment.lower() == "neutral":
-            overall_sentiment = 0
+            overall_sentiment = 0.0
         else:
             overall_sentiment = (
                 max_score
@@ -190,7 +189,7 @@ class SentimentBase(OperationBase):
                 output_field = self._get_output_field(t)
             sentiments = [
                 self.analyze_sentiment(
-                    self.get_field(t, doc),
+                    self.get_field(t, doc, missing_treatment="return_empty_string"),
                     highlight=self.highlight,
                     max_number_of_shap_documents=self.max_number_of_shap_documents,
                     min_abs_score=self.min_abs_score,
