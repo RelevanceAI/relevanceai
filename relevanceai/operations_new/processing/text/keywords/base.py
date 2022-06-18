@@ -1,4 +1,5 @@
 from relevanceai.operations_new.base import OperationBase
+from relevanceai.constants.errors import MissingPackageError
 
 
 class KeyWordBase(OperationBase):
@@ -34,7 +35,10 @@ class KeyWordBase(OperationBase):
     @property
     def keyphrase_model(self):
         if not hasattr(self, "_model"):
-            from keybert import KeyBERT
+            try:
+                from keybert import KeyBERT
+            except ModuleNotFoundError:
+                raise MissingPackageError("keybert")
 
             self._model = KeyBERT(self.model_name)
         return self._model
