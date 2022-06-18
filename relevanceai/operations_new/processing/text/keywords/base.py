@@ -14,6 +14,7 @@ class KeyWordBase(OperationBase):
         upper_bound: int = 3,
         output_fields: list = None,
         stop_words: list = None,
+        max_keywords: int = 1,
     ):
         self.fields = fields
         self.model_name = model_name
@@ -21,6 +22,7 @@ class KeyWordBase(OperationBase):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.stop_words = stop_words
+        self.max_keywords = max_keywords
 
     def _get_output_field(self, field):
         return field + "_keyphrase_"
@@ -43,7 +45,10 @@ class KeyWordBase(OperationBase):
             keyphrase_ngram_range=(self.lower_bound, self.upper_bound),
             stop_words=self.stop_words,
         )
-        return keywords
+        return [{"keyword": k[0], "score": k[1]} for k in keywords[: self.max_keywords]]
+
+    def extract_keyphrases(self, texts):
+        return [self.extract_keyphrase(t) for t in texts]
 
     def transform(self, documents):
         # Extract the keywords from a bunch of documents
@@ -53,11 +58,7 @@ class KeyWordBase(OperationBase):
                 output_field = self.output_fields[i]
             else:
                 output_field = self._get_output_field(t)
-            keyphrases = [
-                self.extract_keyphrase(
-                    self.get_field(t, doc, missing_treatment="return_empty_string"),
-                )
-                for doc in documents
-            ]
+            texts = self.get_field_across_documents(t, documents)
+            keyphrases = self.extract_keyphrases(texts)
             self.set_field_across_documents(output_field, keyphrases, keyphrase_docs)
         return keyphrase_docs

@@ -15,6 +15,7 @@ class KeyWordOps(OperationAPIBase, KeyWordBase):
         upper_bound: int = 3,
         output_fields: list = None,
         stop_words: list = None,
+        max_keywords: int = 1,
         **kwargs
     ):
         self.fields = fields
@@ -23,4 +24,5 @@ class KeyWordOps(OperationAPIBase, KeyWordBase):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.stop_words = stop_words
+        self.max_keywords = max_keywords
         super().__init__(**kwargs)
