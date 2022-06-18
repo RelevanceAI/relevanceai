@@ -951,3 +951,41 @@ class Operations(Write):
                 model=subcluster_model,
                 filters=filters,
             )
+
+    def extract_keywords(
+        self,
+        fields: list,
+        model_name: str = "all-mpnet-base-v2",
+        output_fields: list = None,
+        lower_bound: int = 0,
+        upper_bound: int = 3,
+        chunksize: int = 200,
+        stop_words: list = None,
+        filters: list = None,
+        batched: bool = True,
+    ):
+        """
+        Extract the keyphrases of a text field and output and store it into
+        a separate field. This can be used to better explain sentiment,
+        label and identify why certain things were clustered together!
+        """
+        from relevanceai.operations_new.processing.text.keywords.ops import KeyWordOps
+
+        ops = KeyWordOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_name=model_name,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            output_fields=output_fields,
+            stop_words=stop_words,
+        )
+        ops.run(
+            self,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+        )
+        return ops
