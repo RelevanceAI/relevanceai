@@ -960,6 +960,7 @@ class Operations(Write):
         lower_bound: int = 0,
         upper_bound: int = 3,
         chunksize: int = 200,
+        max_keywords: int = 1,
         stop_words: list = None,
         filters: list = None,
         batched: bool = True,
@@ -979,6 +980,7 @@ class Operations(Write):
             upper_bound=upper_bound,
             output_fields=output_fields,
             stop_words=stop_words,
+            max_keywords=max_keywords,
         )
         ops.run(
             self,
