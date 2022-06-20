@@ -1,5 +1,6 @@
 import warnings
 from typing import List, Dict, Optional, Any, Union, Callable
+from xmlrpc.client import Boolean
 from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
@@ -886,6 +887,7 @@ class Operations(Write, IO):
         vector_search_query: Optional[dict] = None,
         fields_to_search: Optional[List] = None,
         select_fields: Optional[List] = None,
+        include_vectors: bool = True,
         filters: Optional[List] = None,
         page: int = 0,
         page_size: int = 10,
@@ -915,6 +917,7 @@ class Operations(Write, IO):
             vectorSearchQuery=vector_search_query,
             fieldsToSearch=fields_to_search,
             includeFields=select_fields,
+            includeVectors=include_vectors,
             filters=filters,
             page=page,
             pageSize=page_size,
