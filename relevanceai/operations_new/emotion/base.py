@@ -41,7 +41,7 @@ class EmotionBase(OperationBase):
             import transformers
 
             self._classifier = transformers.pipeline(
-                "sentiment-analysis", return_all_scores=True, model=self.model_name
+                "sentiment-analysis", return_all_scores=False, model=self.model_name
             )
         return self._classifier
 
