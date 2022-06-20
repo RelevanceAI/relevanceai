@@ -1,6 +1,5 @@
 import warnings
 from typing import List, Dict, Optional, Any, Union, Callable
-from xmlrpc.client import Boolean
 from tqdm.auto import tqdm
 
 from relevanceai.client.helpers import Credentials
