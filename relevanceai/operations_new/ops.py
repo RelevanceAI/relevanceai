@@ -561,6 +561,7 @@ class Operations(Write):
         filters: list = None,
         chunksize: int = 100,
         output_fields: list = None,
+        min_score: float = 0.3,
     ):
         """
         Extract an emotion.
@@ -582,6 +583,7 @@ class Operations(Write):
             text_fields=text_fields,
             model_name=model_name,
             output_fields=output_fields,
+            min_score=min_score,
         )
         return ops.run(
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
