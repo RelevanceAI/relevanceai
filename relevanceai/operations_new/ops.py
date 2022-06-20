@@ -560,6 +560,7 @@ class Operations(Write):
         model_name="joeddav/distilbert-base-uncased-go-emotions-student",
         filters: list = None,
         chunksize: int = 100,
+        output_fields: list = None,
     ):
         """
         Extract an emotion.
@@ -576,7 +577,9 @@ class Operations(Write):
         """
         from relevanceai.operations_new.emotion.ops import EmotionOps
 
-        ops = EmotionOps(text_fields=text_fields, model_name=model_name)
+        ops = EmotionOps(
+            text_fields=text_fields, model_name=model_name, output_Fields=output_fields
+        )
         return ops.run(
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
         )
