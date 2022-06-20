@@ -475,7 +475,7 @@ class Read(Statistics):
     @track
     def schema(self) -> Dict:
         """
-        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a Relevance schema.
 
         Example
         -----------------
@@ -794,3 +794,20 @@ class Read(Statistics):
                     null_count[field] += 1
 
         return null_count
+
+    def facets(
+        self,
+        fields: list,
+        date_interval: str = "monthly",
+        page_size: int = 5,
+        page: int = 1,
+        asc: bool = False,
+    ):
+        return self.datasets.facets(
+            dataset_id=self.dataset_id,
+            fields=fields,
+            date_interval=date_interval,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+        )

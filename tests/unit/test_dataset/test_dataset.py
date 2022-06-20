@@ -8,6 +8,7 @@ import uuid
 import numpy as np
 import pandas as pd
 
+import time
 import pytest
 
 from relevanceai import Client
@@ -95,6 +96,7 @@ class TestDatasetSeries:
 
         before = test_dataset["sample_1_value"].values
         test_dataset["sample_1_value"].bulk_apply(bulk_func)
+        time.sleep(2)
         after = test_dataset["sample_1_value"].values
 
         assert ((before + 1) == after).mean()
@@ -262,6 +264,7 @@ class TestDatasetWrite:
             return docs
 
         test_dataset.bulk_apply(bulk_fn)
+        time.sleep(2)
         filtered_documents = test_dataset.datasets.documents.get_where(
             test_dataset.dataset_id,
             filters=[

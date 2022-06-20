@@ -2,7 +2,6 @@
 """
 
 # Running a function across each subcluster
-from sre_constants import MAX_UNTIL
 import numpy as np
 import csv
 from typing import Optional
@@ -15,11 +14,12 @@ class SentimentBase(OperationBase):
     def __init__(
         self,
         text_fields: list,
-        model_name: str = "siebert/sentiment-roberta-large-english",
+        model_name: str = "cardiffnlp/twitter-roberta-base-sentiment",
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
+        output_fields: list = None,
         **kwargs,
     ):
         """
@@ -38,6 +38,7 @@ class SentimentBase(OperationBase):
         self.positive_sentiment_name = positive_sentiment_name
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
+        self.output_fields = output_fields
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -56,22 +57,22 @@ class SentimentBase(OperationBase):
 
             self._classifier = transformers.pipeline(
                 return_all_scores=True,
-                model="siebert/sentiment-roberta-large-english",
+                model=self.model_name,
             )
         return self._classifier
 
-    def _get_model(self):
-        try:
-            import transformers
-        except ModuleNotFoundError:
-            print(
-                "Need to install transformers by running `pip install -q transformers`."
-            )
-        self.classifier = transformers.pipeline(
-            "sentiment-analysis",
-            return_all_scores=True,
-            model="cardiffnlp/twitter-roberta-base-sentiment",
-        )
+    # def _get_model(self):
+    #     try:
+    #         import transformers
+    #     except ModuleNotFoundError:
+    #         print(
+    #             "Need to install transformers by running `pip install -q transformers`."
+    #         )
+    #     self.classifier = transformers.pipeline(
+    #         "sentiment-analysis",
+    #         return_all_scores=True,
+    #         model="cardiffnlp/twitter-roberta-base-sentiment",
+    #     )
 
     def _get_label_mapping(self, task: str):
         # Note: this is specific to the current model
@@ -97,13 +98,13 @@ class SentimentBase(OperationBase):
     ):
         if text is None:
             return None
-        labels = self.classifier([text])
+        labels = self.classifier([text], truncation=True)
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
         sentiment = self.label_mapping.get(sentiment, sentiment)
         if sentiment.lower() == "neutral":
-            overall_sentiment = 0
+            overall_sentiment = 1e-5
         else:
             overall_sentiment = (
                 max_score
@@ -180,19 +181,23 @@ class SentimentBase(OperationBase):
 
     def transform(self, documents):
         # For each document, update the field
-        for t in self.text_fields:
-            output_field = self._get_output_field(t)
+        sentiment_docs = [{"_id": d["_id"]} for d in documents]
+        for i, t in enumerate(self.text_fields):
+            if self.output_fields is not None:
+                output_field = self.output_fields[i]
+            else:
+                output_field = self._get_output_field(t)
             sentiments = [
                 self.analyze_sentiment(
-                    self.get_field(t, doc),
+                    self.get_field(t, doc, missing_treatment="return_empty_string"),
                     highlight=self.highlight,
                     max_number_of_shap_documents=self.max_number_of_shap_documents,
                     min_abs_score=self.min_abs_score,
                 )
                 for doc in documents
             ]
-            self.set_field_across_documents(output_field, sentiments, documents)
-        return documents
+            self.set_field_across_documents(output_field, sentiments, sentiment_docs)
+        return sentiment_docs
 
     # def analyze_sentiment(self, text, highlight:bool= True):
     #     try:

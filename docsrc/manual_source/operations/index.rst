@@ -12,6 +12,10 @@ happens when you accept documents and return documents
 - Operators are also written in `ops.py` files that inherit
 from an OperationsAPIBase.
 
+.. autoclass:: relevanceai.dataset.operations_new.ops.Operations
+    :exclude-members: __init__
+
+
 .. toctree::
     :maxdepth: 4
 

@@ -21,8 +21,9 @@ jobs:
         name: Setting notebook fpath output
         run: |
           cd workflows
-          export WORKFLOW_IGNORE=workflows/ignore-workflows.txt
-          export NOTEBOOK_FPATHS=$( grep '.ipynb' $WORKFLOW_IGNORE| grep -v '#' $WORKFLOW_IGNORE | jq -Rsc '. / "\n" - [""]' )
+
+          NOTEBOOKS=$(cat 'workflows/.workflowsignore' | grep '#' | sed 's/# //g')
+          NOTEBOOK_FPATHS=$(for n in $NOTEBOOKS; do echo $n; done |  jq -Rsc '. / "\n" - [""]' )
           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
 
   test-notebooks:
