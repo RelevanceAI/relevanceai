@@ -112,10 +112,10 @@ class SentimentBase(OperationBase):
             overall_sentiment = 1e-5
         elif sentiment.lower() == "neutral":
             # get the next highest score
-            new_labels = labels[:ind_max] + labels[(ind_max + 1) :]
+            new_labels = labels[0][:ind_max] + labels[0][(ind_max + 1) :]
             new_ind_max = np.argmax([l["score"] for l in new_labels])
-            new_max_score = new_labels[0][new_ind_max]
-            new_sentiment = new_labels[0][new_ind_max]
+            new_max_score = new_labels[new_ind_max]["score"]
+            new_sentiment = new_labels[new_ind_max]["label"]
             overall_sentiment = (
                 new_max_score
                 if new_sentiment.lower() == positive_sentiment_name
