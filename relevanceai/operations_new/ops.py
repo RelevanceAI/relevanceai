@@ -540,6 +540,10 @@ class Operations(Write):
     ):
         """
         Extract sentiment from the dataset
+
+        If you are dealing with news sources, you will want
+        more sensitivity, as more news sources are likely to be neutral
+
         """
         from relevanceai.operations_new.sentiment.ops import SentimentOps
 
