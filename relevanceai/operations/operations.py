@@ -880,12 +880,18 @@ class Operations(Write, IO):
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
 
-    def advanced_search(
+    def search(
         self,
         query: str = None,
         vector_search_query: Optional[dict] = None,
         fields_to_search: Optional[List] = None,
         select_fields: Optional[List] = None,
+        filters: Optional[List] = None,
+        page: int = 0,
+        page_size: int = 10,
+        sort: dict = None,
+        minimum_relevance: int = 0,
+        query_config: dict = None,
         **kwargs,
     ):
         """
@@ -909,10 +915,16 @@ class Operations(Write, IO):
             vectorSearchQuery=vector_search_query,
             fieldsToSearch=fields_to_search,
             includeFields=select_fields,
+            filters=filters,
+            page=page,
+            pageSize=page_size,
+            sort=sort,
+            minimumRelevance=minimum_relevance,
+            queryConfig=query_config,
             **kwargs,
         )
 
-    search = advanced_search
+    advanced_search = search
 
     @track
     def list_deployables(self):
