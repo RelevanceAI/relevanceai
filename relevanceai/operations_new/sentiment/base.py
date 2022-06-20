@@ -20,6 +20,7 @@ class SentimentBase(OperationBase):
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
         output_fields: list = None,
+        sensitivity: float = 0,
         **kwargs,
     ):
         """
@@ -30,6 +31,9 @@ class SentimentBase(OperationBase):
 
         model_name: str
             The name of the model
+        sensitivity: float
+            How confident it is about being `neutral`. If you are dealing with news sources,
+            you probably want less sensitivity
 
         """
         self.model_name = model_name
@@ -39,6 +43,7 @@ class SentimentBase(OperationBase):
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
+        self.sensitivity = sensitivity
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -103,7 +108,7 @@ class SentimentBase(OperationBase):
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
         sentiment = self.label_mapping.get(sentiment, sentiment)
-        if sentiment.lower() == "neutral":
+        if sentiment.lower() == "neutral" and max_score > self.sensitivity:
             overall_sentiment = 1e-5
         else:
             overall_sentiment = (

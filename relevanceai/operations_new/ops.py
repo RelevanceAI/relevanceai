@@ -533,6 +533,7 @@ class Operations(Write):
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
+        sensitivity: float = 0,
         filters: Optional[list] = None,
         output_fields: list = None,
         chunksize: int = 100,
@@ -549,6 +550,7 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
             output_fields=output_fields,
+            sensitivity=sensitivity,
         )
         return ops.run(
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
