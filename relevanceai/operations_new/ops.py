@@ -578,7 +578,10 @@ class Operations(Write):
         from relevanceai.operations_new.emotion.ops import EmotionOps
 
         ops = EmotionOps(
-            text_fields=text_fields, model_name=model_name, output_Fields=output_fields
+            credentials=self.credentials,
+            text_fields=text_fields,
+            model_name=model_name,
+            output_fields=output_fields,
         )
         return ops.run(
             self, filters=filters, select_fields=text_fields, chunksize=chunksize
