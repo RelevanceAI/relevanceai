@@ -1005,3 +1005,33 @@ class Operations(Write):
             output_fields=output_fields,
         )
         return ops
+
+    def deduplicate(
+        self, field, amount_to_deduplicate: int = 1000, filters: list = None
+    ):
+        """
+        You can deduplicate values in your dataset here.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds.deduplicate("text_field")
+
+        """
+        results = self.aggregate(
+            aggregation_query=dict(
+                groupby=[
+                    {
+                        "field": field,
+                        "agg": "category",
+                        "name": "array",
+                        "group_size": amount_to_deduplicate,
+                        "select_fields": [field],
+                    }
+                ]
+            ),
+            filters=filters,
+            page_size=amount_to_deduplicate,
+        )
+        print("Finished deduplicating!")
