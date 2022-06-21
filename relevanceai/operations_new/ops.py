@@ -15,7 +15,7 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
     dataset.cluster(*args **kwarsgs)
 """
-
+from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 
 from relevanceai.dataset.write import Write
@@ -1034,4 +1034,8 @@ class Operations(Write):
             filters=filters,
             page_size=amount_to_deduplicate,
         )
+
+        for r in tqdm(results["results"]):
+            all_ids = [d["_id"] for d in r["documents"]]
+            self.datasets.documents.bulk_delete(self.dataset_id, ids=all_ids[1:])
         print("Finished deduplicating!")
