@@ -10,11 +10,19 @@ import numpy as np
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
-
+try:
+    import tensorflow as tf
+    import tensorflow_hub as hub
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(
+                "Run `pip install tensorflow_hub`."
+            )
+except:
+    import traceback
+    traceback.print_exc()
 
 class TFHubImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, image_dimensions: Optional[int] = None):
-        import tensorflow_hub as hub
 
         self.model: Any = hub.load(url)
         self.vector_length: int = vector_length
@@ -43,8 +51,6 @@ class TFHubImage2Vec(VectorizeModelBase):
                         ).read()
                     )
                 except:
-                    import tensorflow as tf
-
                     return tf.image.decode_jpeg(
                         requests.get(image).content, channels=3, name="jpeg_reader"
                     ).numpy()
