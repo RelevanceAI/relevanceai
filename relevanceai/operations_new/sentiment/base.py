@@ -117,17 +117,12 @@ class SentimentBase(OperationBase):
             new_max_score = new_labels[new_ind_max]["score"]
             new_sentiment = new_labels[new_ind_max]["label"]
             new_sentiment = self.label_mapping.get(new_sentiment, new_sentiment)
-            overall_sentiment = (
-                new_max_score
-                if new_sentiment.lower() == positive_sentiment_name
-                else -new_max_score
+            overall_sentiment = self._calculate_overall_sentiment(
+                new_max_score, new_sentiment
             )
+
         else:
-            overall_sentiment = (
-                max_score
-                if sentiment.lower() == positive_sentiment_name
-                else -max_score
-            )
+            overall_sentiment = self._calculate_overall_sentiment(max_score, sentiment)
         # Adjust to avoid bug
         if overall_sentiment == 0:
             overall_sentiment = 1e-5
@@ -149,6 +144,12 @@ class SentimentBase(OperationBase):
             "overall_sentiment": overall_sentiment,
             "highlight_chunk_": shap_documents,
         }
+
+    def _calculate_overall_sentiment(self, score: float, sentiment: str):
+        if sentiment.lower().strip() == self.positive_sentiment_name:
+            return score
+        else:
+            return -score
 
     @property
     def explainer(self):
