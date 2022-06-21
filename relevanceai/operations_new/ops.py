@@ -198,6 +198,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -268,22 +269,13 @@ class Operations(Write):
             }
         ]
         # Check if output field already exists
-        if output_field is not None:
-            filters += [
-                {
-                    "field": output_field,
-                    "filter_type": "exists",
-                    "condition": "!=",
-                    "condition_value": " ",
-                }
-            ]
-
         res = ops.run(
             dataset=self,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
             select_fields=vector_fields,
+            **kwargs,
         )
 
         return ops
@@ -303,6 +295,7 @@ class Operations(Write):
         similarity_threshold=0.1,
         chunksize: int = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """
         Label from another dataset
@@ -323,6 +316,7 @@ class Operations(Write):
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            **kwargs,
         )
 
     @track
@@ -1007,7 +1001,7 @@ class Operations(Write):
         return ops
 
     def deduplicate(
-        self, field, amount_to_deduplicate: int = 1000, filters: list = None
+        self, fields, amount_to_deduplicate: int = 100, filters: list = None
     ):
         """
         You can deduplicate values in your dataset here.
@@ -1025,10 +1019,11 @@ class Operations(Write):
                     {
                         "field": field,
                         "agg": "category",
-                        "name": "array",
+                        "name": field,
                         "group_size": amount_to_deduplicate,
-                        "select_fields": [field],
+                        "select_fields": ["_id"],
                     }
+                    for field in fields
                 ]
             ),
             filters=filters,
