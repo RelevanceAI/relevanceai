@@ -116,10 +116,11 @@ class SentimentBase(OperationBase):
             new_ind_max = np.argmax([l["score"] for l in new_labels])
             new_max_score = new_labels[new_ind_max]["score"]
             new_sentiment = new_labels[new_ind_max]["label"]
+            new_sentiment = self.label_mapping.get(new_sentiment, new_sentiment)
             overall_sentiment = (
                 new_max_score
                 if new_sentiment.lower() == positive_sentiment_name
-                else -max_score
+                else -new_max_score
             )
         else:
             overall_sentiment = (
@@ -127,6 +128,9 @@ class SentimentBase(OperationBase):
                 if sentiment.lower() == positive_sentiment_name
                 else -max_score
             )
+        # Adjust to avoid bug
+        if overall_sentiment == 0:
+            overall_sentiment = 1e-5
         if not highlight:
             return {
                 "sentiment": sentiment,
