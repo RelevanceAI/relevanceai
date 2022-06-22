@@ -531,6 +531,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         output_fields: list = None,
         chunksize: int = 100,
+        batched: bool = True,
     ):
         """
         Extract sentiment from the dataset
@@ -551,7 +552,11 @@ class Operations(Write):
             sensitivity=sensitivity,
         )
         return ops.run(
-            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            batched=batched,
         )
 
     def extract_emotion(
@@ -562,6 +567,7 @@ class Operations(Write):
         chunksize: int = 100,
         output_fields: list = None,
         min_score: float = 0.3,
+        batched: bool = True,
     ):
         """
         Extract an emotion.
@@ -586,7 +592,11 @@ class Operations(Write):
             min_score=min_score,
         )
         return ops.run(
-            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            batched=batched,
         )
 
     def apply_transformers_pipeline(
