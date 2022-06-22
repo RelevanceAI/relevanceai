@@ -35,7 +35,7 @@ requirements = [
     "orjson>=3.6.7",
 ]
 
-models = requirements + ["sentence-transformers"]
+models_requirements = requirements + ["sentence-transformers"]
 
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
