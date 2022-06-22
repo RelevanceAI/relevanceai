@@ -54,6 +54,7 @@ class BatchInsertClient(BatchRetrieveClient):
         use_json_encoder: bool = True,
         verbose: bool = True,
         create_id: bool = False,
+        overwrite: bool = True,
         *args,
         **kwargs,
     ):
@@ -114,6 +115,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 dataset_id,
                 documents,
                 return_documents=True,
+                overwrite=overwrite,
                 *args,
                 **kwargs,
             )
