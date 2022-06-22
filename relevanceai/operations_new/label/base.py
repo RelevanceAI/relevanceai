@@ -193,15 +193,13 @@ class LabelBase(OperationBase):
             for i in self.get_field_across_documents(vector_field, documents)
         ]
         self.set_field_across_documents(score_field, sort_key, documents)
-        labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])[
-            :max_number_of_labels
-        ]
+        labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])
+        labels = labels[:max_number_of_labels]
         labels = [l for l in labels if l[score_field] > similarity_threshold]
-        labels = deepcopy(labels)
+        new_labels = deepcopy(labels)
         # remove labels from labels
-        [l.pop(vector_field) for l in labels]
-        # TODO: add similarity_threshold
-        return labels
+        [l.pop(vector_field) for l in new_labels]
+        return new_labels
 
     def get_operation_metadata(self) -> Dict[str, Any]:
         return dict(

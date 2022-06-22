@@ -17,6 +17,7 @@ class EmotionBase(OperationBase):
         text_fields: list,
         model_name="joeddav/distilbert-base-uncased-go-emotions-student",
         output_fields: list = None,
+        min_score: float = 0.3,
         **kwargs,
     ):
         """
@@ -32,6 +33,7 @@ class EmotionBase(OperationBase):
         self.model_name = model_name
         self.text_fields = text_fields
         self.output_fields = output_fields
+        self.min_score = min_score
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -41,7 +43,7 @@ class EmotionBase(OperationBase):
             import transformers
 
             self._classifier = transformers.pipeline(
-                "sentiment-analysis", return_all_scores=True, model=self.model_name
+                "sentiment-analysis", return_all_scores=False, model=self.model_name
             )
         return self._classifier
 
@@ -54,7 +56,11 @@ class EmotionBase(OperationBase):
         """
         if text is None:
             return {}
-        return self.classifier(text)
+        output = self.classifier(text, truncation=True, max_length=512)
+        # [{'label': 'desire', 'score': 0.30693167448043823}]
+        if output[0]["score"] > self.min_score:
+            return output
+        return {}
 
     @property
     def name(self):

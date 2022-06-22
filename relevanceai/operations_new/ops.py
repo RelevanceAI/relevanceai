@@ -15,7 +15,7 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
     dataset.cluster(*args **kwarsgs)
 """
-
+from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 
 from relevanceai.dataset.write import Write
@@ -198,6 +198,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
         and then it labels the documents with the label documents
@@ -268,22 +269,13 @@ class Operations(Write):
             }
         ]
         # Check if output field already exists
-        if output_field is not None:
-            filters += [
-                {
-                    "field": output_field,
-                    "filter_type": "exists",
-                    "condition": "!=",
-                    "condition_value": " ",
-                }
-            ]
-
         res = ops.run(
             dataset=self,
             filters=filters,
             batched=batched,
             chunksize=chunksize,
             select_fields=vector_fields,
+            **kwargs,
         )
 
         return ops
@@ -303,6 +295,7 @@ class Operations(Write):
         similarity_threshold=0.1,
         chunksize: int = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """
         Label from another dataset
@@ -323,6 +316,7 @@ class Operations(Write):
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            **kwargs,
         )
 
     @track
@@ -522,7 +516,7 @@ class Operations(Write):
         if filters is not None:
             filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters)
+        cluster_ops.run(self, filters=filters)
 
         return cluster_ops
 
@@ -533,12 +527,18 @@ class Operations(Write):
         highlight: bool = False,
         max_number_of_shap_documents: int = 1,
         min_abs_score: float = 0.1,
+        sensitivity: float = 0,
         filters: Optional[list] = None,
         output_fields: list = None,
         chunksize: int = 100,
+        batched: bool = True,
     ):
         """
         Extract sentiment from the dataset
+
+        If you are dealing with news sources, you will want
+        more sensitivity, as more news sources are likely to be neutral
+
         """
         from relevanceai.operations_new.sentiment.ops import SentimentOps
 
@@ -549,9 +549,14 @@ class Operations(Write):
             max_number_of_shap_documents=max_number_of_shap_documents,
             min_abs_score=min_abs_score,
             output_fields=output_fields,
+            sensitivity=sensitivity,
         )
         return ops.run(
-            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            batched=batched,
         )
 
     def extract_emotion(
@@ -560,6 +565,9 @@ class Operations(Write):
         model_name="joeddav/distilbert-base-uncased-go-emotions-student",
         filters: list = None,
         chunksize: int = 100,
+        output_fields: list = None,
+        min_score: float = 0.3,
+        batched: bool = True,
     ):
         """
         Extract an emotion.
@@ -576,9 +584,19 @@ class Operations(Write):
         """
         from relevanceai.operations_new.emotion.ops import EmotionOps
 
-        ops = EmotionOps(text_fields=text_fields, model_name=model_name)
+        ops = EmotionOps(
+            credentials=self.credentials,
+            text_fields=text_fields,
+            model_name=model_name,
+            output_fields=output_fields,
+            min_score=min_score,
+        )
         return ops.run(
-            self, filters=filters, select_fields=text_fields, chunksize=chunksize
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            chunksize=chunksize,
+            batched=batched,
         )
 
     def apply_transformers_pipeline(
@@ -951,3 +969,78 @@ class Operations(Write):
                 model=subcluster_model,
                 filters=filters,
             )
+
+    def extract_keywords(
+        self,
+        fields: list,
+        model_name: str = "all-mpnet-base-v2",
+        output_fields: list = None,
+        lower_bound: int = 0,
+        upper_bound: int = 3,
+        chunksize: int = 200,
+        max_keywords: int = 1,
+        stop_words: list = None,
+        filters: list = None,
+        batched: bool = True,
+    ):
+        """
+        Extract the keyphrases of a text field and output and store it into
+        a separate field. This can be used to better explain sentiment,
+        label and identify why certain things were clustered together!
+        """
+        from relevanceai.operations_new.processing.text.keywords.ops import KeyWordOps
+
+        ops = KeyWordOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_name=model_name,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+            output_fields=output_fields,
+            stop_words=stop_words,
+            max_keywords=max_keywords,
+        )
+        ops.run(
+            self,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+        )
+        return ops
+
+    def deduplicate(
+        self, fields, amount_to_deduplicate: int = 100, filters: list = None
+    ):
+        """
+        You can deduplicate values in your dataset here.
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds.deduplicate("text_field")
+
+        """
+        results = self.aggregate(
+            aggregation_query=dict(
+                groupby=[
+                    {
+                        "field": field,
+                        "agg": "category",
+                        "name": field,
+                        "group_size": amount_to_deduplicate,
+                        "select_fields": ["_id"],
+                    }
+                    for field in fields
+                ]
+            ),
+            filters=filters,
+            page_size=amount_to_deduplicate,
+        )
+
+        for r in tqdm(results["results"]):
+            all_ids = [d["_id"] for d in r["documents"]]
+            self.datasets.documents.bulk_delete(self.dataset_id, ids=all_ids[1:])
+        print("Finished deduplicating!")

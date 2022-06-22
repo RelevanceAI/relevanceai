@@ -25,6 +25,7 @@ class OperationRun(OperationBase):
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         output_fields: Optional[list] = None,
+        refresh: bool = False,
         *args,
         **kwargs,
     ):
@@ -76,7 +77,7 @@ class OperationRun(OperationBase):
             ]
 
         # add a checkmark for output fields
-        if output_fields is not None and len(output_fields) > 0:
+        if not refresh and output_fields is not None and len(output_fields) > 0:
             filters += [
                 {
                     "field": output_fields[0],
