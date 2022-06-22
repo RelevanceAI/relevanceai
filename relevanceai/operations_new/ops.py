@@ -516,7 +516,7 @@ class Operations(Write):
         if filters is not None:
             filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters)
+        cluster_ops.run(self, filters=filters)
 
         return cluster_ops
 
