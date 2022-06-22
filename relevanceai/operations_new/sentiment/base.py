@@ -20,6 +20,7 @@ class SentimentBase(OperationBase):
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
         output_fields: list = None,
+        sensitivity: float = 0,
         **kwargs,
     ):
         """
@@ -30,6 +31,9 @@ class SentimentBase(OperationBase):
 
         model_name: str
             The name of the model
+        sensitivity: float
+            How confident it is about being `neutral`. If you are dealing with news sources,
+            you probably want less sensitivity
 
         """
         self.model_name = model_name
@@ -39,6 +43,7 @@ class SentimentBase(OperationBase):
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
+        self.sensitivity = sensitivity
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -103,14 +108,24 @@ class SentimentBase(OperationBase):
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]
         sentiment = self.label_mapping.get(sentiment, sentiment)
-        if sentiment.lower() == "neutral":
+        if sentiment.lower() == "neutral" and max_score > self.sensitivity:
             overall_sentiment = 1e-5
-        else:
-            overall_sentiment = (
-                max_score
-                if sentiment.lower() == positive_sentiment_name
-                else -max_score
+        elif sentiment.lower() == "neutral":
+            # get the next highest score
+            new_labels = labels[0][:ind_max] + labels[0][(ind_max + 1) :]
+            new_ind_max = np.argmax([l["score"] for l in new_labels])
+            new_max_score = new_labels[new_ind_max]["score"]
+            new_sentiment = new_labels[new_ind_max]["label"]
+            new_sentiment = self.label_mapping.get(new_sentiment, new_sentiment)
+            overall_sentiment = self._calculate_overall_sentiment(
+                new_max_score, new_sentiment
             )
+
+        else:
+            overall_sentiment = self._calculate_overall_sentiment(max_score, sentiment)
+        # Adjust to avoid bug
+        if overall_sentiment == 0:
+            overall_sentiment = 1e-5
         if not highlight:
             return {
                 "sentiment": sentiment,
@@ -129,6 +144,12 @@ class SentimentBase(OperationBase):
             "overall_sentiment": overall_sentiment,
             "highlight_chunk_": shap_documents,
         }
+
+    def _calculate_overall_sentiment(self, score: float, sentiment: str):
+        if sentiment.lower().strip() == self.positive_sentiment_name:
+            return score
+        else:
+            return -score
 
     @property
     def explainer(self):
