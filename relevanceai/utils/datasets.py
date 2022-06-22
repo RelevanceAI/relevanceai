@@ -134,10 +134,10 @@ class ExampleDatasets:
 
 
 def get_ebay_app_review_dataset(
-    number_of_documents: Union[None, int] = 365, select_fields: Optional[List] = None
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
 ) -> List:
     """
-    Download an example games dataset (https://www.freetogame.com/) \n
+    Download an example playstore reviews data for ebay \n
     Total Len: 10000 \n
 
     Parameters
@@ -167,10 +167,34 @@ def get_ebay_app_review_dataset(
     """
     select_fields = [] if select_fields is None else select_fields
     if number_of_documents is None:
-        number_of_documents = 365
+        number_of_documents = 100
 
     return ExampleDatasets._get_dummy_dataset(
         "playstore_ebay",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+
+def get_ebay_app_review_encoded_dataset(
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
+) -> List:
+    """
+    Download an example playstore reviews data for ebay (all encoded) \n
+    Total Len: 10000 \n
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+        Fields to include in the dataset, empty array/list means all fields.
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 100
+
+    return ExampleDatasets._get_dummy_dataset(
+        "playstore_ebay_encoded",
         number_of_documents=number_of_documents,
         select_fields=select_fields,
     )
