@@ -56,7 +56,7 @@ class EmotionBase(OperationBase):
         """
         if text is None:
             return {}
-        output = self.classifier(text, truncation=True)
+        output = self.classifier(text, truncation=True, max_length=512)
         # [{'label': 'desire', 'score': 0.30693167448043823}]
         if output[0]["score"] > self.min_score:
             return output
