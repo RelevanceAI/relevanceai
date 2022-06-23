@@ -140,6 +140,8 @@ class Operations(Write):
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        output_fields: list = None,
+        refresh: bool = False,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -168,6 +170,7 @@ class Operations(Write):
             credentials=self.credentials,
             fields=fields,
             models=models,
+            output_fields=output_fields,
         )
 
         filters = [] if filters is None else filters
@@ -179,6 +182,8 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
+            output_fields=output_fields,
+            refresh=refresh,
         )
 
         return ops
@@ -197,7 +202,8 @@ class Operations(Write):
         batched: bool = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
-        output_field: str = None,
+        output_fields: list = None,
+        refresh: bool = True,
         **kwargs,
     ):
         """This function takes a list of documents, a list of vector fields, and a list of label documents,
@@ -254,7 +260,7 @@ class Operations(Write):
             similarity_threshold=similarity_threshold,
             label_field=label_field,
             label_vector_field=label_vector_field,
-            output_field=output_field,
+            output_fields=output_fields,
         )
         # Add an exists filter
         if filters is None:
@@ -275,6 +281,7 @@ class Operations(Write):
             batched=batched,
             chunksize=chunksize,
             select_fields=vector_fields,
+            refresh=refresh,
             **kwargs,
         )
 

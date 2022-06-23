@@ -12,7 +12,7 @@ from relevanceai.operations_new.base import OperationBase
 class LabelBase(OperationBase):
     def __init__(
         self,
-        vector_field: str,
+        vector_fields: list,
         label_documents: list,
         expanded: bool = True,
         max_number_of_labels: int = 1,
@@ -20,10 +20,10 @@ class LabelBase(OperationBase):
         similarity_threshold: float = 0.1,
         label_field="label",
         label_vector_field="label_vector_",
-        output_field: str = "_label_",
+        output_fields: list = ["_label_"],
         **kwargs,
     ):
-        self.vector_field = vector_field
+        self.vector_fields = vector_fields
         self.expanded = expanded
         self.max_number_of_labels = max_number_of_labels
         self.similarity_metric = similarity_metric
@@ -31,8 +31,8 @@ class LabelBase(OperationBase):
         self.label_field = label_field
         self.label_vector_field = label_vector_field
         self.label_documents = label_documents
-        self.vector_fields = [vector_field]
-        self.output_field = output_field
+        self.vector_fields = vector_fields
+        self.output_fields = output_fields
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -84,11 +84,7 @@ class LabelBase(OperationBase):
             A list of dictionaries.
 
         """
-
-        # Get all vectors
-        vectors = self.get_field_across_documents(self.vector_field, documents)
-
-        # TODO switch this to multiprocessing
+        # TODO switch this to multiprocessing - as this can be quite CPU intensive
         from relevanceai.utils import multiprocess_list
 
         # label_docs = multiprocess_list(self.get_label_document, documents)
@@ -99,12 +95,14 @@ class LabelBase(OperationBase):
         return label_docs
 
     def get_label_document(self, document, *args, **kwargs):
-        labels = self._get_nearest_labels(
-            vector=self.get_field(self.vector_field, document),
-            label_documents=self.label_documents,
-        )
+        # Get a label document
         doc: dict = {"_id": document["_id"]}
-        self.set_field(self.output_field, doc, labels)
+        for i, vector_field in enumerate(self.vector_fields):
+            labels = self._get_nearest_labels(
+                vector=self.get_field(vector_field, document),
+                label_documents=self.label_documents,
+            )
+            self.set_field(self.output_fields[i], doc, labels)
         return doc
 
     @property

@@ -17,7 +17,7 @@ class Scaler(Write):
     def scale(
         self,
         fields: List[Any],
-        output_field=None,
+        output_fields=None,
         scaler: Any = None,
         number_of_documents: Union[int, None] = None,
         show_progress_bar: bool = True,
@@ -91,9 +91,9 @@ class Scaler(Write):
         documents = df.to_dict("records")
 
         for document in documents:
-            for field in distributed_fields:
+            for i, field in enumerate(distributed_fields):
                 dims = schema[field]["vector"]
-                document[field if output_field is None else output_field] = [
+                document[field if output_fields is None else output_fields[i]] = [
                     document[f"{field}-{n}"] for n in range(dims)
                 ]
                 for n in range(dims):
