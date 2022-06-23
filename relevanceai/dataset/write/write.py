@@ -37,6 +37,7 @@ class Write(Read):
         chunksize: int = 0,
         use_json_encoder: bool = True,
         create_id: bool = False,
+        overwrite: bool = True,
         **kwargs,
     ) -> Dict:
 
@@ -100,6 +101,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            overwrite=overwrite,
             **kwargs,
         )
         return self._process_insert_results(results)
