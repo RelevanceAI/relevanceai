@@ -12,12 +12,19 @@ class SentenceSplittingBase(OperationBase):
         text_fields: List[str],
         language: str = "en",
         inplace: bool = True,
-        output_field: str = "_splittextchunk_",
+        output_fields: list = None,
     ):
+        if output_fields is not None:
+            if len(output_fields) != len(text_fields):
+                raise ValueError(
+                    "output_fields needs to be same length as text_fields!"
+                )
+        if output_fields is None:
+            output_fields = ["_splittextchunk_"]
         self.text_fields = text_fields
         self.language = language
         self.inplace = inplace
-        self.output_field = output_field
+        self.output_fields = output_fields
 
     @property
     def name(self):
@@ -61,7 +68,7 @@ class SentenceSplittingBase(OperationBase):
             The fields in the document that contain the text to be split.
         document
             The document to be split.
-        output_field : str, optional
+        output_fields : list, optional
             The name of the field that will contain the split text.
 
         Returns
@@ -69,14 +76,14 @@ class SentenceSplittingBase(OperationBase):
             A list of dictionaries.
 
         """
-        for text_field in self.text_fields:
+        for i, text_field in enumerate(self.text_fields):
             text = self.get_fields(text_field, document)
             split_text = self.split_text(text)
 
             # Format the split text into documents
             split_text_value = [{text_field: s} for s in split_text if s.strip() != ""]
             self.set_field(
-                self.output_field,
+                self.output_fields[i],
                 document,
                 split_text_value,
             )
@@ -113,8 +120,6 @@ class SentenceSplittingBase(OperationBase):
         [
             self.split_text_document(
                 document=document,
-                text_fields=self.text_fields,
-                output_field=self.output_field,
             )
             for document in documents
         ]

@@ -301,7 +301,7 @@ class Operations(Write):
         filters: list = None,
         similarity_threshold=0.1,
         chunksize: int = 100,
-        output_field: str = None,
+        output_fields: list = None,
         **kwargs,
     ):
         """
@@ -314,7 +314,7 @@ class Operations(Write):
             vector_fields=vector_fields,
             label_documents=label_documents,
             expanded=expanded,
-            output_field=output_field,
+            output_fields=output_fields,
             max_number_of_labels=max_number_of_labels,
             similarity_metric=similarity_metric,
             similarity_threshold=similarity_threshold,
@@ -330,12 +330,13 @@ class Operations(Write):
     def split_sentences(
         self,
         text_fields: List[str],
-        output_field="_splittextchunk_",
+        output_fields: list = ["_splittextchunk_"],
         language: str = "en",
         inplace: bool = True,
-        batched: bool = False,
+        batched: bool = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        refresh: bool = True,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -360,7 +361,7 @@ class Operations(Write):
             text_fields=text_fields,
             language=language,
             inplace=inplace,
-            output_field=output_field,
+            output_fields=output_fields,
         )
 
         res = ops.run(
@@ -369,6 +370,8 @@ class Operations(Write):
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            output_fields=output_fields,
+            refresh=refresh,
         )
 
         return ops
@@ -508,6 +511,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         include_cluster_report: bool = True,
         model_kwargs: dict = None,
+        batched: bool = True,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
@@ -523,7 +527,7 @@ class Operations(Write):
         if filters is not None:
             filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters=filters)
+        cluster_ops.run(self, filters=filters, batched=batched)
 
         return cluster_ops
 
@@ -610,7 +614,7 @@ class Operations(Write):
         self,
         text_fields: list,
         pipeline,
-        output_field: Optional[str] = None,
+        output_fields: Optional[str] = None,
         filters: Optional[list] = None,
     ):
         """
@@ -632,9 +636,14 @@ class Operations(Write):
         ops = TransformersPipelineOps(
             text_fields=text_fields,
             pipeline=pipeline,
-            output_field=output_field,
+            output_fields=output_fields,
         )
-        return ops.run(self, filters=filters, select_fields=text_fields)
+        return ops.run(
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            output_fields=output_fields,
+        )
 
     def subcluster(
         self,
