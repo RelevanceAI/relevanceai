@@ -6,14 +6,20 @@ from typing import Optional
 
 
 class TransformersPipelineBase(OperationBase):
-    def __init__(self, text_fields: list, pipeline, output_field: Optional[str] = None):
+    def __init__(
+        self, text_fields: list, pipeline, output_fields: Optional[str] = None
+    ):
         self.text_fields = text_fields
         self.pipeline = pipeline
         self.task: str = pipeline.task
         self._name: str = pipeline.tokenizer.name_or_path
-        self.output_field = (
-            self._generate_output_field() if output_field is None else output_field
-        )
+        self.output_fields = [
+            self._generate_output_field(text_field)
+            if output_fields is None
+            else output_fields
+            for text_field in text_fields
+        ]
+        print(f"Output fields are {self.output_fields}")
 
     @property
     def name(self):
@@ -29,5 +35,5 @@ class TransformersPipelineBase(OperationBase):
             self.set_field_across_documents(self.output_field, values, documents)
         return documents
 
-    def _generate_output_field(self):
-        return f"_{self.task}_." + self.name + "." + ".".join(self.text_fields)
+    def _generate_output_field(self, text_field):
+        return f"_{self.task}_.{self.name}." + ".".join(text_field)
