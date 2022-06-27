@@ -13,6 +13,12 @@ class _ModelUtils(DocUtils):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
             return self.predict(vectors)
+        # else:
+        #     vectors = [
+        #         [val for val in vector] 
+        #         for vector in self.get_fields_across_documents(vector_fields, documents)
+        #     ]
+        #     return self.predict(vectors)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
         )
