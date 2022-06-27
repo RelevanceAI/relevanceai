@@ -1,3 +1,6 @@
+"""
+Base class for ops.py to inherit
+"""
 from relevanceai.dataset import Dataset
 from relevanceai._api import APIClient
 

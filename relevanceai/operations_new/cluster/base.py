@@ -2,14 +2,14 @@
 Base class for clustering
 """
 from typing import List, Dict, Any, Optional
-from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 from relevanceai.operations_new.ops_run_base import OperationRunBase
 from relevanceai.operations_new.cluster.alias import ClusterAlias
 
 
 class ClusterBase(OperationRunBase, ClusterAlias):
 
-    model: ModelBase
+    model: ClusterModelBase
 
     def __init__(
         self,
@@ -35,6 +35,10 @@ class ClusterBase(OperationRunBase, ClusterAlias):
 
         self._check_vector_fields()
 
+    @property
+    def name(self):
+        return "cluster"
+
     def _get_model(self, model: Any, model_kwargs: Optional[dict]) -> Any:
         if model_kwargs is None:
             model_kwargs = {}
@@ -54,11 +58,11 @@ class ClusterBase(OperationRunBase, ClusterAlias):
 
     def _get_sklearn_model_from_class(self, model):
         from relevanceai.operations_new.cluster.models.sklearn.base import (
-            SklearnModelBase,
+            SklearnModel,
         )
 
         model_kwargs = model.__dict__
-        model = SklearnModelBase(model=model, model_kwargs=model_kwargs)
+        model = SklearnModel(model=model, model_kwargs=model_kwargs)
         return model
 
     def _get_faiss_model_from_class(self, model):
@@ -81,10 +85,10 @@ class ClusterBase(OperationRunBase, ClusterAlias):
 
         if model in sklearn_models:
             from relevanceai.operations_new.cluster.models.sklearn.base import (
-                SklearnModelBase,
+                SklearnModel,
             )
 
-            model = SklearnModelBase(
+            model = SklearnModel(
                 model=model,
                 model_kwargs=model_kwargs,
             )
@@ -92,10 +96,10 @@ class ClusterBase(OperationRunBase, ClusterAlias):
 
         elif model == "faiss":
             from relevanceai.operations_new.cluster.models.faiss.base import (
-                FaissModelBase,
+                FaissModel,
             )
 
-            model = FaissModelBase(
+            model = FaissModel(
                 model=model,
                 model_kwargs=model_kwargs,
             )
@@ -103,17 +107,13 @@ class ClusterBase(OperationRunBase, ClusterAlias):
 
         elif model == "communitydetection":
             from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
-                CommunityDetection,
+                CommunityDetectionModel,
             )
 
-            model = CommunityDetection(**model_kwargs)
+            model = CommunityDetectionModel(**model_kwargs)
             return model
 
         raise ValueError("Model not supported.")
-
-    @property
-    def name(self):
-        return "cluster"
 
     def format_cluster_label(self, label):
         """> If the label is an integer, return a string that says "cluster_" and the integer. If the label is

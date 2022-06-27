@@ -3,5 +3,7 @@
 2. `ops_run_base.py`: This is where all the dataset related interactions goes. <- base.py should inherit this
 3. `ops_api_base.py`: This is when API client methods are required. <- ops.py should inherit this
 
-# How to create a Ops Class
-
+# How to create a Operation
+You need two key things
+`base.py`
+`ops.py`

@@ -1,5 +1,6 @@
 """
-All functions related to running operations on datasets
+Base class for base.py to inherit.
+All functions related to running operations on datasets.
 """
 import threading
 import time
@@ -8,7 +9,6 @@ from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.ops_base import OperationBase
-from relevanceai.operations_new.ops_manager import OperationManager
 
 from relevanceai.utils import fire_and_forget
 
@@ -89,7 +89,10 @@ class OperationRunBase(OperationBase):
                     "condition_value": " ",
                 }
             ]
-
+        
+        #needs to be here due to circular imports
+        from relevanceai.operations_new.ops_manager import OperationManager
+        
         with OperationManager(
             dataset=dataset,
             operation=self,
