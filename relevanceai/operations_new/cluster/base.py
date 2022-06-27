@@ -177,14 +177,14 @@ class ClusterBase(OperationRun, ClusterAlias):
 
         """
 
-        # TODO: add support for sklearn kmeans
         if not self.is_field_across_documents(self.vector_fields[0], documents):
             raise ValueError(
-                "You have missing vectors in your document. You will want to apply a filter for vector fields. See here for a page of filter options: https://relevanceai.readthedocs.io/en/development/core/filters/exists.html#exists."
+                "You have missing vectors in your document. You need to filter out documents that don't contain the vector field."
             )
         labels = self.fit_predict_documents(
             documents=documents,
         )
+        # from sklearn.metrics import silhouette_samples
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 

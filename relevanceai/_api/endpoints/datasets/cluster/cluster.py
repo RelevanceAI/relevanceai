@@ -26,7 +26,6 @@ class ClusterClient(_Base):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
-        For more information about aggregations check out services.aggregate.aggregate.
         Parameters
         ----------
         dataset_id : string
