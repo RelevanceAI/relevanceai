@@ -90,10 +90,10 @@ class ClusterOps(ClusterBase, OperationAPIBase):
                 alias="sample"
             )
             cluster_ops.insert_centroids(
-                centorid_documents={
-                    "cluster-0": [1, 1, 1],
-                    "cluster-2": [2, 1, 1]
-                }
+                centorid_documents=[
+                    {"_id" : "cluster-0", "sample_1_vector_": [1, 1, 1]},
+                    {"_id" : "cluster-1", "sample_1_vector_": [1, 2, 2]},
+                ]
             )
 
         """
