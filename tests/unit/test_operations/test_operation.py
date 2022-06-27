@@ -25,7 +25,14 @@ class TestOperation:
             alias=alias,
             vector_fields=[vector_field],
             parent_field=parent_field,
-            filters=["sample_1_vector"],
+            filters=[
+                {
+                    "field": vector_field,
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": "",
+                }
+            ],
             min_parent_cluster_size=2,
         )
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema

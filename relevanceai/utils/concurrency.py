@@ -17,7 +17,7 @@ def chunk(iterables, n=20):
 
 
 def multithread(
-    func, iterables, max_workers=8, chunksize=20, show_progress_bar: bool = False
+    func, iterables, max_workers=2, chunksize=20, show_progress_bar: bool = False
 ):
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         progress_tracker = progress_bar(
@@ -41,7 +41,7 @@ def multithread(
 def multiprocess(
     func,
     iterables,
-    max_workers=8,
+    max_workers=2,
     chunksize=20,
     post_func_hook: Callable = None,
     show_progress_bar: bool = False,
@@ -57,10 +57,49 @@ def multiprocess(
         )
         progress_iterator = iter(progress_tracker)
 
-        futures = [
-            executor.submit(func, it, process_args)
-            for it in chunk(iterables, chunksize)
-        ]
+        if len(process_args) > 0:
+            futures = [
+                executor.submit(func, it, process_args)
+                for it in chunk(iterables, chunksize)
+            ]
+        else:
+            futures = [executor.submit(func, it) for it in chunk(iterables, chunksize)]
+        results = []
+        for future in as_completed(futures):
+            if post_func_hook:
+                results.append(post_func_hook(future.result()))
+            else:
+                results.append(future.result())
+            if progress_tracker is not None:
+                next(progress_iterator)
+            if show_progress_bar is True:
+                progress_tracker.update(1)
+        return results
+
+
+def multiprocess_list(
+    func,
+    iterables,
+    max_workers=2,
+    chunksize=1,
+    post_func_hook: Callable = None,
+    show_progress_bar: bool = False,
+    process_args: tuple = (),
+):
+    # with progress_bar(total=int(len(iterables) / chunksize),
+    #     show_progress_bar=show_progress_bar) as pbar:
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        # Create trackers
+        progress_tracker = progress_bar(
+            range(math.ceil(len(iterables) / chunksize)),
+            show_progress_bar=show_progress_bar,
+        )
+        progress_iterator = iter(progress_tracker)
+
+        if len(process_args) > 0:
+            futures = [executor.submit(func, it, process_args) for it in iterables]
+        else:
+            futures = [executor.submit(func, it) for it in iterables]
         results = []
         for future in as_completed(futures):
             if post_func_hook:

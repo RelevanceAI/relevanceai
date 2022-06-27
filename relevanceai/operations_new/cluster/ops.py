@@ -7,7 +7,6 @@ from typing import Optional, Union, Callable, Dict, Any, Set, List
 from relevanceai.utils.decorators.analytics import track
 
 from relevanceai.operations_new.apibase import OperationAPIBase
-from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.base import ClusterBase
 
 from relevanceai.constants import Warning
@@ -15,7 +14,7 @@ from relevanceai.constants.errors import MissingClusterError
 from relevanceai.constants import MissingClusterError, Warning
 
 
-class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
+class ClusterOps(ClusterBase, OperationAPIBase):
     """
     Cluster-related functionalities
     """
@@ -32,6 +31,7 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         verbose: bool = False,
         model=None,
         model_kwargs=None,
+        byo_cluster_field: str = None,
         **kwargs,
     ):
         """
@@ -69,6 +69,10 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
         # alias is set after model so that we can get the number of clusters
         # if the model needs ot be instantiated
         self.alias = self._get_alias(alias)
+
+        self.byo_cluster_field = byo_cluster_field
+        if byo_cluster_field is not None:
+            self.create_byo_clusters()
 
     def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
         """
@@ -626,3 +630,33 @@ class ClusterOps(ClusterBase, OperationAPIBase, ClusterAlias):
             alias=self.alias,
             cluster_ids=cluster_ids,
         )
+
+    def create_byo_clusters(self):
+        """
+        Create BYO clusters for a given field
+        """
+        # TODO: Change into generator to make unique values more than 9999
+        results = self.datasets.facets(
+            dataset_id=self.dataset_id, fields=[self.byo_cluster_field], page_size=9999
+        )
+
+        try:
+            for r in results["results"][self.byo_cluster_field]:
+                filters = [
+                    {
+                        "field": self.byo_cluster_field,
+                        "filter_type": "exact_match",
+                        "condition": "==",
+                        "condition_value": r["value"],
+                    }
+                ]
+                cluster_doc = {}
+                self.set_field(self._get_cluster_field_name(), cluster_doc, r["value"])
+                results = self.datasets.documents.update_where(
+                    dataset_id=self.dataset_id, update=cluster_doc, filters=filters
+                )
+
+        except KeyError:
+            raise ValueError("Cluster field has no values.")
+
+        return results

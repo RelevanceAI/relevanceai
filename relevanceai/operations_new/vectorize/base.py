@@ -12,13 +12,25 @@ class VectorizeBase(OperationRun):
     models: List[VectorizeModelBase]
     fields: List[str]
 
-    def __init__(self, fields: List[str], models: List[VectorizeModelBase], **kwargs):
+    def __init__(
+        self,
+        fields: List[str],
+        models: List[VectorizeModelBase],
+        output_fields: list = None,
+        **kwargs
+    ):
         self.fields = fields
         self.models = [self._get_model(model) for model in models]
         self.vector_fields = []
         for model in self.models:
             for field in self.fields:
                 self.vector_fields.append(model.vector_name(field))
+        if output_fields is not None:
+            if len(output_fields) != len(models) * len(fields):
+                raise NotImplementedError(
+                    "Output fields only supported for 1 model for now."
+                )
+        self.output_fields = output_fields
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -52,6 +64,7 @@ class VectorizeBase(OperationRun):
             updated_documents = model.encode_documents(
                 documents=updated_documents,
                 fields=self.fields,
+                output_fields=self.output_fields,
             )
 
         # removes unnecessary info for updated_where
@@ -68,7 +81,7 @@ class VectorizeBase(OperationRun):
 
     def _get_base_filters(
         self,
-    ) -> List[Dict[str, Any]]:
+    ) -> List:
 
         """
         Creates the filters necessary to search all documents
@@ -105,10 +118,10 @@ class VectorizeBase(OperationRun):
                 A list of filters.
         """
 
-        filters = []
         if len(self.fields) > 1:
             iters = len(self.fields) ** 2
 
+            filters: list = []
             for i in range(iters):
                 binary_array = [character for character in str(bin(i))][2:]
                 mixed_mask = ["0"] * (
@@ -129,9 +142,7 @@ class VectorizeBase(OperationRun):
                         zip(self.fields, self.vector_fields)
                     )
                 ]
-                filters.append(
-                    {"filter_type": "or", "condition_value": condition_value}
-                )
+                filters += [{"filter_type": "or", "condition_value": condition_value}]
 
         else:  # Special Case when only 1 field is provided
             condition_value = [
@@ -139,15 +150,15 @@ class VectorizeBase(OperationRun):
                     "field": self.fields[0],
                     "filter_type": "exists",
                     "condition": "==",
-                    "condition_value": "",
+                    "condition_value": " ",
                 },
                 {
                     "field": self.vector_fields[0],
                     "filter_type": "exists",
                     "condition": "!=",
-                    "condition_value": "",
+                    "condition_value": " ",
                 },
             ]
-            filters.append({"filter_type": "or", "condition_value": condition_value})
+            filters = condition_value
 
         return filters

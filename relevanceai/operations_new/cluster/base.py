@@ -4,9 +4,10 @@ Base class for clustering
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ModelBase
 from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.cluster.alias import ClusterAlias
 
 
-class ClusterBase(OperationRun):
+class ClusterBase(OperationRun, ClusterAlias):
 
     model: ModelBase
 
@@ -17,6 +18,7 @@ class ClusterBase(OperationRun):
         model: Any,
         cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
+        byo_cluster_name: str = None,
         **kwargs,
     ):
 
@@ -27,7 +29,7 @@ class ClusterBase(OperationRun):
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
         self.cluster_field = cluster_field
-
+        self.byo_cluster_name = byo_cluster_name
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -155,7 +157,7 @@ class ClusterBase(OperationRun):
                 )
                 cluster_labels = self.model.fit_predict(
                     vectors,
-                    warm_start=warm_start,
+                    # warm_start=warm_start,
                 )
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")

@@ -5,6 +5,8 @@ Pandas like dataset API
 import warnings
 import requests
 import pandas as pd
+import threading
+import time
 
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
@@ -16,7 +18,7 @@ from relevanceai.utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
-
+from relevanceai.utils import fire_and_forget
 from relevanceai.constants.warning import Warning
 
 
@@ -29,12 +31,13 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
         create_id: bool = False,
+        overwrite: bool = True,
         **kwargs,
     ) -> Dict:
 
@@ -98,6 +101,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            overwrite=overwrite,
             **kwargs,
         )
         return self._process_insert_results(results)
@@ -107,7 +111,7 @@ class Write(Read):
         self,
         filepath_or_buffer,
         chunksize: int = 10000,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
@@ -305,7 +309,7 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
         show_progress_bar=False,
@@ -475,9 +479,7 @@ class Write(Read):
         retrieve_chunksize: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        show_progress_bar: bool = True,
-        use_json_encoder: bool = True,
-        log_to_file: bool = True,
+        max_active_threads: int = 2,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -516,19 +518,32 @@ class Write(Read):
 
             df.apply(update_documents)
         """
+        thread_count = 0
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
 
-        return self.pull_update_push_async(
-            self.dataset_id,
-            bulk_func,
-            retrieve_chunk_size=retrieve_chunksize,
-            filters=filters,
+        for chunk in self.chunk_dataset(
             select_fields=select_fields,
-            show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
-            log_to_file=log_to_file,
-        )
+            filters=filters,
+            chunksize=retrieve_chunksize,
+        ):
+            updated_chunk = bulk_func(
+                chunk,
+            )
+
+            @fire_and_forget
+            def fire_upsert_docs():
+                self.upsert_documents(updated_chunk)
+
+            thread_count += 1
+            if thread_count >= max_active_threads:
+                # Check if thread count decreases
+                curr_thread_count = threading.active_count()
+                while threading.active_count() >= curr_thread_count:
+                    time.sleep(1)
+                thread_count -= 1
+
+            fire_upsert_docs()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
@@ -918,3 +933,21 @@ class Write(Read):
         return self.datasets.documents.update_where(
             dataset_id=self.dataset_id, update=update, filters=filters
         )
+
+    def insert_list(self, labels: list, label_field: str = "label", **kwargs):
+        """It takes a list of labels, and inserts them into the database as documents
+
+        Parameters
+        ----------
+        labels : list
+            list of labels to insert
+        label_field : str, optional
+            The field in the document that contains the label.
+
+        Returns
+        -------
+            A list of the ids of the documents that were inserted.
+
+        """
+        documents = [{label_field: l} for l in labels]
+        return self.insert_documents(documents=documents, **kwargs)

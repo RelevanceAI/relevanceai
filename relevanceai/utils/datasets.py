@@ -12,6 +12,7 @@ import random
 import string
 import sys
 import uuid
+from numpy import number
 import pandas as pd
 import requests
 
@@ -131,6 +132,72 @@ class ExampleDatasets:
             data = select_fields_from_json(data, select_fields)
         return data
 
+
+def get_ebay_app_review_dataset(
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
+) -> List:
+    """
+    Download an example playstore reviews data for ebay \n
+    Total Len: 10000 \n
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+        Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+
+        {
+            '_id': '4b9b92c3-011d-4f43-98ca-e131958a49f4',
+            'at': datetime.datetime(2022, 6, 20, 12, 22, 23),
+            'content': "PLEASE change the way your app works in terms of swiping through images. If you pull down, you refresh the page. If you swipe left/right, you change images. Problem is, it's far too easy to accidentally pull down while swiping left/right, which ends up resetting the gallery!!!! Please fix this! Otherwise, app works as expected.",
+            'repliedAt': None,
+            'replyContent': None,
+            'reviewCreatedVersion': '6.64.0.3',
+            'reviewId': '4b9b92c3-011d-4f43-98ca-e131958a49f4',
+            'score': 4.0,
+            'thumbsUpCount': 50,
+            'userImage': 'https://play-lh.googleusercontent.com/a/AATXAJwrSs35SJYs5BUzJ2blj0zJagZgUZuPfglwcT_f=mo',
+            'userName': 'Mitchel Wood'
+        }
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 100
+
+    return ExampleDatasets._get_dummy_dataset(
+        "playstore_ebay",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+
+def get_ebay_app_review_encoded_dataset(
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
+) -> List:
+    """
+    Download an example playstore reviews data for ebay (all encoded) \n
+    Total Len: 10000 \n
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+        Fields to include in the dataset, empty array/list means all fields.
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 100
+
+    return ExampleDatasets._get_dummy_dataset(
+        "playstore_ebay_encoded",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
 
 def get_games_dataset(
     number_of_documents: Union[None, int] = 365, select_fields: Optional[List] = None
@@ -702,6 +769,45 @@ def get_iris_dataset(
     if shuffle:
         random.shuffle(iris_data)
     return iris_data
+
+
+def list_example_datasets():
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        return client.list_datasets()
+
+
+def example_documents(dataset_id: str, number_of_documents: int = None):
+    project = "3a4b969f4d5fae6f850e"
+    api_key = (
+        "LVpyeWlYOEI4X2lpWW1za3J6Qmg6dldnTVZCczlUZ09pMG5LM2NyejVtdw"  # read access
+    )
+    region = "us-east-1"
+    firebase_uid = "tQ5Yu5frJhOQ8Ge3PpeFoh2325F3"
+    token = ":".join([project, api_key, region, firebase_uid])
+    from relevanceai.utils import FileLogger
+
+    with FileLogger():
+        from relevanceai import Client
+
+        client = Client(token=token)
+        if number_of_documents is None:
+            return client._get_all_documents(dataset_id)
+        else:
+            return client._get_documents(
+                dataset_id=dataset_id, number_of_documents=number_of_documents
+            )
 
 
 ### For backwards compatability
