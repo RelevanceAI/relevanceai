@@ -68,7 +68,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         )
 
         # alias is set after model so that we can get the number of clusters
-        # if the model needs ot be instantiated
+        # if the model needs to be instantiated
         self.alias = self._get_alias(alias)
 
         self.byo_cluster_field = byo_cluster_field
