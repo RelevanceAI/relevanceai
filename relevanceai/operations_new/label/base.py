@@ -6,7 +6,7 @@ max_number_of_labels.
 from copy import deepcopy
 from typing import Any, Dict, List
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 
 
 class LabelBase(OperationBase):

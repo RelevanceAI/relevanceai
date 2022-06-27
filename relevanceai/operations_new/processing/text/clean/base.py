@@ -3,7 +3,7 @@ from relevanceai.operations_new.processing.text.clean.helpers import (
     MLStripper,
 )
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 
 
 class CleanTextBase(OperationBase):

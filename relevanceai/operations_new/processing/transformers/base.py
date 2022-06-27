@@ -1,7 +1,7 @@
 """
 Transformers Pipeline Implementation
 """
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 from typing import Optional
 
 

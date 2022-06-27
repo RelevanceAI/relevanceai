@@ -8,7 +8,7 @@ import csv
 from typing import Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 
 
 class EmotionBase(OperationBase):

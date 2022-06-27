@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 
 from relevanceai.operations_new.processing.text.html_clean.helpers import (
     MLStripper,

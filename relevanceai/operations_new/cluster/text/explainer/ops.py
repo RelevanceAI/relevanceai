@@ -4,7 +4,7 @@
 from tqdm.auto import tqdm
 from typing import Optional
 from relevanceai.operations_new.cluster.text.explainer.base import BaseExplainer
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_api_base import OperationAPIBase
 
 
 class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore

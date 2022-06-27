@@ -1,5 +1,5 @@
 from relevanceai.utils import MissingPackageError
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
 
 
 class CountTextBase(OperationBase):

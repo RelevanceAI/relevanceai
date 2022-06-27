@@ -1,5 +1,6 @@
 """
 Base Operations Class
+Checks fields, contains key abstract methods, etc
 """
 from abc import ABC, abstractmethod
 

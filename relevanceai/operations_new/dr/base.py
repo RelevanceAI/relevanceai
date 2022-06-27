@@ -1,10 +1,10 @@
 from typing import List, Dict, Any, Optional, Union
 
-from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.ops_run_base import OperationRunBase
 from relevanceai.operations_new.dr.models.base import DimReductionModelBase
 
 
-class DimReductionBase(OperationRun):
+class DimReductionBase(OperationRunBase):
 
     model: DimReductionModelBase
     fields: List[str]

@@ -7,15 +7,19 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.ops_manager import OperationManager
 
 from relevanceai.utils import fire_and_forget
 
 
-class OperationRun(OperationBase):
+class OperationRunBase(OperationBase):
     """
     All functions related to running operations on datasets
     """
+
+    def is_chunk_valid(self, chunk):
+        return chunk is not None and len(chunk) > 0
 
     def run(
         self,
@@ -46,7 +50,6 @@ class OperationRun(OperationBase):
 
         """
 
-        from relevanceai.operations_new.manager import OperationManager
 
         if filters is None:
             filters = []
@@ -159,8 +162,6 @@ class OperationRun(OperationBase):
 
                 fire_upsert_docs()
 
-    def is_chunk_valid(self, chunk):
-        return chunk is not None and len(chunk) > 0
 
     def store_operation_metadata(
         self,

@@ -1,14 +1,14 @@
 from relevanceai.dataset import Dataset
 from relevanceai._api import APIClient
 
-from relevanceai.operations_new.base_run import OperationRun
+from relevanceai.operations_new.ops_run_base import OperationRunBase
 
 
 class OperationsAPILogger:
     pass
 
 
-class OperationAPIBase(APIClient, OperationRun, OperationsAPILogger):
+class OperationAPIBase(APIClient, OperationRunBase, OperationsAPILogger):
     @classmethod
     def from_credentials(self, *args, **kwargs):
         """

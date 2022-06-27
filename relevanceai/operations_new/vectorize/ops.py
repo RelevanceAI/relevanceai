@@ -1,4 +1,4 @@
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_api_base import OperationAPIBase
 from relevanceai.operations_new.vectorize.base import VectorizeBase
 
 

@@ -7,7 +7,7 @@ from typing import Optional, Union, Callable, Dict, Any, Set, List
 
 from relevanceai.utils.decorators.analytics import track
 
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_api_base import OperationAPIBase
 from relevanceai.operations_new.cluster.base import ClusterBase
 
 from relevanceai.constants import Warning
