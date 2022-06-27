@@ -128,7 +128,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
 
     def create_centroids(self, insert: bool = True):
         """
-        Calculate centroids from your vectors
+        Calculate centroids from your dataset vectors.
 
         Example
         --------
@@ -480,9 +480,9 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
+            from relevanceai.operations_new.vectorize.text.transform import VectorizeTextTransform
 
-            self.model = VectorizeTextBase._get_model(encode_fn_or_model)
+            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
             encode_fn = self.model.encode
         else:
             encode_fn = encode_fn_or_model
