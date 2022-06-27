@@ -8,8 +8,58 @@ from typing import Any, Dict, List
 from relevanceai.utils import DocUtils
 from relevanceai.client import Credentials
 
+class OperationsCheck(ABC, DocUtils):
+    def _check_alias(self):
+        if self.alias is None:
+            raise ValueError("alias is not set. Please supply alias=")
+        if self.alias.lower() != self.alias:
+            raise ValueError("Alias cannot be lower case.")
 
-class OperationBase(ABC, DocUtils):
+    def _check_vector_fields(self):
+        """It checks that the vector fields are in the schema, and that they are of the correct type"""
+        self._check_vector_field_type()
+
+        if len(self.vector_fields) == 0:
+            raise ValueError("No vector fields set. Please supply with vector_fields=")
+        self._check_vector_field_names()
+        self._check_vector_field_in_schema()
+
+    def _check_vector_field_type(self):
+        """If the vector_fields is None, raise an error. If it's a string, force it to be a list"""
+        # check the vector fields
+        if self.vector_fields is None:
+            raise ValueError(
+                "No vector_fields has been set. Please supply with vector_fields="
+            )
+        elif isinstance(self.vector_fields, str):
+            # Force it to be a list instead
+            self.vector_fields = [self.vector_fields]
+
+    def _check_vector_field_names(self):
+        """If the class has a vector_fields attribute, then for each vector field in the vector_fields
+        attribute, check that the vector field ends with _vector_. If it doesn't, raise a ValueError
+
+        """
+        if hasattr(self, "vector_fields"):
+            for vector_field in self.vector_fields:
+                if not vector_field.endswith("_vector_"):
+                    raise ValueError(
+                        "Invalid vector field. Ensure they end in `_vector_`."
+                    )
+
+    def _check_vector_field_in_schema(self):
+        """> If the dataset has a schema, then the vector field must be in the schema"""
+        # TODO: check the schema
+        if hasattr(self, "dataset"):
+            for vector_field in self.vector_fields:
+                if hasattr(self.dataset, "schema"):
+                    assert vector_field in self.dataset.schema
+
+    @staticmethod
+    def normalize_string(string: str):
+        return string.lower().replace("-", "").replace("_", "")
+
+class OperationBase(OperationsCheck):
     """
     To write your own operation, you need to add:
     - name
@@ -45,52 +95,6 @@ class OperationBase(ABC, DocUtils):
             operation=self.name,
             values=values,
         )
-
-    def _check_vector_field_type(self):
-        """If the vector_fields is None, raise an error. If it's a string, force it to be a list"""
-        # check the vector fields
-        if self.vector_fields is None:
-            raise ValueError(
-                "No vector_fields has been set. Please supply with vector_fields="
-            )
-        elif isinstance(self.vector_fields, str):
-            # Force it to be a list instead
-            self.vector_fields = [self.vector_fields]
-
-    def _check_vector_names(self):
-        """If the class has a vector_fields attribute, then for each vector field in the vector_fields
-        attribute, check that the vector field ends with _vector_. If it doesn't, raise a ValueError
-
-        """
-        if hasattr(self, "vector_fields"):
-            for vector_field in self.vector_fields:
-                if not vector_field.endswith("_vector_"):
-                    raise ValueError(
-                        "Invalid vector field. Ensure they end in `_vector_`."
-                    )
-
-    def _check_vector_field_in_schema(self):
-        """> If the dataset has a schema, then the vector field must be in the schema"""
-        # TODO: check the schema
-        if hasattr(self, "dataset"):
-            for vector_field in self.vector_fields:
-                if hasattr(self.dataset, "schema"):
-                    assert vector_field in self.dataset.schema
-
-    def _check_vector_fields(self):
-        """It checks that the vector fields are in the schema, and that they are of the correct type"""
-        self._check_vector_field_type()
-
-        if len(self.vector_fields) == 0:
-            raise ValueError("No vector fields set. Please supply with vector_fields=")
-        self._check_vector_names()
-        self._check_vector_field_in_schema()
-
-    def _check_alias(self):
-        if self.alias is None:
-            raise ValueError("alias is not set. Please supply alias=")
-        if self.alias.lower() != self.alias:
-            raise ValueError("Alias cannot be lower case.")
 
     def _get_package_from_model(self, model):
         """Determine the package for a model.
@@ -129,7 +133,3 @@ class OperationBase(ABC, DocUtils):
         else:
             self.package = "custom"
         return self.package
-
-    @staticmethod
-    def normalize_string(string: str):
-        return string.lower().replace("-", "").replace("_", "")

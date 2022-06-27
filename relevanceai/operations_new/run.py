@@ -185,7 +185,8 @@ class OperationRun(OperationBase):
             {
                 "_operationhistory_": {
                     "1-1-1-17-2-3": {
-                        "operation": "vector", "model_name": "miniLm"
+                        "operation": "vector", 
+                        "model_name": "miniLm"
                     },
                 }
             }
