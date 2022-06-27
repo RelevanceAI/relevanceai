@@ -430,7 +430,10 @@ class SklearnCentroidBase(CentroidBase, ClusterBase):
 
 
 if is_hdbscan_available():
-    import hdbscan
+    try:
+        import hdbscan
+    except:
+        pass
 
 
 class HDBSCANClusterBase(SklearnCentroidBase):
