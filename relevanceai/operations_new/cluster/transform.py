@@ -87,7 +87,6 @@ class ClusterTransform(TransformBase, ClusterAlias):
         labels = self.fit_predict_documents(
             documents=documents,
         )
-        # from sklearn.metrics import silhouette_samples
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
