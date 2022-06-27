@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.ops_run_base import OperationRunBase
+from relevanceai.operations_new.ops_run import OperationRun
 
 
 class OperationManager:
@@ -19,7 +19,7 @@ class OperationManager:
     def __init__(
         self,
         dataset: Dataset,
-        operation: OperationRunBase,
+        operation: OperationRun,
         metadata: Optional[Dict[str, Any]] = None,
         post_hooks: Optional[list] = None,
     ):

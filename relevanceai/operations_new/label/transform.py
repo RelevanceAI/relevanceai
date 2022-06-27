@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from relevanceai.operations_new.transform_base import TransformBase
 
 
-class LabelBase(TransformBase):
+class LabelTransform(TransformBase):
     def __init__(
         self,
         vector_field: str,

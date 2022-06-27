@@ -1,11 +1,11 @@
 """
 Labelling with API-related functions
 """
-from relevanceai.operations_new.label.base import LabelBase
+from relevanceai.operations_new.label.transform import LabelTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
-class LabelOps(LabelBase, OperationAPIBase):  # type: ignore
+class LabelOps(LabelTransform, OperationAPIBase):  # type: ignore
     """
     Label Operations
     """

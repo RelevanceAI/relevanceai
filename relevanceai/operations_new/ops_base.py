@@ -4,14 +4,14 @@ Base class for ops.py to inherit
 from relevanceai.dataset import Dataset
 from relevanceai._api import APIClient
 
-from relevanceai.operations_new.ops_run import OperationRunBase
+from relevanceai.operations_new.ops_run import OperationRun
 
 
 class OperationsAPILogger:
     pass
 
 
-class OperationAPIBase(APIClient, OperationRunBase, OperationsAPILogger):
+class OperationAPIBase(APIClient, OperationRun, OperationsAPILogger):
     @classmethod
     def from_credentials(self, *args, **kwargs):
         """

@@ -2,7 +2,7 @@ from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.constants.errors import MissingPackageError
 
 
-class KeyWordBase(TransformBase):
+class KeyWordTransform(TransformBase):
     """
     Extract keyphrase from documents
     """

@@ -1,8 +1,8 @@
-from relevanceai.operations_new.emotion.base import EmotionBase
+from relevanceai.operations_new.emotion.transform import EmotionTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
-class EmotionOps(OperationAPIBase, EmotionBase):
+class EmotionOps(OperationAPIBase, EmotionTransform):
     """
     Add emotions
     """

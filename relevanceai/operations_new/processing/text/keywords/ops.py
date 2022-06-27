@@ -2,11 +2,11 @@
     Run operations to get the keyphrases of this document
 """
 
-from relevanceai.operations_new.processing.text.keywords.base import KeyWordBase
+from relevanceai.operations_new.processing.text.keywords.transform import KeyWordTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
-class KeyWordOps(OperationAPIBase, KeyWordBase):
+class KeyWordOps(OperationAPIBase, KeyWordTransform):
     def __init__(
         self,
         fields: list,

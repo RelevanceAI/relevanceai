@@ -1,7 +1,7 @@
 """
 Batch Cluster Operations
 """
-from relevanceai.operations_new.cluster.batch.base import BatchClusterBase
+from relevanceai.operations_new.cluster.batch.transform import BatchClusterTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
@@ -9,7 +9,7 @@ from relevanceai.dataset import Dataset
 from typing import Any
 
 
-class BatchClusterOps(BatchClusterBase, ClusterOps):
+class BatchClusterOps(BatchClusterTransform, ClusterOps):
     """Batch Clustering related Operations"""
 
     def __init__(

@@ -1,12 +1,12 @@
 import warnings
-from relevanceai.operations_new.cluster.sub.base import SubClusterBase
+from relevanceai.operations_new.cluster.sub.transform import SubClusterTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
 from typing import Optional, Union
 from copy import deepcopy
 
 
-class SubClusterOps(SubClusterBase, ClusterOps):
+class SubClusterOps(SubClusterTransform, ClusterOps):
     def __init__(
         self,
         model,

@@ -3,11 +3,11 @@ Base class for clustering
 """
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ClusterModelBase
-from relevanceai.operations_new.ops_run_base import OperationRunBase
+from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.operations_new.cluster.alias import ClusterAlias
 
 
-class ClusterBase(OperationRunBase, ClusterAlias):
+class ClusterTransform(TransformBase, ClusterAlias):
 
     model: ClusterModelBase
 
