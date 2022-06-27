@@ -68,7 +68,7 @@ class OperationRun(OperationBase):
                         {
                             "field": field,
                             "filter_type": "exists",
-                            "condition": ">=",
+                            "condition": "==",
                             "condition_value": " ",
                         }
                         for field in select_fields

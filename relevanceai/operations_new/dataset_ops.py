@@ -442,7 +442,6 @@ class Operations(Write):
         if filters is not None:
             filters = ops._get_filters(filters, vector_fields)
 
-        # Create the cluster report
         ops.run(
             dataset=self,
             select_fields=vector_fields,
@@ -450,7 +449,9 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
         )
-
+        # TODO: Create the cluster report
+        if include_cluster_report:
+            pass
         print(
             f"""You can now utilise the ClusterOps object using the below:
 
