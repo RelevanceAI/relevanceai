@@ -1,11 +1,10 @@
-
-name: Unit Tests
+name: Ops Tests
 
 on:
   push:
     branches: [ main, development ]
   pull_request:
-    branches: [ main, development]
+    # branches: [ main, development]
 
   workflow_dispatch:
 
@@ -19,7 +18,7 @@ jobs:
         # python-version: [ '3.6', '3.7', '3.8', '3.9' ]
         include:
           - os: ubuntu-latest
-            # path: ~/.cache/pip
+          # path: ~/.cache/pip
           # - os: macos-latest
           #   path: ~/Library/Caches/pip
           # - os: windows-latest
@@ -51,4 +50,4 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .[tests]
           python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist sentence-splitter sentence-transformers
-          python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=40
+          python -m pytest tests/unit/test_operations_new/ --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=40
