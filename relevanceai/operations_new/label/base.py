@@ -6,10 +6,10 @@ max_number_of_labels.
 from copy import deepcopy
 from typing import Any, Dict, List
 
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 
-class LabelBase(OperationBase):
+class LabelBase(TransformBase):
     def __init__(
         self,
         vector_field: str,

@@ -1,10 +1,10 @@
 """
-OperationBase
+TransformBase
 """
 from typing import Any, Dict, Optional, List
 from relevanceai.operations_new.cluster.alias import ClusterAlias
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.operations_new.cluster.base import ClusterBase
 
 

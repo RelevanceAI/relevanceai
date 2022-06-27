@@ -2,11 +2,11 @@ from copy import deepcopy
 
 from typing import List
 
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.utils import MissingPackageError
 
 
-class SentenceSplittingBase(OperationBase):
+class SentenceSplittingBase(TransformBase):
     def __init__(
         self,
         text_fields: List[str],

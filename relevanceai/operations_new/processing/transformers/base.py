@@ -1,11 +1,11 @@
 """
 Transformers Pipeline Implementation
 """
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 from typing import Optional
 
 
-class TransformersPipelineBase(OperationBase):
+class TransformersPipelineBase(TransformBase):
     def __init__(self, text_fields: list, pipeline, output_field: Optional[str] = None):
         self.text_fields = text_fields
         self.pipeline = pipeline

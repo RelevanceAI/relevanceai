@@ -1,7 +1,7 @@
 """Counting Text operations
 """
 from relevanceai.operations_new.processing.text.count.base import CountTextBase
-from relevanceai.operations_new.ops_api_base import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
 class CountTextOps(CountTextBase, OperationAPIBase):

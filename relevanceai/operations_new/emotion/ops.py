@@ -1,5 +1,5 @@
 from relevanceai.operations_new.emotion.base import EmotionBase
-from relevanceai.operations_new.ops_api_base import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
 class EmotionOps(OperationAPIBase, EmotionBase):

@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 from relevanceai.operations_new.processing.text.html_clean.helpers import (
     MLStripper,
@@ -8,7 +8,7 @@ from relevanceai.operations_new.processing.text.html_clean.helpers import (
 )
 
 
-class CleanTextBase(OperationBase, BaseTextProcessing):
+class CleanTextBase(TransformBase, BaseTextProcessing):
     def __init__(self):
         self.stripper = MLStripper()
 

@@ -8,14 +8,14 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 from relevanceai.utils import fire_and_forget
 
 
-class OperationRunBase(OperationBase):
+class OperationRun(TransformBase):
     """
-    All functions related to running operations on datasets
+    All functions related to running transforms as an operation on datasets
     """
 
     def is_chunk_valid(self, chunk):

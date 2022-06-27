@@ -3,7 +3,7 @@
 """
 
 from relevanceai.operations_new.processing.text.keywords.base import KeyWordBase
-from relevanceai.operations_new.ops_api_base import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
 class KeyWordOps(OperationAPIBase, KeyWordBase):

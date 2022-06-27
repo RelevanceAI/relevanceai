@@ -1,8 +1,8 @@
-from relevanceai.operations_new.ops_base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.constants.errors import MissingPackageError
 
 
-class KeyWordBase(OperationBase):
+class KeyWordBase(TransformBase):
     """
     Extract keyphrase from documents
     """

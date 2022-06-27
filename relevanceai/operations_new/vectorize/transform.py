@@ -4,10 +4,10 @@ from abc import abstractmethod
 from typing import List, Dict, Any
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
-from relevanceai.operations_new.ops_run_base import OperationRunBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 
-class VectorizeBase(OperationRunBase):
+class VectorizeTransform(TransformBase):
 
     models: List[VectorizeModelBase]
     fields: List[str]
