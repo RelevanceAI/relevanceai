@@ -795,6 +795,7 @@ class Operations(Write):
             print(f"The output fields are {output_fields}.")
 
         ops = CleanTextOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             output_fields=output_fields,
             remove_html_tags=remove_html_tags,
