@@ -1,6 +1,6 @@
 """Extract noun operations
 """
-
+from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations_new.apibase import OperationAPIBase
 from relevanceai.operations_new.processing.text.extract_nouns.transform import (
     ExtractNounsBase,
@@ -10,14 +10,18 @@ from relevanceai.operations_new.processing.text.extract_nouns.transform import (
 class ExtractNounsOps(OperationAPIBase, ExtractNounsBase):
     def __init__(
         self,
-        text_fields: list,
+        fields: list,
         model_name: str,
         output_fields: list,
         cutoff_probability: float,
         stopwords: list = None,
         **kwargs
     ):
-        self.text_fields = text_fields
+        try:
+            from flair.models import SequenceTagger
+        except ModuleNotFoundError:
+            raise MissingPackageError("flair")
+        self.fields = fields
         self.model_name = model_name
         self.output_fields = output_fields
         self.cutoff_probability = cutoff_probability
@@ -29,7 +33,7 @@ class ExtractNounsOps(OperationAPIBase, ExtractNounsBase):
         else:
             self.stopwords = STOPWORDS
 
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
         super().__init__(**kwargs)

@@ -36,7 +36,7 @@ class ExtractNounsBase(OperationBase):
         else:
             self.stopwords = STOPWORDS
 
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     @staticmethod
