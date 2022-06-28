@@ -1049,8 +1049,8 @@ class Operations(Write):
     def extract_nouns(
         self,
         fields: list,
-        model_name: str,
         output_fields: list,
+        model_name: str = "flair/chunk-english",
         cutoff_probability: float = 0.7,
         stopwords: list = None,
         filters: list = None,
