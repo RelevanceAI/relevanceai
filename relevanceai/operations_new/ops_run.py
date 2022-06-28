@@ -52,6 +52,8 @@ class OperationRun(TransformBase):
 
         if filters is None:
             filters = []
+        if select_fields is None:
+            select_fields = []
 
         # store this
         if hasattr(dataset, "dataset_id"):

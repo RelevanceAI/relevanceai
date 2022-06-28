@@ -11,7 +11,7 @@ from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations_new.transform_base import TransformBase
 
 
-class EmotionBase(TransformBase):
+class EmotionTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,
