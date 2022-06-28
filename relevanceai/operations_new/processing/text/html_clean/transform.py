@@ -7,6 +7,7 @@ from relevanceai.operations_new.processing.text.clean.helpers import (
     BaseTextProcessing,
 )
 
+
 class CleanTextTransform(TransformBase, BaseTextProcessing):
     def __init__(self):
         self.stripper = MLStripper()

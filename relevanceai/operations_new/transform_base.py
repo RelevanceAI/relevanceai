@@ -55,7 +55,7 @@ class OperationsCheck(ABC, DocUtils):
         if hasattr(self, "dataset"):
             for vector_field in self.vector_fields:
                 if hasattr(self.dataset, "schema"):
-                    assert vector_field in self.dataset.schem
+                    assert vector_field in self.datasets.schema(self.dataset_id)
 
     @staticmethod
     def normalize_string(string: str):
@@ -65,7 +65,7 @@ class OperationsCheck(ABC, DocUtils):
         # Check fields in schema
         if fields is not None:
             for field in fields:
-                if field not in self.dataset.schema:
+                if field not in self.datasets.schema(self.dataset_id):
                     raise ValueError(f"{field} not in Dataset schema")
 
 
