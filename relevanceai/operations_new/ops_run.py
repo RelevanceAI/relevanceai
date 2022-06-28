@@ -50,34 +50,31 @@ class OperationRun(TransformBase):
 
         """
 
-
         if filters is None:
             filters = []
 
         # store this
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
-        schema = dataset.schema
-        if select_fields is not None:
-            for field in select_fields:
-                if field not in schema:
-                    raise ValueError(f"{field} not in Dataset schema")
 
-            # Only get fields that matter
-            filters += [
-                {
-                    "filter_type": "or",
-                    "condition_value": [
-                        {
-                            "field": field,
-                            "filter_type": "exists",
-                            "condition": "==",
-                            "condition_value": " ",
-                        }
-                        for field in select_fields
-                    ],
-                }
-            ]
+        schema = dataset.schema
+
+        self._check_fields_in_schema(select_fields)
+
+        filters += [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    {
+                        "field": field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                    }
+                    for field in select_fields
+                ],
+            }
+        ]
 
         # add a checkmark for output fields
         if not refresh and output_fields is not None and len(output_fields) > 0:
@@ -89,10 +86,10 @@ class OperationRun(TransformBase):
                     "condition_value": " ",
                 }
             ]
-        
-        #needs to be here due to circular imports
+
+        # needs to be here due to circular imports
         from relevanceai.operations_new.ops_manager import OperationManager
-        
+
         with OperationManager(
             dataset=dataset,
             operation=self,
@@ -165,7 +162,6 @@ class OperationRun(TransformBase):
 
                 fire_upsert_docs()
 
-
     def store_operation_metadata(
         self,
         dataset: Dataset,
@@ -189,7 +185,7 @@ class OperationRun(TransformBase):
             {
                 "_operationhistory_": {
                     "1-1-1-17-2-3": {
-                        "operation": "vector", 
+                        "operation": "vector",
                         "model_name": "miniLm"
                     },
                 }

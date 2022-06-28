@@ -9,6 +9,7 @@ from typing import Any, Dict, List
 from relevanceai.utils import DocUtils
 from relevanceai.client import Credentials
 
+
 class OperationsCheck(ABC, DocUtils):
     def _check_alias(self):
         if self.alias is None:
@@ -54,11 +55,19 @@ class OperationsCheck(ABC, DocUtils):
         if hasattr(self, "dataset"):
             for vector_field in self.vector_fields:
                 if hasattr(self.dataset, "schema"):
-                    assert vector_field in self.dataset.schema
+                    assert vector_field in self.dataset.schem
 
     @staticmethod
     def normalize_string(string: str):
         return string.lower().replace("-", "").replace("_", "")
+
+    def _check_fields_in_schema(self, fields):
+        # Check fields in schema
+        if fields is not None:
+            for field in fields:
+                if field not in self.dataset.schema:
+                    raise ValueError(f"{field} not in Dataset schema")
+
 
 class TransformBase(OperationsCheck):
     """
