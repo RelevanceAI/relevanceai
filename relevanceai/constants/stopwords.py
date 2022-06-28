@@ -2,6 +2,8 @@
     A list of stopwords that should work most of the time for various use-cases.
 """
 
+# A list of stopwords originally from nltk.stopwords but we are now maintaining.
+
 STOPWORDS = [
     "i",
     "me",
@@ -183,5 +185,5 @@ STOPWORDS = [
     "wouldn",
     "wouldn't",
     "everything",
-    "many"
+    "many",
 ]
