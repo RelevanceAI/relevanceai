@@ -6,7 +6,7 @@ from relevanceai.operations_new.processing.text.clean.helpers import (
 from relevanceai.operations_new.transform_base import TransformBase
 
 
-class CleanTextBase(TransformBase):
+class CleanTextTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,
