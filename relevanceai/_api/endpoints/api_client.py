@@ -1,5 +1,7 @@
 """API Client
 """
+import json
+import uuid
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
@@ -83,7 +85,14 @@ class APIEndpointsClient(_Base, DocUtils):
             )
         except KeyError:
             if create_id:
-                pass
+                self.set_field_across_documents(
+                    "_id",
+                    [
+                        uuid.uuid3(uuid.NAMESPACE_DNS, json.dumps(document))
+                        for document in documents
+                    ],
+                    documents,
+                )
             else:
                 raise FieldNotFoundError(
                     "Missing _id field. Set `create_id=True` to automatically generate IDs."
