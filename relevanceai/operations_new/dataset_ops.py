@@ -544,6 +544,7 @@ class Operations(Write):
         from relevanceai.operations_new.sentiment.ops import SentimentOps
 
         ops = SentimentOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             model_name=model_name,
             highlight=highlight,
