@@ -127,7 +127,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
         """
         if isinstance(label, str):
             return label
-        return "cluster-" + str(label)
+        return "cluster_" + str(label)
 
     def format_cluster_labels(self, labels):
         return [self.format_cluster_label(label) for label in labels]
