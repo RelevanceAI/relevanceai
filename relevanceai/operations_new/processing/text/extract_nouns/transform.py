@@ -1,5 +1,5 @@
 from relevanceai.constants.errors import MissingPackageError
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 try:
     from flair.data import Sentence
@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 from tqdm.auto import tqdm
 
 
-class ExtractNounsTransform(OperationBase):
+class ExtractNounsTransform(TransformBase):
     """
     An operation for extracting noun
     """
