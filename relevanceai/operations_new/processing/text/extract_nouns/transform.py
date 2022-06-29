@@ -70,7 +70,7 @@ class ExtractNounsTransform(TransformBase):
 
     def transform(self, docs):
         new_docs = [{"_id": d["_id"]} for d in docs]
-        for i, d in tqdm(docs):
+        for i, d in enumerate(tqdm(docs)):
             for j, t in enumerate(self.fields):
                 value = self.extract_nouns(
                     self.get_field(t, d)[:200],
