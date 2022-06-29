@@ -25,22 +25,10 @@ CLIP_MODELS: Dict[str, Dict[str, Any]] = {
         "vector_length": 1024,
         "url": "RN50",
     },
-    "RN101": {
-        "vector_length": 512,
-        "url": "RN101"
-    },
-    "RN50x4": {
-        "vector_length": 640,
-        "url": "RN50x4"
-    },
-    "RN50x16": {
-        "vector_length": 512,
-        "url": "RN50x16"
-    },
-    "RN50x64": {
-        "vector_length": 1024,
-        "url": "RN50x64"
-    },
+    "RN101": {"vector_length": 512, "url": "RN101"},
+    "RN50x4": {"vector_length": 640, "url": "RN50x4"},
+    "RN50x16": {"vector_length": 512, "url": "RN50x16"},
+    "RN50x64": {"vector_length": 1024, "url": "RN50x64"},
 }
 
 TFHUB_MODELS: Dict[str, Dict[str, Any]] = {

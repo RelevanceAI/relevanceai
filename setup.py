@@ -125,7 +125,7 @@ setup(
         # "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
-        "models" : models_requirements
+        "models": models_requirements,
     },
     python_requires=">=3.6",
     classifiers=[

@@ -2,7 +2,9 @@
     Run operations to get the keyphrases of this document
 """
 
-from relevanceai.operations_new.processing.text.keywords.transform import KeyWordTransform
+from relevanceai.operations_new.processing.text.keywords.transform import (
+    KeyWordTransform,
+)
 from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
