@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 from tqdm.auto import tqdm
 
 
-class ExtractNounsBase(OperationBase):
+class ExtractNounsTransform(OperationBase):
     """
     An operation for extracting noun
     """
@@ -55,7 +55,7 @@ class ExtractNounsBase(OperationBase):
         nouns = []
         # Extract the noun phrases
         for entity in sentence.get_spans("np"):
-            text = ExtractNounsBase.process_noun(entity.text.lower().strip())
+            text = ExtractNounsTransform.process_noun(entity.text.lower().strip())
 
             if (
                 entity.tag == "NP"

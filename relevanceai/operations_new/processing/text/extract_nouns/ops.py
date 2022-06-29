@@ -1,13 +1,13 @@
 """Extract noun operations
 """
 from relevanceai.constants.errors import MissingPackageError
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.processing.text.extract_nouns.transform import (
-    ExtractNounsBase,
+    ExtractNounsTransform,
 )
 
 
-class ExtractNounsOps(OperationAPIBase, ExtractNounsBase):
+class ExtractNounsOps(OperationAPIBase, ExtractNounsTransform):
     def __init__(
         self,
         fields: list,
