@@ -1,5 +1,6 @@
 """
-All functions related to running operations on datasets
+Base class for base.py to inherit.
+All functions related to running operations on datasets.
 """
 import threading
 import time
@@ -7,15 +8,18 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 from relevanceai.utils import fire_and_forget
 
 
-class OperationRun(OperationBase):
+class OperationRun(TransformBase):
     """
-    All functions related to running operations on datasets
+    All functions related to running transforms as an operation on datasets
     """
+
+    def is_chunk_valid(self, chunk):
+        return chunk is not None and len(chunk) > 0
 
     def run(
         self,
@@ -46,39 +50,33 @@ class OperationRun(OperationBase):
 
         """
 
-        if isinstance(select_fields, list):
-            if any(field not in dataset.schema for field in select_fields):
-                raise ValueError("field not in Dataset")
-
-        from relevanceai.operations_new.manager import OperationManager
-
         if filters is None:
             filters = []
+        if select_fields is None:
+            select_fields = []
 
         # store this
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
-        schema = dataset.schema
-        if select_fields is not None:
-            for field in select_fields:
-                if field not in schema:
-                    raise ValueError(f"{field} not in Dataset schema")
 
-            # Only get fields that matter
-            filters += [
-                {
-                    "filter_type": "or",
-                    "condition_value": [
-                        {
-                            "field": field,
-                            "filter_type": "exists",
-                            "condition": ">=",
-                            "condition_value": " ",
-                        }
-                        for field in select_fields
-                    ],
-                }
-            ]
+        schema = dataset.schema
+
+        self._check_fields_in_schema(select_fields)
+
+        filters += [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    {
+                        "field": field,
+                        "filter_type": "exists",
+                        "condition": "==",
+                        "condition_value": " ",
+                    }
+                    for field in select_fields
+                ],
+            }
+        ]
 
         # add a checkmark for output fields
         if not refresh and output_fields is not None and len(output_fields) > 0:
@@ -90,6 +88,9 @@ class OperationRun(OperationBase):
                     "condition_value": " ",
                 }
             ]
+
+        # needs to be here due to circular imports
+        from relevanceai.operations_new.ops_manager import OperationManager
 
         with OperationManager(
             dataset=dataset,
@@ -163,9 +164,6 @@ class OperationRun(OperationBase):
 
                 fire_upsert_docs()
 
-    def is_chunk_valid(self, chunk):
-        return chunk is not None and len(chunk) > 0
-
     def store_operation_metadata(
         self,
         dataset: Dataset,
@@ -189,7 +187,8 @@ class OperationRun(OperationBase):
             {
                 "_operationhistory_": {
                     "1-1-1-17-2-3": {
-                        "operation": "vector", "model_name": "miniLm"
+                        "operation": "vector",
+                        "model_name": "miniLm"
                     },
                 }
             }

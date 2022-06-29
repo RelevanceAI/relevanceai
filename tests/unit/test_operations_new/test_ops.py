@@ -13,14 +13,9 @@ from typing import List
             ["princeton-nlp/sup-simcse-roberta-large"],
             "all-mpnet-base-v2",
             None,
-        ),  ## Single model
-        (
-            ["princeton-nlp/sup-simcse-roberta-large", "all-mpnet-base-v2"],
-            "all-mpnet-base-v2",
-            None,
-        ),  ## Multiple model
+        )
     ],
-    ids=["single_model", "multiple_model"],
+    ids=["single_model"],
 )
 def test_analyze_text(
     test_dataset: Dataset,
@@ -29,8 +24,10 @@ def test_analyze_text(
     filters: List[dict],
 ):
     test_vector_name = "sample_vector_"
+    test_field = "sample_1_label"
+
     test_dataset.analyze_text(
-        fields=["sample_1_label"],
+        fields=[test_field],
         vector_fields=[test_vector_name],
         vectorize_models=vectorize_models,
         vectorize=True,

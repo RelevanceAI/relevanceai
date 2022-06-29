@@ -45,10 +45,11 @@ jobs:
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
           TEST_PROJECT: ${{ secrets.TEST_US_PROJECT }}
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
+          TEST_TOKEN: ${{ secrets.TEST_US_TOKEN }}
           DEBUG_REQUESTS: "FALSE"
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
           python -m pip install -e .[tests]
-          python -m pip install pytest-sugar pytest-rerunfailures pytest-xdist sentence-splitter sentence-transformers
-          python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x --reruns 5 --reruns-delay 2 -n auto tests --cov-fail-under=40
+          python -m pip install pytest-sugar pytest-cov pytest-rerunfailures pytest-xdist sentence-splitter sentence-transformers
+          python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x -n auto tests --cov-fail-under=40  --ignore=relevanceai/operations_new/

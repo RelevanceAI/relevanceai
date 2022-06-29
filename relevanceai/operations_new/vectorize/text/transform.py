@@ -1,11 +1,11 @@
 from typing import Any
 
-from relevanceai.operations_new.vectorize.base import VectorizeBase
+from relevanceai.operations_new.vectorize.transform import VectorizeTransform
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.operations_new.vectorize.models.text.mappings import *
 
 
-class VectorizeTextBase(VectorizeBase):
+class VectorizeTextTransform(VectorizeTransform):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
