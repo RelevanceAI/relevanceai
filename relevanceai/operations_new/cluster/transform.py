@@ -2,14 +2,14 @@
 Base class for clustering
 """
 from typing import List, Dict, Any, Optional
-from relevanceai.operations_new.cluster.models.base import ModelBase
-from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
+from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.operations_new.cluster.alias import ClusterAlias
 
 
-class ClusterBase(OperationRun, ClusterAlias):
+class ClusterTransform(TransformBase, ClusterAlias):
 
-    model: ModelBase
+    model: ClusterModelBase
 
     def __init__(
         self,
@@ -35,106 +35,9 @@ class ClusterBase(OperationRun, ClusterAlias):
 
         self._check_vector_fields()
 
-    def _get_model(self, model: Any, model_kwargs: Optional[dict]) -> Any:
-        if model_kwargs is None:
-            model_kwargs = {}
-
-        if model is None:
-            return model
-        if isinstance(model, str):
-            model = self._get_model_from_string(model, model_kwargs)
-
-        elif "sklearn" in model.__module__:
-            model = self._get_sklearn_model_from_class(model)
-
-        elif "faiss" in model.__module__:
-            model = self._get_faiss_model_from_class(model)
-
-        return model
-
-    def _get_sklearn_model_from_class(self, model):
-        from relevanceai.operations_new.cluster.models.sklearn.base import (
-            SklearnModelBase,
-        )
-
-        model_kwargs = model.__dict__
-        model = SklearnModelBase(model=model, model_kwargs=model_kwargs)
-        return model
-
-    def _get_faiss_model_from_class(self, model):
-        raise NotImplementedError
-
-    def normalize_model_name(self, model):
-        if isinstance(model, str):
-            return model.lower().replace("-", "").replace("_", "")
-
-        return model
-
-    def _get_model_from_string(self, model: str, model_kwargs: dict = None):
-        if model_kwargs is None:
-            model_kwargs = {}
-
-        model = self.normalize_model_name(model)
-        model_kwargs = {} if model_kwargs is None else model_kwargs
-
-        from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
-
-        if model in sklearn_models:
-            from relevanceai.operations_new.cluster.models.sklearn.base import (
-                SklearnModelBase,
-            )
-
-            model = SklearnModelBase(
-                model=model,
-                model_kwargs=model_kwargs,
-            )
-            return model
-
-        elif model == "faiss":
-            from relevanceai.operations_new.cluster.models.faiss.base import (
-                FaissModelBase,
-            )
-
-            model = FaissModelBase(
-                model=model,
-                model_kwargs=model_kwargs,
-            )
-            return model
-
-        elif model == "communitydetection":
-            from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
-                CommunityDetection,
-            )
-
-            model = CommunityDetection(**model_kwargs)
-            return model
-
-        raise ValueError("Model not supported.")
-
     @property
     def name(self):
         return "cluster"
-
-    def format_cluster_label(self, label):
-        """> If the label is an integer, return a string that says "cluster_" and the integer. If the label is
-        a string, return the string. If the label is neither, raise an error
-
-        Parameters
-        ----------
-        label
-            the label of the cluster. This can be a string or an integer.
-
-        Returns
-        -------
-            A list of lists.
-
-        """
-        if isinstance(label, str):
-            return label
-        return "cluster_" + str(label)
-
-    def format_cluster_labels(self, labels):
-        return [self.format_cluster_label(label) for label in labels]
 
     def fit_predict_documents(self, documents, warm_start=False):
         """
@@ -207,3 +110,24 @@ class ClusterBase(OperationRun, ClusterAlias):
             set_cluster_field = f"{self.cluster_field}.{self.vector_fields}.{alias}"
 
         return set_cluster_field
+
+    def format_cluster_label(self, label):
+        """> If the label is an integer, return a string that says "cluster-" and the integer. If the label is
+        a string, return the string. If the label is neither, raise an error
+
+        Parameters
+        ----------
+        label
+            the label of the cluster. This can be a string or an integer.
+
+        Returns
+        -------
+            A list of lists.
+
+        """
+        if isinstance(label, str):
+            return label
+        return "cluster_" + str(label)
+
+    def format_cluster_labels(self, labels):
+        return [self.format_cluster_label(label) for label in labels]

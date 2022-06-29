@@ -3,10 +3,10 @@ from relevanceai.operations_new.processing.text.clean.helpers import (
     MLStripper,
 )
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 
-class CleanTextBase(OperationBase):
+class CleanTextTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,

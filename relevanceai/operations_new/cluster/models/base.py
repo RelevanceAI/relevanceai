@@ -68,7 +68,7 @@ class _ModelUtils(DocUtils):
         return [self.format_cluster_label(label) for label in labels]
 
 
-class ModelBase(ABC, _ModelUtils):
+class ClusterModelBase(ABC, _ModelUtils):
     def __init__(self, *args, **kwargs):
         model_kwargs = kwargs.pop("model_kwargs", {})
         for key, value in model_kwargs.items():

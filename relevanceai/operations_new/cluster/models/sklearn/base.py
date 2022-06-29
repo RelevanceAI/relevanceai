@@ -7,11 +7,11 @@ import numpy as np
 
 from sklearn.base import ClusterMixin
 
-from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
 
 
-class SklearnModelBase(ModelBase):
+class SklearnModel(ClusterModelBase):
     """Sklearn model base"""
 
     def __init__(
@@ -22,7 +22,7 @@ class SklearnModelBase(ModelBase):
 
         if isinstance(model, str):
             assert model in sklearn_models
-            model = ModelBase.import_from_string(
+            model = ClusterModelBase.import_from_string(
                 f"sklearn.cluster.{sklearn_models[model]}"
             )
             if model_kwargs is None:
@@ -36,7 +36,7 @@ class SklearnModelBase(ModelBase):
         super().__init__(model_kwargs=self.model.__dict__)
 
     def warm_start(self):
-        model = SklearnModelBase.import_from_string("sklearn.cluster.KMeans")
+        model = SklearnModel.import_from_string("sklearn.cluster.KMeans")
         kwargs = self.model_kwargs
         kwargs["init"] = self.model.init
         self.model = model(kwargs)

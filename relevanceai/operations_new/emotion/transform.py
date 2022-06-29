@@ -8,10 +8,10 @@ import csv
 from typing import Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 
-class EmotionBase(OperationBase):
+class EmotionTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,

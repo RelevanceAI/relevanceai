@@ -7,15 +7,15 @@ from typing import Optional, Union, Callable, Dict, Any, Set, List
 
 from relevanceai.utils.decorators.analytics import track
 
-from relevanceai.operations_new.apibase import OperationAPIBase
-from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
+from relevanceai.operations_new.cluster.transform import ClusterTransform
 
 from relevanceai.constants import Warning
 from relevanceai.constants.errors import MissingClusterError
 from relevanceai.constants import MissingClusterError, Warning
 
 
-class ClusterOps(ClusterBase, OperationAPIBase):
+class ClusterOps(ClusterTransform, OperationAPIBase):
     """
     Cluster-related functionalities
     """
@@ -68,7 +68,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         )
 
         # alias is set after model so that we can get the number of clusters
-        # if the model needs ot be instantiated
+        # if the model needs to be instantiated
         self.alias = self._get_alias(alias)
 
         self.byo_cluster_field = byo_cluster_field
@@ -128,7 +128,7 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
     def create_centroids(self, insert: bool = True):
         """
-        Calculate centroids from your vectors
+        Calculate centroids from your dataset vectors.
 
         Example
         --------
@@ -480,9 +480,9 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
+            from relevanceai.operations_new.vectorize.text.transform import VectorizeTextTransform
 
-            self.model = VectorizeTextBase._get_model(encode_fn_or_model)
+            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
             encode_fn = self.model.encode
         else:
             encode_fn = encode_fn_or_model

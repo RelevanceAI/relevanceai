@@ -1,8 +1,8 @@
 from relevanceai.utils import MissingPackageError
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
 
-class CountTextBase(OperationBase):
+class CountTextTransform(TransformBase):
     _imported_nltk = False
 
     def __init__(

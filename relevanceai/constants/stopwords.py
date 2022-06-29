@@ -5,6 +5,7 @@
 # A list of stopwords originally from nltk.stopwords but we are now maintaining.
 
 STOPWORDS = [
+    "",
     "i",
     "me",
     "my",

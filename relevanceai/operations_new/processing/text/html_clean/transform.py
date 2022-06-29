@@ -1,14 +1,14 @@
 from copy import deepcopy
 
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 
-from relevanceai.operations_new.processing.text.html_clean.helpers import (
+from relevanceai.operations_new.processing.text.clean.helpers import (
     MLStripper,
     BaseTextProcessing,
 )
 
 
-class CleanTextBase(OperationBase, BaseTextProcessing):
+class CleanTextTransform(TransformBase, BaseTextProcessing):
     def __init__(self):
         self.stripper = MLStripper()
 
@@ -20,7 +20,7 @@ class CleanTextBase(OperationBase, BaseTextProcessing):
         """
         Clean the text of the individuals
         """
-        text = CleanTextBase.normalize_text(
+        text = CleanTextTransform.normalize_text(
             text, lower=False, remove_punct=False, remove_digit=False
         )
         return self.stripper.clean(text)

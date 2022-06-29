@@ -1,7 +1,10 @@
+"""
+Base class for ops.py to inherit
+"""
 from relevanceai.dataset import Dataset
 from relevanceai._api import APIClient
 
-from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.ops_run import OperationRun
 
 
 class OperationsAPILogger:
