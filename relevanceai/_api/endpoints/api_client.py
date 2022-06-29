@@ -84,7 +84,7 @@ class APIEndpointsClient(_Base, DocUtils):
                 "_id", [str(i["_id"]) for i in documents], documents
             )
         except KeyError:
-            if create_id:
+            if create_id:  # need this
                 self.set_field_across_documents(
                     "_id",
                     [
