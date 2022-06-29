@@ -70,12 +70,12 @@ class ExtractNounsTransform(TransformBase):
 
     def transform(self, docs):
         new_docs = [{"_id": d["_id"]} for d in docs]
-        for d in tqdm(docs):
-            for i, t in enumerate(self.fields):
+        for i, d in tqdm(docs):
+            for j, t in enumerate(self.fields):
                 value = self.extract_nouns(
                     self.get_field(t, d)[:200],
                 )
-                self.set_field(self.output_fields[i], new_docs[i], value)
+                self.set_field(self.output_fields[j], new_docs[i], value)
         return new_docs
 
     @property
