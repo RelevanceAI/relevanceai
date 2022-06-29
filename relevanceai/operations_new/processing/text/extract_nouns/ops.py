@@ -7,7 +7,7 @@ from relevanceai.operations_new.processing.text.extract_nouns.transform import (
 )
 
 
-class ExtractNounsOps(OperationAPIBase, ExtractNounsTransform):
+class ExtractNounsOps(ExtractNounsTransform, OperationAPIBase):
     def __init__(
         self,
         fields: list,
@@ -36,4 +36,4 @@ class ExtractNounsOps(OperationAPIBase, ExtractNounsTransform):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
