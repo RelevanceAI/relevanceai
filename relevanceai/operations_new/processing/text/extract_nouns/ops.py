@@ -37,3 +37,12 @@ class ExtractNounsOps(ExtractNounsTransform, OperationAPIBase):
             setattr(self, k, v)
 
         # super().__init__(**kwargs)
+
+    def get_operation_metadata(self):
+        return {
+            "fields": self.fields,
+            "model_name": self.model_name,
+            "output_fields": self.output_fields,
+            "cutoff_probability": self.cutoff_probability,
+            "stopwords": self.stopwords,
+        }
