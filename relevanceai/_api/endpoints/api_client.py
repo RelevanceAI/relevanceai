@@ -78,21 +78,38 @@ class APIEndpointsClient(_Base, DocUtils):
         self._deployables_client = DeployableClient(self.credentials)
         return self._deployables_client
 
-    def _convert_id_to_string(self, documents, create_id: bool = False):
+    def _convert_id_to_string(
+        self,
+        documents,
+        create_id: bool = False,
+        uuid_type: str = "random",
+    ):
+        """
+        uuid_type: ["unqiue", "random"]
+        """
         try:
             self.set_field_across_documents(
                 "_id", [str(i["_id"]) for i in documents], documents
             )
         except KeyError:
             if create_id:  # need this
-                self.set_field_across_documents(
-                    "_id",
-                    [
-                        uuid.uuid3(uuid.NAMESPACE_DNS, json.dumps(document))
-                        for document in documents
-                    ],
-                    documents,
-                )
+                if uuid_type == "unique":
+                    self.set_field_across_documents(
+                        "_id",
+                        [
+                            str(uuid.uuid3(uuid.NAMESPACE_DNS, json.dumps(document)))
+                            for document in documents
+                        ],
+                        documents,
+                    )
+                elif uuid_type == "random":
+                    self.set_field_across_documents(
+                        "_id",
+                        [str(uuid.uuid4()) for document in documents],
+                        documents,
+                    )
+                else:
+                    raise ValueError("Invalid uuid type")
             else:
                 raise FieldNotFoundError(
                     "Missing _id field. Set `create_id=True` to automatically generate IDs."

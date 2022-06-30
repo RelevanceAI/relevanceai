@@ -55,6 +55,7 @@ class BatchInsertClient(BatchRetrieveClient):
         verbose: bool = True,
         create_id: bool = False,
         overwrite: bool = True,
+        uuid_type: str = "random",
         *args,
         **kwargs,
     ):
@@ -108,7 +109,7 @@ class BatchInsertClient(BatchRetrieveClient):
         if use_json_encoder:
             documents = self.json_encoder(documents)
 
-        self._convert_id_to_string(documents, create_id=create_id)
+        self._convert_id_to_string(documents, create_id=create_id, uuid_type=uuid_type)
 
         def bulk_insert_func(documents):
             return self.datasets.bulk_insert(
@@ -146,6 +147,7 @@ class BatchInsertClient(BatchRetrieveClient):
         show_progress_bar=False,
         use_json_encoder: bool = True,
         create_id: bool = False,
+        uuid_type: str = "random",
         *args,
         **kwargs,
     ):
@@ -194,7 +196,7 @@ class BatchInsertClient(BatchRetrieveClient):
         )
 
         # Turn _id into string
-        self._convert_id_to_string(documents, create_id=create_id)
+        self._convert_id_to_string(documents, create_id=create_id, uuid_type=uuid_type)
 
         if use_json_encoder:
             documents = self.json_encoder(documents)

@@ -480,7 +480,9 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            from relevanceai.operations_new.vectorize.text.transform import VectorizeTextTransform
+            from relevanceai.operations_new.vectorize.text.transform import (
+                VectorizeTextTransform,
+            )
 
             self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
             encode_fn = self.model.encode
@@ -568,7 +570,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
 
         return filters
 
-    def merge(self, target_cluster_id:str, cluster_ids: list):
+    def merge(self, target_cluster_id: str, cluster_ids: list):
         """
         Merge clusters into the target cluster.
         The centroids are re-calculated and become a new middle.

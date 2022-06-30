@@ -16,10 +16,11 @@ try:
     from requests.exceptions import MissingSchema
 except ModuleNotFoundError as e:
     raise ModuleNotFoundError(
-                "Run `pip install git+https://github.com/openai/CLIP.git`."
-            )
+        "Run `pip install git+https://github.com/openai/CLIP.git`."
+    )
 except:
     import traceback
+
     traceback.print_exc()
 
 

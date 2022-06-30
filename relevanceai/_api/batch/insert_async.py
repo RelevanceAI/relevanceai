@@ -121,6 +121,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
         use_json_encoder: bool = True,
         create_id: bool = False,
         verbose: bool = True,
+        uuid_type: str = "random",
         **kwargs,
     ):
         """
@@ -163,7 +164,9 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
                 self.datasets.create(dataset_id)
             if insert:
                 create_id = True
-            self._convert_id_to_string(documents, create_id=create_id)
+            self._convert_id_to_string(
+                documents, create_id=create_id, uuid_type=uuid_type
+            )
 
             async def bulk_fn(documents):
                 return await self.datasets.bulk_insert_async(
@@ -178,7 +181,9 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
 
         else:
             operation = f"updating {dataset_id}"
-            self._convert_id_to_string(documents, create_id=create_id)
+            self._convert_id_to_string(
+                documents, create_id=create_id, uuid_type=uuid_type
+            )
 
             async def bulk_fn(documents):
                 return await self.datasets.documents.bulk_update_async(
