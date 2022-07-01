@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 
 from relevanceai.dataset import Dataset
-from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.ops_run import OperationRun
 
 
 class OperationManager:

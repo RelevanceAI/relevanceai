@@ -329,7 +329,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
     def _format_labels(self, labels: np.ndarray) -> List[str]:
         labels = labels.flatten().tolist()
         cluster_labels = [
-            f"cluster-{str(label)}"
+            f"cluster_{str(label)}"
             if label != self.outlier_value
             else self.outlier_label
             for label in labels

@@ -2,10 +2,9 @@
 """
 import numpy as np
 from relevanceai.constants import MissingPackageError
-from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 
-
-class CommunityDetection(ModelBase):
+class CommunityDetection(ClusterModelBase):
     def __init__(
         self,
         threshold: float = 0.75,
@@ -141,3 +140,6 @@ class CommunityDetection(ModelBase):
     def predict(self, *args, **kwargs):
         # Not necessary
         pass
+
+#to stay with convention
+CommunityDetectionModel = CommunityDetection

@@ -4,10 +4,10 @@ Subclustering operation
 import numpy as np
 from tqdm.auto import tqdm
 from typing import Optional, List, Union
-from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.cluster.transform import ClusterTransform
 
 
-class SubClusterBase(ClusterBase):
+class SubClusterTransform(ClusterTransform):
     def __init__(
         self,
         model,

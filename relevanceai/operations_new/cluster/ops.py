@@ -1,4 +1,5 @@
 import warnings
+import numpy as np
 
 from copy import deepcopy
 
@@ -6,15 +7,15 @@ from typing import Optional, Union, Callable, Dict, Any, Set, List
 
 from relevanceai.utils.decorators.analytics import track
 
-from relevanceai.operations_new.apibase import OperationAPIBase
-from relevanceai.operations_new.cluster.base import ClusterBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
+from relevanceai.operations_new.cluster.transform import ClusterTransform
 
 from relevanceai.constants import Warning
 from relevanceai.constants.errors import MissingClusterError
 from relevanceai.constants import MissingClusterError, Warning
 
 
-class ClusterOps(ClusterBase, OperationAPIBase):
+class ClusterOps(ClusterTransform, OperationAPIBase):
     """
     Cluster-related functionalities
     """
@@ -67,63 +68,97 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         )
 
         # alias is set after model so that we can get the number of clusters
-        # if the model needs ot be instantiated
+        # if the model needs to be instantiated
         self.alias = self._get_alias(alias)
 
         self.byo_cluster_field = byo_cluster_field
         if byo_cluster_field is not None:
             self.create_byo_clusters()
 
-    def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
+    def insert_centroids(
+        self,
+        centroid_documents,
+    ) -> None:
         """
-        Internal function for operations
+        Insert centroids
+        Centroids look below
 
-        It takes a cluster_id, a field, an output dictionary, and a function, and then it gets all the
-        documents in the cluster, gets the field across all the documents, and then applies the function
-        to the field
+        .. code-block::
 
-        Parameters
-        ----------
-        cluster_id : str
-            str, field: str, output: dict, func: Callable
-        field : str
-            the field you want to get the value for
-        output : dict
-            dict
-        func : Callable
-            Callable
+            cluster_ops = client.ClusterOps(
+                vector_field=["sample_1_vector_"],
+                alias="sample"
+            )
+            cluster_ops.insert_centroids(
+                centorid_documents=[
+                    {"_id" : "cluster-0", "sample_1_vector_": [1, 1, 1]},
+                    {"_id" : "cluster-1", "sample_1_vector_": [1, 2, 2]},
+                ]
+            )
 
         """
-        cluster_field = self._get_cluster_field_name()
-        # TODO; change this to fetch all documents
-        documents = self._get_all_documents(
-            self.dataset_id,
-            filters=[
-                {
-                    "field": cluster_field,
-                    "filter_type": "exact_match",
-                    "condition": "==",
-                    "condition_value": cluster_id,
-                },
-                {
-                    "field": field,
-                    "filter_type": "exists",
-                    "condition": ">=",
-                    "condition_value": " ",
-                },
-            ],
-            select_fields=[field, cluster_field],
-            show_progress_bar=False,
+        # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
+        return self.datasets.cluster.centroids.insert(
+            dataset_id=self.dataset_id,
+            cluster_centers=self.json_encoder(centroid_documents),
+            vector_fields=self.vector_fields,
+            alias=self.alias,
         )
-        # get the field across each
-        arr = self.get_field_across_documents(field, documents)
-        output[cluster_id] = func(arr)
 
-    def _operate_across_clusters(self, field: str, func: Callable):
-        output: Dict[str, Any] = dict()
-        for cluster_id in self.list_cluster_ids():
-            self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
-        return output
+    def calculate_centroids(self):
+
+        # calculate the centroids
+        centroid_vectors = {}
+
+        def calculate_centroid(vectors):
+            X = np.array(vectors)
+            return X.mean(axis=0)
+
+        centroid_vectors = self._operate_across_clusters(
+            field=self.vector_fields[0], func=calculate_centroid
+        )
+
+        # Does this insert properly?
+        if isinstance(centroid_vectors, dict):
+            centroid_vectors = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in centroid_vectors.items()
+            ]
+        return centroid_vectors
+
+    def create_centroids(self, insert: bool = True):
+        """
+        Calculate centroids from your dataset vectors.
+
+        Example
+        --------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                alias="kmeans-25",
+                vector_fields=['sample_vector_']
+            )
+            centroids = cluster_ops.create_centroids()
+
+        """
+        # Get an array of the different vectors
+        if len(self.vector_fields) > 1:
+            raise NotImplementedError(
+                "Do not currently support multiple vector fields for centroid creation."
+            )
+
+        # calculate the centroids
+        centroid_vectors = self.calculate_centroids()
+
+        if insert:
+            self.insert_centroids(
+                centroid_documents=centroid_vectors,
+            )
+        return centroid_vectors
 
     def list_cluster_ids(
         self,
@@ -189,92 +224,6 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
         return list(all_cluster_ids)
 
-    def insert_centroids(
-        self,
-        centroid_documents,
-    ) -> None:
-        """
-        Insert centroids
-        Centroids look below
-
-        .. code-block::
-
-            cluster_ops = client.ClusterOps(
-                vector_field=["sample_1_vector_"],
-                alias="sample"
-            )
-            cluster_ops.insert_centroids(
-                centorid_documents={
-                    "cluster-0": [1, 1, 1],
-                    "cluster-2": [2, 1, 1]
-                }
-            )
-
-        """
-        # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
-        return self.datasets.cluster.centroids.insert(
-            dataset_id=self.dataset_id,
-            cluster_centers=self.json_encoder(centroid_documents),
-            vector_fields=self.vector_fields,
-            alias=self.alias,
-        )
-
-    def create_centroids(self, insert: bool = True):
-        """
-        Calculate centroids from your vectors
-
-        Example
-        --------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                alias="kmeans-25",
-                vector_fields=['sample_vector_']
-            )
-            centroids = cluster_ops.create_centroids()
-
-        """
-        # Get an array of the different vectors
-        if len(self.vector_fields) > 1:
-            raise NotImplementedError(
-                "Do not currently support multiple vector fields for centroid creation."
-            )
-
-        # calculate the centroids
-        centroid_vectors = self.calculate_centroids()
-
-        if insert:
-            self.insert_centroids(
-                centroid_documents=centroid_vectors,
-            )
-        return centroid_vectors
-
-    def calculate_centroids(self):
-        import numpy as np
-
-        # calculate the centroids
-        centroid_vectors = {}
-
-        def calculate_centroid(vectors):
-            X = np.array(vectors)
-            return X.mean(axis=0)
-
-        centroid_vectors = self._operate_across_clusters(
-            field=self.vector_fields[0], func=calculate_centroid
-        )
-
-        # Does this insert properly?
-        if isinstance(centroid_vectors, dict):
-            centroid_vectors = [
-                {"_id": k, self.vector_fields[0]: v}
-                for k, v in centroid_vectors.items()
-            ]
-        return centroid_vectors
-
     def get_centroid_documents(self):
         centroid_vectors = {}
         if hasattr(self.model, "_centroids") and self.model._centroids is not None:
@@ -293,6 +242,54 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         else:
             centroids = self.create_centroids()
         return centroids
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.datasets.cluster.centroids.documents(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )["results"]
+        return self._centroids
+
+    def get_centroid_from_id(
+        self,
+        cluster_id: str,
+    ) -> Dict[str, Any]:
+        """> It takes a cluster id and returns the centroid with that id
+
+        Parameters
+        ----------
+        cluster_id : str
+            The id of the cluster to get the centroid for.
+
+        Returns
+        -------
+            The centroid with the given id.
+
+        """
+
+        for centroid in self.centroids:
+            if centroid["_id"] == cluster_id:
+                return centroid
+
+        raise ValueError(f"Missing the centorid with id {cluster_id}")
 
     def list_closest(
         self,
@@ -483,9 +480,9 @@ class ClusterOps(ClusterBase, OperationAPIBase):
         """
         if isinstance(encode_fn_or_model, str):
             # Get the model
-            from relevanceai.operations_new.vectorize.text.base import VectorizeTextBase
+            from relevanceai.operations_new.vectorize.text.transform import VectorizeTextTransform
 
-            self.model = VectorizeTextBase._get_model(encode_fn_or_model)
+            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
             encode_fn = self.model.encode
         else:
             encode_fn = encode_fn_or_model
@@ -530,54 +527,6 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             ),
         )
 
-    @property
-    def centroids(self):
-        """
-        Access the centroids of your dataset easily
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.centroids
-
-        """
-        if not hasattr(self, "_centroids"):
-            self._centroids = self.datasets.cluster.centroids.documents(
-                dataset_id=self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                page_size=9999,
-                include_vector=True,
-            )["results"]
-        return self._centroids
-
-    def get_centroid_from_id(
-        self,
-        cluster_id: str,
-    ) -> Dict[str, Any]:
-        """> It takes a cluster id and returns the centroid with that id
-
-        Parameters
-        ----------
-        cluster_id : str
-            The id of the cluster to get the centroid for.
-
-        Returns
-        -------
-            The centroid with the given id.
-
-        """
-
-        for centroid in self.centroids:
-            if centroid["_id"] == cluster_id:
-                return centroid
-
-        raise ValueError(f"Missing the centorid with id {cluster_id}")
-
     @staticmethod
     def _get_filters(
         filters: List[Dict[str, Union[str, int]]],
@@ -619,16 +568,16 @@ class ClusterOps(ClusterBase, OperationAPIBase):
 
         return filters
 
-    def merge(self, cluster_ids: list):
+    def merge(self, target_cluster_id:str, cluster_ids: list):
         """
-        Merge clusters into the first one.
+        Merge clusters into the target cluster.
         The centroids are re-calculated and become a new middle.
         """
         return self.datasets.cluster.merge(
             dataset_id=self.dataset_id,
             vector_fields=self.vector_fields,
             alias=self.alias,
-            cluster_ids=cluster_ids,
+            cluster_ids=[target_cluster_id] + cluster_ids,
         )
 
     def create_byo_clusters(self):
@@ -660,3 +609,54 @@ class ClusterOps(ClusterBase, OperationAPIBase):
             raise ValueError("Cluster field has no values.")
 
         return results
+
+    def _operate(self, cluster_id: str, field: str, output: dict, func: Callable):
+        """
+        Internal function for operations
+
+        It takes a cluster_id, a field, an output dictionary, and a function, and then it gets all the
+        documents in the cluster, gets the field across all the documents, and then applies the function
+        to the field
+
+        Parameters
+        ----------
+        cluster_id : str
+            str, field: str, output: dict, func: Callable
+        field : str
+            the field you want to get the value for
+        output : dict
+            dict
+        func : Callable
+            Callable
+
+        """
+        cluster_field = self._get_cluster_field_name()
+        # TODO; change this to fetch all documents
+        documents = self._get_all_documents(
+            self.dataset_id,
+            filters=[
+                {
+                    "field": cluster_field,
+                    "filter_type": "exact_match",
+                    "condition": "==",
+                    "condition_value": cluster_id,
+                },
+                {
+                    "field": field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                },
+            ],
+            select_fields=[field, cluster_field],
+            show_progress_bar=False,
+        )
+        # get the field across each
+        arr = self.get_field_across_documents(field, documents)
+        output[cluster_id] = func(arr)
+
+    def _operate_across_clusters(self, field: str, func: Callable):
+        output: Dict[str, Any] = dict()
+        for cluster_id in self.list_cluster_ids():
+            self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
+        return output
