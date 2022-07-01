@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import threading
 import time
+import uuid
 
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
@@ -758,7 +759,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log):
             for i, im in enumerate(tqdm(media_urls)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = im
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:
@@ -829,7 +830,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log) as f:
             for i, media_fn in enumerate(tqdm(media_fns)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = media_fn
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:
