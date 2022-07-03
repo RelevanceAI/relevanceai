@@ -39,6 +39,7 @@ class Write(Read):
         use_json_encoder: bool = True,
         create_id: bool = False,
         overwrite: bool = True,
+        ingest_in_background: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -103,6 +104,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
             create_id=create_id,
             overwrite=overwrite,
+            ingest_in_background=ingest_in_background,
             **kwargs,
         )
         return self._process_insert_results(results)
@@ -317,6 +319,7 @@ class Write(Read):
         use_json_encoder: bool = True,
         return_json: bool = False,
         create_id: bool = False,
+        ingest_in_background: bool = False,
     ) -> Dict:
 
         """
@@ -375,6 +378,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            ingest_in_background=ingest_in_background,
         )
         return self._process_insert_results(results, return_json=return_json)
 

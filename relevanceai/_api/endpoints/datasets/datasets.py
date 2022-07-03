@@ -306,6 +306,7 @@ class DatasetsClient(_Base):
         update_schema: bool = True,
         field_transformers: Optional[list] = None,
         return_documents: bool = False,
+        ingest_in_background: bool = False,
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
@@ -355,6 +356,7 @@ class DatasetsClient(_Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
+                    "ingest_in_background": ingest_in_background,
                 },
             )
 
@@ -369,6 +371,7 @@ class DatasetsClient(_Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
+                    "ingest_in_background": ingest_in_background,
                 },
             )
 

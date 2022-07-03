@@ -413,6 +413,7 @@ class DocumentsClient(_Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
+        ingest_in_background: bool = False,
     ):
 
         """
@@ -439,6 +440,7 @@ class DocumentsClient(_Base):
                 method="POST",
                 parameters={"updates": updates, "insert_date": insert_date},
                 base_url=base_url,
+                ingest_in_background=ingest_in_background,
             )
         else:
             response_json = self.make_http_request(
@@ -446,6 +448,7 @@ class DocumentsClient(_Base):
                 method="POST",
                 parameters={"updates": updates, "insert_date": insert_date},
                 base_url=base_url,
+                ingest_in_background=ingest_in_background,
             )
 
             try:
