@@ -438,17 +438,23 @@ class DocumentsClient(_Base):
             return self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
-                parameters={"updates": updates, "insert_date": insert_date},
+                parameters={
+                    "updates": updates,
+                    "insert_date": insert_date,
+                    "ingest_in_background": ingest_in_background,
+                },
                 base_url=base_url,
-                ingest_in_background=ingest_in_background,
             )
         else:
             response_json = self.make_http_request(
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
-                parameters={"updates": updates, "insert_date": insert_date},
+                parameters={
+                    "updates": updates,
+                    "insert_date": insert_date,
+                    "ingest_in_background": ingest_in_background,
+                },
                 base_url=base_url,
-                ingest_in_background=ingest_in_background,
             )
 
             try:
