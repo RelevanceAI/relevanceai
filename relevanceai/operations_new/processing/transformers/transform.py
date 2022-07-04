@@ -5,9 +5,9 @@ from relevanceai.operations_new.transform_base import TransformBase
 from typing import Optional
 
 
-class TransformersPipelineBase(TransformBase):
+class TransformersPipelineTransform(TransformBase):
     def __init__(
-        self, text_fields: list, pipeline, output_fields: Optional[str] = None
+        self, text_fields: list, pipeline, output_fields: Optional[str] = None, **kwargs
     ):
         self.text_fields = text_fields
         self.pipeline = pipeline
@@ -19,6 +19,8 @@ class TransformersPipelineBase(TransformBase):
             else output_fields
             for text_field in text_fields
         ]
+        for k, v in kwargs.items():
+            setattr(self, k, v)
         print(f"Output fields are {self.output_fields}")
 
     @property
@@ -36,4 +38,4 @@ class TransformersPipelineBase(TransformBase):
         return documents
 
     def _generate_output_field(self, text_field):
-        return f"_{self.task}_.{self.name}." + ".".join(text_field)
+        return f"_{self.task}_.{self.name}." + text_field
