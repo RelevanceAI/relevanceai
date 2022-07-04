@@ -8,8 +8,7 @@ and machine learning engineers how best to unlock Relevance AI.
 .. toctree::
     :caption: Start Here
 
-    quickstart_guide
-    feature_tour_guide
+    🏃‍♀️ QuickStart <quickstart_guide>
 
 .. toctree::
     :caption: Vectorize
@@ -33,3 +32,8 @@ and machine learning engineers how best to unlock Relevance AI.
 
     advanced_search_guide
     text_to_image_guide
+
+.. toctree::
+    :caption: Transformers Integration
+
+    integration_with_pipelines_guide
