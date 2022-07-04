@@ -109,7 +109,9 @@ class APIEndpointsClient(_Base, DocUtils):
                         documents,
                     )
                 else:
-                    raise ValueError("Invalid uuid type")
+                    raise ValueError(
+                        "Invalid uuid type. Needs to be `unique` or `random`."
+                    )
             else:
                 raise FieldNotFoundError(
                     "Missing _id field. Set `create_id=True` to automatically generate IDs."
