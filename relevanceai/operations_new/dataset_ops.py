@@ -629,6 +629,7 @@ class Operations(Write):
             text_fields=text_fields,
             pipeline=pipeline,
             output_fields=output_fields,
+            credentials=self.credentials,
         )
         return ops.run(
             self,
