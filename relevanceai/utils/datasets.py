@@ -175,6 +175,7 @@ def get_ebay_app_review_dataset(
         select_fields=select_fields,
     )
 
+
 def get_ebay_app_review_encoded_dataset(
     number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
 ) -> List:
@@ -198,6 +199,7 @@ def get_ebay_app_review_encoded_dataset(
         number_of_documents=number_of_documents,
         select_fields=select_fields,
     )
+
 
 def get_games_dataset(
     number_of_documents: Union[None, int] = 365, select_fields: Optional[List] = None

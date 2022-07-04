@@ -4,6 +4,7 @@ import numpy as np
 from relevanceai.constants import MissingPackageError
 from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 
+
 class CommunityDetection(ClusterModelBase):
     def __init__(
         self,
@@ -141,5 +142,6 @@ class CommunityDetection(ClusterModelBase):
         # Not necessary
         pass
 
-#to stay with convention
+
+# to stay with convention
 CommunityDetectionModel = CommunityDetection
