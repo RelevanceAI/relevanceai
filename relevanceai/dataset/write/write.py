@@ -1015,7 +1015,24 @@ class Write(Read):
         show_progress_bar: bool = False,
         max_workers: Optional[int] = None,
     ) -> List[str]:
-        """batched upsert media"""
+        """
+        It takes a list of images, splits it into batches, and then uses a thread pool to upsert the
+        images in parallel
+
+        Parameters
+        ----------
+        images : List[str]
+            A list of media src paths to upload
+        show_progress_bar : bool
+            Show the progress bar
+        max_workers : Optional[int]
+            The number of workers to use. If None, this is set to the max number in ThreadPoolExecutor
+
+        Returns
+        -------
+            List[str]: A list of media_urls
+
+        """
 
         if max_workers is None:
             max_workers = os.cpu_count() + 4
