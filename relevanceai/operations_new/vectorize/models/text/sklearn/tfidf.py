@@ -35,5 +35,5 @@ class TfIDFModel(VectorizeModelBase):
         vectors = self.vect.fit_transform(text_corpus)
         dense_vectors = vectors.todense()
         for i, d in enumerate(documents):
-            d[self.output_field] = dense_vectors[i]
+            self.set_field(self.output_field, d, dense_vectors[i])
         return documents
