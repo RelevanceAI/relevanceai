@@ -753,7 +753,7 @@ class Write(Read):
         media_urls: List[str],
         verbose: bool = True,
         file_log: str = "insert_media_urls.log",
-        log_file: bool = True,
+        logging: bool = True,
     ):
         """
         Insert a single media URL
@@ -761,7 +761,7 @@ class Write(Read):
         # media to download
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_urls)
         response_docs: dict = {"media_documents": [], "failed_medias": []}
-        if log_file:
+        if logging:
             with FileLogger(file_log):
                 for i, im in enumerate(tqdm(media_urls)):
                     response_doc = {"_id": str(uuid.uuid4())}
@@ -837,7 +837,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log="local_media_upload.log",
-        log_file: bool = True,
+        logging: bool = True,
     ):
         """Insert a list of local medias.
 
@@ -853,7 +853,7 @@ class Write(Read):
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_fns)
         response_docs: dict = {"media_documents": [], "failed_medias": []}
 
-        if log_file:
+        if logging:
             with FileLogger(file_log) as f:
                 for i, media_fn in enumerate(tqdm(media_fns)):
                     response_doc = {"_id": str(uuid.uuid4())}
@@ -894,7 +894,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log: str = "media_upload.log",
-        log_file: bool = True,
+        logging: bool = True,
     ) -> dict:
         """
         Bulk insert medias. Returns a link to once it has been hosted
@@ -914,14 +914,14 @@ class Write(Read):
                 media_fns,
                 verbose=verbose,
                 file_log=file_log,
-                log_file=log_file,
+                logging=logging,
             )
         else:
             return self.insert_local_medias(
                 media_fns,
                 verbose=verbose,
                 file_log=file_log,
-                log_file=log_file,
+                logging=logging,
             )
 
     @track
@@ -930,7 +930,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log: str = "media_upload.log",
-        log_file: bool = True,
+        logging: bool = True,
         **kw,
     ):
         """
@@ -950,7 +950,7 @@ class Write(Read):
             media_fns=media_fns,
             verbose=verbose,
             file_log=file_log,
-            log_file=log_file,
+            logging=logging,
         )
         return self.upsert_documents(documents["media_documents"], create_id=True, **kw)
 
@@ -1013,13 +1013,17 @@ class Write(Read):
         self,
         images: List[str],
         show_progress_bar: bool = False,
+        max_workers: Optional[int] = None,
     ) -> List[str]:
         """batched upsert media"""
 
-        bs = int(len(images) / (os.cpu_count() + 4))
+        if max_workers is None:
+            max_workers = os.cpu_count() + 4
+
+        bs = int(len(images) / max_workers)
         nb = int(len(images) / bs)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []
             for i in range(int(nb)):
                 futures.append(
