@@ -605,8 +605,9 @@ class Operations(Write):
         self,
         text_fields: list,
         pipeline,
-        output_field: Optional[str] = None,
+        output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
+        refresh: bool = False,
     ):
         """
         Apply a transformers pipeline generically.
@@ -627,9 +628,16 @@ class Operations(Write):
         ops = TransformersPipelineOps(
             text_fields=text_fields,
             pipeline=pipeline,
-            output_field=output_field,
+            output_fields=output_fields,
+            credentials=self.credentials,
         )
-        return ops.run(self, filters=filters, select_fields=text_fields)
+        return ops.run(
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
 
     def scale(
         self,
