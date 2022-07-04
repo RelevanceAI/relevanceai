@@ -605,7 +605,7 @@ class Operations(Write):
         self,
         text_fields: list,
         pipeline,
-        output_fields: Optional[str] = None,
+        output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
         refresh: bool = False,
     ):
