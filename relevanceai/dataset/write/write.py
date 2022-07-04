@@ -23,6 +23,7 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
 from relevanceai.utils import fire_and_forget
 from relevanceai.constants.warning import Warning
+from relevanceai.utils.progress_bar import progress_bar
 
 
 class Write(Read):
@@ -1008,7 +1009,9 @@ class Write(Read):
         documents = [{label_field: l} for l in labels]
         return self.insert_documents(documents=documents, **kwargs)
 
-    def batched_upsert_media(self, images: List[str]) -> List[str]:
+    def batched_upsert_media(
+        self, images: List[str], show_progress_bar: bool = False
+    ) -> List[str]:
         bs = int(len(images) / (os.cpu_count() + 4))
         nb = int(len(images) / bs)
 
@@ -1025,8 +1028,10 @@ class Write(Read):
                     )
                 )
 
-            for future in tqdm(
-                concurrent.futures.as_completed(futures), total=len(futures)
+            for future in progress_bar(
+                concurrent.futures.as_completed(futures),
+                total=len(futures),
+                show_progress_bar=show_progress_bar,
             ):
                 res = future.result()
 
