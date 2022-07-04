@@ -56,6 +56,7 @@ class BatchInsertClient(BatchRetrieveClient):
         create_id: bool = False,
         overwrite: bool = True,
         uuid_type: str = "random",
+        ingest_in_background: bool = False,
         *args,
         **kwargs,
     ):
@@ -117,6 +118,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 documents,
                 return_documents=True,
                 overwrite=overwrite,
+                ingest_in_background=ingest_in_background,
                 *args,
                 **kwargs,
             )
@@ -148,6 +150,7 @@ class BatchInsertClient(BatchRetrieveClient):
         use_json_encoder: bool = True,
         create_id: bool = False,
         uuid_type: str = "random",
+        ingest_in_background: bool = False,
         *args,
         **kwargs,
     ):
@@ -206,6 +209,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 dataset_id,
                 documents,
                 return_documents=True,
+                ingest_in_background=ingest_in_background,
                 *args,
                 **kwargs,
             )
