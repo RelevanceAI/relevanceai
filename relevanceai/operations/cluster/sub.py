@@ -277,6 +277,8 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
             if hasattr(dataset, "dataset_id"):
                 self.dataset_id = dataset.dataset_id
             # needs to have the dataset_id attribute
+        self.n_clusters = kwargs.get("n_clusters", 4)
+        self.cluster_config = kwargs.get("cluster_config", {})
 
         super().__init__(
             credentials=credentials,

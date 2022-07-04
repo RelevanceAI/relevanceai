@@ -7,7 +7,7 @@
 
 **Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RelevanceAI/workflows/blob/main/workflows/quickstart_workflow/%E2%98%98%EF%B8%8F_Relevance_AI_Quickstart.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/development/guides/quickstart_guide.ipynb)
 
 
 For guides and tutorials on how to use this package, visit https://relevanceai.readthedocs.io/en/development/ .
@@ -140,7 +140,7 @@ pre-commit install
 
 ## 🧰 Config
 
-The config object contains the adjustable global settings for the SDK. For a description of all the settings, see here.
+The config object contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://github.com/RelevanceAI/RelevanceAI/blob/development/relevanceai/constants/config.ini).
 
 To view setting options, run the following:
 

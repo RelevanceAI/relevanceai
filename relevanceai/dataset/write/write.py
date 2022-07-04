@@ -5,6 +5,9 @@ Pandas like dataset API
 import warnings
 import requests
 import pandas as pd
+import threading
+import time
+import uuid
 
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
@@ -16,7 +19,7 @@ from relevanceai.utils import DocUtils
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
-
+from relevanceai.utils import fire_and_forget
 from relevanceai.constants.warning import Warning
 
 
@@ -29,12 +32,14 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
         create_id: bool = False,
+        overwrite: bool = True,
+        ingest_in_background: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -98,6 +103,8 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            overwrite=overwrite,
+            ingest_in_background=ingest_in_background,
             **kwargs,
         )
         return self._process_insert_results(results)
@@ -107,7 +114,7 @@ class Write(Read):
         self,
         filepath_or_buffer,
         chunksize: int = 10000,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         index_col: int = None,
@@ -305,13 +312,14 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 8,
+        max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         chunksize: int = 0,
         show_progress_bar=False,
         use_json_encoder: bool = True,
         return_json: bool = False,
         create_id: bool = False,
+        ingest_in_background: bool = False,
     ) -> Dict:
 
         """
@@ -370,6 +378,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            ingest_in_background=ingest_in_background,
         )
         return self._process_insert_results(results, return_json=return_json)
 
@@ -475,9 +484,7 @@ class Write(Read):
         retrieve_chunksize: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        show_progress_bar: bool = True,
-        use_json_encoder: bool = True,
-        log_to_file: bool = True,
+        max_active_threads: int = 2,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -516,19 +523,32 @@ class Write(Read):
 
             df.apply(update_documents)
         """
+        thread_count = 0
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
 
-        return self.pull_update_push_async(
-            self.dataset_id,
-            bulk_func,
-            retrieve_chunk_size=retrieve_chunksize,
-            filters=filters,
+        for chunk in self.chunk_dataset(
             select_fields=select_fields,
-            show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
-            log_to_file=log_to_file,
-        )
+            filters=filters,
+            chunksize=retrieve_chunksize,
+        ):
+            updated_chunk = bulk_func(
+                chunk,
+            )
+
+            @fire_and_forget
+            def fire_upsert_docs():
+                self.upsert_documents(updated_chunk)
+
+            thread_count += 1
+            if thread_count >= max_active_threads:
+                # Check if thread count decreases
+                curr_thread_count = threading.active_count()
+                while threading.active_count() >= curr_thread_count:
+                    time.sleep(1)
+                thread_count -= 1
+
+            fire_upsert_docs()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
@@ -610,7 +630,7 @@ class Write(Read):
     def create(self, schema: Optional[dict] = None) -> Dict:
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+        A powerful and core feature of Relevance is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -634,7 +654,7 @@ class Write(Read):
                 "product_text_chunkvector_" : 1024
             }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+        You don't have to specify the schema of every single field when creating a dataset, as Relevance will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
 
@@ -743,7 +763,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log):
             for i, im in enumerate(tqdm(media_urls)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = im
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:
@@ -814,7 +834,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log) as f:
             for i, media_fn in enumerate(tqdm(media_fns)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = media_fn
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:
@@ -918,3 +938,21 @@ class Write(Read):
         return self.datasets.documents.update_where(
             dataset_id=self.dataset_id, update=update, filters=filters
         )
+
+    def insert_list(self, labels: list, label_field: str = "label", **kwargs):
+        """It takes a list of labels, and inserts them into the database as documents
+
+        Parameters
+        ----------
+        labels : list
+            list of labels to insert
+        label_field : str, optional
+            The field in the document that contains the label.
+
+        Returns
+        -------
+            A list of the ids of the documents that were inserted.
+
+        """
+        documents = [{label_field: l} for l in labels]
+        return self.insert_documents(documents=documents, **kwargs)

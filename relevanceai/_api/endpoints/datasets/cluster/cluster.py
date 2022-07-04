@@ -26,7 +26,6 @@ class ClusterClient(_Base):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
-        For more information about aggregations check out services.aggregate.aggregate.
         Parameters
         ----------
         dataset_id : string
@@ -82,15 +81,17 @@ class ClusterClient(_Base):
         self,
         dataset_id: str,
         vector_fields: List[str],
-        centroid_vector_fields: List[str],
         alias: str,
         cluster_ids: list,
+        centroid_vector_fields: List[str] = None,
     ):
         """
         Merge clusters together
         """
         endpoint = f"/datasets/{dataset_id}/cluster/merge"
         method = "POST"
+        if centroid_vector_fields is None:
+            centroid_vector_fields = []
         parameters = {
             "dataset_id": dataset_id,
             "vector_fields": vector_fields,

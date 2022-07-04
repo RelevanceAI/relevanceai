@@ -12,7 +12,7 @@ class TasksClient(_Base):
 
     def create(self, dataset_id, task_name, task_parameters):
         """
-        Tasks unlock the power of VecDb AI by adding a lot more new functionality with a flexible way of searching.
+        Tasks unlock the power of Relevance AI by adding a lot more new functionality with a flexible way of searching.
 
         Parameters
         ----------

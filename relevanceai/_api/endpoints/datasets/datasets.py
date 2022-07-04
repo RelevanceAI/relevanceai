@@ -23,7 +23,7 @@ class DatasetsClient(_Base):
 
     def schema(self, dataset_id: str):
         """
-        Returns the schema of a dataset. Refer to datasets.create for different field types available in a VecDB schema.
+        Returns the schema of a dataset. Refer to datasets.create for different field types available in a Relevance schema.
 
         Parameters
         ----------
@@ -60,7 +60,7 @@ class DatasetsClient(_Base):
     def create(self, dataset_id: str, schema: Optional[dict] = None):
         """
         A dataset can store documents to be searched, retrieved, filtered and aggregated (similar to Collections in MongoDB, Tables in SQL, Indexes in ElasticSearch).
-        A powerful and core feature of VecDB is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
+        A powerful and core feature of Relevance is that you can store both your metadata and vectors in the same document. When specifying the schema of a dataset and inserting your own vector use the suffix (ends with) "_vector_" for the field name, and specify the length of the vector in dataset_schema. \n
 
         For example:
 
@@ -81,7 +81,7 @@ class DatasetsClient(_Base):
         >>>        "product_text_chunkvector_" : 1024
         >>>    }
 
-        You don't have to specify the schema of every single field when creating a dataset, as VecDB will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
+        You don't have to specify the schema of every single field when creating a dataset, as Relevance will automatically detect the appropriate data type for each field (vectors will be automatically identified by its "_vector_" suffix). Infact you also don't always have to use this endpoint to create a dataset as /datasets/bulk_insert will infer and create the dataset and schema as you insert new documents. \n
 
         Note:
 
@@ -273,8 +273,8 @@ class DatasetsClient(_Base):
         ----------
         dataset_id : string
             Unique name of dataset
-        documents : list
-            A list of documents. Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
+        document : dict
+            Document is a JSON-like data that we store our metadata and vectors with. For specifying id of the document use the field '_id', for specifying vector field use the suffix of '_vector_'
         insert_date : bool
             Whether to include insert date as a field 'insert_date_'.
         overwrite : bool
@@ -295,6 +295,8 @@ class DatasetsClient(_Base):
             },
         )
 
+    log = insert
+
     def bulk_insert(
         self,
         dataset_id: str,
@@ -304,6 +306,7 @@ class DatasetsClient(_Base):
         update_schema: bool = True,
         field_transformers: Optional[list] = None,
         return_documents: bool = False,
+        ingest_in_background: bool = False,
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
@@ -353,6 +356,7 @@ class DatasetsClient(_Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
+                    "ingest_in_background": ingest_in_background,
                 },
             )
 
@@ -367,6 +371,7 @@ class DatasetsClient(_Base):
                     "overwrite": overwrite,
                     "update_schema": update_schema,
                     "field_transformers": field_transformers,
+                    "ingest_in_background": ingest_in_background,
                 },
             )
 
@@ -767,7 +772,7 @@ class DatasetsClient(_Base):
             parameters=parameters,
         )
 
-    def recommend(self, documents_to_recommend: list):
+    def recommend(self, dataset_id, documents_to_recommend: list):
         """
         Recommend documents similar to specific documents. Specify which vector field must be used for recommendation using the documentsToRecommend property.
         Parameters
@@ -780,7 +785,28 @@ class DatasetsClient(_Base):
         """
         parameters = {"documentsToRecommend": documents_to_recommend}
         return self.make_http_request(
-            endpoint="/datasets/{dataset_id}/recommend",
+            endpoint=f"/datasets/{dataset_id}/recommend",
+            method="POST",
+            parameters=parameters,
+        )
+
+    def get_settings(self, dataset_id):
+        """
+        Get settings for a dataset
+        """
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/settings",
+            method="GET",
+            parameters={},
+        )
+
+    def post_settings(self, dataset_id, settings: dict):
+        """
+        Update settings
+        """
+        parameters = {"settings": settings}
+        return self.make_http_request(
+            endpoint=f"/datasets/{dataset_id}/settings",
             method="POST",
             parameters=parameters,
         )

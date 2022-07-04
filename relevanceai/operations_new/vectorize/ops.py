@@ -1,8 +1,7 @@
-from tkinter import N
-from relevanceai.operations_new.apibase import OperationAPIBase
-from relevanceai.operations_new.vectorize.base import VectorizeBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
+from relevanceai.operations_new.vectorize.transform import VectorizeTransform
 
 
-class VectorizeOps(VectorizeBase, OperationAPIBase):
+class VectorizeOps(VectorizeTransform, OperationAPIBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -332,7 +332,7 @@ class Operations(Write, IO):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         search_history_id: string
@@ -409,7 +409,7 @@ class Operations(Write, IO):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         search_history_id: string
@@ -497,7 +497,7 @@ class Operations(Write, IO):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         query: string
@@ -585,7 +585,7 @@ class Operations(Write, IO):
         asc: bool
             Whether to sort results by ascending or descending order
         keep_search_history: bool
-            Whether to store the history into VecDB. This will increase the storage costs over time.
+            Whether to store the history into Relevance. This will increase the storage costs over time.
         hundred_scale: bool
             Whether to scale up the metric by 100
         first_step_multivector_query: list
@@ -880,12 +880,19 @@ class Operations(Write, IO):
     #     )
     #     return workflow.run(self, verbose=verbose, log_to_file=log_to_file)
 
-    def advanced_search(
+    def search(
         self,
         query: str = None,
         vector_search_query: Optional[dict] = None,
         fields_to_search: Optional[List] = None,
         select_fields: Optional[List] = None,
+        include_vectors: bool = True,
+        filters: Optional[List] = None,
+        page: int = 0,
+        page_size: int = 10,
+        sort: dict = None,
+        minimum_relevance: int = 0,
+        query_config: dict = None,
         **kwargs,
     ):
         """
@@ -909,10 +916,17 @@ class Operations(Write, IO):
             vectorSearchQuery=vector_search_query,
             fieldsToSearch=fields_to_search,
             includeFields=select_fields,
+            includeVectors=include_vectors,
+            filters=filters,
+            page=page,
+            pageSize=page_size,
+            sort=sort,
+            minimumRelevance=minimum_relevance,
+            queryConfig=query_config,
             **kwargs,
         )
 
-    search = advanced_search
+    advanced_search = search
 
     @track
     def list_deployables(self):
