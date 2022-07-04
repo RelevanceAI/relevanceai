@@ -1,9 +1,10 @@
 """
 All operations related to sentiment
 """
-from relevanceai.operations_new.sentiment.base import SentimentBase
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.sentiment.transform import SentimentTransform
+from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
-class SentimentOps(SentimentBase, OperationAPIBase):
-    pass
+class SentimentOps(SentimentTransform, OperationAPIBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

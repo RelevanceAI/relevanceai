@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import threading
 import time
+import uuid
 
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
@@ -38,6 +39,7 @@ class Write(Read):
         use_json_encoder: bool = True,
         create_id: bool = False,
         overwrite: bool = True,
+        ingest_in_background: bool = False,
         **kwargs,
     ) -> Dict:
 
@@ -102,6 +104,7 @@ class Write(Read):
             use_json_encoder=use_json_encoder,
             create_id=create_id,
             overwrite=overwrite,
+            ingest_in_background=ingest_in_background,
             **kwargs,
         )
         return self._process_insert_results(results)
@@ -316,6 +319,7 @@ class Write(Read):
         use_json_encoder: bool = True,
         return_json: bool = False,
         create_id: bool = False,
+        ingest_in_background: bool = False,
     ) -> Dict:
 
         """
@@ -374,6 +378,7 @@ class Write(Read):
             chunksize=chunksize,
             use_json_encoder=use_json_encoder,
             create_id=create_id,
+            ingest_in_background=ingest_in_background,
         )
         return self._process_insert_results(results, return_json=return_json)
 
@@ -758,7 +763,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log):
             for i, im in enumerate(tqdm(media_urls)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = im
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:
@@ -829,7 +834,7 @@ class Write(Read):
         response_docs: dict = {"media_documents": [], "failed_medias": []}
         with FileLogger(file_log) as f:
             for i, media_fn in enumerate(tqdm(media_fns)):
-                response_doc = {}
+                response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = media_fn
                 response_doc["media_url"] = response["files"][i]["url"]
                 try:

@@ -1,11 +1,11 @@
 """
 Transformers Pipeline Implementation
 """
-from relevanceai.operations_new.base import OperationBase
+from relevanceai.operations_new.transform_base import TransformBase
 from typing import Optional
 
 
-class TransformersPipelineBase(OperationBase):
+class TransformersPipelineBase(TransformBase):
     def __init__(
         self, text_fields: list, pipeline, output_fields: Optional[str] = None
     ):
@@ -29,10 +29,10 @@ class TransformersPipelineBase(OperationBase):
             return "transformers-pipeline"
 
     def transform(self, documents):
-        for text_field in self.text_fields:
+        for i, text_field in enumerate(self.text_fields):
             texts = self.get_field_across_documents(text_field, documents)
             values = self.pipeline(texts)
-            self.set_field_across_documents(self.output_field, values, documents)
+            self.set_field_across_documents(self.output_fields[i], values, documents)
         return documents
 
     def _generate_output_field(self, text_field):

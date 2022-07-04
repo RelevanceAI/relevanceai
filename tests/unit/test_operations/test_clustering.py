@@ -1,5 +1,5 @@
 import pytest
-
+import time
 from sklearn.cluster import MiniBatchKMeans
 
 from relevanceai import Client
@@ -79,6 +79,7 @@ class TestClusterOps:
             vector_fields=["sample_1_vector_"],
         )
         cluster_ids = ["cluster_0", "cluster_6", "cluster_3"]
+        time.sleep(5)
         closests = clusterer.list_closest(
             cluster_ids=cluster_ids,
             approx=0,

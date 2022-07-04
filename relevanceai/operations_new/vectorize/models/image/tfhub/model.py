@@ -10,16 +10,17 @@ import numpy as np
 
 from relevanceai.operations_new.vectorize.models.base import VectorizeModelBase
 from relevanceai.utils.decorators.vectors import catch_errors
+
 try:
     import tensorflow as tf
     import tensorflow_hub as hub
 except ModuleNotFoundError as e:
-    raise ModuleNotFoundError(
-                "Run `pip install tensorflow_hub`."
-            )
+    raise ModuleNotFoundError("Run `pip install tensorflow_hub`.")
 except:
     import traceback
+
     traceback.print_exc()
+
 
 class TFHubImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, image_dimensions: Optional[int] = None):

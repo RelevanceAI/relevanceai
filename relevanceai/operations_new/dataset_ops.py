@@ -442,7 +442,6 @@ class Operations(Write):
         if filters is not None:
             filters = ops._get_filters(filters, vector_fields)
 
-        # Create the cluster report
         ops.run(
             dataset=self,
             select_fields=vector_fields,
@@ -450,7 +449,9 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
         )
-
+        # TODO: Create the cluster report
+        if include_cluster_report:
+            pass
         print(
             f"""You can now utilise the ClusterOps object using the below:
 
@@ -543,6 +544,7 @@ class Operations(Write):
         from relevanceai.operations_new.sentiment.ops import SentimentOps
 
         ops = SentimentOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             model_name=model_name,
             highlight=highlight,
@@ -634,6 +636,38 @@ class Operations(Write):
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
+        )
+
+    def scale(
+        self,
+        vector_fields: List[str],
+        model: Optional[str] = "standard",
+        alias: Optional[str] = None,
+        model_kwargs: Optional[dict] = None,
+        filters: Optional[list] = None,
+        batched: Optional[bool] = None,
+        chunksize: Optional[int] = None,
+    ):
+
+        from relevanceai.operations_new.scaling.ops import ScaleOps
+
+        chunksize = chunksize if batched is None else batched
+        filters = [] if filters is None else filters
+        batched = False if batched is None else batched
+
+        ops = ScaleOps(
+            vector_fields=vector_fields,
+            model=model,
+            alias=alias,
+            model_kwargs=model_kwargs,
+        )
+
+        ops.run(
+            dataset=self,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=vector_fields,
         )
 
     def subcluster(
@@ -801,6 +835,7 @@ class Operations(Write):
             print(f"The output fields are {output_fields}.")
 
         ops = CleanTextOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             output_fields=output_fields,
             remove_html_tags=remove_html_tags,
@@ -1051,3 +1086,45 @@ class Operations(Write):
             all_ids = [d["_id"] for d in r["documents"]]
             self.datasets.documents.bulk_delete(self.dataset_id, ids=all_ids[1:])
         print("Finished deduplicating!")
+
+    def extract_nouns(
+        self,
+        fields: list,
+        output_fields: list,
+        model_name: str = "flair/chunk-english",
+        cutoff_probability: float = 0.7,
+        stopwords: list = None,
+        filters: list = None,
+        refresh: bool = False,
+        chunksize: int = 50,
+        **kwargs,
+    ):
+        """
+        Extract nouns to build a taxonomy
+        """
+        # TODO: add support for noun processing hooks
+
+        from relevanceai.operations_new.processing.text.extract_nouns.ops import (
+            ExtractNounsOps,
+        )
+
+        ops = ExtractNounsOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_name=model_name,
+            output_fields=output_fields,
+            cutoff_probability=cutoff_probability,
+            stopwords=stopwords,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops

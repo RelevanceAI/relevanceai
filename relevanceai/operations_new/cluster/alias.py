@@ -1,5 +1,5 @@
 import warnings
-from typing import Any
+from typing import Any, Optional
 from relevanceai.constants.warning import Warning
 
 
@@ -100,3 +100,79 @@ class ClusterAlias:
         else:
             self.package = "custom"
         return self.package
+
+    def _get_model(self, model: Any, model_kwargs: Optional[dict]) -> Any:
+        if model_kwargs is None:
+            model_kwargs = {}
+
+        if model is None:
+            return model
+        if isinstance(model, str):
+            model = self._get_model_from_string(model, model_kwargs)
+
+        elif "sklearn" in model.__module__:
+            model = self._get_sklearn_model_from_class(model)
+
+        elif "faiss" in model.__module__:
+            model = self._get_faiss_model_from_class(model)
+
+        return model
+
+    def _get_sklearn_model_from_class(self, model):
+        from relevanceai.operations_new.cluster.models.sklearn.base import (
+            SklearnModel,
+        )
+
+        model_kwargs = model.__dict__
+        model = SklearnModel(model=model, model_kwargs=model_kwargs)
+        return model
+
+    def _get_faiss_model_from_class(self, model):
+        raise NotImplementedError
+
+    def normalize_model_name(self, model):
+        if isinstance(model, str):
+            return model.lower().replace("-", "").replace("_", "")
+
+        return model
+
+    def _get_model_from_string(self, model: str, model_kwargs: dict = None):
+        if model_kwargs is None:
+            model_kwargs = {}
+
+        model = self.normalize_model_name(model)
+        model_kwargs = {} if model_kwargs is None else model_kwargs
+
+        from relevanceai.operations_new.cluster.models.sklearn import sklearn_models
+
+        if model in sklearn_models:
+            from relevanceai.operations_new.cluster.models.sklearn.base import (
+                SklearnModel,
+            )
+
+            model = SklearnModel(
+                model=model,
+                model_kwargs=model_kwargs,
+            )
+            return model
+
+        elif model == "faiss":
+            from relevanceai.operations_new.cluster.models.faiss.base import (
+                FaissModel,
+            )
+
+            model = FaissModel(
+                model=model,
+                model_kwargs=model_kwargs,
+            )
+            return model
+
+        elif model == "communitydetection":
+            from relevanceai.operations_new.cluster.models.sentence_transformers.community_detection import (
+                CommunityDetectionModel,
+            )
+
+            model = CommunityDetectionModel(**model_kwargs)
+            return model
+
+        raise ValueError("Model not supported.")
