@@ -1010,8 +1010,12 @@ class Write(Read):
         return self.insert_documents(documents=documents, **kwargs)
 
     def batched_upsert_media(
-        self, images: List[str], show_progress_bar: bool = False
+        self,
+        images: List[str],
+        show_progress_bar: bool = False,
     ) -> List[str]:
+        """batched upsert media"""
+
         bs = int(len(images) / (os.cpu_count() + 4))
         nb = int(len(images) / bs)
 
