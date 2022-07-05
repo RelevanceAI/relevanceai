@@ -1013,7 +1013,7 @@ class Write(Read):
         self,
         images: List[str],
         show_progress_bar: bool = False,
-        max_workers: Optional[int] = None,
+        n_workers: Optional[int] = None,
     ) -> List[str]:
         """
         It takes a list of images, splits it into batches, and then uses a thread pool to upsert the
@@ -1034,8 +1034,8 @@ class Write(Read):
 
         """
 
-        if max_workers is None:
-            max_workers = os.cpu_count() + 4
+        if n_workers is None:
+            max_workers = os.cpu_count() + 4  # type: ignore
 
         bs = int(len(images) / max_workers)
         nb = int(len(images) / bs)
@@ -1055,7 +1055,6 @@ class Write(Read):
 
             for future in progress_bar(
                 concurrent.futures.as_completed(futures),
-                total=len(futures),
                 show_progress_bar=show_progress_bar,
             ):
                 res = future.result()
