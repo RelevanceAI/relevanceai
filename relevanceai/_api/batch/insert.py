@@ -784,7 +784,7 @@ class BatchInsertClient(BatchRetrieveClient):
             }
 
         # Insert documents
-        test_doc = json.dumps(documents[0], indent=4)
+        test_doc = json.dumps(self.json_encoder(documents[0]), indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
