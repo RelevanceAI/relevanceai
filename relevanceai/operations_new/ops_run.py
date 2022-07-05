@@ -199,12 +199,13 @@ class OperationRun(TransformBase):
 
         print("Storing operation metadata...")
         timestamp = str(datetime.now().timestamp()).replace(".", "-")
-        metadata = {
-            "_operationhistory_": {
-                timestamp: {
-                    "operation": self.name,
-                    "parameters": str(values),
-                }
+        metadata = dataset.metadata
+        if "_operationhistory_" not in metadata:
+            metadata["_operationhistory_"] = {}
+        metadata["_operationhistory_"] = {
+            timestamp: {
+                "operation": self.name,
+                "parameters": str(values),
             }
         }
         # Gets metadata and appends to the operation history
