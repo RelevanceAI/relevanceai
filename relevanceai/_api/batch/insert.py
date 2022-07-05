@@ -106,12 +106,11 @@ class BatchInsertClient(BatchRetrieveClient):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
+            if use_json_encoder:
+                documents = self.json_encoder(documents)
             return self.datasets.bulk_insert(
                 dataset_id,
                 documents,
@@ -199,10 +198,9 @@ class BatchInsertClient(BatchRetrieveClient):
         # Turn _id into string
         self._convert_id_to_string(documents, create_id=create_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         def bulk_update_func(documents):
+            if use_json_encoder:
+                documents = self.json_encoder(documents)
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 documents,
@@ -433,7 +431,7 @@ class BatchInsertClient(BatchRetrieveClient):
         These documents are then uploaded into either an updated collection, or back into the original collection.
 
         Parameters
-        ----------
+        ------------
         original_dataset_id: string
             The dataset_id of the collection where your original documents are
         logging_dataset_id: string
@@ -786,7 +784,7 @@ class BatchInsertClient(BatchRetrieveClient):
             }
 
         # Insert documents
-        test_doc = json.dumps(documents[0], indent=4)
+        test_doc = json.dumps(self.json_encoder(documents[0]), indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
@@ -797,6 +795,8 @@ class BatchInsertClient(BatchRetrieveClient):
                 else len(documents)
             )
             chunksize = min(chunksize, max_chunk_size)
+
+            print(f"Updating chunksize to {chunksize}")
             # Add edge case handling
             if chunksize == 0:
                 chunksize = 1
