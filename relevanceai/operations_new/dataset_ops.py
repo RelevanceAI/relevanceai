@@ -15,9 +15,10 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
     dataset.cluster(*args **kwarsgs)
 """
+import pandas as pd
 from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
-
+from datetime import datetime
 from relevanceai.dataset.write import Write
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
@@ -1129,3 +1130,27 @@ class Operations(Write):
         )
 
         return ops
+
+    def view_workflow_history(self):
+        """
+        View all previous workflows
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            ds = client.Dataset('sample')
+            ds.view_workflow_history()
+
+        """
+        metadata = self.metadata["_operationhistory_"]
+        op_docs = []
+        for k, v in metadata.items():
+            v["time"] = k
+            op_docs.append(v)
+
+        df = pd.DataFrame(op_docs)
+        df["time"] = df["time"].apply(
+            lambda x: datetime.fromtimestamp(float(x.replace("-", ".")))
+        )
+        return df
