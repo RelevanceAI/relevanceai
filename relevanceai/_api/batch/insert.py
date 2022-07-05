@@ -113,7 +113,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 documents = self.json_encoder(documents)
             return self.datasets.bulk_insert(
                 dataset_id,
-                self.json_encoder(documents),
+                documents,
                 return_documents=True,
                 overwrite=overwrite,
                 ingest_in_background=ingest_in_background,
@@ -200,23 +200,15 @@ class BatchInsertClient(BatchRetrieveClient):
 
         def bulk_update_func(documents):
             if use_json_encoder:
-                return self.datasets.documents.bulk_update(
-                    dataset_id,
-                    self.json_encoder(documents),
-                    return_documents=True,
-                    ingest_in_background=ingest_in_background,
-                    *args,
-                    **kwargs,
-                )
-            else:
-                return self.datasets.documents.bulk_update(
-                    dataset_id,
-                    documents,
-                    return_documents=True,
-                    ingest_in_background=ingest_in_background,
-                    *args,
-                    **kwargs,
-                )
+                documents = self.json_encoder(documents)
+            return self.datasets.documents.bulk_update(
+                dataset_id,
+                documents,
+                return_documents=True,
+                ingest_in_background=ingest_in_background,
+                *args,
+                **kwargs,
+            )
 
         return self._write_documents(
             bulk_update_func,
