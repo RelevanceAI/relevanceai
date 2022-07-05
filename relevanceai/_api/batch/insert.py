@@ -106,15 +106,14 @@ class BatchInsertClient(BatchRetrieveClient):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
+            if use_json_encoder:
+                documents = self.json_encoder(documents)
             return self.datasets.bulk_insert(
                 dataset_id,
-                documents,
+                self.json_encoder(documents),
                 return_documents=True,
                 overwrite=overwrite,
                 ingest_in_background=ingest_in_background,
@@ -199,18 +198,25 @@ class BatchInsertClient(BatchRetrieveClient):
         # Turn _id into string
         self._convert_id_to_string(documents, create_id=create_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         def bulk_update_func(documents):
-            return self.datasets.documents.bulk_update(
-                dataset_id,
-                documents,
-                return_documents=True,
-                ingest_in_background=ingest_in_background,
-                *args,
-                **kwargs,
-            )
+            if use_json_encoder:
+                return self.datasets.documents.bulk_update(
+                    dataset_id,
+                    self.json_encoder(documents),
+                    return_documents=True,
+                    ingest_in_background=ingest_in_background,
+                    *args,
+                    **kwargs,
+                )
+            else:
+                return self.datasets.documents.bulk_update(
+                    dataset_id,
+                    documents,
+                    return_documents=True,
+                    ingest_in_background=ingest_in_background,
+                    *args,
+                    **kwargs,
+                )
 
         return self._write_documents(
             bulk_update_func,
@@ -433,7 +439,7 @@ class BatchInsertClient(BatchRetrieveClient):
         These documents are then uploaded into either an updated collection, or back into the original collection.
 
         Parameters
-        ----------
+        ------------
         original_dataset_id: string
             The dataset_id of the collection where your original documents are
         logging_dataset_id: string
