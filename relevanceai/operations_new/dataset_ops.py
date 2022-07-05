@@ -15,6 +15,7 @@ RelevanceAI Operations wrappers for use from a Dataset object
 
     dataset.cluster(*args **kwarsgs)
 """
+import pandas as pd
 from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 
@@ -1129,3 +1130,14 @@ class Operations(Write):
         )
 
         return ops
+
+    def view_workflow_history(self):
+        metadata = self.metadata.to_dict()
+        if "_operationhistory_" not in metadata:
+            return "No workflows have been run."
+        metadata = self.metadata['_operationhistory_']
+        op_docs = []
+        for k, v in metadata.items():
+            v['time'] = k
+            op_docs.append(v)
+        return pd.DataFrame(op_docs)
