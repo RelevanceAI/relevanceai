@@ -795,6 +795,8 @@ class BatchInsertClient(BatchRetrieveClient):
                 else len(documents)
             )
             chunksize = min(chunksize, max_chunk_size)
+
+            print(f"Updating chunksize to {chunksize}")
             # Add edge case handling
             if chunksize == 0:
                 chunksize = 1
