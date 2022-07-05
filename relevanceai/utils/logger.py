@@ -132,6 +132,10 @@ class FileLogger:
             return True
         return False
 
+    def log(self, text):
+        with open(self.fn, "wb") as f:
+            f.write(text)
+
 
 @contextmanager
 def suppress_stdout_stderr():

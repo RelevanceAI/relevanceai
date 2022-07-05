@@ -140,7 +140,7 @@ pre-commit install
 
 ## 🧰 Config
 
-The config object contains the adjustable global settings for the SDK. For a description of all the settings, see here.
+The config object contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://github.com/RelevanceAI/RelevanceAI/blob/development/relevanceai/constants/config.ini).
 
 To view setting options, run the following:
 

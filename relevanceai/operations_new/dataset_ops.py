@@ -605,8 +605,9 @@ class Operations(Write):
         self,
         text_fields: list,
         pipeline,
-        output_field: Optional[str] = None,
+        output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
+        refresh: bool = False,
     ):
         """
         Apply a transformers pipeline generically.
@@ -627,9 +628,48 @@ class Operations(Write):
         ops = TransformersPipelineOps(
             text_fields=text_fields,
             pipeline=pipeline,
-            output_field=output_field,
+            output_fields=output_fields,
+            credentials=self.credentials,
         )
-        return ops.run(self, filters=filters, select_fields=text_fields)
+        return ops.run(
+            self,
+            filters=filters,
+            select_fields=text_fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+    def scale(
+        self,
+        vector_fields: List[str],
+        model: Optional[str] = "standard",
+        alias: Optional[str] = None,
+        model_kwargs: Optional[dict] = None,
+        filters: Optional[list] = None,
+        batched: Optional[bool] = None,
+        chunksize: Optional[int] = None,
+    ):
+
+        from relevanceai.operations_new.scaling.ops import ScaleOps
+
+        chunksize = chunksize if batched is None else batched
+        filters = [] if filters is None else filters
+        batched = False if batched is None else batched
+
+        ops = ScaleOps(
+            vector_fields=vector_fields,
+            model=model,
+            alias=alias,
+            model_kwargs=model_kwargs,
+        )
+
+        ops.run(
+            dataset=self,
+            batched=batched,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=vector_fields,
+        )
 
     def subcluster(
         self,

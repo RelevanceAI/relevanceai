@@ -15,7 +15,7 @@ class _ModelUtils(DocUtils):
             return self.predict(vectors)
         # else:
         #     vectors = [
-        #         [val for val in vector] 
+        #         [val for val in vector]
         #         for vector in self.get_fields_across_documents(vector_fields, documents)
         #     ]
         #     return self.predict(vectors)
