@@ -1036,6 +1036,8 @@ class Write(Read):
 
         if n_workers is None:
             max_workers = os.cpu_count() + 4  # type: ignore
+        else:
+            max_workers = n_workers
 
         bs = int(len(images) / max_workers)
         nb = int(len(images) / bs)
