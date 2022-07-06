@@ -928,6 +928,8 @@ class Write(Read):
                 logging=logging,
             )
 
+    host_media_documents = get_media_documents
+
     @track
     def upsert_media(
         self,
