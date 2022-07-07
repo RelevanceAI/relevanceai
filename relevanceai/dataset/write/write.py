@@ -35,7 +35,8 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: Optional[int] = None,
+        max_workers: Optional[int] = 2,
+        media_workers: Optional[int] = None,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
@@ -101,7 +102,7 @@ class Write(Read):
             documents = self.prepare_media_documents(
                 documents,
                 media_fields,
-                max_workers=max_workers,
+                max_workers=media_workers,
             )
 
         results = self._insert_documents(
