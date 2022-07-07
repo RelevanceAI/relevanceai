@@ -55,7 +55,8 @@ class CreateAppsTemplates(CreateApps):
                                 {
                                     "groupby": [group], 
                                     "metrics": [metric],
-                                    "sort" : metric['name']
+                                    "sort" : metric['name'],
+                                    "page_size" : page_size
                                 }
                             )
                     else:
@@ -63,7 +64,8 @@ class CreateAppsTemplates(CreateApps):
                             {
                                 "groupby": [group], 
                                 "metrics": main_metrics,
-                                "sort" : sort_default
+                                "sort" : sort_default,
+                                "page_size" : page_size
                             }
                         )
             elif depth > 1:
@@ -74,7 +76,8 @@ class CreateAppsTemplates(CreateApps):
                                 {
                                     "groupby": list(group), 
                                     "metrics": [metric],
-                                    "sort" : metric['name']
+                                    "sort" : metric['name'],
+                                    "page_size" : page_size
                                 }
                             )
                     else:
@@ -82,7 +85,8 @@ class CreateAppsTemplates(CreateApps):
                         {
                             "groupby": list(group), 
                             "metrics": main_metrics,
-                            "sort" : sort_default
+                            "sort" : sort_default,
+                            "page_size" : page_size
                         }
                     )
 
