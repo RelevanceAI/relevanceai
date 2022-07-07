@@ -37,7 +37,7 @@ class CreateApps(APIClient):
             "chart-name" : chart_name
         }
         if not chart_name:
-            chart_name = f"{chart_mode.title()} chart "
+            chart_name = "Chart " # can give more flexibility to this
             if groupby:
                 groupby_names = [g['name'] for g in groupby]
                 chart_name += f"grouped by ({', '.join(groupby_names)}) "

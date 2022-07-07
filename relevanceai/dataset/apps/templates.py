@@ -2,7 +2,17 @@ import itertools
 from relevanceai.dataset.apps.create_apps import CreateApps
 
 class CreateAppsTemplates(CreateApps):
-    def create_metrics_chart_app(self, app_name="Metrics App", metrics=[], groupby=[], date_fields=[], groupby_depths=[1], sort=None, page_size=100):
+    def create_metrics_chart_app(
+        self, 
+        app_name="Metrics App", 
+        metrics=[], 
+        groupby=[], 
+        date_fields=[], 
+        groupby_depths=[1],
+        split_metrics=False, 
+        sort=None, 
+        page_size=100
+    ):
         main_metrics = []
         main_groupby = []
         metric_fields = []
@@ -30,29 +40,51 @@ class CreateAppsTemplates(CreateApps):
                 main_groupby.append(m)
                 groupby_fields.append(m['field'])
 
-        charts = []
-        for depth in groupby_depths:
-            if depth == 1:
-                for group in main_groupby:
-                    charts.append(
-                        {
-                            "groupby": [group], 
-                            "metrics": main_metrics
-                        }
-                    )
-            elif depth == 2:
-                for group in list(itertools.combinations(main_groupby, 2)):
-                    charts.append(
-                        {
-                            "groupby": list(group), 
-                            "metrics": main_metrics
-                        }
-                    )
-
         if sort:
             for m in main_metrics:
                 if sort == m['field']:
                     sort_default = m["name"]
+
+        charts = []
+        for depth in groupby_depths:
+            if depth == 1:
+                for group in main_groupby:
+                    if split_metrics:
+                        for metric in main_metrics:
+                            charts.append(
+                                {
+                                    "groupby": [group], 
+                                    "metrics": [metric],
+                                    "sort" : metric['name']
+                                }
+                            )
+                    else:
+                        charts.append(
+                            {
+                                "groupby": [group], 
+                                "metrics": main_metrics,
+                                "sort" : sort_default
+                            }
+                        )
+            elif depth > 1:
+                for group in list(itertools.combinations(main_groupby, depth)):
+                    if split_metrics:
+                        for metric in main_metrics:
+                            charts.append(
+                                {
+                                    "groupby": list(group), 
+                                    "metrics": [metric],
+                                    "sort" : metric['name']
+                                }
+                            )
+                    else:
+                        charts.append(
+                        {
+                            "groupby": list(group), 
+                            "metrics": main_metrics,
+                            "sort" : sort_default
+                        }
+                    )
 
         config = self.create_app_config(
             app_name=app_name, 
