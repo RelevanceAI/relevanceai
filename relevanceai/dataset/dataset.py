@@ -2,6 +2,8 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
+from relevanceai.dataset.write import Write
+from relevanceai.dataset.apps import AppsDeployables
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
@@ -13,7 +15,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(OperationsNew, Operations):
+class Dataset(OperationsNew, Operations, Write, AppsDeployables):
     @track
     def __init__(
         self,
@@ -114,7 +116,7 @@ class Dataset(OperationsNew, Operations):
             )
         else:
             raise TypeError("Field needs to be a list or a string.")
-            
+
     @track
     def launch_explore_app(self):
         print(EXPLORER_APP_LINK.format(self.dataset_id))
