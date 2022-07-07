@@ -12,7 +12,7 @@ import uuid
 import concurrent.futures
 
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
@@ -35,7 +35,8 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 2,
+        max_workers: Optional[int] = 2,
+        media_workers: Optional[int] = None,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
@@ -43,6 +44,7 @@ class Write(Read):
         create_id: bool = False,
         overwrite: bool = True,
         ingest_in_background: bool = False,
+        media_fields: Optional[List[str]] = None,
         **kwargs,
     ) -> Dict:
 
@@ -70,6 +72,8 @@ class Write(Read):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+        media_fields: List[str]
+            specifies which fields are local medias and need to upserted to S3. These should be given in absolute path format
 
         Example
         --------
@@ -96,6 +100,13 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
+        if media_fields is not None:
+            documents = self.prepare_media_documents(
+                documents,
+                media_fields,
+                max_workers=media_workers,
+            )
+
         results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
@@ -1068,3 +1079,54 @@ class Write(Read):
                 res = future.result()
 
         return [document["media_url"] for document in self.get_all_documents()]
+
+    def prepare_media_documents(
+        self,
+        documents: List[Dict[str, Any]],
+        media_fields: List[str],
+        max_workers: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+
+        list_of_media_urls = []
+
+        for media_field in media_fields:
+            paths = [document[media_field] for document in documents]
+
+            def upload_media(path, url):
+
+                response_doc = {"_id": str(uuid.uuid4())}
+                response_doc["media_file"] = path
+
+                with open(path, "rb") as f:
+                    img = bytes(f.read())
+
+                requests.put(
+                    url["upload_url"],
+                    data=img,
+                )
+
+                del img
+
+                return url["url"]
+
+            urls = self.datasets.get_file_upload_urls(self.dataset_id, files=paths)[
+                "files"
+            ]
+
+            def upload():
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=max_workers
+                ) as executor:
+                    data = list(
+                        tqdm(executor.map(upload_media, paths, urls), total=len(paths))
+                    )
+                return data
+
+            list_of_media_urls.append(upload())
+
+        for media_field, media_urls in zip(media_fields, list_of_media_urls):
+            for document, media_url in zip(documents, media_urls):
+                document[f"{media_field}_url"] = media_url
+                document[media_field] = os.path.split(document[media_field])[-1]
+
+        return documents
