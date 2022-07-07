@@ -1,25 +1,24 @@
 """
-Build a concept graph based on the documents in your dataset
+Build a co-occurrence network based on the documents in your dataset
 """
 import sys
 
+from collections import defaultdict
 import numpy as np
-
 from sklearn.cluster import AgglomerativeClustering
-
 from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.operations_new.processing.text.clean.transform import CleanTextTransform
 from relevanceai.constants.stopwords import STOPWORDS
 
 
-def preprocess(data):
-    stopwords = STOPWORDS
+def preprocess(data, stopwords_list=[]):
+    # stopwords_list = STOPWORDS # stopwords is a list of strings.
+    # stopwords_list += stopwords
     cleaner = CleanTextTransform(text_fields=[], output_fields=[], lower=True,
-                                 lemmatize=True, remove_stopwords=stopwords)
+                                 lemmatize=True, remove_stopwords=STOPWORDS + stopwords_list)
     res = []
     for doc in data:
         res.append(cleaner.clean_text(doc).split(' '))
-
     return res
 
 
@@ -28,18 +27,48 @@ class WordDictionary():
         self.id2word = []
         self.word2id = dict()
         self.id2dfs = dict()
-        for doc in docs:
-            words = set()
-            for word in doc:
+        self.id2docs = defaultdict(list)
+        self.doc2ids = defaultdict(list)
+        for doc_id, doc in enumerate(docs):
+            words = set(doc)
+            for word in words:
                 if word not in self.word2id:
-                    self.id2word.append(word)
                     self.word2id[word] = len(self.id2word)
-                if word not in words:
-                    words.add(word)
-                    self.id2dfs[self.word2id[word]] = self.id2dfs.get(self.word2id[word], 0) + 1
+                    self.id2word.append(word)
+                    self.id2dfs[self.word2id[word]] = 1
+                else:
+                    self.id2dfs[self.word2id[word]] = self.id2dfs.get(self.word2id[word]) + 1
+                self.doc2ids[doc_id].append(self.word2id[word])
+                self.id2docs[self.word2id[word]].append(doc_id)
+
+    def get_df_table(self):
+        return self.id2dfs
+
+    def get_ids(self, doc_id):
+        return self.doc2ids[doc_id]
+
+    def get_docs(self, word: str):
+        return self.id2docs[self.word2id[word]]
+
+    def get_word(self, id):
+        return self.id2word[id]
+
+    def get_id(self, word: str):
+        return self.word2id[word]
+
+    # return updated df_table based on only the documents contains word
+    def update_df_table(self, word: str):
+        df_table = dict()
+        for doc_id in self.get_docs(word):
+            for word_id in self.get_ids(doc_id):
+                if word_id not in df_table:
+                    df_table[word_id] = 1
+                else:
+                    df_table[word_id] = df_table[word_id] + 1
+        return df_table
 
 
-class ConceptGraphTransform(TransformBase):
+class CoOccurNetTransform(TransformBase):
     def __init__(
             self,
             max_number_of_clusters=15,
@@ -48,8 +77,6 @@ class ConceptGraphTransform(TransformBase):
             **kwargs,
     ):
         """
-        Sentiment Ops.
-
         Parameters
         -------------
 
@@ -58,64 +85,60 @@ class ConceptGraphTransform(TransformBase):
         min_number_of_clusters: int
 
         number_of_concepts: int
-
-
         """
+
         self.max_number_of_clusters = max_number_of_clusters
         self.min_number_of_clusters = min_number_of_clusters
         self.number_of_concepts = number_of_concepts
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def findMaxVertex(self, visited, weights):
+    def find_max_vertex(self, visited, weights):
         # Stores the index of max-weight vertex
         # from set of unvisited vertices
-        index = -1;
+        index = -1
 
         # Stores the maximum weight from
         # the set of unvisited vertices
-        maxW = -sys.maxsize;
+        max_weight = -sys.maxsize
 
         # Iterate over all possible
         # Nodes of a graph
         for i in range(self.number_of_concepts):
-
             # If the current Node is unvisited
             # and weight of current vertex is
-            # greater than maxW
-            if (visited[i] == False and weights[i] > maxW):
-                # Update maxW
-                maxW = weights[i];
-
+            # greater than max_weight
+            if visited[i] is False and weights[i] > max_weight:
+                # Update max_weight
+                max_weight = weights[i]
                 # Update index
-                index = i;
-        return index;
+                index = i
+        return index
 
     # Function to find the maximum spanning tree
-    def maximumSpanningTree(self, graph):
-
+    def maximum_spanning_tree(self, graph):
         # visited[i]:Check if vertex i
         # is visited or not
-        visited = [True] * self.number_of_concepts;
+        visited = [True] * self.number_of_concepts
 
         # weights[i]: Stores maximum weight of
         # graph to connect an edge with i
-        weights = [0] * self.number_of_concepts;
+        weights = [0] * self.number_of_concepts
 
         # parent[i]: Stores the parent Node
         # of vertex i
-        parent = [0] * self.number_of_concepts;
+        parent = [0] * self.number_of_concepts
 
         # Initialize weights as -INFINITE,
         # and visited of a Node as False
         for i in range(self.number_of_concepts):
-            visited[i] = False;
-            weights[i] = -sys.maxsize;
+            visited[i] = False
+            weights[i] = -sys.maxsize
 
         # Include 1st vertex in
         # maximum spanning tree
-        weights[0] = sys.maxsize;
-        parent[0] = -1;
+        weights[0] = sys.maxsize
+        parent[0] = -1
 
         # Search for other (V-1) vertices
         # and build a tree
@@ -123,10 +146,10 @@ class ConceptGraphTransform(TransformBase):
 
             # Stores index of max-weight vertex
             # from a set of unvisited vertex
-            maxVertexIndex = self.findMaxVertex(visited, weights);
+            max_vertex_index = self.find_max_vertex(visited, weights)
 
             # Mark that vertex as visited
-            visited[maxVertexIndex] = True;
+            visited[max_vertex_index] = True
 
             # Update adjacent vertices of
             # the current visited vertex
@@ -135,32 +158,19 @@ class ConceptGraphTransform(TransformBase):
                 # If there is an edge between j
                 # and current visited vertex and
                 # also j is unvisited vertex
-                if (graph[j][maxVertexIndex] != 0 and visited[j] == False):
+                if graph[j][max_vertex_index] != 0 and visited[j] == False:
 
                     # If graph[v][x] is
                     # greater than weight[v]
-                    if (graph[j][maxVertexIndex] > weights[j]):
+                    if graph[j][max_vertex_index] > weights[j]:
                         # Update weights[j]
-                        weights[j] = graph[j][maxVertexIndex];
+                        weights[j] = graph[j][max_vertex_index]
 
                         # Update parent[j]
-                        parent[j] = maxVertexIndex;
-
+                        parent[j] = max_vertex_index
         return parent
 
-    def transform(self, documents):
-        # For each document, update the field
-        docs = [d['content'] for d in documents]
-
-        cleaned_texts = preprocess(docs)
-
-        # Create Dictionary
-        word_dict = WordDictionary(cleaned_texts)
-        # Create Corpus
-        texts = cleaned_texts
-
-        top_ids = sorted(word_dict.id2dfs, key=word_dict.id2dfs.get, reverse=True)[:self.number_of_concepts]
-
+    def concurrence_matrix(self, top_ids, texts, word_dict):
         word_count_mat = []
         for i, text in enumerate(texts):
             row = [0] * self.number_of_concepts
@@ -171,17 +181,9 @@ class ConceptGraphTransform(TransformBase):
             word_count_mat.append(row)
         word_count_mat = np.array(word_count_mat)
 
-        concurrence_matrix = np.dot(word_count_mat.transpose(), word_count_mat)
+        return np.dot(word_count_mat.transpose(), word_count_mat)
 
-        mst = self.maximumSpanningTree(concurrence_matrix)
-
-        mat = concurrence_matrix[0][0] - concurrence_matrix
-
-        vertexes = []
-        for i, id in enumerate(top_ids):
-            v = {'word': word_dict.id2word[id], 'rank': i, 'count': word_dict.id2dfs.get(id)}
-            vertexes.append(v)
-
+    def get_clusters_labels(self, mat):
         labels = np.zeros((self.number_of_concepts, self.number_of_concepts), dtype=int)
 
         for i in range(self.number_of_concepts):
@@ -196,21 +198,50 @@ class ConceptGraphTransform(TransformBase):
                     labels[j, i + 1] = labels[j, i]
 
         for i in range(self.number_of_concepts):
-            uniqueValues = np.unique(labels[:, i])
-            label2label = dict(zip(uniqueValues, range(len(uniqueValues))))
+            unique_values = np.unique(labels[:, i])
+            label2label = dict(zip(unique_values, range(len(unique_values))))
             for j, v in enumerate(labels[:, i]):
                 labels[j, i] = label2label[v]
 
+        return labels
+
+    def transform(self, documents, text_field='content', stopwords_list=[], center_word=None):
+        # For each document, update the field
+        docs = [d[text_field] for d in documents]
+        cleaned_texts = preprocess(docs, stopwords_list)
+
+        # Create Dictionary
+        word_dict = WordDictionary(cleaned_texts)
+
+        # Create Corpus
+        if center_word is None:
+            texts = cleaned_texts
+            df_table = word_dict.get_df_table()
+        else:
+            doc_id_list = word_dict.get_docs(center_word)
+            texts = [cleaned_texts[i] for i in doc_id_list]
+            df_table = word_dict.update_df_table(center_word)
+
+        top_ids = sorted(df_table, key=df_table.get, reverse=True)[:self.number_of_concepts]
+        co_occur_mat = self.concurrence_matrix(top_ids, texts, word_dict)
+        mst = self.maximum_spanning_tree(co_occur_mat)
+
+        vertexes = []
+        for i, id in enumerate(top_ids):
+            v = {'word': word_dict.id2word[id], 'rank': i, 'count': df_table.get(id)}
+            vertexes.append(v)
+
+        labels = self.get_clusters_labels(co_occur_mat[0][0] - co_occur_mat)
         for i in range(self.min_number_of_clusters, self.max_number_of_clusters + 1):
             for j in range(self.number_of_concepts):
                 vertexes[j]['label_{}'.format(i)] = labels[j, self.number_of_concepts - i]
 
         edges = []
-        for sour, dest in enumerate(mst[1:]):
+        for sour, dest in enumerate(mst):
             edges.append((word_dict.id2word[top_ids[dest]], word_dict.id2word[top_ids[sour]]))
 
         return vertexes, edges
 
     @property
     def name(self):
-        return "concept_graph"
+        return "co_occurrence_network"
