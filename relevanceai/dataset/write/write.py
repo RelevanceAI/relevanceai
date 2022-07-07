@@ -72,6 +72,8 @@ class Write(Read):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+        media_fields: List[str]
+            specifies which fields are local medias and need to upserted to S3. These should be given in absolute path format
 
         Example
         --------
