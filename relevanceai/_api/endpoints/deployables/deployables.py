@@ -8,6 +8,49 @@ class DeployableClient(_Base):
     def __init__(self, credentials: Credentials):
         super().__init__(credentials)
 
+    def create_deployable_configuration(self, 
+        deployable_name="",
+        sort_default=None,
+        sort_default_direction=None, 
+        sort=[],
+        filters=[], 
+        search_fields=[],
+        vector_search_fields=[],
+        charts=[],
+        cluster_charts=[],
+        cluster_preview_fields=[],
+        **kwargs):
+        
+        configuration = {
+            "deployable_name" : deployable_name,
+            "type":"explore", 
+            **kwargs
+        }
+        configuration["filter-facets"] = filters
+        configuration["default-preview-centroids-columns"] = cluster_preview_fields
+        if sort:
+            configuration["key-metrics"] = sort
+
+        if sort_default:
+            configuration["sort-default"] = sort_default
+            configuration["sort-default-direction"] = sort_default_direction
+            if sort_default_direction:
+                configuration["sort-default-direction"] = sort_default_direction
+
+        if charts:
+            configuration["aggregation-charts"] = charts
+
+        if cluster_charts:
+            configuration["cluster-preview-configuration"] = cluster_charts
+        elif charts:
+            configuration["cluster-preview-configuration"] = charts
+
+        if search_fields:
+            configuration["text-fields-to-search"] = search_fields
+        if vector_search_fields:
+            configuration["vector-fields-to-search"] = vector_search_fields
+        return configuration
+
     def create(self, dataset_id: str, configuration: Optional[Dict] = None):
         """
         Create a private deployable from an existing dataset.

@@ -114,31 +114,7 @@ class Dataset(OperationsNew, Operations):
             )
         else:
             raise TypeError("Field needs to be a list or a string.")
-
-    @track
-    def launch_search_app(self):
-        """
-        Launches the link to the search application to start building
-
-        .. code-block::
-
-            ds.launch_search_app()
-
-        """
-        print(SEARCH_APP_LINK.format(self.dataset_id))
-
-    @track
-    def launch_projector_app(self):
-        """
-        Launches the link to the projector application to start building
-
-        .. code-block::
-
-            ds.launch_projector_app()
-
-        """
-        print(PROJECTOR_APP_LINK.format(self.dataset_id))
-
+            
     @track
     def launch_explore_app(self):
         print(EXPLORER_APP_LINK.format(self.dataset_id))

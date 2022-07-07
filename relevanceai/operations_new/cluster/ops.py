@@ -369,7 +369,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             verbose=verbose,
         )
 
-    @track
     def list_furthest(
         self,
         cluster_ids: Optional[List] = None,
