@@ -237,8 +237,8 @@ class CoOccurNetTransform(TransformBase):
                 vertexes[j]['label_{}'.format(i)] = labels[j, self.number_of_concepts - i]
 
         edges = []
-        for sour, dest in enumerate(mst):
-            edges.append((word_dict.id2word[top_ids[dest]], word_dict.id2word[top_ids[sour]]))
+        for sour, dest in enumerate(mst[1:]):
+            edges.append((word_dict.id2word[top_ids[dest]], word_dict.id2word[top_ids[sour+1]]))
 
         return vertexes, edges
 
