@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 from relevanceai.dataset.write import Write
-from relevanceai.dataset.apps import AppsDeployables
+from relevanceai.dataset.apps import CreateAppsTemplates
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
@@ -15,7 +15,7 @@ from relevanceai.constants import (
 )
 
 
-class Dataset(OperationsNew, Operations, Write, AppsDeployables):
+class Dataset(OperationsNew, Operations, Write, CreateAppsTemplates):
     @track
     def __init__(
         self,
