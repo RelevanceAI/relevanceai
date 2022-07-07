@@ -2,22 +2,33 @@ import itertools
 from relevanceai.dataset.apps.create_apps import CreateApps
 
 class CreateAppsTemplates(CreateApps):
-    def create_metrics_chart_app(
+    """
+    Generate is used for templates.
+    """
+    # def transform_deployable_to_template():
+    #     #take deployable as a long string and replace
+    #     return
+
+    def generate_metrics_chart_config(
         self, 
-        app_name="Metrics App", 
+        app_name="Metrics Chart App", 
         metrics=[], 
         groupby=[], 
         date_fields=[], 
         groupby_depths=[1],
         split_metrics=False, 
         sort=None, 
-        page_size=100
+        page_size=50
     ):
         main_metrics = []
         main_groupby = []
         metric_fields = []
         groupby_fields = []
         metrics_to_sort = []
+        sort_default = None
+
+        if not split_metrics and not metrics:
+            raise TypeError("use 'split_metrics'=False if metrics is empty")
 
         for m in metrics:
             if isinstance(m, str):
@@ -99,10 +110,50 @@ class CreateAppsTemplates(CreateApps):
             facets=groupby_fields,
             sort=main_metrics
         )
-        return self.create_app(config)
+        return config
 
-    def create_text_search_app(self):
-        return 
+    def generate_metrics_chart_app(
+        self, 
+        app_name="Metrics Chart App", 
+        metrics=[], 
+        groupby=[], 
+        date_fields=[], 
+        groupby_depths=[1],
+        split_metrics=False, 
+        sort=None, 
+        page_size=50
+    ):
+        return self.create_app(
+            self.generate_metrics_chart_config(
+                app_name=app_name, 
+                metrics=metrics, 
+                groupby=groupby,
+                date_fields=date_fields,
+                groupby_depths=groupby_depths,
+                split_metrics=split_metrics,
+                sort=sort,
+                page_size=page_size
+            )
+        )
+
+    # def generate_text_search_app(
+    #     self,
+    #     text_fields,
+    #     text_vector_fields="auto",
+    #     sort=[],
+    # ):
+    #     if text_vector_fields == "auto":
+    #         print('Detected "text_vector_fields" is set as "auto"')
+    #     config = self.create_app_config(
+    #         app_name=app_name, 
+    #         default_view="results", 
+    #         sort_default=sort_default, 
+    #         charts=charts,
+    #         preview_fields=groupby_fields+metric_fields,
+    #         facets=groupby_fields,
+    #         sort=main_metrics
+    #     )
+    #     return config
 
     def create_text_cluster_app(self):
         return
