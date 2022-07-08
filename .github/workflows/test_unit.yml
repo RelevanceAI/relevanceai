@@ -39,7 +39,7 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-${{ env.pythonLocation }}-pip-
       #       ${{ runner.os }}-${{ env.pythonLocation }}-
-      - name: Unit Tests
+      - uses: nick-fields/retry@v2
         env:
           # TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
           # TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
@@ -47,9 +47,13 @@ jobs:
           TEST_API_KEY: ${{ secrets.TEST_US_API_KEY }}
           TEST_TOKEN: ${{ secrets.TEST_US_TOKEN }}
           DEBUG_REQUESTS: "FALSE"
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install --upgrade pip
-          python -m pip install -e .[tests]
-          python -m pip install pytest-sugar pytest-cov pytest-rerunfailures pytest-xdist sentence-splitter sentence-transformers
-          python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x -n auto tests --cov-fail-under=40  --ignore=relevanceai/operations_new/
+        with:
+          max_attempts: 5
+          timeout_minutes: 15
+          retry_on: error
+          command: |
+            python -c "import sys; print(sys.version)"
+            python -m pip install --upgrade pip
+            python -m pip install -e .[tests]
+            python -m pip install pytest-sugar pytest-cov pytest-rerunfailures pytest-xdist sentence-splitter sentence-transformers
+            python -m pytest tests/unit --cov-config=coverage/coverage.cfg --cov=relevanceai -vv -rs -x -n auto tests --cov-fail-under=40  --ignore=relevanceai/operations_new/
