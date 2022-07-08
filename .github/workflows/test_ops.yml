@@ -50,7 +50,7 @@ jobs:
           max_attempts: 3
           timeout_minutes: 15
           retry_on: error
-          run: |
+          command: |
             python -c "import sys; print(sys.version)"
             python -m pip install --upgrade pip
             python -m pip install -e .[tests]
