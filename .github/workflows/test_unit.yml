@@ -48,7 +48,7 @@ jobs:
           TEST_TOKEN: ${{ secrets.TEST_US_TOKEN }}
           DEBUG_REQUESTS: "FALSE"
         with:
-          max_attempts: 3
+          max_attempts: 5
           timeout_minutes: 15
           retry_on: error
           command: |
