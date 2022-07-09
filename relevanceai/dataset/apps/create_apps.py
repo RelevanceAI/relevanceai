@@ -2,6 +2,9 @@ from relevanceai._api import APIClient
 from relevanceai.constants.errors import FieldNotFoundError
 
 class CreateApps(APIClient):
+    """
+    Set of core functions used to do CRUD on deployables/apps
+    """
     def list_apps(self, return_config=False):
         print("Note: Deployable is the same as App. Deployables are legacy names of what we call Apps in the backend.")
         if return_config:
@@ -26,7 +29,7 @@ class CreateApps(APIClient):
                     results.append(result)
             return results
 
-    def chart_config_from_agg(
+    def _agg_to_chart_config(
         self, 
         groupby=[], 
         metrics=[], 
@@ -121,11 +124,11 @@ class CreateApps(APIClient):
         if charts:
             if isinstance(charts, dict):
                 configuration["aggregation-charts"] = [
-                    self.chart_config_from_agg(**charts)
+                    self._agg_to_chart_config(**charts)
                 ]
             elif isinstance(charts, list):
                 configuration["aggregation-charts"] = [
-                    self.chart_config_from_agg(**c)
+                    self._agg_to_chart_config(**c)
                     for c in charts
                 ]
 
@@ -157,3 +160,11 @@ class CreateApps(APIClient):
 
     def get_app(self, deployable_id):
         return self.deployables.get(deployable_id=deployable_id)
+
+    def get_app_ids_by_name(self, name):
+        ids = []
+        for a in self.list_apps():
+            if "configuration" in a:
+                if "deployable_name" in a["configuration"] and a['configuration']['deployable_name'] == name:
+                    ids.append(a['deployable_id'])
+        return ids

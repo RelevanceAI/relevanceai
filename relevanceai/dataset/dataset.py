@@ -3,19 +3,14 @@ from typing import Dict, List, Optional, Union
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 from relevanceai.dataset.write import Write
-from relevanceai.dataset.apps import CreateAppsTemplates
+from relevanceai.dataset.apps import LaunchApps
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.constants import (
-    GLOBAL_DATASETS,
-    SEARCH_APP_LINK,
-    PROJECTOR_APP_LINK,
-    EXPLORER_APP_LINK,
-)
+from relevanceai.constants import GLOBAL_DATASETS
 
 
-class Dataset(OperationsNew, Operations, Write, CreateAppsTemplates):
+class Dataset(OperationsNew, Operations, Write, LaunchApps):
     @track
     def __init__(
         self,
@@ -116,10 +111,6 @@ class Dataset(OperationsNew, Operations, Write, CreateAppsTemplates):
             )
         else:
             raise TypeError("Field needs to be a list or a string.")
-
-    @track
-    def launch_explore_app(self):
-        print(EXPLORER_APP_LINK.format(self.dataset_id))
 
     def set_dtypes(self, mapping: dict):
         unstruc_types = ["_numeric_", "_category_", "_text_", "_image_"]

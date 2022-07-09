@@ -1,1 +1,1 @@
-from relevanceai.dataset.apps.templates import CreateAppsTemplates
+from relevanceai.dataset.apps.templates import LaunchApps
