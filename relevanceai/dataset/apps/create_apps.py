@@ -26,9 +26,14 @@ class CreateApps(APIClient):
                     results.append(result)
             return results
 
-    def chart_config_from_agg(self, 
-        groupby=[], metrics=[], sort=None, page_size=None,
-        chart_name=None, chart_mode="column", 
+    def chart_config_from_agg(
+        self, 
+        groupby=[], 
+        metrics=[], 
+        sort=None, 
+        page_size=None,
+        chart_name=None, 
+        chart_mode="column", 
     ):  
         chart_config = {
             "groupby" : groupby,
@@ -54,7 +59,8 @@ class CreateApps(APIClient):
             chart_config["page-size"] = page_size
         return chart_config
 
-    def create_app_config(self, 
+    def create_app_config(
+        self, 
         app_name="",
         default_view="charts",
         sort_default=None,
@@ -68,7 +74,8 @@ class CreateApps(APIClient):
         preview_fields=[],
         search_min_relevance=None,
         cluster=None,
-        **kwargs):
+        **kwargs
+        ):
         
         configuration = {
             "dataset_name" : self.dataset_id,

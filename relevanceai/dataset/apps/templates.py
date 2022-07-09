@@ -112,7 +112,7 @@ class CreateAppsTemplates(CreateApps):
         )
         return config
 
-    def generate_metrics_chart_app(
+    def create_metrics_chart_app(
         self, 
         app_name="Metrics Chart App", 
         metrics=[], 
@@ -136,27 +136,60 @@ class CreateAppsTemplates(CreateApps):
             )
         )
 
-    # def generate_text_search_app(
+    def generate_text_search_config(
+        self,
+        app_name,
+        text_fields,
+        text_vector_fields="auto",
+        sort=[],
+        facets=[],
+    ):
+        if text_vector_fields == "auto":
+            text_vector_fields = []
+            print('Detected "text_vector_fields" is set as "auto", will try to determine "text_vector_fields" from "text_fields"')
+            for field, field_type in self.schema.items():
+                if isinstance(field_type, dict):
+                    for f in text_fields:
+                        if f in field:
+                            text_vector_fields.append(field)
+            print(f'The detected vector fields are {str(text_vector_fields)}')
+
+        config = self.create_app_config(
+            app_name=app_name, 
+            default_view="results", 
+            search_fields=text_fields,
+            preview_fields=text_fields+facets,
+            vector_search_fields=text_vector_fields,
+            facets=facets,
+            sort=sort
+        )
+        return config
+
+    def create_text_search_app(
+        self,
+        app_name,
+        text_fields,
+        text_vector_fields="auto",
+        sort=[],
+        facets=[],
+    ):
+        config = self.create_app(
+            self.generate_text_search_config(
+                app_name=app_name, 
+                text_fields=text_fields,
+                text_vector_fields=text_vector_fields,
+                sort=sort,
+                facets=facets
+            )
+        )
+        return config
+
+    # def create_text_cluster_app(
     #     self,
     #     text_fields,
-    #     text_vector_fields="auto",
-    #     sort=[],
+    #     text_vector_fields,
     # ):
-    #     if text_vector_fields == "auto":
-    #         print('Detected "text_vector_fields" is set as "auto"')
-    #     config = self.create_app_config(
-    #         app_name=app_name, 
-    #         default_view="results", 
-    #         sort_default=sort_default, 
-    #         charts=charts,
-    #         preview_fields=groupby_fields+metric_fields,
-    #         facets=groupby_fields,
-    #         sort=main_metrics
-    #     )
-    #     return config
+    #     return
 
-    def create_text_cluster_app(self):
-        return
-
-    def create_image_cluster_app(self):
-        return
+    # def create_image_cluster_app(self):
+    #     return
