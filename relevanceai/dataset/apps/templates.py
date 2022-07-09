@@ -173,7 +173,7 @@ class CreateAppsTemplates(CreateApps):
         sort=[],
         facets=[],
     ):
-        config = self.create_app(
+        return self.create_app(
             self.generate_text_search_config(
                 app_name=app_name, 
                 text_fields=text_fields,
@@ -182,7 +182,6 @@ class CreateAppsTemplates(CreateApps):
                 facets=facets
             )
         )
-        return config
 
     # def create_text_cluster_app(
     #     self,
