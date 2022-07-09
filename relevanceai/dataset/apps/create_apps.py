@@ -174,6 +174,9 @@ class CreateApps(APIClient):
         return configuration
 
     def update_config_inputs(self, inputs, updates):
+        """
+        A way to combine multiple templates.
+        """
         inputs = deepcopy(inputs)
         input_fields_that_append = ["charts", "preview_fields", "facets", "sort"]
         for f in input_fields_that_append:
