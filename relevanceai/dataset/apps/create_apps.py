@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional, Union
 from relevanceai._api import APIClient
 from relevanceai.constants.errors import FieldNotFoundError
@@ -171,3 +172,12 @@ class CreateApps(APIClient):
             configuration["cluster"] = cluster
 
         return configuration
+
+    def update_config_inputs(self, inputs, updates):
+        inputs = deepcopy(inputs)
+        input_fields_that_append = ["charts", "preview_fields", "facets", "sort"]
+        for f in input_fields_that_append:
+            if f in updates:
+                inputs[f] += [u for u in updates[f] if u not in inputs[f]]
+        inputs.update({k:v for k,v in updates.items() if k not in input_fields_that_append})
+        return inputs
