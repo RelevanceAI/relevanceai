@@ -1,24 +1,18 @@
 import itertools
 from relevanceai.dataset.apps.create_apps import CreateApps
 
-class CreateAppsTemplates(CreateApps):
-    """
-    Generate is used for templates.
-    """
-    # def transform_deployable_to_template():
-    #     #take deployable as a long string and replace
-    #     return
-
+class MetricsChartTemplate(CreateApps):
     def generate_metrics_chart_config(
         self, 
-        app_name="Metrics Chart App", 
+        app_name:str="Metrics Chart App", 
         metrics=[], 
         groupby=[], 
         date_fields=[], 
         groupby_depths=[1],
         split_metrics=False, 
         sort=None, 
-        page_size=50
+        page_size=50,
+        return_config_input=False,
     ):
         main_metrics = []
         main_groupby = []
@@ -101,7 +95,7 @@ class CreateAppsTemplates(CreateApps):
                         }
                     )
 
-        config = self.create_app_config(
+        config_inputs = dict(
             app_name=app_name, 
             default_view="charts", 
             sort_default=sort_default, 
@@ -110,7 +104,13 @@ class CreateAppsTemplates(CreateApps):
             facets=groupby_fields,
             sort=main_metrics
         )
-        return config
+
+        if return_config_input:
+            config_inputs
+        else:
+            return self.create_app_config(
+                **config_inputs
+            )
 
     def create_metrics_chart_app(
         self, 
@@ -135,60 +135,3 @@ class CreateAppsTemplates(CreateApps):
                 page_size=page_size
             )
         )
-
-    def generate_text_search_config(
-        self,
-        app_name,
-        text_fields,
-        text_vector_fields="auto",
-        sort=[],
-        facets=[],
-    ):
-        if text_vector_fields == "auto":
-            text_vector_fields = []
-            print('Detected "text_vector_fields" is set as "auto", will try to determine "text_vector_fields" from "text_fields"')
-            for field, field_type in self.schema.items():
-                if isinstance(field_type, dict):
-                    for f in text_fields:
-                        if f in field:
-                            text_vector_fields.append(field)
-            print(f'The detected vector fields are {str(text_vector_fields)}')
-
-        config = self.create_app_config(
-            app_name=app_name, 
-            default_view="results", 
-            search_fields=text_fields,
-            preview_fields=text_fields+facets,
-            vector_search_fields=text_vector_fields,
-            facets=facets,
-            sort=sort
-        )
-        return config
-
-    def create_text_search_app(
-        self,
-        app_name,
-        text_fields,
-        text_vector_fields="auto",
-        sort=[],
-        facets=[],
-    ):
-        return self.create_app(
-            self.generate_text_search_config(
-                app_name=app_name, 
-                text_fields=text_fields,
-                text_vector_fields=text_vector_fields,
-                sort=sort,
-                facets=facets
-            )
-        )
-
-    # def create_text_cluster_app(
-    #     self,
-    #     text_fields,
-    #     text_vector_fields,
-    # ):
-    #     return
-
-    # def create_image_cluster_app(self):
-    #     return

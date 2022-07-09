@@ -1,11 +1,14 @@
+from typing import Dict, List, Optional, Union
 from relevanceai._api import APIClient
 from relevanceai.constants.errors import FieldNotFoundError
 
 class CreateApps(APIClient):
     """
-    Set of core functions used to do CRUD on deployables/apps
+    Set of core functions used to do CRUD on deployables/apps.
+    Config = Universal config in Relevance AI for apps
+    Config Input = The input to the SDK's create_app_config
     """
-    def list_apps(self, return_config=False):
+    def list_apps(self, return_config:bool=False):
         print("Note: Deployable is the same as App. Deployables are legacy names of what we call Apps in the backend.")
         if return_config:
             return [
@@ -29,14 +32,36 @@ class CreateApps(APIClient):
                     results.append(result)
             return results
 
+    def create_app(self, config):
+        result = self.deployables.create(dataset_id=self.dataset_id, configuration=config)
+        print(f"Your app can be accessed at: https://cloud.relevance.ai/dataset/{result['dataset_id']}/deploy/explore/{result['project_id']}/{self.api_key}/{result['deployable_id']}/{self.region}")
+        return result
+
+    def update_app(self, deployable_id, config):
+        return self.deployables.update(deployable_id=deployable_id, dataset_id=self.dataset_id, config=config)
+
+    def delete_app(self, deployable_id):
+        return self.deployables.delete(deployable_id=deployable_id)
+
+    def get_app(self, deployable_id):
+        return self.deployables.get(deployable_id=deployable_id)
+
+    def get_app_ids_by_name(self, name):
+        ids = []
+        for a in self.list_apps():
+            if "configuration" in a:
+                if "deployable_name" in a["configuration"] and a['configuration']['deployable_name'] == name:
+                    ids.append(a['deployable_id'])
+        return ids
+
     def _agg_to_chart_config(
         self, 
-        groupby=[], 
-        metrics=[], 
-        sort=None, 
-        page_size=None,
-        chart_name=None, 
-        chart_mode="column", 
+        groupby:List[Dict]=[], 
+        metrics:List[Dict]=[], 
+        sort:List[Dict]=None, 
+        page_size:int=None,
+        chart_name:str=None, 
+        chart_mode:str="column", 
     ):  
         chart_config = {
             "groupby" : groupby,
@@ -146,25 +171,3 @@ class CreateApps(APIClient):
             configuration["cluster"] = cluster
 
         return configuration
-
-    def create_app(self, config):
-        result = self.deployables.create(dataset_id=self.dataset_id, configuration=config)
-        print(f"Your app can be accessed at: https://cloud.relevance.ai/dataset/{result['dataset_id']}/deploy/explore/{result['project_id']}/{self.api_key}/{result['deployable_id']}/{self.region}")
-        return result
-
-    def update_app(self, deployable_id, config):
-        return self.deployables.update(deployable_id=deployable_id, dataset_id=self.dataset_id, config=config)
-
-    def delete_app(self, deployable_id):
-        return self.deployables.delete(deployable_id=deployable_id)
-
-    def get_app(self, deployable_id):
-        return self.deployables.get(deployable_id=deployable_id)
-
-    def get_app_ids_by_name(self, name):
-        ids = []
-        for a in self.list_apps():
-            if "configuration" in a:
-                if "deployable_name" in a["configuration"] and a['configuration']['deployable_name'] == name:
-                    ids.append(a['deployable_id'])
-        return ids
