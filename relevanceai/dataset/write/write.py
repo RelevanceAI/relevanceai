@@ -2,15 +2,17 @@
 """
 Pandas like dataset API
 """
+import os
 import warnings
 import requests
 import pandas as pd
 import threading
 import time
 import uuid
+import concurrent.futures
 
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
@@ -21,6 +23,7 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.utils import make_id
 from relevanceai.utils import fire_and_forget
 from relevanceai.constants.warning import Warning
+from relevanceai.utils.progress_bar import progress_bar
 
 
 class Write(Read):
@@ -32,7 +35,8 @@ class Write(Read):
         self,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 2,
+        max_workers: Optional[int] = 2,
+        media_workers: Optional[int] = None,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
@@ -40,6 +44,7 @@ class Write(Read):
         create_id: bool = False,
         overwrite: bool = True,
         ingest_in_background: bool = False,
+        media_fields: Optional[List[str]] = None,
         **kwargs,
     ) -> Dict:
 
@@ -67,6 +72,8 @@ class Write(Read):
             Number of documents to upload per worker. If None, it will default to the size specified in config.upload.target_chunk_mb
         use_json_encoder : bool
             Whether to automatically convert documents to json encodable format
+        media_fields: List[str]
+            specifies which fields are local medias and need to upserted to S3. These should be given in absolute path format
 
         Example
         --------
@@ -93,6 +100,13 @@ class Write(Read):
             df.insert_documents(documents)
 
         """
+        if media_fields is not None:
+            documents = self.prepare_media_documents(
+                documents,
+                media_fields,
+                max_workers=media_workers,
+            )
+
         results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
@@ -754,6 +768,7 @@ class Write(Read):
         media_urls: List[str],
         verbose: bool = True,
         file_log: str = "insert_media_urls.log",
+        logging: bool = True,
     ):
         """
         Insert a single media URL
@@ -761,7 +776,26 @@ class Write(Read):
         # media to download
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_urls)
         response_docs: dict = {"media_documents": [], "failed_medias": []}
-        with FileLogger(file_log):
+        if logging:
+            with FileLogger(file_log):
+                for i, im in enumerate(tqdm(media_urls)):
+                    response_doc = {"_id": str(uuid.uuid4())}
+                    response_doc["media_file"] = im
+                    response_doc["media_url"] = response["files"][i]["url"]
+                    try:
+                        self._upload_media(
+                            presigned_url=response["files"][i]["upload_url"],
+                            media_content=requests.get(im).content,
+                            verbose=verbose,
+                        )
+                        response_docs["media_documents"].append(response_doc)
+                    except Exception as e:
+                        if verbose:
+                            print(f"Failed to upload {im}.")
+                        if verbose:
+                            print(e)
+                        response_docs["failed_medias"].append(response_doc)
+        else:
             for i, im in enumerate(tqdm(media_urls)):
                 response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = im
@@ -818,6 +852,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log="local_media_upload.log",
+        logging: bool = True,
     ):
         """Insert a list of local medias.
 
@@ -832,7 +867,25 @@ class Write(Read):
         """
         response = self.datasets.get_file_upload_urls(self.dataset_id, files=media_fns)
         response_docs: dict = {"media_documents": [], "failed_medias": []}
-        with FileLogger(file_log) as f:
+
+        if logging:
+            with FileLogger(file_log) as f:
+                for i, media_fn in enumerate(tqdm(media_fns)):
+                    response_doc = {"_id": str(uuid.uuid4())}
+                    response_doc["media_file"] = media_fn
+                    response_doc["media_url"] = response["files"][i]["url"]
+                    try:
+                        self._upload_media(
+                            presigned_url=response["files"][i]["upload_url"],
+                            media_content=self._open_local_media(media_fn),
+                            verbose=verbose,
+                        )
+                        response_docs["media_documents"].append(response_doc)
+                    except Exception as e:
+                        print(f"failed to upload {media_fn}")
+                        print(e)
+                        response_docs["failed_medias"].append(response_doc)
+        else:
             for i, media_fn in enumerate(tqdm(media_fns)):
                 response_doc = {"_id": str(uuid.uuid4())}
                 response_doc["media_file"] = media_fn
@@ -848,6 +901,7 @@ class Write(Read):
                     print(f"failed to upload {media_fn}")
                     print(e)
                     response_docs["failed_medias"].append(response_doc)
+
         return response_docs
 
     def get_media_documents(
@@ -855,6 +909,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log: str = "media_upload.log",
+        logging: bool = True,
     ) -> dict:
         """
         Bulk insert medias. Returns a link to once it has been hosted
@@ -870,11 +925,21 @@ class Write(Read):
         """
         # Algorithm aims to insert local or hosted medias
         if "http" in media_fns[0]:
-            return self.insert_media_urls(media_fns, verbose=verbose, file_log=file_log)
+            return self.insert_media_urls(
+                media_fns,
+                verbose=verbose,
+                file_log=file_log,
+                logging=logging,
+            )
         else:
             return self.insert_local_medias(
-                media_fns, verbose=verbose, file_log=file_log
+                media_fns,
+                verbose=verbose,
+                file_log=file_log,
+                logging=logging,
             )
+
+    host_media_documents = get_media_documents
 
     @track
     def upsert_media(
@@ -882,6 +947,7 @@ class Write(Read):
         media_fns: List[str],
         verbose: bool = False,
         file_log: str = "media_upload.log",
+        logging: bool = True,
         **kw,
     ):
         """
@@ -898,7 +964,10 @@ class Write(Read):
             The file log to write
         """
         documents = self.get_media_documents(
-            media_fns=media_fns, verbose=verbose, file_log=file_log
+            media_fns=media_fns,
+            verbose=verbose,
+            file_log=file_log,
+            logging=logging,
         )
         return self.upsert_documents(documents["media_documents"], create_id=True, **kw)
 
@@ -956,3 +1025,108 @@ class Write(Read):
         """
         documents = [{label_field: l} for l in labels]
         return self.insert_documents(documents=documents, **kwargs)
+
+    def batched_upsert_media(
+        self,
+        images: List[str],
+        show_progress_bar: bool = False,
+        n_workers: Optional[int] = None,
+    ) -> List[str]:
+        """
+        It takes a list of images, splits it into batches, and then uses a thread pool to upsert the
+        images in parallel
+
+        Parameters
+        ----------
+        images : List[str]
+            A list of media src paths to upload
+        show_progress_bar : bool
+            Show the progress bar
+        max_workers : Optional[int]
+            The number of workers to use. If None, this is set to the max number in ThreadPoolExecutor
+
+        Returns
+        -------
+            List[str]: A list of media_urls
+
+        """
+
+        if n_workers is None:
+            max_workers = os.cpu_count() + 4  # type: ignore
+        else:
+            max_workers = n_workers
+
+        bs = int(len(images) / max_workers)
+        nb = int(len(images) / bs)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = []
+            for i in range(int(nb)):
+                futures.append(
+                    executor.submit(
+                        self.upsert_media,
+                        images[i * bs : (i + 1) * bs],
+                        False,
+                        "",
+                        False,
+                    )
+                )
+
+            for future in progress_bar(
+                concurrent.futures.as_completed(futures),
+                show_progress_bar=show_progress_bar,
+            ):
+                res = future.result()
+
+        return [document["media_url"] for document in self.get_all_documents()]
+
+    def prepare_media_documents(
+        self,
+        documents: List[Dict[str, Any]],
+        media_fields: List[str],
+        max_workers: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+
+        list_of_media_urls = []
+
+        for media_field in media_fields:
+            paths = [document[media_field] for document in documents]
+
+            def upload_media(path, url):
+
+                response_doc = {"_id": str(uuid.uuid4())}
+                response_doc["media_file"] = path
+
+                with open(path, "rb") as f:
+                    img = bytes(f.read())
+
+                requests.put(
+                    url["upload_url"],
+                    data=img,
+                )
+
+                del img
+
+                return url["url"]
+
+            urls = self.datasets.get_file_upload_urls(self.dataset_id, files=paths)[
+                "files"
+            ]
+
+            def upload():
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=max_workers
+                ) as executor:
+                    data = list(
+                        tqdm(executor.map(upload_media, paths, urls), total=len(paths))
+                    )
+                return data
+
+            list_of_media_urls.append(upload())
+
+        for media_field, media_urls in zip(media_fields, list_of_media_urls):
+            for document, media_url in zip(documents, media_urls):
+                document[f"{media_field}_url"] = media_url
+                document[media_field] = os.path.split(document[media_field])[-1]
+
+        return documents

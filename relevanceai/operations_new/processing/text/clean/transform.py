@@ -50,7 +50,9 @@ class CleanTextTransform(TransformBase):
             if self.remove_digits:
                 text = BaseTextProcessing.remove_digits(text)
             if self.remove_stopwords:
-                text = BaseTextProcessing.remove_stopwords(text)
+                text = BaseTextProcessing.remove_stopwords(
+                    text, additional_stp_wrds=self.remove_stopwords
+                )
             if self.lemmatize:
                 text = BaseTextProcessing.lemmatize(text)
             if self.replace_words:

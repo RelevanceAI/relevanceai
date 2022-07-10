@@ -312,3 +312,9 @@ class TestDatasetWrite:
                 "_image_",
             ]
         )
+
+    def test_insert_documents_with_media(self, test_dataset: Dataset):
+        image_paths = ["tests/logo.png"] * 3
+        pandas_df = pd.DataFrame({"image": image_paths, "_id": ["10", "11", "12"]})
+        documents = pandas_df.to_dict("records")
+        test_dataset.insert_documents(documents, media_fields=["image"])

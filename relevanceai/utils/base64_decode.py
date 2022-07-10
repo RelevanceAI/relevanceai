@@ -1,6 +1,6 @@
 """Base64 decoding for workflows
 """
-
+import os
 import base64
 import json
 
@@ -19,4 +19,6 @@ def decode_workflow_token(token):
 
     """
     config = json.loads(base64.b64decode(token + "==="))
+    # Set workflow ID for tracking
+    os.environ["WORKFLOW_ID"] = config.get("job_id", "")
     return config
