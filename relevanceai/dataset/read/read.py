@@ -692,7 +692,7 @@ class Read(Statistics):
         """
         # RUn it asynchronously
         if workflow_id is None:
-            workflow_id = os.getenv("WORKFLOW_ID")
+            workflow_id = os.getenv("WORKFLOW_ID", None)
 
         @fire_and_forget
         def update():
@@ -700,7 +700,8 @@ class Read(Statistics):
                 workflow_id=workflow_id, metadata=self.json_encoder(metadata)
             )
 
-        update()
+        if workflow_id is not None and workflow_id != "":
+            update()
 
     @track
     def chunk_dataset(
