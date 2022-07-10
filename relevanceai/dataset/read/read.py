@@ -5,7 +5,9 @@ import collections
 import re
 import math
 import warnings
+import os
 import pandas as pd
+from relevanceai.utils.decorators.thread import fire_and_forget
 
 from tqdm.auto import tqdm
 from typing import Optional, Union, Dict, List, Mapping
@@ -684,6 +686,22 @@ class Read(Statistics):
         else:
             return results
 
+    def _update_workflow_progress(self, metadata: dict, workflow_id: str = None):
+        """
+        Updates the workflow progress
+        """
+        # RUn it asynchronously
+        if workflow_id is None:
+            workflow_id = os.getenv("WORKFLOW_ID")
+
+        @fire_and_forget
+        def update():
+            return self.workflows.metadata(
+                workflow_id=workflow_id, metadata=self.json_encoder(metadata)
+            )
+
+        update()
+
     @track
     def chunk_dataset(
         self, select_fields: List = None, chunksize: int = 100, filters: list = None
@@ -731,6 +749,8 @@ class Read(Statistics):
                     filters=filters,
                     select_fields=select_fields,
                 )
+                # Update metadata if possible
+                self._update_workflow_progress(metadata=pbar.format_dict())
                 pbar.update(1)
         return
 
