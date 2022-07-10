@@ -751,6 +751,12 @@ class Read(Statistics):
                     select_fields=select_fields,
                 )
                 # Update metadata if possible
+                # {'n': 0, 'total': 3, 'elapsed': 1.3828277587890625e-05,
+                # 'ncols': 143, 'nrows': 23, 'prefix': '',
+                # 'ascii': False, 'unit': 'it', 'unit_scale': False,
+                # 'rate': None, 'bar_format': None, 'postfix': None,
+                # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
+
                 self._update_workflow_progress(metadata=pbar.format_dict)
                 pbar.update(1)
         return
