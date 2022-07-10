@@ -751,7 +751,7 @@ class Read(Statistics):
                     select_fields=select_fields,
                 )
                 # Update metadata if possible
-                self._update_workflow_progress(metadata=pbar.format_dict())
+                self._update_workflow_progress(metadata=pbar.format_dict)
                 pbar.update(1)
         return
 
