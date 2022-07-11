@@ -20,7 +20,6 @@ If you need to change your token, simply run:
 """
 import os
 import re
-import uuid
 import getpass
 import pandas as pd
 import analytics
@@ -29,8 +28,6 @@ from base64 import b64decode as decode
 from typing import Dict, List, Optional, Union
 
 from relevanceai._api import APIClient
-
-from doc_utils.doc_utils import DocUtils
 
 from relevanceai.client.helpers import *
 

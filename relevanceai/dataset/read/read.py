@@ -253,20 +253,23 @@ class Read(Statistics):
                 return pd.json_normalize(head_documents).head(n=n)
 
     def _show_json(self, documents, **kw):
-        from jsonshower import show_json
+        try:
+            from jsonshower import show_json
 
-        if not self.text_fields:
-            text_fields = pd.json_normalize(documents).columns.tolist()
-        else:
-            text_fields = self.text_fields
-        return show_json(
-            documents,
-            image_fields=self.image_fields,
-            audio_fields=self.audio_fields,
-            highlight_fields=self.highlight_fields,
-            text_fields=text_fields,
-            **kw,
-        )
+            if not self.text_fields:
+                text_fields = pd.json_normalize(documents).columns.tolist()
+            else:
+                text_fields = self.text_fields
+            return show_json(
+                documents,
+                image_fields=self.image_fields,
+                audio_fields=self.audio_fields,
+                highlight_fields=self.highlight_fields,
+                text_fields=text_fields,
+                **kw,
+            )
+        except ModuleNotFoundError:
+            return 
 
     def _repr_html_(self):
         documents = self.get_documents(include_after_id=False)
