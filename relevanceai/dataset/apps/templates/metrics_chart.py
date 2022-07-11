@@ -14,36 +14,16 @@ class MetricsChartTemplate(CreateApps):
         page_size=50,
         return_config_input=False,
     ):
-        main_metrics = []
         main_groupby = []
-        metric_fields = []
         groupby_fields = []
-        metrics_to_sort = []
         sort_default = None
 
         if not split_metrics and not metrics:
             raise TypeError("use 'split_metrics'=False if metrics is empty")
 
-        for m in metrics:
-            if isinstance(m, str):
-                main_metrics.append({"agg" : "avg", "field": m, "name" : f"Average {m}"})
-                metric_fields.append(m)
-                metrics_to_sort.append(f"Average {m}")
-            else:
-                main_metrics.append(m)
-                metric_fields.append(m['field'])
-                metrics_to_sort.append(m['name'])
+        main_metrics, metric_fields, _ = self._clean_metrics(metrics)
 
-        for m in groupby:
-            if isinstance(m, str):
-                if self.schema[m] == "text":
-                    main_groupby.append({"agg" : "category", "field": m, "name" : f"{m}"})
-                elif self.schema[m] == "numeric":
-                    main_groupby.append({"agg" : "numeric", "field": m, "name" : f"{m}"})
-                groupby_fields.append(m)
-            else:
-                main_groupby.append(m)
-                groupby_fields.append(m['field'])
+        main_groupby, groupby_fields = self._clean_groupby(groupby)
 
         if sort:
             for m in main_metrics:

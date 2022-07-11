@@ -198,3 +198,37 @@ class CreateApps(APIClient):
             if not vector_fields:
                 raise(f'No vector fields associated with the given {field_type} fields were found, run `ds.vectorize_{field_type}({field_type}_fields={str(fields)})` to extract vectors for your {field_type} fields.')
         return vector_fields
+
+    def _clean_metrics(self, metrics):
+        main_metrics = []
+        metric_fields = []
+        metric_names = []
+        for m in metrics:
+            if isinstance(m, str):
+                main_metrics.append({"agg" : "avg", "field": m, "name" : f"Average {m}"})
+                metric_fields.append(m)
+                metric_names.append(f"Average {m}")
+            else:
+                main_metrics.append(m)
+                metric_fields.append(m['field'])
+                metric_names.append(m['name'])
+        return main_metrics, metric_fields, metric_names
+
+    def _clean_groupby(self, groupby):
+        main_groupby = []
+        groupby_fields = []
+        for m in groupby:
+            if isinstance(m, str):
+                if self.schema[m] == "text":
+                    main_groupby.append({
+                        "agg" : "category", "field": m, "name" : f"{m}"
+                    })
+                elif self.schema[m] == "numeric":
+                    main_groupby.append({
+                        "agg" : "numeric", "field": m, "name" : f"{m}"
+                    })
+                groupby_fields.append(m)
+            else:
+                main_groupby.append(m)
+                groupby_fields.append(m['field'])
+        return main_groupby, groupby_fields
