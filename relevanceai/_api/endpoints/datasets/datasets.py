@@ -8,6 +8,7 @@ from relevanceai._api.endpoints.datasets.documents import DocumentsClient
 from relevanceai._api.endpoints.datasets.monitor import MonitorClient
 from relevanceai._api.endpoints.datasets.tasks import TasksClient
 from relevanceai._api.endpoints.datasets.cluster import ClusterClient
+from relevanceai.utils.cache import lru_cache
 
 
 class DatasetsClient(_Base):

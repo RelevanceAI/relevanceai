@@ -11,7 +11,6 @@ class DeployableClient(_Base):
     def create(self, dataset_id: str, configuration: Optional[Dict] = None):
         """
         Create a private deployable from an existing dataset.
-        TODO: explain what a deployable is
 
         Parameters
         ------------

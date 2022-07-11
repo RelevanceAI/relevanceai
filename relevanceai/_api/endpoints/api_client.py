@@ -115,7 +115,7 @@ class APIEndpointsClient(_Base, DocUtils):
 
     def _is_field_vectorized(self, field):
         return
-        
+
     #validate section
     def _validate_vector_field(self, field, include_chunk=False, guess_field=False):            
         if field.endswith(field, "_vector_"):
@@ -164,3 +164,6 @@ class APIEndpointsClient(_Base, DocUtils):
                 return False
         else:
             return False
+
+    def _validate_sort(self, sort):
+        return 

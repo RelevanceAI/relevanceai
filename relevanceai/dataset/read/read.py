@@ -393,6 +393,7 @@ class Read(Statistics):
             documents = df.get_all_documents()
 
         """
+        #TODO: validate fields, filters and sort
         filters = [] if filters is None else filters
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
@@ -637,6 +638,7 @@ class Read(Statistics):
         filters: list
             Query for filtering the search results
         """
+        #TODO: validate fields, filters and sort
         filters = [] if filters is None else filters
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
@@ -824,20 +826,3 @@ class Read(Statistics):
                     null_count[field] += 1
 
         return null_count
-
-    def facets(
-        self,
-        fields: list,
-        date_interval: str = "monthly",
-        page_size: int = 5,
-        page: int = 1,
-        asc: bool = False,
-    ):
-        return self.datasets.facets(
-            dataset_id=self.dataset_id,
-            fields=fields,
-            date_interval=date_interval,
-            page_size=page_size,
-            page=page,
-            asc=asc,
-        )
