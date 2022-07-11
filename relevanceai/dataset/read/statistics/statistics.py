@@ -344,10 +344,3 @@ class Statistics(APIClient):
             page=page,
             asc=asc,
         )
-
-    @track
-    def health_check(self, **kwargs):
-        # This is supposed to provide utilities
-        raise NotImplementedError()
-        # details = self.datasets.monitor.health(self.dataset_id, **kwargs)
-        # return details

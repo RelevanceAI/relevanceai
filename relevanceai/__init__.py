@@ -2,15 +2,6 @@
 import warnings
 from relevanceai.client import Client
 
-# Cluster _Base Utilities
-from relevanceai.operations.cluster.base import (
-    ClusterBase,
-    CentroidClusterBase,
-)
-from relevanceai.operations.cluster import ClusterOps
-from relevanceai.operations.dr.ops import ReduceDimensionsOps
-from relevanceai.operations.vector import Base2Vec
-
 # Fix the name
 from relevanceai.utils import datasets
 from relevanceai.utils.datasets import mock_documents
