@@ -112,3 +112,54 @@ class APIEndpointsClient(_Base, DocUtils):
                 f"{', '.join(invalid_fields)} are invalid fields. They are not in the dataset schema."
             )
         return
+
+    def _valid_vector_field(self, field, include_chunk=False, guess_field=False):            
+        if field.endswith(field, "_vector_"):
+            return True
+        elif include_chunk and field.endswith(field, "_chunkvector_"):
+            return True
+        else:
+            return False
+
+    def _valid_metric(self, metric, automate=False):
+        if isinstance(metric, dict):
+            if "agg" in metric:
+                if "field" in metric or "fields" in metric:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        elif automate and isinstance(metric, str):
+            print("Detected metric as string, automatically creating.")
+            return {
+                "field" : metric,
+                "agg" : "avg",
+                "name" : f"Average {metric}"
+            }
+        else:
+            return False
+
+    def _valid_groupby(self, groupby, automate=False):
+        if isinstance(groupby, dict):
+            if "agg" in groupby:
+                if "field" in groupby:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False 
+
+    def _valid_filter(self, filter):
+        if isinstance(filter, dict):
+            if "field" in filter:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def _is_field_vectorized(self, field):
+        return
