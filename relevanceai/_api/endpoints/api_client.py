@@ -113,7 +113,11 @@ class APIEndpointsClient(_Base, DocUtils):
             )
         return
 
-    def _valid_vector_field(self, field, include_chunk=False, guess_field=False):            
+    def _is_field_vectorized(self, field):
+        return
+        
+    #validate section
+    def _validate_vector_field(self, field, include_chunk=False, guess_field=False):            
         if field.endswith(field, "_vector_"):
             return True
         elif include_chunk and field.endswith(field, "_chunkvector_"):
@@ -121,7 +125,7 @@ class APIEndpointsClient(_Base, DocUtils):
         else:
             return False
 
-    def _valid_metric(self, metric, automate=False):
+    def _validate_metric(self, metric, automate=False):
         if isinstance(metric, dict):
             if "agg" in metric:
                 if "field" in metric or "fields" in metric:
@@ -140,7 +144,7 @@ class APIEndpointsClient(_Base, DocUtils):
         else:
             return False
 
-    def _valid_groupby(self, groupby, automate=False):
+    def _validate_groupby(self, groupby, automate=False):
         if isinstance(groupby, dict):
             if "agg" in groupby:
                 if "field" in groupby:
@@ -152,7 +156,7 @@ class APIEndpointsClient(_Base, DocUtils):
         else:
             return False 
 
-    def _valid_filter(self, filter):
+    def _validate_filter(self, filter):
         if isinstance(filter, dict):
             if "field" in filter:
                 return True
@@ -160,6 +164,3 @@ class APIEndpointsClient(_Base, DocUtils):
                 return False
         else:
             return False
-
-    def _is_field_vectorized(self, field):
-        return

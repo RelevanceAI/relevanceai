@@ -8,7 +8,6 @@ from relevanceai._api.endpoints.services.cluster import ClusterClient
 from relevanceai._api.endpoints.services.search import SearchClient
 from relevanceai._api.endpoints.services.aggregate import AggregateClient
 from relevanceai._api.endpoints.services.recommend import RecommendClient
-from relevanceai._api.endpoints.services.tagger import TaggerClient
 from relevanceai._api.endpoints.services.prediction import PredictionClient
 from relevanceai._api.endpoints.datasets.cluster.centroids import CentroidsClient
 
@@ -19,7 +18,6 @@ class ServicesClient(_Base):
         self.search = SearchClient(credentials)
         self.aggregate = AggregateClient(credentials)
         self.recommend = RecommendClient(credentials)
-        self.tagger = TaggerClient(credentials)
         self.prediction = PredictionClient(credentials)
         self.centroids = CentroidsClient(credentials)
         super().__init__(credentials)
