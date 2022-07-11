@@ -11,16 +11,9 @@ class TextSearchTemplate(CreateApps):
         facets=[],
         return_config_input=False,
     ):
-        if text_vector_fields == "auto":
-            text_vector_fields = []
-            print('Detected "text_vector_fields" is set as "auto", will try to determine "text_vector_fields" from "text_fields"')
-            for field, field_type in self.schema.items():
-                if isinstance(field_type, dict):
-                    for f in text_fields:
-                        if f in field:
-                            text_vector_fields.append(field)
-            print(f'The detected vector fields are {str(text_vector_fields)}')
-
+        text_vector_fields = self._auto_detect_vector_fields(
+            fields=text_fields, vector_fields=text_vector_fields
+        )
         config_input = dict(
             app_name=app_name, 
             default_view="results", 

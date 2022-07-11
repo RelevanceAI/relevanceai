@@ -184,3 +184,17 @@ class CreateApps(APIClient):
                 inputs[f] += [u for u in updates[f] if u not in inputs[f]]
         inputs.update({k:v for k,v in updates.items() if k not in input_fields_that_append})
         return inputs
+
+    def _auto_detect_vector_fields(self, fields, vector_fields="auto", field_type="text"):
+        if vector_fields == "auto":
+            vector_fields = []
+            print(f'Detected "{field_type}_vector_fields" is set as "auto", will try to determine "{field_type}_vector_fields" from "{field_type}_fields"')
+            for field, field_type in self.schema.items():
+                if isinstance(field_type, dict):
+                    for f in fields:
+                        if f in field:
+                            vector_fields.append(field)
+            print(f'The detected vector fields are {str(vector_fields)}, manually specify the `{field_type}_vector_fields` if those are incorrect.')
+            if not vector_fields:
+                raise(f'No vector fields associated with the given {field_type} fields were found, run `ds.vectorize_{field_type}({field_type}_fields={str(fields)})` to extract vectors for your {field_type} fields.')
+        return vector_fields
