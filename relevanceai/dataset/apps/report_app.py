@@ -21,6 +21,13 @@ class ReportMarks:
             "marks":[{"type":"strike"}]
         }]
 
+    def underline(self, content):
+        return [{
+            "type":"text",
+            "text": content,
+            "marks":[{"type":"underline"}]
+        }]
+
     def code(self, content):
         return [{
             "type":"text",
