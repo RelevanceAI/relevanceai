@@ -1,5 +1,6 @@
 import itertools
 from relevanceai.dataset.apps.create_apps import CreateApps
+from relevanceai.dataset.apps.report_app import ReportApp
 
 class MetricsReportTemplate(CreateApps):
     def generate_metrics_report_config(
@@ -16,17 +17,12 @@ class MetricsReportTemplate(CreateApps):
     ):
         main_metrics, metric_fields, _ = self._clean_metrics(metrics)
         main_groupby, groupby_fields = self._clean_groupby(groupby)
-        page_contents = [
-            {"content_type": "h1", "content": app_name},
-            {"content_type": "quote", "content": f"Analyzing {self.shape[0]} {entity_name} across {self.shape[1]} fields/columns"},
-        ]
-        page_contents.append({
-            "content_type": "h2", "content": "Overall"
-        })
+        report_app = ReportApp(name=app_name)
+        report_app.h1(app_name)
+        report_app.quote(f"Analyzing {self.shape[0]} {entity_name} across {self.shape[1]} fields/columns")
+        report_app.h2("Overall")
         overall_metrics = self.aggregate(metrics=main_metrics)['results'][0]
-        page_contents.append({
-            "content_type": "bullet", "content": [f"{k}: {v}" for k, v in overall_metrics.items()]
-        })
+        report_app.bullet_list([f"{k}: {v}" for k, v in overall_metrics.items()])
         # page_contents.append({
         #     "content_type": "h2", "content": f"This Month Performance"
         # })
