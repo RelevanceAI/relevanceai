@@ -13,6 +13,7 @@ class MetricsChartTemplate(CreateApps):
         sort=None, 
         page_size=50,
         return_config_input=False,
+        show_frequency=True
     ):
         main_groupby = []
         groupby_fields = []
@@ -41,7 +42,9 @@ class MetricsChartTemplate(CreateApps):
                                     "groupby": [group], 
                                     "metrics": [metric],
                                     "sort" : metric['name'],
-                                    "page_size" : page_size
+                                    "page_size" : page_size,
+                                    "show_frequency" : show_frequency,
+                                    'series-visibility': {metric['name']: True, 'frequency': False}
                                 }
                             )
                     else:
@@ -50,9 +53,32 @@ class MetricsChartTemplate(CreateApps):
                                 "groupby": [group], 
                                 "metrics": main_metrics,
                                 "sort" : sort_default,
-                                "page_size" : page_size
+                                "page_size" : page_size,
+                                "show_frequency" : show_frequency,
                             }
                         )
+                    for d in date_fields:
+                        charts.append(
+                            {
+                                "groupby": [group], 
+                                "page_size" : page_size,
+                                "show_frequency" : show_frequency,
+                                "chart_mode" : "timeseries",
+                                "timeseries" : {"field":d, "date_interval":"monthly"}
+                            }
+                        )
+                        for metric in main_metrics:
+                            charts.append(
+                                {
+                                    "groupby": [group], 
+                                    "metrics": [metric],
+                                    "sort" : metric['name'],
+                                    "page_size" : page_size,
+                                    "show_frequency" : show_frequency,
+                                    "chart_mode" : "timeseries",
+                                    "timeseries" : {"field":d, "date_interval":"monthly"}
+                                }
+                            )
             elif depth > 1:
                 for group in list(itertools.combinations(main_groupby, depth)):
                     if split_metrics:
@@ -62,18 +88,42 @@ class MetricsChartTemplate(CreateApps):
                                     "groupby": list(group), 
                                     "metrics": [metric],
                                     "sort" : metric['name'],
-                                    "page_size" : page_size
+                                    "page_size" : page_size,
+                                    "show_frequency" : show_frequency,
                                 }
                             )
                     else:
                         charts.append(
-                        {
-                            "groupby": list(group), 
-                            "metrics": main_metrics,
-                            "sort" : sort_default,
-                            "page_size" : page_size
-                        }
-                    )
+                            {
+                                "groupby": list(group), 
+                                "metrics": main_metrics,
+                                "sort" : sort_default,
+                                "page_size" : page_size,
+                                "show_frequency" : show_frequency,
+                            }
+                        )
+                    for d in date_fields:
+                        charts.append(
+                            {
+                                "groupby": list(group), 
+                                "page_size" : page_size,
+                                "show_frequency" : show_frequency,
+                                "chart_mode" : "timeseries",
+                                "timeseries" : {"field":d, "date_interval":"monthly"}
+                            }
+                        )
+                        for metric in main_metrics:
+                            charts.append(
+                                {
+                                    "groupby": list(group), 
+                                    "metrics": [metric],
+                                    "sort" : metric['name'],
+                                    "page_size" : page_size,
+                                    "show_frequency" : show_frequency,
+                                    "chart_mode" : "timeseries",
+                                    "timeseries" : {"field":d, "date_interval":"monthly"}
+                                }
+                            )
 
         config_inputs = dict(
             app_name=app_name, 

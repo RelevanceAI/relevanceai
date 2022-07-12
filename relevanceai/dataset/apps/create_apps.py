@@ -1,9 +1,10 @@
+import uuid
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
-from relevanceai._api import APIClient
+from relevanceai.dataset.write import Write
 from relevanceai.constants.errors import FieldNotFoundError
 
-class CreateApps(APIClient):
+class CreateApps(Write):
     """
     Set of core functions used to do CRUD on deployables/apps.
     Config = Universal config in Relevance AI for apps
@@ -35,7 +36,10 @@ class CreateApps(APIClient):
 
     def create_app(self, config):
         result = self.deployables.create(dataset_id=self.dataset_id, configuration=config)
-        print(f"Your app can be accessed at: https://cloud.relevance.ai/dataset/{result['dataset_id']}/deploy/explore/{result['project_id']}/{self.api_key}/{result['deployable_id']}/{self.region}")
+        if config['type'] == "explore":
+            print(f"Your app can be accessed at: https://cloud.relevance.ai/dataset/{result['dataset_id']}/deploy/explore/{result['project_id']}/{self.api_key}/{result['deployable_id']}/{self.region}")
+        elif config['type'] == "page":
+            print(f"Your app can be accessed at: https://cloud.relevance.ai/dataset/{result['dataset_id']}/deploy/page/{result['project_id']}/{self.api_key}/{result['deployable_id']}/{self.region}")
         return result
 
     def update_app(self, deployable_id, config):
@@ -63,12 +67,16 @@ class CreateApps(APIClient):
         page_size:int=None,
         chart_name:str=None, 
         chart_mode:str="column", 
+        show_frequency:bool=False,
+        **kwargs
     ):  
         chart_config = {
             "groupby" : groupby,
             "metrics" : metrics,
             "chart-mode" : chart_mode,
-            "chart-name" : chart_name
+            "chart-name" : chart_name,
+            "show-frequency" : show_frequency,
+            **kwargs
         }
         if not chart_name:
             chart_name = "Chart " # can give more flexibility to this
@@ -232,3 +240,83 @@ class CreateApps(APIClient):
                 main_groupby.append(m)
                 groupby_fields.append(m['field'])
         return main_groupby, groupby_fields
+
+    def _create_report_block(self, content_type, content):
+        if content_type == "h1":
+            block = {
+                "type" : "appBlock",
+                "content" : [{
+                    "type": "heading", 
+                    "attrs" : {"level" : 1},
+                    "content" : [
+                        {"type":"text", "text" : content}
+                    ]
+                }]
+            }
+        elif content_type == "h2":
+            block = {
+                "type" : "appBlock",
+                "content" : [{
+                    "type": "heading", 
+                    "attrs" : {"level" : 2},
+                    "content" : [
+                        {"type":"text", "text" : content}
+                    ]
+                }]
+            }
+        elif content_type == "bullet":
+            if not isinstance(content, list):
+                raise TypeError("'bullet' content_type needs to have list as content")
+            block = {
+                "type" : "appBlock",
+                "content" : [{
+                    "type": "bulletList", 
+                    "content" : [
+                        {
+                            "type":"listItem", "content" : [
+                                {"type" :"text", "text": c}
+                            ]
+                        }
+                        for c in content
+                    ]
+                }]
+            }
+        elif content_type == "quote":
+            block = {
+                "type" : "appBlock",
+                "content" : [{
+                    "type": "blockquote", 
+                    "content" : [{
+                        "type": "paragraph", 
+                        "content" : [
+                            {"type":"text", "text" : content}
+                        ]
+                    }]
+                }]
+            }
+        else:
+            block = {
+                "type" : "appBlock",
+                # "attrs" : {"id": str(uuid.uuid4())},
+                "content" : [{
+                    "type": "paragraph", 
+                    "content" : [
+                        {"type":"text", "text" : content}
+                    ]
+                }]
+            }
+        return block
+
+    def create_report_app_config(self, app_name, page_contents):
+        contents = []
+        for c in page_contents:
+            contents.append(self._create_report_block(c['content_type'], c['content']))
+        return {
+            "dataset_name" : self.dataset_id,
+            "deployable_name" : app_name,
+            "type":"page", 
+            "page-content" : {
+                "type" :"doc",
+                "content" : contents
+            }
+        }

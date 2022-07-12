@@ -10,7 +10,7 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import GLOBAL_DATASETS
 
 
-class Dataset(OperationsNew, Operations, Write, LaunchApps):
+class Dataset(OperationsNew, Operations, LaunchApps):
     @track
     def __init__(
         self,
