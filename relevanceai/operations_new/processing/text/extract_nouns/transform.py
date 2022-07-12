@@ -73,7 +73,7 @@ class ExtractNounsTransform(TransformBase):
         for i, d in enumerate(tqdm(docs)):
             for j, t in enumerate(self.fields):
                 value = self.extract_nouns(
-                    self.get_field(t, d)[:200],
+                    self.get_field(t, d, missing_treatment="return_empty_string")[:200],
                 )
                 self.set_field(self.output_fields[j], new_docs[i], value)
         return new_docs
