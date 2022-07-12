@@ -1,24 +1,38 @@
 
 class ReportMarks:
-    def bold(self, content, add=False):
+    def bold(self, content):
         return [{
             "type":"text",
             "text": content,
             "marks":[{"type":"bold"}]
         }]
 
-    def italic(self, content, add=False):
+    def italic(self, content):
         return [{
             "type":"text",
             "text": content,
             "marks":[{"type":"italic"}]
         }]
 
-    def strikethrough(self, content, add=False):
+    def strike(self, content):
         return [{
             "type":"text",
             "text": content,
-            "marks":[{"type":"strikethrough"}]
+            "marks":[{"type":"strike"}]
+        }]
+
+    def code(self, content):
+        return [{
+            "type":"text",
+            "text": content,
+            "marks":[{"type":"code"}]
+        }]
+
+    def link(self, content, href):
+        return [{
+            "type":"text",
+            "text": content,
+            "marks":[{"type":"link", "attrs" : {"href" : href, "target":"_blank"}}]
         }]
 
 class ReportApp(ReportMarks):
@@ -58,6 +72,19 @@ class ReportApp(ReportMarks):
         if add: self.app.append(block)
         return block
 
+    def h3(self, content, add=True):
+        block = {
+            "type" : "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content" : [{
+                "type": "heading", 
+                "attrs" : {"level" : 3},
+                "content" : self._process_content(content)
+            }]
+        }
+        if add: self.app.append(block)
+        return block
+
     def quote(self, content, add=True):
         block = {
             "type" : "appBlock",
@@ -84,19 +111,39 @@ class ReportApp(ReportMarks):
         if add: self.app.append(block)
         return block
 
+    def _list_item(self, content):
+        return [{
+            "type" : "listItem",
+            "content" : [self.paragraph(content, raw=True)]
+        }]
+
     def bullet_list(self, contents, add=True):
         if not isinstance(contents, list):
             raise TypeError("'contents' needs to be a List")
         list_contents = []
         for c in contents:
-            list_contents += [{
-                "type" : "listItem",
-                "content" : [self.paragraph(c, raw=True)]
-            }]
+            list_contents += self._list_item(c)
         block = {
             "type" : "appBlock",
             "content" : [{
                 "type": "bulletList", 
+                "content" : list_contents
+            }]
+        }
+        if add: self.app.append(block)
+        return block
+
+
+    def ordered_list(self, contents, add=True):
+        if not isinstance(contents, list):
+            raise TypeError("'contents' needs to be a List")
+        list_contents = []
+        for c in contents:
+            list_contents += self._list_item(c)
+        block = {
+            "type" : "appBlock",
+            "content" : [{
+                "type": "orderedList", 
                 "content" : list_contents
             }]
         }
