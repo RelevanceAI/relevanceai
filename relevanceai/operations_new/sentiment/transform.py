@@ -103,7 +103,7 @@ class SentimentTransform(TransformBase):
     ):
         if text is None:
             return None
-        labels = self.classifier([text], truncation=True, max_length=512)
+        labels = self.classifier([str(text)], truncation=True, max_length=512)
         ind_max = np.argmax([l["score"] for l in labels[0]])
         sentiment = labels[0][ind_max]["label"]
         max_score = labels[0][ind_max]["score"]

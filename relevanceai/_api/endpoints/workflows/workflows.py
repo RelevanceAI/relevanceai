@@ -42,10 +42,7 @@ class WorkflowsClient(_Base):
                 "metadata": { }
             }
         """
-        return self.make_http_request(
-            f"/workflows/{workflow_id}/get",
-            method="POST"
-        )
+        return self.make_http_request(f"/workflows/{workflow_id}/get", method="POST")
 
     def metadata(self, workflow_id: str, metadata: dict):
         """
