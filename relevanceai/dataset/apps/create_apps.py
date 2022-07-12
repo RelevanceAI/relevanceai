@@ -301,22 +301,18 @@ class CreateApps(Write):
                 "content" : [{
                     "type": "paragraph", 
                     "content" : [
-                        {"type":"text", "text" : content}
                     ]
                 }]
             }
         return block
 
-    def create_report_app_config(self, app_name, page_contents):
-        contents = []
-        for c in page_contents:
-            contents.append(self._create_report_block(c['content_type'], c['content']))
+    def create_report_app_config(self, report):
         return {
             "dataset_name" : self.dataset_id,
-            "deployable_name" : app_name,
+            "deployable_name" : report.name,
             "type":"page", 
             "page-content" : {
                 "type" :"doc",
-                "content" : contents
+                "content" : report.app
             }
         }

@@ -1,5 +1,6 @@
 import requests
 import datetime
+
 def preprocess_linear_doc(doc):
     doc['_id'] = doc['id']
     created_at = datetime.datetime.strptime(doc['createdAt'], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -39,7 +40,7 @@ def preprocess_linear_doc(doc):
         doc['noLabels'] = 1
     return doc
 
-def linear_recipe(dataset_id, api_key=api_key):
+def linear_recipe(dataset_id, api_key, client):
     docs = []
     next_page = True
 
@@ -99,6 +100,7 @@ def linear_recipe(dataset_id, api_key=api_key):
                 'query' : query_string.format(after="")
             }
         ).json()
+    
     docs += [preprocess_linear_doc(n['node']) for n in results['data']['issues']['edges']]
     next_page = results['data']['issues']['pageInfo']['hasNextPage']
 
@@ -116,6 +118,7 @@ def linear_recipe(dataset_id, api_key=api_key):
         next_page = results['data']['issues']['pageInfo']['hasNextPage']
     print(f"Inserting {len(docs)} linear issues to Relevance")
     ds = client.Dataset(dataset_id)
+    ds.delete()
     ds.insert_documents(docs, create_id=False)
     print("Generating App for exploration & insight")
     ds.create_metrics_chart_app(
@@ -132,9 +135,12 @@ def linear_recipe(dataset_id, api_key=api_key):
         ],
         groupby=[
             "assignee.name", "creator.name", 
-            "team.name", "labels.nodes.name",
-            "priorityLabel"
+            "team.name", "project.name",
+            "labels.nodes.name",
+            "priorityLabel", 
         ],
-        sort=["completed"]
+        date_fields=["createdAt", "completedAt", "startedAt"],
+        sort=["completed"],
+        split_metrics=True
     )
     return docs
