@@ -1,14 +1,5 @@
-class ReportApp:
-    def __init__(self, name):
-        self.name = name
-        self.app = []
 
-    def _process_content(self, content):
-        if isinstance(content, str):
-            return [{"type":"text", "text":content}]
-        else:
-            return content
-
+class ReportMarks:
     def bold(self, content, add=False):
         return [{
             "type":"text",
@@ -23,7 +14,25 @@ class ReportApp:
             "marks":[{"type":"italic"}]
         }]
 
-    def h1(self, content, add=False):
+    def strikethrough(self, content, add=False):
+        return [{
+            "type":"text",
+            "text": content,
+            "marks":[{"type":"strikethrough"}]
+        }]
+
+class ReportApp(ReportMarks):
+    def __init__(self, name):
+        self.name = name
+        self.app = []
+
+    def _process_content(self, content):
+        if isinstance(content, str):
+            return [{"type":"text", "text":content}]
+        else:
+            return content
+
+    def h1(self, content, add=True):
         block = {
             "type" : "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
@@ -36,7 +45,7 @@ class ReportApp:
         if add: self.app.append(block)
         return block
     
-    def h2(self, content, add=False):
+    def h2(self, content, add=True):
         block = {
             "type" : "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
@@ -49,7 +58,7 @@ class ReportApp:
         if add: self.app.append(block)
         return block
 
-    def quote(self, content, add=False):
+    def quote(self, content, add=True):
         block = {
             "type" : "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
@@ -61,7 +70,7 @@ class ReportApp:
         if add: self.app.append(block)
         return block
 
-    def paragraph(self, content, add=False, raw=False):
+    def paragraph(self, content, add=True, raw=False):
         block = {
             "type": "paragraph", 
             "content" : self._process_content(content)
@@ -75,7 +84,7 @@ class ReportApp:
         if add: self.app.append(block)
         return block
 
-    def bullet_list(self, contents, add=False):
+    def bullet_list(self, contents, add=True):
         if not isinstance(contents, list):
             raise TypeError("'contents' needs to be a List")
         list_contents = []
