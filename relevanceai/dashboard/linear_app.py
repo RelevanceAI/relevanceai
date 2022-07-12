@@ -1,6 +1,4 @@
 import requests
-api_key = "lin_api_QkmQmnzizvaJ5z9hgJrlALo8wp9uKgccPXirIMlM"
-
 import datetime
 def preprocess_linear_doc(doc):
     doc['_id'] = doc['id']
