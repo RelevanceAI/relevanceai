@@ -1,5 +1,4 @@
-from relevanceai.dataset import Dataset
-
+import warnings
 class ReportMarks:
     def bold(self, content):
         return [{
@@ -44,9 +43,44 @@ class ReportMarks:
         }]
 
 class ReportApp(ReportMarks):
-    def __init__(self, name):
+    def __init__(self, name, dataset, deployable_id=None):
         self.name = name
-        self.app = []
+        self.dataset = dataset
+        self.dataset_id = dataset.dataset_id
+        self.deployable_id = deployable_id
+        app_config = None
+        self.reloaded = False
+        if deployable_id:
+            try:
+                app_config = self.dataset.get_app(deployable_id)
+                self.reloaded = True
+            except:
+                raise Exception(f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app.")
+        if app_config:
+            self.config = app_config["configuration"]
+        else:
+            self.config = {
+                "dataset_name" : self.dataset_id,
+                "deployable_name" : self.name,
+                "type":"page", 
+                "page-content" : {
+                    "type" :"doc",
+                    "content" : []
+                }
+            }
+
+    @property
+    def contents(self):
+        return self.config["page-content"]["content"]
+
+    def deploy(self, overwrite=False):
+        if self.deployable_id and self.reloaded:
+            status = self.dataset.update_app(self.deployable_id, self.config, overwrite=overwrite)
+            if status["status"] == "success":
+                return self.dataset.get_app(self.deployable_id)
+            else:
+                raise Exception("Failed to update app")
+        return self.dataset.create_app(self.config)
 
     def _process_content(self, content):
         if isinstance(content, str):
@@ -64,7 +98,7 @@ class ReportApp(ReportMarks):
                 "content" : self._process_content(content)
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
     
     def h2(self, content, add=True):
@@ -77,7 +111,7 @@ class ReportApp(ReportMarks):
                 "content" : self._process_content(content)
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
 
     def h3(self, content, add=True):
@@ -90,7 +124,7 @@ class ReportApp(ReportMarks):
                 "content" : self._process_content(content)
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
 
     def quote(self, content, add=True):
@@ -102,7 +136,7 @@ class ReportApp(ReportMarks):
                 "content" : self._process_content(content)
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
 
     def paragraph(self, content, add=True, raw=False):
@@ -116,7 +150,7 @@ class ReportApp(ReportMarks):
             # "attrs" : {"id": str(uuid.uuid4())},
             "content" : [block]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
 
     def _list_item(self, content):
@@ -138,7 +172,7 @@ class ReportApp(ReportMarks):
                 "content" : list_contents
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block
 
 
@@ -155,5 +189,5 @@ class ReportApp(ReportMarks):
                 "content" : list_contents
             }]
         }
-        if add: self.app.append(block)
+        if add: self.contents.append(block)
         return block

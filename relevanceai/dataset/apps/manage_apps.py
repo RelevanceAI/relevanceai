@@ -31,7 +31,7 @@ class ManageApps(Write):
                 if d["dataset_id"] == self.dataset_id:
                     result = {
                         "deployable_id" : d["deployable_id"],
-                        "url" : self._app_url(d['dataset_id'], d['project_id'], d['type'], d['deployable_id'])
+                        "url" : self._app_url(d['dataset_id'], d['project_id'], d['configuration']['type'], d['deployable_id'])
                     }
                     if "configuration" in d:
                         if "deployable_name" in d["configuration"]:
@@ -43,11 +43,30 @@ class ManageApps(Write):
 
     def create_app(self, config):
         result = self.deployables.create(dataset_id=self.dataset_id, configuration=config)
-        print(f"Your app can be accessed at: {self._app_url(result['dataset_id'], result['project_id'], result['type'], result['deployable_id'])}")
+        print(f"""Your app can be accessed at: {self._app_url(
+            dataset_id=result['dataset_id'], 
+            project_id=result['project_id'], 
+            deployable_id=result['deployable_id'], 
+            app_type=result['configuration']['type']
+        )}""")
         return result
 
-    def update_app(self, deployable_id, config):
-        return self.deployables.update(deployable_id=deployable_id, dataset_id=self.dataset_id, config=config)
+    def update_app(self, deployable_id, config, overwrite=False):
+        status = self.deployables.update(deployable_id=deployable_id, dataset_id=self.dataset_id, configuration=config, overwrite=overwrite)
+        if status["status"] == "success":
+            if "type" in config:
+                app_type = config["type"]
+            elif "type" in config["configuration"]:
+                app_type = config["configuration"]["type"]
+            print(f"""Your app can be accessed at: {self._app_url(
+                dataset_id=self.dataset_id, 
+                project_id=self.project, 
+                deployable_id=deployable_id,
+                app_type=app_type
+            )}""")
+        else:
+            print('Failed to update')
+        return status
 
     def delete_app(self, deployable_id):
         return self.deployables.delete(deployable_id=deployable_id)

@@ -1,8 +1,8 @@
-from relevanceai.dataset.apps.templates import MetricsChartTemplate, MetricsReportTemplate, TextSearchTemplate, TextClusterTemplate
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
+from relevanceai.dataset.apps.manage_apps import ManageApps
 
-class LaunchApps(MetricsChartTemplate, MetricsReportTemplate, TextSearchTemplate, TextClusterTemplate):
+class LaunchApps(ManageApps):
     """
     Launch apps are designed to create apps automatically.
     """

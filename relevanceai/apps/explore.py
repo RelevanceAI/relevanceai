@@ -1,18 +1,19 @@
 import warnings
 from typing import Dict, List, Optional, Union
-from relevanceai.dataset import Dataset
-
 class ExploreApp:
     def __init__(self, 
         name, 
-        dataset: Dataset, 
+        dataset, 
         deployable_id=None,
         default_view="charts", 
         charts_view_column=2,
         preview_centroids_page_size=2,
+        client=None,
         **kwargs
     ):
         self.name = name
+        # if not isinstance(dataset, Dataset):
+        #     raise TypeError("'dataset' only accepts Relevance Dataset class. to create one use ds = client.Dataset('example').")
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
         self.deployable_id = deployable_id
@@ -26,9 +27,9 @@ class ExploreApp:
                 app_config = self.dataset.get_app(deployable_id)
                 self.reloaded = True
             except:
-                warnings.warn(f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app.")            
+               raise Exception(f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app.")            
         if app_config:
-            self.config = app_config
+            self.config = app_config["configuration"]
         else:
             self.config = {
                 "dataset_name" : self.dataset_id,
@@ -40,9 +41,13 @@ class ExploreApp:
                 **kwargs
             }
 
-    def create(self):
+    def deploy(self, overwrite=False):
         if self.deployable_id and self.reloaded:
-            return self.dataset.update_app(self.deployable_id, self.config)
+            status = self.dataset.update_app(self.deployable_id, self.config, overwrite=overwrite)
+            if status["status"] == "success":
+                return self.dataset.get_app(self.deployable_id)
+            else:
+                raise Exception("Failed to update app")
         return self.dataset.create_app(self.config)
         
     def _append_or_replace(self, key, value, append=True, default_value=[]):
