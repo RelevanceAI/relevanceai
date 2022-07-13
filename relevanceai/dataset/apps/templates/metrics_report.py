@@ -1,8 +1,8 @@
 import itertools
-from relevanceai.dataset.apps.create_apps import CreateApps
+from relevanceai.dataset.apps.manage_apps import ManageApps
 from relevanceai.dataset.apps.report_app import ReportApp
 
-class MetricsReportTemplate(CreateApps):
+class MetricsReportTemplate(ManageApps):
     def generate_metrics_report_config(
         self, 
         app_name:str="Metrics Report", 

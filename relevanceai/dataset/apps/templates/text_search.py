@@ -1,7 +1,7 @@
 import itertools
-from relevanceai.dataset.apps.create_apps import CreateApps
+from relevanceai.dataset.apps.manage_apps import ManageApps
 
-class TextSearchTemplate(CreateApps):
+class TextSearchTemplate(ManageApps):
     def generate_text_search_config(
         self,
         app_name,

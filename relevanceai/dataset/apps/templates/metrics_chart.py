@@ -1,7 +1,7 @@
 import itertools
-from relevanceai.dataset.apps.create_apps import CreateApps
+from relevanceai.dataset.apps.manage_apps import ManageApps
 
-class MetricsChartTemplate(CreateApps):
+class MetricsChartTemplate(ManageApps):
     def generate_metrics_chart_config(
         self, 
         app_name:str="Metrics Chart App", 

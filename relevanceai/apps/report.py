@@ -1,3 +1,4 @@
+from relevanceai.dataset import Dataset
 
 class ReportMarks:
     def bold(self, content):
