@@ -741,7 +741,16 @@ class Read(Statistics):
             self.dataset_id, filters=filters
         )
         with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:
+            # update after we get the first batch
+            pbar.update(1)
+            self._update_workflow_progress(metadata=pbar.format_dict)
             while len(docs["documents"]) > 0:
+                # Update metadata if possible
+                # {'n': 0, 'total': 3, 'elapsed': 1.3828277587890625e-05,
+                # 'ncols': 143, 'nrows': 23, 'prefix': '',
+                # 'ascii': False, 'unit': 'it', 'unit_scale': False,
+                # 'rate': None, 'bar_format': None, 'postfix': None,
+                # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
                 yield docs["documents"]
                 docs = self.get_documents(
                     number_of_documents=chunksize,
@@ -750,15 +759,9 @@ class Read(Statistics):
                     filters=filters,
                     select_fields=select_fields,
                 )
-                # Update metadata if possible
-                # {'n': 0, 'total': 3, 'elapsed': 1.3828277587890625e-05,
-                # 'ncols': 143, 'nrows': 23, 'prefix': '',
-                # 'ascii': False, 'unit': 'it', 'unit_scale': False,
-                # 'rate': None, 'bar_format': None, 'postfix': None,
-                # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
-
-                self._update_workflow_progress(metadata=pbar.format_dict)
+                # Final update at the end
                 pbar.update(1)
+                self._update_workflow_progress(metadata=pbar.format_dict)
         return
 
     @track
