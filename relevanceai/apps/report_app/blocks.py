@@ -1,90 +1,19 @@
-import warnings
-class ReportMarks:
-    def bold(self, content):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"bold"}]
-        }]
+from relevanceai.apps.report_app.marks import ReportMarks
 
-    def italic(self, content):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"italic"}]
-        }]
-
-    def strike(self, content):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"strike"}]
-        }]
-
-    def underline(self, content):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"underline"}]
-        }]
-
-    def code(self, content):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"code"}]
-        }]
-
-    def link(self, content, href):
-        return [{
-            "type":"text",
-            "text": content,
-            "marks":[{"type":"link", "attrs" : {"href" : href, "target":"_blank"}}]
-        }]
-
-class ReportApp(ReportMarks):
-    def __init__(self, name, dataset, deployable_id=None):
-        self.name = name
-        self.dataset = dataset
-        self.dataset_id = dataset.dataset_id
-        self.deployable_id = deployable_id
-        app_config = None
-        self.reloaded = False
-        if deployable_id:
-            try:
-                app_config = self.dataset.get_app(deployable_id)
-                self.reloaded = True
-            except:
-                raise Exception(f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app.")
-        if app_config:
-            self.config = app_config["configuration"]
-        else:
-            self.config = {
-                "dataset_name" : self.dataset_id,
-                "deployable_name" : self.name,
-                "type":"page", 
-                "page-content" : {
-                    "type" :"doc",
-                    "content" : []
-                }
-            }
-
-    @property
-    def contents(self):
-        return self.config["page-content"]["content"]
-
-    def deploy(self, overwrite=False):
-        if self.deployable_id and self.reloaded:
-            status = self.dataset.update_app(self.deployable_id, self.config, overwrite=overwrite)
-            if status["status"] == "success":
-                return self.dataset.get_app(self.deployable_id)
-            else:
-                raise Exception("Failed to update app")
-        return self.dataset.create_app(self.config)
-
+class ReportBlocks(ReportMarks):
     def _process_content(self, content):
         if isinstance(content, str):
             return [{"type":"text", "text":content}]
+        elif isinstance(content, list):
+            content_list = []
+            for c in content:
+                if isinstance(c, str):
+                    content_list.append({"type":"text", "text":c})
+                elif isinstance(c, list):
+                    content_list.append(c[0])
+                else:
+                    content_list.append(c)
+            return content_list
         else:
             return content
 

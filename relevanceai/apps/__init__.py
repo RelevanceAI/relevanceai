@@ -1,2 +1,2 @@
-from relevanceai.apps.explore import ExploreApp
-from relevanceai.apps.report import ReportApp
+from relevanceai.apps.explore_app.app import ExploreApp
+from relevanceai.apps.report_app.app import ReportApp

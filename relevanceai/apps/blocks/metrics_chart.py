@@ -1,10 +1,8 @@
 import itertools
-from relevanceai.dataset.apps.manage_apps import ManageApps
 
-class MetricsChartTemplate(ManageApps):
-    def generate_metrics_chart_config(
+class MetricCharts:
+    def metric_block(
         self, 
-        app_name:str="Metrics Chart App", 
         metrics=[], 
         groupby=[], 
         date_fields=[], 
@@ -12,19 +10,13 @@ class MetricsChartTemplate(ManageApps):
         split_metrics=False, 
         sort=None, 
         page_size=50,
-        return_config_input=False,
-        show_frequency=True
+        show_frequency=True,
+        return_inputs=False
     ):
-        main_groupby = []
-        groupby_fields = []
-        sort_default = None
-
         if not split_metrics and not metrics:
             raise TypeError("use 'split_metrics'=False if metrics is empty")
-
-        main_metrics, metric_fields, _ = self._clean_metrics(metrics)
-
-        main_groupby, groupby_fields = self._clean_groupby(groupby)
+        main_metrics, metric_fields, _ = self.dataset._clean_metrics(metrics)
+        main_groupby, groupby_fields = self.dataset._clean_groupby(groupby)
 
         if sort:
             for m in main_metrics:
@@ -141,27 +133,3 @@ class MetricsChartTemplate(ManageApps):
             return self.create_app_config(
                 **config_inputs
             )
-
-    def create_metrics_chart_app(
-        self, 
-        app_name="Metrics Chart App", 
-        metrics=[], 
-        groupby=[], 
-        date_fields=[], 
-        groupby_depths=[1],
-        split_metrics=False, 
-        sort=None, 
-        page_size=50
-    ):
-        return self.create_app(
-            self.generate_metrics_chart_config(
-                app_name=app_name, 
-                metrics=metrics, 
-                groupby=groupby,
-                date_fields=date_fields,
-                groupby_depths=groupby_depths,
-                split_metrics=split_metrics,
-                sort=sort,
-                page_size=page_size
-            )
-        )
