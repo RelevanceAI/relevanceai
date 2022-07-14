@@ -8,6 +8,58 @@ class ExplorerApp(ExplorerBase):
         self._append_or_replace(
             "default-preview-centroids-columns", fields, default_value=[]
         )
+        self.document_card(fields=fields)
+
+    def document_card(self, 
+            fields:List=None, 
+            primary_field:str=None, 
+            secondary_field:str=None, 
+            image_field:str=None, 
+            layout_mode:str=None,
+            page_size:int=None,
+            append:bool=True
+        ):
+        fields_config = []
+        multi_fields = fields[:]
+        if image_field:
+            fields_config.append({"id":"image", "value":image_field})
+            if image_field in multi_fields:
+                multi_fields.remove(image_field)
+        if primary_field:
+            fields_config.append({"id":"primary", "value":primary_field})
+            if primary_field in multi_fields:
+                multi_fields.remove(primary_field)
+        if secondary_field:
+            fields_config.append({"id":"secondary", "value":secondary_field})
+            if secondary_field in multi_fields:
+                multi_fields.remove(secondary_field)
+        if fields:
+            fields_config.append({"id":"multiple-fields", "value":multi_fields})
+
+        if "document-view-configuration" not in self.config:
+            self.config["document-view-configuration"] = {
+                "layout-template":"custom",
+                "layout-template-configuration":{
+                    "fields":[]
+                }
+            }
+        if layout_mode:
+            self.config["document-view-configuration"]["layout-mode"] = layout_mode
+        elif "layout-mode" not in self.config["document-view-configuration"]:
+            self.config["document-view-configuration"]["layout-mode"] = "grid"
+        if page_size:
+            self.config["document-view-configuration"]["page-size"] = page_size
+        elif "page-size" not in self.config["document-view-configuration"]:
+            self.config["document-view-configuration"]["page-size"] = 20
+
+        if append:
+            self.config["document-view-configuration"]["layout-template-configuration"][
+                "fields"
+            ] += fields_config
+        else:
+            self.config["document-view-configuration"]["layout-template-configuration"][
+                "fields"
+            ] = fields_config
 
     # Search and filter section
     def facets(self, fields: List = None, append=True):
@@ -98,16 +150,18 @@ class ExplorerApp(ExplorerBase):
             raise TypeError("'charts' needs to be a list or dictionary.")
 
     # Cluster section
-    def cluster(self, cluster_field: str):
-        self.config["cluster"] = cluster_field
+    def cluster(self, alias:str, vector_field:str):
+        self.config["cluster"] = {"alias" : alias, "vector_field":vector_field}
 
     def cluster_charts(self, charts: List):
         self._append_or_replace("cluster-preview-config", charts, default_value=[])
 
     def label_clusters(self, cluster_labels: Dict):
         if "cluster" in self.config:
-            alias = self.config["cluster"].split(".")[-1]
-            vector_fields = ".".join(self.config["cluster"].split(".")[1:-1])
-            self.dataset.label_clusters(cluster_labels, alias, vector_fields)
+            self.dataset.label_clusters(
+                cluster_labels, 
+                self.config["cluster"]["alias"],
+                self.config["cluster"]["vector_field"]
+            )
         else:
             raise Exception("Specify your cluster field first with .cluster.")
