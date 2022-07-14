@@ -20,7 +20,6 @@ from requests import Request
 
 from relevanceai.constants.config import Config
 from relevanceai.utils.logger import AbstractLogger, FileLogger
-from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
 from relevanceai.utils.config_mixin import ConfigMixin
@@ -28,6 +27,12 @@ from relevanceai.utils.config_mixin import ConfigMixin
 DO_NOT_REPEAT_STATUS_CODES = {400, 401, 413, 404, 422}
 _HAS_PRINTED = False
 
+DASHBOARD_MAPPINGS = {
+    "multivector_search": "/sdk/search",
+    "cluster_centroids_closest": "/sdk/cluster/centroids/closest",
+    "cluster_centroids_furthest": "/sdk/cluster/centroids/furthest",
+    "cluster_aggregation": "/sdk/cluster/aggregation",
+}
 
 class Transport(JSONEncoderUtils, ConfigMixin):
     """_Base class for all relevanceai objects"""

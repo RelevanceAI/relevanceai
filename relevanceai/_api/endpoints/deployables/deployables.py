@@ -176,7 +176,7 @@ class DeployableClient(_Base):
             },
         )
 
-    def list(self):
+    def list(self, page_size:int=1000):
         """
         List all deployables.
 
@@ -193,7 +193,7 @@ class DeployableClient(_Base):
             loc, msg, type
         }
         """
-        return self.make_http_request(endpoint="/deployables/list", method="GET")
+        return self.make_http_request(endpoint="/deployables/list", method="GET", parameters={"page_size": page_size})
 
     def url(self, deployable_id: str, dataset_id: str, application: str) -> str:
         """
