@@ -715,11 +715,11 @@ class BatchInsertClient(BatchRetrieveClient):
         self,
         chunk: pd.DataFrame,
         dataset_id: str,
-        id_col: str,
-        create_id: bool,
-        max_workers: int,
-        retry_chunk_mult: float,
-        show_progress_bar: bool,
+        id_col: Optional[str] = None,
+        create_id: bool = False,
+        max_workers: int = 2,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
     ):
         # generate '_id' if possible
         # id_col
