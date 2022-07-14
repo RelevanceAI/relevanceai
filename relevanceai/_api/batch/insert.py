@@ -631,7 +631,8 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        **csv_args,
+        csv_args: Optional[Dict[str, Any]] = None,
+        **kwargs,
     ):
 
         """
