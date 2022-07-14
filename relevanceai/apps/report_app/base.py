@@ -1,5 +1,5 @@
 class ReportBase:
-    def __init__(self, name, dataset, deployable_id=None):
+    def __init__(self, name:str, dataset, deployable_id:str=None):
         self.name = name
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
@@ -29,7 +29,7 @@ class ReportBase:
     def contents(self):
         return self.config["page-content"]["content"]
 
-    def deploy(self, overwrite=False):
+    def deploy(self, overwrite:bool=False):
         if self.deployable_id and self.reloaded:
             status = self.dataset.update_app(self.deployable_id, self.config, overwrite=overwrite)
             if status["status"] == "success":

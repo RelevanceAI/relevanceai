@@ -1,8 +1,11 @@
 import itertools
+from typing import Dict, List, Optional, Union
 from relevanceai.apps.report_app.blocks import ReportBlocks
 
 class AggregateSections(ReportBlocks):
-    def section_overview(self, metrics, entity_name="documents", filters=[], decimals=3):
+    def section_overview(self, metrics:List, entity_name:str="documents", filters:List=None, decimals:int=3):
+        filters = [] if filters is None else filters
+
         main_metrics, metric_fields, _ = self.dataset._clean_metrics(metrics)
         self.quote(f"Analyzing {self.dataset.shape[0]} {entity_name} across {self.dataset.shape[1]} fields/columns")
         self.h1("Section: Overview")
@@ -14,7 +17,11 @@ class AggregateSections(ReportBlocks):
             overall_metrics_bullets += [[self.bold(k), ": ", self.bold(str(round(v, decimals)))]]
         self.bullet_list(overall_metrics_bullets)
 
-    def section_groupby(self, groupby, metrics=[], groupby_depths=[1], filters=[], decimals=3):
+    def section_groupby(self, groupby:List, metrics:List=None, groupby_depths:List=None, filters:List=None, decimals:int=3):
+        metrics = [] if metrics is None else metrics
+        groupby_depths = [1] if groupby_depths is None else groupby_depths
+        filters = [] if filters is None else filters
+
         self.h1("Section: Analyzing different groups")
         main_metrics, metric_fields, _ = self.dataset._clean_metrics(metrics)
         main_groupby, groupby_fields = self.dataset._clean_groupby(groupby)
