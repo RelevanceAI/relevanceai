@@ -28,7 +28,7 @@ class FeatureExtractor(nn.Module):
             layer_name = list(layer_dict.keys())[-2]
 
         self.layer_name = layer_name
-        self._features = defaultdict(list)
+        self._features: defaultdict = defaultdict(list)
 
         layer = layer_dict[layer_name]
         layer.register_forward_hook(self.save_outputs_hook(layer_name))
