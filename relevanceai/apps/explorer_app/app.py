@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional, Union
 from relevanceai.apps.explorer_app.base import ExplorerBase
 
-
 class ExplorerApp(ExplorerBase):
     def preview_fields(self, fields: List = None, append=True):
         fields = [] if fields is None else fields
