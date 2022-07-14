@@ -686,8 +686,12 @@ class BatchInsertClient(BatchRetrieveClient):
         if chunksize == 0:
             chunksize = 1
 
-        # Chunk inserts        
-        for chunk in self.chunk(df, chunksize, show_progress_bar):
+        # Chunk inserts
+        for chunk in self.chunk(
+            documents=df,
+            chunksize=chunksize,
+            show_progress_bar=show_progress_bar,
+        ):
             response = self._insert_csv_chunk(
                 chunk=chunk,
                 dataset_id=dataset_id,
