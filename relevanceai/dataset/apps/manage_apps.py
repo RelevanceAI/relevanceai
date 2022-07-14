@@ -13,7 +13,9 @@ class ManageApps(Write):
     Config Input = The input to the SDK's create_app_config
     """
 
-    def _app_url(self, dataset_id, project_id, deployable_id, app_type=None):
+    def _app_url(
+        self, dataset_id: str, project_id: str, deployable_id: str, app_type=None
+    ):
         if app_type:
             return f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/{app_type}/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
         else:
@@ -52,7 +54,7 @@ class ManageApps(Write):
                     results.append(result)
             return results
 
-    def create_app(self, config):
+    def create_app(self, config: Dict):
         result = self.deployables.create(
             dataset_id=self.dataset_id, configuration=config
         )
@@ -66,7 +68,7 @@ class ManageApps(Write):
         )
         return result
 
-    def update_app(self, deployable_id, config, overwrite=False):
+    def update_app(self, deployable_id: str, config: Dict, overwrite: bool = False):
         status = self.deployables.update(
             deployable_id=deployable_id,
             dataset_id=self.dataset_id,
@@ -90,13 +92,13 @@ class ManageApps(Write):
             print("Failed to update")
         return status
 
-    def delete_app(self, deployable_id):
+    def delete_app(self, deployable_id: str):
         return self.deployables.delete(deployable_id=deployable_id)
 
-    def get_app(self, deployable_id):
+    def get_app(self, deployable_id: str):
         return self.deployables.get(deployable_id=deployable_id)
 
-    def get_app_ids_by_name(self, name):
+    def get_app_ids_by_name(self, name: str):
         ids = []
         for a in self.list_apps():
             if "configuration" in a:
@@ -111,17 +113,17 @@ class ManageApps(Write):
         self,
         name="App",
         default_view="charts",
+        preview_fields: List[str] = None,
+        facets: List[str] = None,
+        search_fields: List[str] = None,
+        vector_search_fields: List[str] = None,
+        search_min_relevance=None,
+        sort: Union[List[str], List[dict]] = None,
         sort_default=None,
         sort_default_direction=None,
-        sort=[],
-        facets=[],
-        search_fields=[],
-        vector_search_fields=[],
-        charts=[],
-        cluster_charts=[],
-        preview_fields=[],
-        search_min_relevance=None,
+        charts: Union[List[str], List[dict]] = None,
         cluster_field=None,
+        cluster_charts: Union[List[str], List[dict]] = None,
         charts_view_column=2,
         preview_centroids_page_size=2,
         **kwargs,
@@ -142,16 +144,16 @@ class ManageApps(Write):
         # Filter/Drilldown bar
         if facets:
             eapp.facets(fields=facets)
-        if sort:
-            eapp.sort(metrics=sort)
-        if sort_default:
-            eapp.sort_default(metric_name=sort_default)
         if search_fields:  # make sure its text
             eapp.search_fields(fields=search_fields)
         if vector_search_fields:
             eapp.vector_search_fields(vector_fields=vector_search_fields)
         if search_min_relevance:
             eapp.search_min_relevance(min_relevance=search_min_relevance)
+        if sort:
+            eapp.sort(metrics=sort)
+        if sort_default:
+            eapp.sort_default(metric_name=sort_default)
 
         # Charts section
         if charts:
