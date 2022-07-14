@@ -686,10 +686,8 @@ class BatchInsertClient(BatchRetrieveClient):
         if chunksize == 0:
             chunksize = 1
 
-        nchunks = math.ceil(df.shape[0] / chunksize)
-
-        # Chunk inserts
-        for chunk in np.array_split(df, nchunks):
+        # Chunk inserts        
+        for chunk in self.chunk(df, chunksize, show_progress_bar):
             response = self._insert_csv_chunk(
                 chunk=chunk,
                 dataset_id=dataset_id,
@@ -697,7 +695,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 create_id=create_id,
                 max_workers=max_workers,
                 retry_chunk_mult=retry_chunk_mult,
-                show_progress_bar=show_progress_bar,
+                show_progress_bar=False,
             )
             inserted += response["inserted"]
             failed_documents += response["failed_documents"]
