@@ -631,7 +631,7 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        **csv_kwargs,
+        **csv_args,
     ):
 
         """
@@ -660,7 +660,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> df.insert_csv("temp.csv")
 
         """
-        df = pd.read_csv(filepath_or_buffer, **csv_kwargs)
+        df = pd.read_csv(filepath_or_buffer, **csv_args)
 
         # Initialise output
         inserted = 0
