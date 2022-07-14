@@ -2,13 +2,13 @@
 
 # class MetricCharts:
 #     def metric_block(
-#         self, 
-#         metrics=[], 
-#         groupby=[], 
-#         date_fields=[], 
+#         self,
+#         metrics=[],
+#         groupby=[],
+#         date_fields=[],
 #         groupby_depths=[1],
-#         split_metrics=False, 
-#         sort=None, 
+#         split_metrics=False,
+#         sort=None,
 #         page_size=50,
 #         show_frequency=True,
 #         return_inputs=False
@@ -31,7 +31,7 @@
 #                         for metric in main_metrics:
 #                             charts.append(
 #                                 {
-#                                     "groupby": [group], 
+#                                     "groupby": [group],
 #                                     "metrics": [metric],
 #                                     "sort" : metric['name'],
 #                                     "page_size" : page_size,
@@ -42,7 +42,7 @@
 #                     else:
 #                         charts.append(
 #                             {
-#                                 "groupby": [group], 
+#                                 "groupby": [group],
 #                                 "metrics": main_metrics,
 #                                 "sort" : sort_default,
 #                                 "page_size" : page_size,
@@ -52,7 +52,7 @@
 #                     for d in date_fields:
 #                         charts.append(
 #                             {
-#                                 "groupby": [group], 
+#                                 "groupby": [group],
 #                                 "page_size" : page_size,
 #                                 "show_frequency" : show_frequency,
 #                                 "chart_mode" : "timeseries",
@@ -62,7 +62,7 @@
 #                         for metric in main_metrics:
 #                             charts.append(
 #                                 {
-#                                     "groupby": [group], 
+#                                     "groupby": [group],
 #                                     "metrics": [metric],
 #                                     "sort" : metric['name'],
 #                                     "page_size" : page_size,
@@ -77,7 +77,7 @@
 #                         for metric in main_metrics:
 #                             charts.append(
 #                                 {
-#                                     "groupby": list(group), 
+#                                     "groupby": list(group),
 #                                     "metrics": [metric],
 #                                     "sort" : metric['name'],
 #                                     "page_size" : page_size,
@@ -87,7 +87,7 @@
 #                     else:
 #                         charts.append(
 #                             {
-#                                 "groupby": list(group), 
+#                                 "groupby": list(group),
 #                                 "metrics": main_metrics,
 #                                 "sort" : sort_default,
 #                                 "page_size" : page_size,
@@ -97,7 +97,7 @@
 #                     for d in date_fields:
 #                         charts.append(
 #                             {
-#                                 "groupby": list(group), 
+#                                 "groupby": list(group),
 #                                 "page_size" : page_size,
 #                                 "show_frequency" : show_frequency,
 #                                 "chart_mode" : "timeseries",
@@ -107,7 +107,7 @@
 #                         for metric in main_metrics:
 #                             charts.append(
 #                                 {
-#                                     "groupby": list(group), 
+#                                     "groupby": list(group),
 #                                     "metrics": [metric],
 #                                     "sort" : metric['name'],
 #                                     "page_size" : page_size,
@@ -118,9 +118,9 @@
 #                             )
 
 #         config_inputs = dict(
-#             app_name=app_name, 
-#             default_view="charts", 
-#             sort_default=sort_default, 
+#             app_name=app_name,
+#             default_view="charts",
+#             sort_default=sort_default,
 #             charts=charts,
 #             preview_fields=groupby_fields+metric_fields,
 #             facets=groupby_fields,
