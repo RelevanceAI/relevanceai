@@ -1,8 +1,12 @@
-from torch import nn
-from typing import Any, List, Optional, Union
 from collections import defaultdict
+from typing import Any, List, Optional, Union
 
-import torch
+try:
+    import torch
+
+    from torch import nn
+except:
+    pass
 
 
 class FeatureExtractor(nn.Module):
