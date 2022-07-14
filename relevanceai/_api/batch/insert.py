@@ -10,6 +10,7 @@ import time
 import warnings
 import traceback
 
+import numpy as np
 import pandas as pd
 
 from ast import literal_eval
@@ -669,8 +670,26 @@ class BatchInsertClient(BatchRetrieveClient):
         failed_documents = []
         failed_documents_detailed = []
 
+        test_doc = json.dumps(self.json_encoder(df.loc[0].to_dict()))
+        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+
+        target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
+        max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
+        chunksize = (
+            int(target_chunk_mb / doc_mb) + 1
+            if int(target_chunk_mb / doc_mb) + 1 < df.shape[0]
+            else df.shape[0]
+        )
+        chunksize = min(chunksize, max_chunk_size)
+
+        # Add edge case handling
+        if chunksize == 0:
+            chunksize = 1
+
+        nchunks = math.ceil(df.shape[0] / chunksize)
+
         # Chunk inserts
-        for chunk in df:
+        for chunk in np.array_split(df, nchunks):
             response = self._insert_csv_chunk(
                 chunk=chunk,
                 dataset_id=dataset_id,
@@ -692,13 +711,13 @@ class BatchInsertClient(BatchRetrieveClient):
 
     def _insert_csv_chunk(
         self,
-        chunk,
-        dataset_id,
-        id_col,
-        create_id,
-        max_workers,
-        retry_chunk_mult,
-        show_progress_bar,
+        chunk: pd.DataFrame,
+        dataset_id: str,
+        id_col: str,
+        create_id: bool,
+        max_workers: int,
+        retry_chunk_mult: float,
+        show_progress_bar: bool,
     ):
         # generate '_id' if possible
         # id_col
