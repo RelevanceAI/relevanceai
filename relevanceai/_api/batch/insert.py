@@ -1014,3 +1014,5 @@ class BatchInsertClient(BatchRetrieveClient):
             > 0
         ) or return_json:
             return results
+
+        return results
