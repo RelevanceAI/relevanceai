@@ -4,16 +4,16 @@ from relevanceai.apps.report_app.blocks import ReportBlocks
 
 class PlotlyReportBlock(ReportBlocks):
     """
-    Adding a pyplot block to Report
+    Adding a plotly block to Report
     """
 
-    def pyplot(
+    def plotly(
         self,
         fig,
         title: str = "",
-        static: bool=True,
-        width:int=300,
-        height:int=300,
+        static: bool = True,
+        width: int = 300,
+        height: int = 300,
         add: bool = True,
         width_percentage: int = 50,
         **kwargs
@@ -32,6 +32,8 @@ class PlotlyReportBlock(ReportBlocks):
                     ".plotly 'image=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
                 )
             fig_image = fig.to_image(format="png", width=width, heigh=height)
-            self.image(fig_image, title=title, width_percentage=width_percentage, add=add)
+            self.image(
+                fig_image, title=title, width_percentage=width_percentage, add=add
+            )
         else:
             raise NotImplementedError
