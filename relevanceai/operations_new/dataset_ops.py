@@ -1170,7 +1170,6 @@ class Operations(Write):
             TranslateOps,
         )
 
-        ops = TranslateOps(fields=fields, model_id=model_id)
         ops = TranslateOps(
             credentials=self.credentials,
             fields=fields,
