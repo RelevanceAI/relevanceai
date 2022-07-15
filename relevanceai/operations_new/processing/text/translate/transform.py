@@ -59,14 +59,17 @@ class TranslateTransform(TransformBase):
         return supported_languages, translation
 
     def translate_document(self, field, document):
-        sup_lang, translation = self.translate_to_english(
-            self.get_field(field, document)
-        )
-        self.set_field(
-            "_translation_." + field,
-            document,
-            {"detectedLanguage": sup_lang, "translation": translation},
-        )
+        try:
+            sup_lang, translation = self.translate_to_english(
+                self.get_field(field, document)
+            )
+            self.set_field(
+                "_translation_." + field,
+                document,
+                {"detectedLanguage": sup_lang, "translation": translation},
+            )
+        except:
+            pass
         return document
 
     def bulk_translate_documents(self, documents):
