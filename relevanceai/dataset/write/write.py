@@ -745,6 +745,24 @@ class Write(Read):
                 print("media successfully uploaded.")
 
     @track
+    def insert_media_bytes(self, bytes: bytes, filename:str, verbose: bool = True):
+        """
+        Insert a single media URL
+        """
+        # media to download
+        response = self.datasets.get_file_upload_urls(
+            self.dataset_id, files=[filename]
+        )
+        url = response["files"][0]["url"]
+        self._upload_media(
+            presigned_url=response["files"][0]["upload_url"],
+            media_content=bytes,
+        )
+        if verbose:
+            print(f"media is hosted at {url}")
+        return url
+
+    @track
     def insert_media_url(self, media_url: str, verbose: bool = True):
         """
         Insert a single media URL
@@ -1087,10 +1105,17 @@ class Write(Read):
         max_workers: Optional[int] = None,
     ) -> List[Dict[str, Any]]:
 
-        list_of_media_urls = []
+        list_of_media_url_mappings = []
 
         for media_field in media_fields:
             paths = [document[media_field] for document in documents]
+            flat_paths = []
+            for path in paths:
+                if isinstance(path, str):
+                    flat_paths.append(path)
+                elif isinstance(path, list):
+                    flat_paths += path
+            paths = list(set(flat_paths))
 
             def upload_media(path, url):
 
@@ -1122,11 +1147,26 @@ class Write(Read):
                     )
                 return data
 
-            list_of_media_urls.append(upload())
+            url_mapping = {path: url for path, url in zip(paths, upload())}
 
-        for media_field, media_urls in zip(media_fields, list_of_media_urls):
-            for document, media_url in zip(documents, media_urls):
-                document[f"{media_field}_url"] = media_url
-                document[media_field] = os.path.split(document[media_field])[-1]
+            list_of_media_url_mappings.append(url_mapping)
+
+        for media_field, media_url_mapping in zip(
+            media_fields, list_of_media_url_mappings
+        ):
+            for document in documents:
+                if isinstance(document[media_field], str):
+                    document[f"{media_field}_url"] = media_url_mapping[
+                        document[media_field]
+                    ]
+                    document[media_field] = os.path.split(document[media_field])[-1]
+
+                elif isinstance(document[media_field], list):
+                    document[f"{media_field}_url"] = [
+                        media_url_mapping[media] for media in document[media_field]
+                    ]
+                    document[media_field] = [
+                        os.path.split(media)[-1] for media in document[media_field]
+                    ]
 
         return documents

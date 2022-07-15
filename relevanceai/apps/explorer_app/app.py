@@ -1,3 +1,4 @@
+import copy
 from typing import Dict, List, Optional, Union
 from relevanceai.apps.explorer_app.base import ExplorerBase
 
@@ -12,7 +13,7 @@ class ExplorerApp(ExplorerBase):
 
     def document_card(
         self,
-        fields: List = None,
+        fields=None,
         primary_field: str = None,
         secondary_field: str = None,
         image_field: str = None,
@@ -21,7 +22,7 @@ class ExplorerApp(ExplorerBase):
         append: bool = True,
     ):
         fields_config = []
-        multi_fields = fields[:]
+        multi_fields = copy.deepcopy(fields)
         if image_field:
             fields_config.append({"id": "image", "value": image_field})
             if image_field in multi_fields:
@@ -96,7 +97,7 @@ class ExplorerApp(ExplorerBase):
         vector_fields = [] if vector_fields is None else vector_fields
         self.config["vector-fields-to-search"] = vector_fields
 
-    def search_min_relevance(self, min_relevance: int):
+    def search_min_relevance(self, min_relevance: float):
         self.config["search-minimum-relevance"] = min_relevance
 
     # Chart section

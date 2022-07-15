@@ -1,9 +1,9 @@
 import itertools
 from typing import Dict, List, Optional, Union
-from relevanceai.apps.report_app.blocks import ReportBlocks
+from relevanceai.apps.report_app.advanced_blocks import ReportAdvancedBlocks
 
 
-class AggregateSections(ReportBlocks):
+class AggregateSections(ReportAdvancedBlocks):
     def section_overview(
         self,
         metrics: List,
@@ -72,8 +72,8 @@ class AggregateSections(ReportBlocks):
                             self.paragraph(group_str)
             elif depth > 1:
                 for group in list(itertools.combinations(main_groupby, depth)):
-                    group_name = " & ".join([g["name"] for g in group])
-                    self.h2(f"Looking at ({group_name})")
+                    group_name_str = " & ".join([g["name"] for g in group])
+                    self.h2(f"Looking at ({group_name_str})")
 
                     for order in ["desc", "asc"]:
                         freq_group = self.dataset.aggregate(
@@ -85,22 +85,22 @@ class AggregateSections(ReportBlocks):
                         freq_group_name = []
                         for g in group:
                             freq_group_name.append(freq_group[0][g["name"]])
-                        freq_group_name = " & ".join(freq_group_name)
+                        freq_group_name_str = " & ".join(freq_group_name)
                         prefix = "Least" if order == "asc" else "Most"
-                        freq_group_str = f"{prefix} frequent {group_name}: {freq_group[0]['frequency']} for {freq_group_name}"
+                        freq_group_str = f"{prefix} frequent for {group_name_str}: {freq_group[0]['frequency']} for {freq_group_name_str}"
                         self.paragraph(freq_group_str)
                     for m in main_metrics:
                         for order in ["desc", "asc"]:
-                            group = self.dataset.aggregate(
+                            metric_group = self.dataset.aggregate(
                                 groupby=list(group),
                                 metrics=main_metrics,
                                 sort=[{m["name"]: order}],
                                 filters=filters,
                             )["results"]
-                            group_name = []
+                            metric_group_name = []
                             for g in group:
-                                group_name.append(group[0][g["name"]])
-                            group_name = " & ".join(group_name)
+                                metric_group_name.append(group[0][g["name"]])
+                            metric_group_name_str = " & ".join(metric_group_name)
                             prefix = "Lowest" if order == "asc" else "Highest"
-                            group_str = f"{prefix} {m['name']} for {group_name}: {round(group[0][m['name']], decimals)} for {group_name}"
+                            group_str = f"{prefix} {m['name']} for {group_name_str}: {round(group[0][m['name']], decimals)} for {metric_group_name_str}"
                             self.paragraph(group_str)

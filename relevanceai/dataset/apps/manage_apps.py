@@ -122,7 +122,8 @@ class ManageApps(Write):
         sort_default: str = None,
         sort_default_direction: str = None,
         charts: Union[List[str], List[dict]] = None,
-        cluster_field: str = None,
+        cluster_alias: str = None,
+        cluster_vector_field: str = None,
         cluster_charts: Union[List[str], List[dict]] = None,
         charts_view_column: int = 2,
         preview_centroids_page_size: int = 2,
@@ -160,8 +161,14 @@ class ManageApps(Write):
             eapp.charts(charts=charts)
 
         # Cluster section
-        if cluster_field:
-            eapp.cluster(cluster_field=cluster_field)
+        if cluster_alias and cluster_vector_field:
+            eapp.cluster(alias=cluster_alias, vector_field=cluster_vector_field)
+        elif (not cluster_alias and cluster_vector_field) or (
+            cluster_alias and not cluster_vector_field
+        ):
+            raise KeyError(
+                "Require both 'cluster_alias' and 'cluster_vector_field' for setting cluster explorer."
+            )
         if cluster_charts:
-            eapp.cluster_charts(cluster_charts=cluster_charts)
+            eapp.cluster_charts(charts=cluster_charts)
         return eapp.config

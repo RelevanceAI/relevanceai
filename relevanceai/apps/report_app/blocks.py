@@ -1,3 +1,6 @@
+import io
+import uuid
+import requests
 from relevanceai.apps.report_app.marks import ReportMarks
 
 
@@ -117,6 +120,45 @@ class ReportBlocks(ReportMarks):
         block = {
             "type": "appBlock",
             "content": [{"type": "orderedList", "content": list_contents}],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    def image(
+        self, content, title: str = "", width_percentage: int = 100, add: bool = True
+    ):
+        if isinstance(content, str):
+            if "http" in content and "/":
+                # online image
+                content_bytes = io.BytesIO(requests.get(content).content).getvalue()
+            else:
+                # local filepath
+                content_bytes = io.BytesIO(open(content, "rb").read()).getvalue()
+        elif isinstance(content, bytes):
+            content_bytes = content
+        elif isinstance(content, io.BytesIO):
+            content_bytes = content.getvalue()
+        else:
+            raise TypeError("'content' needs to be of type str, bytes or io.BytesIO.")
+        filename = f"{title}.png" if title else f"{str(uuid.uuid4())}.png"
+        image_url = self.dataset.insert_media_bytes(
+            content_bytes, filename=filename, verbose=False
+        )
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "imageDisplayBlock",
+                    "attrs": {
+                        "imageSrc": image_url,
+                        "title": title,
+                        "width": f"{width_percentage}%",
+                        "height": "auto",
+                    },
+                }
+            ],
         }
         if add:
             self.contents.append(block)
