@@ -1,5 +1,7 @@
+import copy
 from typing import Dict, List, Optional, Union
 from relevanceai.apps.explorer_app.base import ExplorerBase
+
 
 class ExplorerApp(ExplorerBase):
     def preview_fields(self, fields: List = None, append=True):
@@ -9,38 +11,37 @@ class ExplorerApp(ExplorerBase):
         )
         self.document_card(fields=fields)
 
-    def document_card(self, 
-            fields:List=None, 
-            primary_field:str=None, 
-            secondary_field:str=None, 
-            image_field:str=None, 
-            layout_mode:str=None,
-            page_size:int=None,
-            append:bool=True
-        ):
+    def document_card(
+        self,
+        fields=None,
+        primary_field: str = None,
+        secondary_field: str = None,
+        image_field: str = None,
+        layout_mode: str = None,
+        page_size: int = None,
+        append: bool = True,
+    ):
         fields_config = []
-        multi_fields = fields[:]
+        multi_fields = copy.deepcopy(fields)
         if image_field:
-            fields_config.append({"id":"image", "value":image_field})
+            fields_config.append({"id": "image", "value": image_field})
             if image_field in multi_fields:
                 multi_fields.remove(image_field)
         if primary_field:
-            fields_config.append({"id":"primary", "value":primary_field})
+            fields_config.append({"id": "primary", "value": primary_field})
             if primary_field in multi_fields:
                 multi_fields.remove(primary_field)
         if secondary_field:
-            fields_config.append({"id":"secondary", "value":secondary_field})
+            fields_config.append({"id": "secondary", "value": secondary_field})
             if secondary_field in multi_fields:
                 multi_fields.remove(secondary_field)
         if fields:
-            fields_config.append({"id":"multiple-fields", "value":multi_fields})
+            fields_config.append({"id": "multiple-fields", "value": multi_fields})
 
         if "document-view-configuration" not in self.config:
             self.config["document-view-configuration"] = {
-                "layout-template":"custom",
-                "layout-template-configuration":{
-                    "fields":[]
-                }
+                "layout-template": "custom",
+                "layout-template-configuration": {"fields": []},
             }
         if layout_mode:
             self.config["document-view-configuration"]["layout-mode"] = layout_mode
@@ -96,7 +97,7 @@ class ExplorerApp(ExplorerBase):
         vector_fields = [] if vector_fields is None else vector_fields
         self.config["vector-fields-to-search"] = vector_fields
 
-    def search_min_relevance(self, min_relevance: int):
+    def search_min_relevance(self, min_relevance: float):
         self.config["search-minimum-relevance"] = min_relevance
 
     # Chart section
@@ -149,8 +150,8 @@ class ExplorerApp(ExplorerBase):
             raise TypeError("'charts' needs to be a list or dictionary.")
 
     # Cluster section
-    def cluster(self, alias:str, vector_field:str):
-        self.config["cluster"] = {"alias" : alias, "vector_field":vector_field}
+    def cluster(self, alias: str, vector_field: str):
+        self.config["cluster"] = {"alias": alias, "vector_field": vector_field}
 
     def cluster_charts(self, charts: List):
         self._append_or_replace("cluster-preview-config", charts, default_value=[])
@@ -158,9 +159,9 @@ class ExplorerApp(ExplorerBase):
     def label_clusters(self, cluster_labels: Dict):
         if "cluster" in self.config:
             self.dataset.label_clusters(
-                cluster_labels, 
+                cluster_labels,
                 self.config["cluster"]["alias"],
-                self.config["cluster"]["vector_field"]
+                self.config["cluster"]["vector_field"],
             )
         else:
             raise Exception("Specify your cluster field first with .cluster.")
