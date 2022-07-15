@@ -996,6 +996,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 print(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
+                return results
 
         elif "failed_document_ids" in results:
             if len(results["failed_document_ids"]) == 0:
@@ -1004,6 +1005,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 print(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
+                return results
 
         # Make backwards compatible on errors
         if (
