@@ -94,6 +94,18 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block
 
+    def space(self, height: int = 40, add=True):
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {"type": "spaceBlock", "content": {"width": "100%", "height": height}}
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
     def _list_item(self, content):
         return [{"type": "listItem", "content": [self.paragraph(content, raw=True)]}]
 

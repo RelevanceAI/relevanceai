@@ -61,14 +61,14 @@ class AggregateSections(ReportAdvancedBlocks):
                         self.paragraph(freq_str)
                     for metric in main_metrics:
                         for order in ["asc", "desc"]:
-                            group = self.dataset.aggregate(
+                            metric_group = self.dataset.aggregate(
                                 groupby=[group],
                                 metrics=main_metrics,
                                 sort=[{metric["name"]: order}],
                                 filters=filters,
                             )["results"]
                             prefix = "Lowest" if order == "asc" else "Highest"
-                            group_str = f"{prefix} {metric['name']} for {group['name']}: {round(group[0][metric['name']], decimals)} for {group[0][group['name']]}"
+                            group_str = f"{prefix} {metric['name']} for {group['name']}: {round(metric_group[0][metric['name']], decimals)} for {metric_group[0][group['name']]}"
                             self.paragraph(group_str)
             elif depth > 1:
                 for group in list(itertools.combinations(main_groupby, depth)):
@@ -99,8 +99,11 @@ class AggregateSections(ReportAdvancedBlocks):
                             )["results"]
                             metric_group_name = []
                             for g in group:
-                                metric_group_name.append(group[0][g["name"]])
+                                metric_group_name.append(metric_group[0][g["name"]])
                             metric_group_name_str = " & ".join(metric_group_name)
                             prefix = "Lowest" if order == "asc" else "Highest"
-                            group_str = f"{prefix} {m['name']} for {group_name_str}: {round(group[0][m['name']], decimals)} for {metric_group_name_str}"
+                            group_str = f"{prefix} {m['name']} for {group_name_str}: {round(metric_group[0][m['name']], decimals)} for {metric_group_name_str}"
                             self.paragraph(group_str)
+
+
+#
