@@ -99,7 +99,7 @@ class ReportBlocks(ReportMarks):
             "type": "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
             "content": [
-                {"type": "spaceBlock", "content": {"width": "100%", "height": height}}
+                {"type": "spaceBlock", "attrs": {"width": "100%", "height": height}}
             ],
         }
         if add:
