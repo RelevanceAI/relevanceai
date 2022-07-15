@@ -1,3 +1,5 @@
+import io
+import requests
 from relevanceai.apps.report_app.marks import ReportMarks
 
 class ReportBlocks(ReportMarks):
@@ -116,6 +118,36 @@ class ReportBlocks(ReportMarks):
             "content" : [{
                 "type": "orderedList", 
                 "content" : list_contents
+            }]
+        }
+        if add: self.contents.append(block)
+        return block
+
+    def image(self, content, title:str="", width:int=100, add:bool=True):
+        if isinstance(content, str):
+            if "http" in content and "/":
+                #online image
+                content_bytes = io.BytesIO(response = requests.get(content).content).getvalue()
+            else:
+                #local filepath
+                content_bytes = io.BytesIO(open(content, 'rb').read()).getvalue()
+        elif isinstance(content, bytes):
+            content_bytes = content
+        elif isinstance(content, io.BytesIO):
+            content_bytes = content.getvalue()
+        block = {
+            "type" : "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content" : [{
+                "type": "imageDisplayBlock", 
+                "content" : [
+                    {
+                        "imageSrc" : image_url,
+                        "title" : title,
+                        "width" : '{width}%',
+                        "height" : "auto"
+                    }
+                ]
             }]
         }
         if add: self.contents.append(block)
