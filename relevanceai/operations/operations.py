@@ -817,9 +817,6 @@ class Operations(Write, IO):
             )
             workflow.run(self, verbose=verbose, log_to_file=log_to_file)
 
-    def translate(self, translation_model_name: str):
-        raise NotImplementedError
-
     # def summarize(
     #     self,
     #     summarize_fields: List[str],
