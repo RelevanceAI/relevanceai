@@ -34,18 +34,20 @@ class TranslateTransform(TransformBase):
         supported_languages = []
         for lang in language:
             try:
-                return self._pass_text_through_model(text, lang, supported_languages)
+                return self._pass_text_through_model(
+                    text, lang.lang, supported_languages
+                )
             except Exception as e:
                 pass
 
         return None, None
 
     def _pass_text_through_model(self, text, language: str, supported_languages: list):
-        self.tokenizer.src_lang = self.lang_dict[lang.lang]
-        if lang.lang in self.lang_to_normal:
-            supported_languages.append(self.lang_to_normal[lang.lang])
+        self.tokenizer.src_lang = self.lang_dict[language]
+        if language in self.lang_to_normal:
+            supported_languages.append(self.lang_to_normal[language])
         else:
-            supported_languages.append(lang.lang)
+            supported_languages.append(language)
 
         encoded_hi = self.tokenizer(text, return_tensors="pt")
         generated_tokens = self.model.generate(
