@@ -1090,7 +1090,14 @@ class Write(Read):
         list_of_media_url_mappings = []
 
         for media_field in media_fields:
-            paths = list(set([document[media_field] for document in documents]))
+            paths = [document[media_field] for document in documents]
+            flat_paths = []
+            for path in paths:
+                if isinstance(path, str):
+                    flat_paths.append(path)
+                elif isinstance(path, list):
+                    flat_paths += path
+            paths = list(set(flat_paths))
 
             def upload_media(path, url):
 
@@ -1130,9 +1137,18 @@ class Write(Read):
             media_fields, list_of_media_url_mappings
         ):
             for document in documents:
-                document[f"{media_field}_url"] = media_url_mapping[
-                    document[media_field]
-                ]
-                document[media_field] = os.path.split(document[media_field])[-1]
+                if isinstance(document[media_field], str):
+                    document[f"{media_field}_url"] = media_url_mapping[
+                        document[media_field]
+                    ]
+                    document[media_field] = os.path.split(document[media_field])[-1]
+
+                elif isinstance(document[media_field], list):
+                    document[f"{media_field}_url"] = [
+                        media_url_mapping[media] for media in document[media_field]
+                    ]
+                    document[media_field] = [
+                        os.path.split(media)[-1] for media in document[media_field]
+                    ]
 
         return documents
