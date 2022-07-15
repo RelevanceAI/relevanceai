@@ -31,7 +31,7 @@ class PlotlyReportBlock(ReportBlocks):
                 raise ImportError(
                     ".plotly 'image=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
                 )
-            fig_image = fig.to_image(format="png", width=width, heigh=height)
+            fig_image = fig.to_image(format="png", width=width, height=height)
             self.image(
                 fig_image, title=title, width_percentage=width_percentage, add=add
             )
