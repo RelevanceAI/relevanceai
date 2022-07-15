@@ -12,7 +12,7 @@ class PlotlyReportBlock(ReportBlocks):
         fig,
         title: str = "",
         static: bool = True,
-        width: int = 300,
+        width: int = 600,
         height: int = 300,
         add: bool = True,
         width_percentage: int = 50,
