@@ -72,9 +72,9 @@ class TranslateTransform(TransformBase):
             pass
         return document
 
-    def bulk_translate_documents(self, documents):
+    def bulk_translate_documents(self, documents, **kwargs):
         for field in self.fields:
-            [self.translate_document(field, d) for d in documents]
+            [self.translate_document(field, d, **kwargs) for d in documents]
         return documents
 
-    transform = bulk_translate_documents
+    transform = bulk_translate_documents  # type: ignore
