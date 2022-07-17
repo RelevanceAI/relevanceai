@@ -1,3 +1,3 @@
 class ExploreAuto:
-    def auto():
+    def auto(self):
         return
