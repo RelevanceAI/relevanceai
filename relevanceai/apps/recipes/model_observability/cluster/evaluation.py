@@ -1,4 +1,3 @@
-import warnings
 import numpy as np
 from typing import Union, List, Dict, Any, Optional
 from scipy.cluster import hierarchy
@@ -248,8 +247,8 @@ class ClusterEvaluation:
 
     def internal_overview_report(
         self,
-        store_centroids:bool=False, 
-        store_distance_matrix:bool=False, 
+        store_centroids:bool=True, 
+        store_distance_matrix:bool=True, 
         save=True
     ):
         report = {}
@@ -321,7 +320,7 @@ class ClusterEvaluation:
             #squared errors
             if store_squared_errors:
                 squared_error_samples = self.squared_error_samples(current_cluster_data, centroid_vector)
-                cluster_document["mean_squared_error"] = squared_error_samples.mean()
+                cluster_document["squared_error_summary"] = self.summary_statistics(squared_error_samples, axis=2)
                 squared_error_by_features = self.squared_error_features_from_samples(squared_error_samples)
                 cluster_document["features"]["lowest_squared_errors"] = sorted(
                     squared_error_by_features, key=lambda x:x['squared_errors'], 
@@ -339,9 +338,14 @@ class ClusterEvaluation:
                 )
             report["each_cluster"].append(cluster_document)
 
-        report["dunn_index_score"] = self.dunn_index(
-            min_distance_from_centroid=min(c["distance_from_centroid_summary"]["min"] for c in report["each_cluster"]),
-            max_centroid_distance=self.distance_matrix.max()
-        )
+        if store_squared_errors:
+            report["total_squared_error"] = sum([c["squared_error_summary"]["sum"] for c in report["each_cluster"]])
+            report["mean_squared_error"] = report["total_squared_error"]/report['total_frequency']
+
+        if store_distances:
+            report["dunn_index_score"] = self.dunn_index(
+                min_distance_from_centroid=min(c["distance_from_centroid_summary"]["min"] for c in report["each_cluster"]),
+                max_centroid_distance=self.distance_matrix.max()
+            )
         if save: self.report = report
         return report
