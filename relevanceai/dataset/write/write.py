@@ -229,6 +229,8 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
+    insert_df = insert_pandas_dataframe
+
     @track
     def insert_media_folder(
         self,
@@ -730,7 +732,6 @@ class Write(Read):
         """
         return self.datasets.delete(self.dataset_id)
 
-    insert_df = insert_pandas_dataframe
 
     def _upload_media(
         self, presigned_url: str, media_content: bytes, verbose: bool = True
@@ -745,18 +746,17 @@ class Write(Read):
                 print("media successfully uploaded.")
 
     @track
-    def insert_media_bytes(self, bytes: bytes, filename:str, verbose: bool = True):
+    def insert_media_bytes(self, bytes: bytes, filename: str, verbose: bool = True):
         """
         Insert a single media URL
         """
         # media to download
-        response = self.datasets.get_file_upload_urls(
-            self.dataset_id, files=[filename]
-        )
+        response = self.datasets.get_file_upload_urls(self.dataset_id, files=[filename])
         url = response["files"][0]["url"]
         self._upload_media(
             presigned_url=response["files"][0]["upload_url"],
             media_content=bytes,
+            verbose=verbose,
         )
         if verbose:
             print(f"media is hosted at {url}")

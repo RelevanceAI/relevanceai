@@ -19,7 +19,6 @@ class PyplotReportBlock(ReportBlocks):
     ):
         try:
             import matplotlib.pyplot as plt
-
             plt.ioff()
         except ImportError:
             raise ImportError(

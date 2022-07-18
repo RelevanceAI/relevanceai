@@ -2,7 +2,6 @@ from typing import Dict, List, Optional, Union
 
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
-from relevanceai.dataset.write import Write
 from relevanceai.dataset.apps import LaunchApps
 from relevanceai.operations import Operations
 from relevanceai.operations_new import Operations as OperationsNew

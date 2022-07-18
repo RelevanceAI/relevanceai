@@ -207,15 +207,6 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/{suburl}"
             )
 
-    def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
-        """Log search to dashboard"""
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="multivector_search",
-        )
-
     def print_dashboard_message(self, message: str):
         if self.config["dashboard.show_dashboard_link"]:
             print(message)
@@ -270,10 +261,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
             self.logger.info("URL you are trying to access:" + request_url)
             try:
-                if Transport._is_search_in_path(request_url):
-                    self._log_search_to_dashboard(
-                        method=method, parameters=parameters, endpoint=endpoint
-                    )
+                # if Transport._is_search_in_path(request_url):
+                #     self._log_to_dashboard(
+                #         method=method, parameters=parameters, endpoint=endpoint, dashboard_type="multivector_search"
+                #     )
 
                 # TODO: Add other endpoints in here too
                 if method.upper() in {"POST", "PUT"}:
@@ -399,10 +390,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         for _ in range(retries):
             self.logger.info(f"URL you are trying to access: {request_url}")
             try:
-                if Transport._is_search_in_path(request_url):
-                    self._log_search_to_dashboard(
-                        method=method, parameters=parameters, endpoint=endpoint
-                    )
+                # if Transport._is_search_in_path(request_url):
+                #     self._log_to_dashboard(
+                #         method=method, parameters=parameters, endpoint=endpoint, dashboard_type="multivector_search"
+                #     )
 
                 async with aiohttp.request(
                     method=method.upper(),
