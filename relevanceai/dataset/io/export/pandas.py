@@ -9,8 +9,7 @@ from relevanceai.constants.constants import MAX_CACHESIZE
 
 class PandasExport(Read):
     @added(version="1.1.5")
-    @lru_cache(maxsize=MAX_CACHESIZE)
-    def to_pandas_dataframe(self, **kwargs) -> pd.DataFrame:
+    def to_df(self, **kwargs) -> pd.DataFrame:
         """
         Converts a Relevance AI Dataset to a pandas DataFrame.
 
@@ -37,3 +36,5 @@ class PandasExport(Read):
             return df
         except KeyError:
             raise Exception("No documents found")
+
+    to_pandas_dataframe = to_df
