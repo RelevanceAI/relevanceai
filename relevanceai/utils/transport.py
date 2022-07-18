@@ -34,6 +34,7 @@ DASHBOARD_MAPPINGS = {
     "cluster_aggregation": "/sdk/cluster/aggregation",
 }
 
+
 class Transport(JSONEncoderUtils, ConfigMixin):
     """_Base class for all relevanceai objects"""
 

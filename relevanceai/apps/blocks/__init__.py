@@ -1,0 +1,4 @@
+from relevanceai.dataset.apps.templates.metrics_chart import MetricsChartTemplate
+from relevanceai.dataset.apps.templates.metrics_report import MetricsReportTemplate
+from relevanceai.dataset.apps.templates.text_search import TextSearchTemplate
+from relevanceai.dataset.apps.templates.text_cluster import TextClusterTemplate
