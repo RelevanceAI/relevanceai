@@ -16,7 +16,7 @@ from relevanceai.dataset.series import Series
 
 
 from relevanceai.dataset.read.metadata import Metadata
-from relevanceai.dataset.read.statistics import Statistics
+from relevanceai.dataset.read.cluster import ClusterRead
 from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.cache import lru_cache
