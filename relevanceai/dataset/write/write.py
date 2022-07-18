@@ -229,6 +229,8 @@ class Write(Read):
         self.print_search_dashboard_url(self.dataset_id)
         return results
 
+    insert_df = insert_pandas_dataframe
+
     @track
     def insert_media_folder(
         self,
@@ -730,7 +732,6 @@ class Write(Read):
         """
         return self.datasets.delete(self.dataset_id)
 
-    insert_df = insert_pandas_dataframe
 
     def _upload_media(
         self, presigned_url: str, media_content: bytes, verbose: bool = True

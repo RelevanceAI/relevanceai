@@ -55,7 +55,7 @@ def update_nested_dictionary(d: dict, u: Union[dict, Mapping]):
     return d
 
 
-class Read(Statistics):
+class Read(ClusterRead):
     """
 
     Dataset Read
