@@ -102,13 +102,13 @@ class CentroidsClient(_Base):
         }
         endpoint = f"/datasets/{dataset_id}/cluster/centroids/list_closest_to_center"
         method = "POST"
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="cluster_centroids_closest",
-            verbose=verbose,
-        )
+        # self._log_to_dashboard(
+        #     method=method,
+        #     parameters=parameters,
+        #     endpoint=endpoint,
+        #     dashboard_type="cluster_centroids_closest",
+        #     verbose=verbose,
+        # )
         return self.make_http_request(endpoint, method=method, parameters=parameters)
 
     documents_closest_to_center = list_closest_to_center
@@ -205,12 +205,12 @@ class CentroidsClient(_Base):
             "include_facets": include_facets,
             "cluster_properties_filter": cluster_properties_filter,
         }
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="cluster_centroids_furthest",
-        )
+        # self._log_to_dashboard(
+        #     method=method,
+        #     parameters=parameters,
+        #     endpoint=endpoint,
+        #     dashboard_type="cluster_centroids_furthest",
+        # )
         response = self.make_http_request(
             endpoint, method=method, parameters=parameters
         )
