@@ -23,7 +23,6 @@ from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
 )
 
-from relevanceai.reports.cluster.evaluate import ClusterEvaluate
 from relevanceai.constants.errors import MissingClusterError
 
 
