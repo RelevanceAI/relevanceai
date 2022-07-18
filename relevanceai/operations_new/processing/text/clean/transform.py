@@ -90,3 +90,6 @@ class CleanTextTransform(TransformBase):
                 t, documents, self.output_fields[i]
             )
         return new_documents
+
+    def name(self):
+        return 'clean_text'
