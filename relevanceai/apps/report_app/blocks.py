@@ -17,7 +17,7 @@ class ReportBlocks(ReportMarks):
                 if isinstance(c, list):
                     content_list.append(c[0])
                 else:
-                    content_list.append(self._process_content(c))
+                    content_list += self._process_content(c)
             return content_list
         elif isinstance(content, dict):
             return content
