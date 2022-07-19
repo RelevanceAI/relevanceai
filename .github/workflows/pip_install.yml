@@ -8,6 +8,7 @@ on:
 
 jobs:
   create-pip-link-comment:
+    runs-on: ubuntu-latest
     name: pip link
     steps:
       - name: Checkout code
