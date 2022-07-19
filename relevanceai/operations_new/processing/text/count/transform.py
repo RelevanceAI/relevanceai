@@ -42,13 +42,13 @@ class CountTextTransform(TransformBase):
             text = self.get_field(t, document)
             if self.include_char_count:
                 self.set_field(
-                    t + "_char_count", output_doc, self.count_characters(text)
+                    "_count_.char." + t, output_doc, self.count_characters(text)
                 )
             if self.include_word_count:
-                self.set_field(t + "_word_count", output_doc, self.count_words(text))
+                self.set_field("_count_.word." + t, output_doc, self.count_words(text))
             if self.include_sentence_count:
                 self.set_field(
-                    t + "_sentence_count", output_doc, self.count_sentences(text)
+                    "_count_.sentence." + t, output_doc, self.count_sentences(text)
                 )
         return output_doc
 
