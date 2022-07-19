@@ -16,20 +16,18 @@ class ClusterTransform(TransformBase, ClusterAlias):
         vector_fields: List[str],
         alias: str,
         model: Any,
-        cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
-        byo_cluster_name: str = None,
+        cluster_field: str = "_cluster_",
         **kwargs,
     ):
 
         self.vector_fields = vector_fields
+        self.cluster_field = cluster_field
 
         self.model_kwargs = {} if model_kwargs is None else model_kwargs
         self.alias = self._get_alias(alias)
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
-        self.cluster_field = cluster_field
-        self.byo_cluster_name = byo_cluster_name
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -87,7 +85,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
         labels = self.fit_predict_documents(
             documents=documents,
         )
-        # from sklearn.metrics import silhouette_samples
+
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 

@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 from typing import Union, List, Dict, Any, Optional
 from scipy.cluster import hierarchy
 from sklearn.neighbors import NearestNeighbors
@@ -11,7 +13,8 @@ from sklearn.metrics.pairwise import (
     pairwise_distances,
 )
 
-class ClusterEvaluation:
+
+class ClusterEvaluator:
     """
     Evaluate your clusters
 
@@ -37,11 +40,13 @@ class ClusterEvaluation:
         Whether to print stuff
 
     """
+
     def __init__(
         self,
         X: Union[list, np.ndarray],
         cluster_labels: Union[List[Union[str, float]], np.ndarray],
-        centroids: Union[list, np.ndarray, str] = None,
+        centroids=None,
+        # centroids: Union[list, np.ndarray, str] = None,
         cluster_names: Union[list, dict] = None,
         feature_names: Union[list, dict] = None,
         model=None,
@@ -72,25 +77,37 @@ class ClusterEvaluation:
                 centroids = self._calculate_centroids(self.X, self.cluster_labels)
         if not isinstance(centroids, (list, dict, np.ndarray)):
             raise TypeError("centroid_vectors should be of type List or Numpy array")
+
         self.centroids = centroids
         self.outlier_label = outlier_label
         self.metric = metric
-        self.distance_matrix = pairwise_distances(
-            list(self.centroids.values()), metric=self.metric
-        )
+        if isinstance(self.centroids, dict):
+            self.distance_matrix = pairwise_distances(
+                list(self.centroids.values()), metric=self.metric
+            )
+        else:
+            self.distance_matrix = pairwise_distances(
+                self.centroids, metric=self.metric
+            )
         self.verbose = verbose
 
     def _get_cluster_name(self, cluster_index):
-        return self.cluster_names[cluster_index] if self.cluster_names else f"cluster-{str(cluster_index)}"
+        return (
+            self.cluster_names[cluster_index]
+            if self.cluster_names
+            else f"cluster-{str(cluster_index)}"
+        )
 
     def _get_feature_name(self, feature_index):
-        return self.feature_names[feature_index] if self.feature_names else f"feature-{str(feature_index)}"
+        return (
+            self.feature_names[feature_index]
+            if self.feature_names
+            else f"feature-{str(feature_index)}"
+        )
 
     def _get_centroids_from_model(self, model, output_format="array"):
         if hasattr(model, "cluster_centers_"):
             return model.cluster_centers_
-        elif hasattr(model, "cluster_centers_"):
-            return model.centroids
         elif hasattr(model, "get_centers"):
             return model.get_centers()
         else:
@@ -113,24 +130,137 @@ class ClusterEvaluation:
         medoids = X[medoid_indexes]
         return medoids
 
-    def hierarchy_linkage(self, hierarchy_method: str="ward"):
-        self.linkage = hierarchy.linkage(list(self.centroids.values()), hierarchy_method)
+    @staticmethod
+    def _convert_centroids(centroids):
+        return
+
+    def hierarchy_linkage(self, hierarchy_method: str = "ward"):
+        self.linkage = hierarchy.linkage(
+            list(self.centroids.values()), hierarchy_method
+        )
         return self.linkage
 
-    def plot_dendrogram(self, hierarchy_method=None, threshold=1.25):
+    def pyplot_dendrogram(
+        self, hierarchy_method=None, color_threshold=1.25, orientation="left", ax=None
+    ):
+        fig, ax = plt.subplots()
         if hierarchy_method:
-            self.linkage = hierarchy.linkage(
-                list(self.centroids.values()), hierarchy_method=hierarchy_method
-            )
+            self.linkage = self.hierarchy_linkage(hierarchy_method=hierarchy_method)
         elif not hasattr(self, "linkage"):
-            self.linkage = hierarchy.linkage(list(self.centroids.values()))
-        return hierarchy.dendrogram(
-            self.linkage, 
-            labels=self.cluster_names, 
-            orientation='right', 
-            color_threshold=threshold
+            self.linkage = self.hierarchy_linkage(ax=ax)
+        self.dendrogram = hierarchy.dendrogram(
+            self.linkage,
+            labels=self.cluster_names,
+            orientation=orientation,
+            color_threshold=color_threshold,
+            ax=ax,
         )
-        
+        return fig
+
+    def plotly_dendrogram(
+        self, hierarchy_method=None, color_threshold=1.25, orientation="left"
+    ):
+        if hierarchy_method:
+            self.linkage = self.hierarchy_linkage(hierarchy_method=hierarchy_method)
+        elif not hasattr(self, "linkage"):
+            self.linkage = self.hierarchy_linkage()
+        try:
+            import plotly.figure_factory as ff
+
+            fig = ff.create_dendrogram(
+                np.array(list(self.centroids.values())),
+                labels=self.cluster_names,
+                orientation=orientation,
+                color_threshold=color_threshold,
+                linkagefun=lambda x: self.linkage,
+            )
+            return fig
+        except ImportError:
+            raise ImportError(
+                "This requires plotly installed, install with `pip install -U plotly`"
+            )
+        except TypeError as e:
+            raise TypeError(
+                e
+                + " This is a common error that can be fixed with `pip install pyyaml==5.4.1`"
+            )
+
+    def plot_dendrogram(
+        self,
+        plot_method=None,
+        hierarchy_method=None,
+        color_threshold: float = 1,
+        orientation: str = "left",
+    ):
+        if plot_method == "pyplot":
+            return (
+                self.pyplot_dendrogram(
+                    hierarchy_method=hierarchy_method,
+                    color_threshold=color_threshold,
+                    orientation=orientation,
+                ),
+                "pyplot",
+            )
+        elif plot_method == "plotly":
+            return (
+                self.plotly_dendrogram(
+                    hierarchy_method=hierarchy_method,
+                    color_threshold=color_threshold,
+                    orientation=orientation,
+                ),
+                "plotly",
+            )
+        else:
+            try:
+                return (
+                    self.plotly_dendrogram(
+                        hierarchy_method=hierarchy_method,
+                        color_threshold=color_threshold,
+                        orientation=orientation,
+                    ),
+                    "plotly",
+                )
+            except:
+                return (
+                    self.pyplot_dendrogram(
+                        hierarchy_method=hierarchy_method,
+                        color_threshold=color_threshold,
+                        orientation=orientation,
+                    ),
+                    "pyplot",
+                )
+
+    def plot_distance_matrix(self, decimals=4):
+        try:
+            import plotly.express as px
+
+            if self.cluster_names:
+                return (
+                    px.imshow(
+                        pd.DataFrame(
+                            np.round(self.distance_matrix, 4),
+                            columns=self.cluster_names,
+                            index=self.cluster_names,
+                        ),
+                        text_auto=True,
+                    ),
+                    "plotly",
+                )
+            else:
+                return (
+                    px.imshow(np.round(self.distance_matrix, 4), text_auto=True),
+                    "plotly",
+                )
+        except ImportError:
+            raise ImportError(
+                "This requires plotly installed, install with `pip install -U plotly`"
+            )
+        except TypeError as e:
+            raise TypeError(
+                e
+                + " This is a common error that can be fixed with `pip install pyyaml==5.4.1`"
+            )
+
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0, simple=False):
         """
@@ -202,9 +332,7 @@ class ClusterEvaluation:
         distances_from_centroid_to_another = pairwise_distances(
             [centroid], other_cluster_data
         )
-        return self.summary_statistics(
-            distances_from_centroid_to_another, axis=2
-        )
+        return self.summary_statistics(distances_from_centroid_to_another, axis=2)
 
     def squared_error_samples(self, cluster_data, centroid):
         return np.square(
@@ -219,7 +347,7 @@ class ClusterEvaluation:
         for f in range(len(squared_error_samples[0])):
             squared_errors_by_feature.append(
                 {
-                    "feature_index" : f,
+                    "feature_index": f,
                     "feature_id": self._get_feature_name(f),
                     "squared_errors": squared_error_samples[:, f].mean(),
                 }
@@ -235,24 +363,26 @@ class ClusterEvaluation:
 
     def closest_clusters(self, cluster_index, n_clusters):
         return [
-            self._get_cluster_name(c) 
+            self._get_cluster_name(c)
             for c in self.distance_matrix[cluster_index].argsort()[:n_clusters]
         ]
-    
+
     def furthest_clusters(self, cluster_index, n_clusters):
         return [
-            self._get_cluster_name(c) 
+            self._get_cluster_name(c)
             for c in self.distance_matrix[cluster_index].argsort()[-n_clusters:][::-1]
         ]
 
     def internal_overview_report(
         self,
-        store_centroids:bool=True, 
-        store_distance_matrix:bool=True, 
-        save=True
+        store_centroids: bool = True,
+        store_distance_matrix: bool = True,
+        save=True,
     ):
         report = {}
-        report["silhouette_score_summary"] = self.summary_statistics(self.silhouette_samples())
+        report["silhouette_score_summary"] = self.summary_statistics(
+            self.silhouette_samples()
+        )
         report["calinski_harabasz_score"] = self.calinski_harabasz_score()
         report["davies_bouldin_score"] = self.davies_bouldin_score()
         report["silhouette_score"] = self.silhouette_score()
@@ -269,24 +399,25 @@ class ClusterEvaluation:
             report["centroids"] = self.centroids
         if store_distance_matrix:
             report["distance_matrix"] = self.distance_matrix
-        if save: self.report = report
+        if save:
+            self.report = report
         return report
 
     def internal_report(
         self,
-        top_n_clusters:int=5,
-        top_n_features:int=5,
-        store_squared_errors:bool=True,
-        store_distances:bool=True,
-        store_centroids:bool=False, 
-        store_distance_matrix:bool=False, 
-        save=True
+        top_n_clusters: int = 5,
+        top_n_features: int = 5,
+        store_squared_errors: bool = True,
+        store_distances: bool = True,
+        store_centroids: bool = False,
+        store_distance_matrix: bool = False,
+        save=True,
     ):
         report = {}
         report.update(
             self.internal_overview_report(
                 store_centroids=store_centroids,
-                store_distance_matrix=store_distance_matrix
+                store_distance_matrix=store_distance_matrix,
             )
         )
         report["each_cluster_frequency"] = []
@@ -308,44 +439,64 @@ class ClusterEvaluation:
             cluster_document = {
                 "cluster_id": cluster_name,
                 "cluster_index": cluster_label,
-                "centroid_vector_" : centroid_vector,
-                "frequency" : label_counts[i],
-                "summary" : current_summary,
-                "silouhette_score" : silouhette_summary["mean"],
-                "silouhette_score_summary" : silouhette_summary,
-                "closest_clusters" : self.closest_clusters(i, top_n_clusters),
-                "furthest_clusters" : self.furthest_clusters(i, top_n_clusters),
-                "features" : {}
+                "centroid_vector_": centroid_vector,
+                "frequency": label_counts[i],
+                "summary": current_summary,
+                "silouhette_score": silouhette_summary["mean"],
+                "silouhette_score_summary": silouhette_summary,
+                "closest_clusters": self.closest_clusters(i, top_n_clusters),
+                "furthest_clusters": self.furthest_clusters(i, top_n_clusters),
+                "features": {},
             }
-            #squared errors
+            # squared errors
             if store_squared_errors:
-                squared_error_samples = self.squared_error_samples(current_cluster_data, centroid_vector)
-                cluster_document["squared_error_summary"] = self.summary_statistics(squared_error_samples, axis=2)
-                squared_error_by_features = self.squared_error_features_from_samples(squared_error_samples)
-                cluster_document["features"]["lowest_squared_errors"] = sorted(
-                    squared_error_by_features, key=lambda x:x['squared_errors'], 
-                    reverse=False)[:top_n_features]
-                cluster_document["features"]["highest_squared_errors"] = sorted(
-                    squared_error_by_features, key=lambda x:x['squared_errors'], 
-                    reverse=True)[:top_n_features]
-            #distances
-            if store_distances:
-                cluster_document["distance_from_centroid_summary"] = self.distance_from_centroid(
+                squared_error_samples = self.squared_error_samples(
                     current_cluster_data, centroid_vector
                 )
-                cluster_document["distance_from_centroid_to_another_cluster_summary"] = self.distance_from_centroid_to_another(
+                cluster_document["squared_error_summary"] = self.summary_statistics(
+                    squared_error_samples, axis=2
+                )
+                squared_error_by_features = self.squared_error_features_from_samples(
+                    squared_error_samples
+                )
+                cluster_document["features"]["lowest_squared_errors"] = sorted(
+                    squared_error_by_features,
+                    key=lambda x: x["squared_errors"],
+                    reverse=False,
+                )[:top_n_features]
+                cluster_document["features"]["highest_squared_errors"] = sorted(
+                    squared_error_by_features,
+                    key=lambda x: x["squared_errors"],
+                    reverse=True,
+                )[:top_n_features]
+            # distances
+            if store_distances:
+                cluster_document[
+                    "distance_from_centroid_summary"
+                ] = self.distance_from_centroid(current_cluster_data, centroid_vector)
+                cluster_document[
+                    "distance_from_centroid_to_another_cluster_summary"
+                ] = self.distance_from_centroid_to_another(
                     current_cluster_data, centroid_vector
                 )
             report["each_cluster"].append(cluster_document)
 
         if store_squared_errors:
-            report["total_squared_error"] = sum([c["squared_error_summary"]["sum"] for c in report["each_cluster"]])
-            report["mean_squared_error"] = report["total_squared_error"]/report['total_frequency']
+            report["total_squared_error"] = sum(
+                [c["squared_error_summary"]["sum"] for c in report["each_cluster"]]
+            )
+            report["mean_squared_error"] = (
+                report["total_squared_error"] / report["total_frequency"]
+            )
 
         if store_distances:
             report["dunn_index_score"] = self.dunn_index(
-                min_distance_from_centroid=min(c["distance_from_centroid_summary"]["min"] for c in report["each_cluster"]),
-                max_centroid_distance=self.distance_matrix.max()
+                min_distance_from_centroid=min(
+                    c["distance_from_centroid_summary"]["min"]
+                    for c in report["each_cluster"]
+                ),
+                max_centroid_distance=self.distance_matrix.max(),
             )
-        if save: self.report = report
+        if save:
+            self.report = report
         return report

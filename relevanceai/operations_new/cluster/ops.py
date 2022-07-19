@@ -28,11 +28,12 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        cluster_field: str = "_cluster_",
-        verbose: bool = False,
         model=None,
         model_kwargs=None,
+        cluster_field: str = "_cluster_",
         byo_cluster_field: str = None,
+        include_cluster_report: bool = False,
+        verbose: bool = False,
         **kwargs,
     ):
         """
@@ -52,6 +53,8 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             model_kwargs = {}
 
         self.model_kwargs = model_kwargs
+
+        self.include_cluster_report = include_cluster_report
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -74,6 +77,14 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         self.byo_cluster_field = byo_cluster_field
         if byo_cluster_field is not None:
             self.create_byo_clusters()
+
+    def post_run(self, dataset, documents, updated_documents):
+        from relevanceai.recipes.model_observability.cluster.report import ClusterReport
+
+        app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
+        app.h1("Cluster Report for {self.alias}")
+        app.quote(f"Ran on {', '.join(self.vector_fields)} vector fields")
+        return
 
     def insert_centroids(
         self,

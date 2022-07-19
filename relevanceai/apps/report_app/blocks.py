@@ -8,6 +8,8 @@ class ReportBlocks(ReportMarks):
     def _process_content(self, content):
         if isinstance(content, str):
             return [{"type": "text", "text": content}]
+        elif isinstance(content, (float, int)):
+            return [{"type": "text", "text": str(content)}]
         elif isinstance(content, list):
             content_list = []
             for c in content:

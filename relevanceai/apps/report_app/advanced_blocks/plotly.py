@@ -15,7 +15,7 @@ class PlotlyReportBlock(ReportBlocks):
         width: int = 600,
         height: int = 300,
         add: bool = True,
-        width_percentage: int = 50,
+        width_percentage: int = 100,
         **kwargs
     ):
         try:
@@ -37,3 +37,40 @@ class PlotlyReportBlock(ReportBlocks):
             )
         else:
             raise NotImplementedError
+
+    def plotly_dendrogram(
+        self,
+        data,
+        labels=None,
+        hierarchy_method="single",
+        metric="euclidean",
+        orientation="right",
+        color_threshold=0.75,
+        **kwargs
+    ):
+        """
+        Convenience function to plot a dendrogram.
+        """
+        from scipy.cluster import hierarchy
+
+        linkage = hierarchy.linkage(data, method=hierarchy_method, metric=metric)
+        try:
+            import plotly.figure_factory as ff
+
+            fig = ff.create_dendrogram(
+                data,
+                labels=labels,
+                orientation=orientation,
+                color_threshold=color_threshold,
+                linkagefun=lambda x: linkage,
+            )
+            return self.plotly(fig, **kwargs)
+        except ImportError:
+            raise ImportError(
+                "This requires plotly installed, install with `pip install -U plotly`"
+            )
+        except TypeError as e:
+            raise TypeError(
+                e
+                + " This is a common error that can be fixed with `pip install pyyaml==5.4.1`"
+            )
