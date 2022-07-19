@@ -7,16 +7,7 @@ on:
 
 jobs:
   create-pip-link-comment:
-    name: pip link ${{ matrix.notebook }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest]
-        python-version: [ '3.8' ]
-        include:
-          - os: ubuntu-latest
-            path: ~/.cache/pip
-
+    name: pip link
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
