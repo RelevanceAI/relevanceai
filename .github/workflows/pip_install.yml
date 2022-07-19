@@ -1,4 +1,4 @@
-name: Colab Link Comments
+name: Pip install comment
 
 on:
   push:
@@ -21,7 +21,8 @@ jobs:
           hide_classify: "OUTDATED"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
-            You can now install using by running:
+            Hey champ! Thanks for the PR! Going to review and merge soon 😉
+            Just before that though can you please test the installation with the command below? 😎
             ```
             pip install git+https://github.com/RelevanceAI/RelevanceAI.git@${{ github.head_ref }}
             ```
