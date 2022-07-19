@@ -51,10 +51,6 @@ class ClusterReport(ReportApp):
         add=True,
     ):
         self.h1("Cluster report")
-        self.h2("Overview of cluster metrics")
-        self.paragraph(
-            "When measuring the performance of a cluster there are 2 main things to look at:"
-        )
         self.section_cluster_overview_metrics()
         self.section_cluster_dendrogram(
             hierarchy_methods=hierarchy_method,
