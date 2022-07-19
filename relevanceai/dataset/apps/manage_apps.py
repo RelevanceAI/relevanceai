@@ -56,7 +56,7 @@ class ManageApps(Write):
 
     def create_app(self, config: Dict):
         result = self.deployables.create(
-            dataset_id=self.dataset_id, configuration=self.json_encoder(self.config)
+            dataset_id=self.dataset_id, configuration=self.json_encoder(config)
         )
         print(
             f"""Your app can be accessed at: {self._app_url(
@@ -72,7 +72,7 @@ class ManageApps(Write):
         status = self.deployables.update(
             deployable_id=deployable_id,
             dataset_id=self.dataset_id,
-            configuration=self.json_encoder(self.config),
+            configuration=self.json_encoder(config),
             overwrite=overwrite,
         )
         if status["status"] == "success":
