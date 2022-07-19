@@ -31,7 +31,7 @@ class ReportBase:
 
     def deploy(self, overwrite:bool=False):
         if self.deployable_id and self.reloaded:
-            status = self.dataset.update_app(self.deployable_id, self.config, overwrite=overwrite)
+            status = self.dataset.update_app(self.deployable_id, self.dataset.json_encoder(self.config), overwrite=overwrite)
             if status["status"] == "success":
                 return self.dataset.get_app(self.deployable_id)
             else:

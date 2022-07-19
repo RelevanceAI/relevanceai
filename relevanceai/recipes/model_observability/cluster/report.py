@@ -41,6 +41,16 @@ class ClusterReport(ReportApp):
         self.started_cluster_evaluator = True
         self.evaluator.internal_overview_report()
 
+    def start_cluster_evaluator_from_dataset(
+        self, 
+        vector_fields:list, 
+        alias:str, 
+        feature_names: Union[list, dict] = None,
+        metric: str = "euclidean",
+        verbose: bool = False,
+    ):
+        return 
+
     # create wrapper to make sure cluster_evaluator is started
 
     def section_cluster_report(
