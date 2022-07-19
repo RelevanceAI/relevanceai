@@ -1,6 +1,6 @@
 import warnings
 import numpy as np
-
+import pandas as pd
 from copy import deepcopy
 
 from typing import Optional, Union, Callable, Dict, Any, Set, List
@@ -661,3 +661,15 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         for cluster_id in self.list_cluster_ids():
             self._operate(cluster_id=cluster_id, field=field, output=output, func=func)
         return output
+
+    @property
+    def labels(self):
+        metadata = self.datasets.metadata(self.dataset_id)
+        metadata = metadata.get("results", {}).get("cluster_metadata", {})
+        vector_fields = ["text_mpnet_vector_"]
+        alias = "kmeans-100"
+
+        cluster_field = "_cluster_." + ".".join(vector_fields) + "." + alias
+        labels = metadata.get("labels", {}).get(cluster_field, {})
+        print("To view nicely, please use `pd.DataFrame(labels)`.")
+        return labels
