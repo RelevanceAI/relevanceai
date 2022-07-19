@@ -21,7 +21,10 @@ class ReportBlocks(ReportMarks):
                 else:
                     content_list.append(c)
             return content_list
+        elif isinstance(content, dict):
+            return content
         else:
+            print(type(content))
             return content
 
     def h1(self, content, add=True):
