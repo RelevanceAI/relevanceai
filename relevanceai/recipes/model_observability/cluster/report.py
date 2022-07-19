@@ -45,7 +45,7 @@ class ClusterReport(ReportApp):
 
     def section_cluster_report(
         self,
-        hierarchy_method=None,
+        hierarchy_methods=["ward"],
         color_threshold: float = 1.25,
         plot_method=None,
         add=True,
@@ -53,7 +53,7 @@ class ClusterReport(ReportApp):
         self.h1("Cluster report")
         self.section_cluster_overview_metrics()
         self.section_cluster_dendrogram(
-            hierarchy_methods=hierarchy_method,
+            hierarchy_methods=hierarchy_methods,
             color_threshold=color_threshold,
             plot_method=plot_method,
         )
@@ -71,14 +71,14 @@ class ClusterReport(ReportApp):
                 "Separation (inter-cluster distance): How well separated are the clusters from each other.",
             ]
         )
-        for m in [
+        for metric in [
             "calinski_harabasz_score",
             "davies_bouldin_score",
             "silhouette_score",
         ]:
-            metric_name = " ".join(m.split("_")).title()
+            metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
-                [self.bold(f"{metric_name}: "), self.evaluator.report[m]], add=add
+                [self.bold(f"{metric_name}: "), self.evaluator.report[metric]], add=add
             )
 
     def section_cluster_dendrogram(
