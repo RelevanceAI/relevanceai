@@ -16,7 +16,7 @@ from relevanceai.dataset.series import Series
 
 
 from relevanceai.dataset.read.metadata import Metadata
-from relevanceai.dataset.read.statistics import Statistics
+from relevanceai.dataset.read.cluster import ClusterRead
 from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.cache import lru_cache
@@ -55,7 +55,7 @@ def update_nested_dictionary(d: dict, u: Union[dict, Mapping]):
     return d
 
 
-class Read(Statistics):
+class Read(ClusterRead):
     """
 
     Dataset Read

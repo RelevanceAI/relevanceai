@@ -5,7 +5,6 @@ Run this file if you want to generate coverage.cfg and you want to exclude many 
 RUN_EXCLUDE = [
     "*__init__.py",
     "relevanceai/_api/*",
-    "relevanceai/dashboard/*",
     "relevanceai/operations/auto/*",
     "relevanceai/operations/cluster/base.py",
     "relevanceai/operations/cluster/centroids.py",

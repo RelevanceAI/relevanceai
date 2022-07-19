@@ -1154,3 +1154,37 @@ class Operations(Write):
             lambda x: datetime.fromtimestamp(float(x.replace("-", ".")))
         )
         return df
+
+    def translate(
+        self,
+        fields: list,
+        model_id: str = None,
+        output_fields: list = None,
+        chunksize: int = 20,
+        filters: list = None,
+        refresh: bool = False,
+    ):
+        if model_id is None:
+            model_id = "facebook/mbart-large-50-many-to-many-mmt"
+        from relevanceai.operations_new.processing.text.translate.ops import (
+            TranslateOps,
+        )
+
+        ops = TranslateOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_id=model_id,
+            output_fields=output_fields,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops
