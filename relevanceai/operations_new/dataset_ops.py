@@ -873,6 +873,7 @@ class Operations(Write):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
         ops = CountTextOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             include_char_count=count_characters,
             include_word_count=count_words,
