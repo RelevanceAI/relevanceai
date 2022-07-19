@@ -289,7 +289,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             if centroid["_id"] == cluster_id:
                 return centroid
 
-        raise ValueError(f"Missing the centorid with id {cluster_id}")
+        raise ValueError(f"Missing the centroid with id {cluster_id}")
 
     def list_closest(
         self,
