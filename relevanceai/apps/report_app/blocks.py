@@ -14,12 +14,10 @@ class ReportBlocks(ReportMarks):
         elif isinstance(content, list):
             content_list = []
             for c in content:
-                if isinstance(c, str):
-                    content_list.append({"type": "text", "text": c})
-                elif isinstance(c, list):
+                if isinstance(c, list):
                     content_list.append(c[0])
                 else:
-                    content_list.append(c)
+                    content_list.append(self._process_content(c))
             return content_list
         elif isinstance(content, dict):
             return content
