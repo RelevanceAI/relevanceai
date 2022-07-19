@@ -1,0 +1,32 @@
+name: Colab Link Comments
+
+on:
+  push:
+      branches: [ main, development ]
+  pull_request:
+
+jobs:
+  create-pip-link-comment:
+    name: pip link ${{ matrix.notebook }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest]
+        python-version: [ '3.8' ]
+        include:
+          - os: ubuntu-latest
+            path: ~/.cache/pip
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Comment PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: |
+            You can now install using by running:
+            pip install git+https://github.com/RelevanceAI/RelevanceAI.git@${{ github.head_ref }}
