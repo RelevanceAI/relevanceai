@@ -241,7 +241,12 @@ class Dataset(OperationsNew, Operations, LaunchApps):
 
     def update_alias(self, field: str, alias: str):
         """Update the alias of a field using the SDK."""
-        current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        try:
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        except:
+            # If there are no settings
+            self.datasets.post_settings(self.dataset_id, settings={})
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
         if "fieldAliases" not in current_settings:
             current_settings["fieldAliases"] = {}
         current_settings["fieldAliases"][field] = alias
