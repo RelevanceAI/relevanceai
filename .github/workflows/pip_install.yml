@@ -20,4 +20,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
             You can now install using by running:
+            ```
             pip install git+https://github.com/RelevanceAI/RelevanceAI.git@${{ github.head_ref }}
+            ```
