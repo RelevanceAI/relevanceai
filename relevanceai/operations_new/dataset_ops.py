@@ -868,6 +868,7 @@ class Operations(Write):
         count_sentences: bool = True,
         filters: list = None,
         chunksize: int = 1000,
+        refresh: bool = False,
     ):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
@@ -883,6 +884,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             batched=True,
+            refresh=refresh,
         )
         return ops
 
