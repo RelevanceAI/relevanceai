@@ -554,13 +554,14 @@ class Operations(Write):
             output_fields=output_fields,
             sensitivity=sensitivity,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
         )
+        return ops
 
     def extract_emotion(
         self,
@@ -571,6 +572,7 @@ class Operations(Write):
         output_fields: list = None,
         min_score: float = 0.3,
         batched: bool = True,
+        refresh: bool = False,
     ):
         """
         Extract an emotion.
@@ -594,13 +596,16 @@ class Operations(Write):
             output_fields=output_fields,
             min_score=min_score,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
+            output_fields=output_fields,
+            refresh=refresh,
         )
+        return ops
 
     def apply_transformers_pipeline(
         self,
@@ -632,13 +637,14 @@ class Operations(Write):
             output_fields=output_fields,
             credentials=self.credentials,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
         )
+        return ops
 
     def scale(
         self,
@@ -671,6 +677,7 @@ class Operations(Write):
             filters=filters,
             select_fields=vector_fields,
         )
+        return ops
 
     def subcluster(
         self,

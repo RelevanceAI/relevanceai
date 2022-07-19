@@ -238,3 +238,18 @@ class Dataset(OperationsNew, Operations, LaunchApps):
                     f"No vector fields associated with the given {field_type} fields were found, run `ds.vectorize_{field_type}({field_type}_fields={str(fields)})` to extract vectors for your {field_type} fields."
                 )
         return vector_fields
+
+    def update_alias(self, field: str, alias: str):
+        """Update the alias of a field using the SDK."""
+        try:
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        except:
+            # If there are no settings
+            self.datasets.post_settings(self.dataset_id, settings={})
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        if "fieldAliases" not in current_settings:
+            current_settings["fieldAliases"] = {}
+        current_settings["fieldAliases"][field] = alias
+        return self.datasets.post_settings(
+            dataset_id=self.dataset_id, settings=current_settings
+        )
