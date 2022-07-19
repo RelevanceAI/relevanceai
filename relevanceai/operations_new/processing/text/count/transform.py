@@ -37,19 +37,24 @@ class CountTextTransform(TransformBase):
         return len(sentences)
 
     def count_text_document(self, document):
-        output_doc = {"_id": document["_id"]}
-        for i, t in enumerate(self.text_fields):
-            text = self.get_field(t, document)
-            if self.include_char_count:
-                self.set_field(
-                    "_count_.char." + t, output_doc, self.count_characters(text)
-                )
-            if self.include_word_count:
-                self.set_field("_count_.word." + t, output_doc, self.count_words(text))
-            if self.include_sentence_count:
-                self.set_field(
-                    "_count_.sentence." + t, output_doc, self.count_sentences(text)
-                )
+        try:
+            output_doc = {"_id": document["_id"]}
+            for i, t in enumerate(self.text_fields):
+                text = self.get_field(t, document)
+                if self.include_char_count:
+                    self.set_field(
+                        "_count_.char." + t, output_doc, self.count_characters(text)
+                    )
+                if self.include_word_count:
+                    self.set_field(
+                        "_count_.word." + t, output_doc, self.count_words(text)
+                    )
+                if self.include_sentence_count:
+                    self.set_field(
+                        "_count_.sentence." + t, output_doc, self.count_sentences(text)
+                    )
+        except:
+            pass
         return output_doc
 
     def transform(self, documents: list):
