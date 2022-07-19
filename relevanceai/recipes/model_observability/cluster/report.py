@@ -88,7 +88,7 @@ class ClusterReport(ReportApp):
         ]:
             metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
-                [self.bold(f"{metric_name}: "), self.evaluator.report[metric]], add=add
+                [self.bold(f"{metric_name}: "), str(self.evaluator.report[metric])], add=add
             )
 
     def section_cluster_dendrogram(
