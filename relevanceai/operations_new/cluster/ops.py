@@ -673,3 +673,53 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         labels = metadata.get("labels", {}).get(cluster_field, {})
         print("To view nicely, please use `pd.DataFrame(labels)`.")
         return labels
+
+    def create_parent_cluster(
+        self,
+        to_merge: dict,
+        parent_field: str,
+        new_cluster_field: str,
+    ):
+        """
+        to_merge should look similar to below:
+
+        .. code-block::
+
+            to_merge = {
+                0: [
+                    'cluster_1',
+                    'cluster_2'
+                ]
+            }
+
+        """
+        for cluster, clusters_to_combine in to_merge.items():
+            for i, cluster_to_combine in enumerate(clusters_to_combine):
+                cluster_filter = ds[parent_field] == cluster_to_combine
+                if "cluster_" in cluster_to_combine:
+                    cluster_to_combine = cluster_to_combine.replace("cluster_", "")
+                if isinstance(cluster, int):
+                    update = {
+                        new_cluster_field: f"mergedCluster_{cluster}-{cluster_to_combine}"
+                    }
+                elif isinstance(cluster, str):
+                    update = {new_cluster_field: f"{cluster}-{cluster_to_combine}"}
+                self.datasets.documents.update_where(
+                    dataset_id=self.dataset_id, update=update, filters=cluster_filter
+                )
+            if isinstance(cluster, int):
+                self.merge(
+                    target_cluster_id=f"mergedCluster_{cluster}",
+                    cluster_ids=clusters_to_combine,
+                )
+            elif isinstance(cluster, str):
+                self.merge(target_cluster_id=cluster, cluster_ids=clusters_to_combine)
+
+        self.append_metadata_list(
+            field="_subcluster_",
+            value_to_append={
+                "parent_field": parent_field,
+                "cluster_field": new_cluster_field,
+            },
+            only_unique=True,
+        )
