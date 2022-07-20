@@ -81,11 +81,12 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
     def post_run(self, dataset, documents, updated_documents):
         centroid_documents = self.get_centroid_documents()
         self.insert_centroids(centroid_documents)
-        # from relevanceai.recipes.model_observability.cluster.report import ClusterReport
-
-        # app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
-        # app.h1("Cluster Report for {self.alias}")
-        # app.quote(f"Ran on {', '.join(self.vector_fields)} vector fields")
+        # if self.include_cluster_report:
+        #     from relevanceai.recipes.model_observability.cluster.report import ClusterReport
+        #     app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
+        #     app.start_cluster_evaluator(documents, updated_documents, centroids=centroid_documents)
+        #     app.section_cluster_report()
+        #     app.deploy()
         return
 
     def insert_centroids(
@@ -110,7 +111,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             )
 
         """
-        # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
         return self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=self.json_encoder(centroid_documents),
@@ -119,6 +119,9 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         )
 
     def calculate_centroids(self):
+        """
+        calculates the centroids from the dataset vectors
+        """
 
         # calculate the centroids
         centroid_vectors = {}
@@ -131,7 +134,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             field=self.vector_fields[0], func=calculate_centroid
         )
 
-        # Does this insert properly?
         if isinstance(centroid_vectors, dict):
             centroid_vectors = [
                 {"_id": k, self.vector_fields[0]: v}
@@ -172,70 +174,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 centroid_documents=centroid_vectors,
             )
         return centroid_vectors
-
-    def list_cluster_ids(
-        self,
-        alias: str = None,
-        minimum_cluster_size: int = 0,
-        num_clusters: int = 1000,
-    ):
-        """
-        List unique cluster IDS
-
-        Example
-        ---------
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            cluster_ops = client.ClusterOps(
-                alias="kmeans_8", vector_fields=["sample_vector_]
-            )
-            cluster_ops.list_cluster_ids()
-
-        Parameters
-        -------------
-        alias: str
-            The alias to use for clustering
-        minimum_cluster_size: int
-            The minimum size of the clusters
-        num_clusters: int
-            The number of clusters
-
-        """
-        if alias is None:
-            alias = self.alias
-        # Mainly to be used for subclustering
-        # Get the cluster alias
-        cluster_field = self._get_cluster_field_name()
-
-        # currently the logic for facets is that when it runs out of pages
-        # it just loops - therefore we need to store it in a simple hash
-        # and then add them to a list
-        all_cluster_ids: Set = set()
-
-        while len(all_cluster_ids) < num_clusters:
-            facet_results = self.datasets.facets(
-                dataset_id=self.dataset_id,
-                fields=[cluster_field],
-                page_size=int(self.config["data.max_clusters"]),
-                page=1,
-                asc=True,
-            )
-            if "results" in facet_results:
-                facet_results = facet_results["results"]
-            if cluster_field not in facet_results:
-                raise MissingClusterError(alias=alias)
-            for facet in facet_results[cluster_field]:
-                if facet["frequency"] > minimum_cluster_size:
-                    curr_len = len(all_cluster_ids)
-                    all_cluster_ids.add(facet[cluster_field])
-                    new_len = len(all_cluster_ids)
-                    if new_len == curr_len:
-                        return list(all_cluster_ids)
-
-        return list(all_cluster_ids)
 
     def get_centroid_documents(self):
         centroid_vectors = {}
@@ -303,6 +241,70 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 return centroid
 
         raise ValueError(f"Missing the centroid with id {cluster_id}")
+
+    def list_cluster_ids(
+        self,
+        alias: str = None,
+        minimum_cluster_size: int = 0,
+        num_clusters: int = 1000,
+    ):
+        """
+        List unique cluster IDS
+
+        Example
+        ---------
+
+        .. code-block::
+
+            from relevanceai import Client
+            client = Client()
+            cluster_ops = client.ClusterOps(
+                alias="kmeans_8", vector_fields=["sample_vector_]
+            )
+            cluster_ops.list_cluster_ids()
+
+        Parameters
+        -------------
+        alias: str
+            The alias to use for clustering
+        minimum_cluster_size: int
+            The minimum size of the clusters
+        num_clusters: int
+            The number of clusters
+
+        """
+        if alias is None:
+            alias = self.alias
+        # Mainly to be used for subclustering
+        # Get the cluster alias
+        cluster_field = self._get_cluster_field_name()
+
+        # currently the logic for facets is that when it runs out of pages
+        # it just loops - therefore we need to store it in a simple hash
+        # and then add them to a list
+        all_cluster_ids: Set = set()
+
+        while len(all_cluster_ids) < num_clusters:
+            facet_results = self.datasets.facets(
+                dataset_id=self.dataset_id,
+                fields=[cluster_field],
+                page_size=int(self.config["data.max_clusters"]),
+                page=1,
+                asc=True,
+            )
+            if "results" in facet_results:
+                facet_results = facet_results["results"]
+            if cluster_field not in facet_results:
+                raise MissingClusterError(alias=alias)
+            for facet in facet_results[cluster_field]:
+                if facet["frequency"] > minimum_cluster_size:
+                    curr_len = len(all_cluster_ids)
+                    all_cluster_ids.add(facet[cluster_field])
+                    new_len = len(all_cluster_ids)
+                    if new_len == curr_len:
+                        return list(all_cluster_ids)
+
+        return list(all_cluster_ids)
 
     def list_closest(
         self,
@@ -455,78 +457,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
         )
-
-    def explain_text_clusters(
-        self,
-        text_field,
-        encode_fn_or_model,
-        n_closest: int = 5,
-        highlight_output_field="_explain_",
-        algorithm: str = "relational",
-        model_kwargs: Optional[dict] = None,
-    ):
-        """
-        It takes a text field and a function that encodes the text field into a vector.
-        It then returns the top n closest vectors to each cluster centroid.
-        .. code-block::
-            def encode(X):
-                return [1, 2, 1]
-            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
-
-        Parameters
-        ----------
-        text_field
-            The field in the dataset that contains the text to be explained.
-        encode_fn
-            This is the function that will be used to encode the text.
-        n_closest : int, optional
-            The number of closest documents to each cluster to return.
-        highlight_output_field, optional
-            The name of the field that will be added to the output dataset.
-        algorithm: str
-            Algorithm is either "centroid" or "relational"
-
-        Returns
-        -------
-            A new dataset with the same data as the original dataset, but with a new field called _explain_
-        """
-        if isinstance(encode_fn_or_model, str):
-            # Get the model
-            from relevanceai.operations_new.vectorize.text.transform import (
-                VectorizeTextTransform,
-            )
-
-            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
-            encode_fn = self.model.encode
-        else:
-            encode_fn = encode_fn_or_model
-
-        from relevanceai.operations_new.cluster.text.explainer.ops import (
-            TextClusterExplainerOps,
-        )
-
-        ops = TextClusterExplainerOps(credentials=self.credentials)
-        if algorithm == "centroid":
-            return ops.explain_clusters(
-                dataset_id=self.dataset_id,
-                alias=self.alias,
-                vector_fields=self.vector_fields,
-                text_field=text_field,
-                encode_fn=encode_fn,
-                n_closest=n_closest,
-                highlight_output_field=highlight_output_field,
-            )
-        elif algorithm == "relational":
-            return ops.explain_clusters_relational(
-                dataset_id=self.dataset_id,
-                alias=self.alias,
-                vector_fields=self.vector_fields,
-                text_field=text_field,
-                encode_fn=encode_fn,
-                n_closest=n_closest,
-                highlight_output_field=highlight_output_field,
-            )
-        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
 
     def store_operation_metadatas(self):
         self.store_operation_metadata(
@@ -686,3 +616,75 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         labels = metadata.get("labels", {}).get(cluster_field, {})
         print("To view nicely, please use `pd.DataFrame(labels)`.")
         return labels
+
+    def explain_text_clusters(
+        self,
+        text_field,
+        encode_fn_or_model,
+        n_closest: int = 5,
+        highlight_output_field="_explain_",
+        algorithm: str = "relational",
+        model_kwargs: Optional[dict] = None,
+    ):
+        """
+        It takes a text field and a function that encodes the text field into a vector.
+        It then returns the top n closest vectors to each cluster centroid.
+        .. code-block::
+            def encode(X):
+                return [1, 2, 1]
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
+
+        Parameters
+        ----------
+        text_field
+            The field in the dataset that contains the text to be explained.
+        encode_fn
+            This is the function that will be used to encode the text.
+        n_closest : int, optional
+            The number of closest documents to each cluster to return.
+        highlight_output_field, optional
+            The name of the field that will be added to the output dataset.
+        algorithm: str
+            Algorithm is either "centroid" or "relational"
+
+        Returns
+        -------
+            A new dataset with the same data as the original dataset, but with a new field called _explain_
+        """
+        if isinstance(encode_fn_or_model, str):
+            # Get the model
+            from relevanceai.operations_new.vectorize.text.transform import (
+                VectorizeTextTransform,
+            )
+
+            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
+            encode_fn = self.model.encode
+        else:
+            encode_fn = encode_fn_or_model
+
+        from relevanceai.operations_new.cluster.text.explainer.ops import (
+            TextClusterExplainerOps,
+        )
+
+        ops = TextClusterExplainerOps(credentials=self.credentials)
+        if algorithm == "centroid":
+            return ops.explain_clusters(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        elif algorithm == "relational":
+            return ops.explain_clusters_relational(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")

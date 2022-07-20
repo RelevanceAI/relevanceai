@@ -1,6 +1,7 @@
 """
 Base class for clustering
 """
+import warnings
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 from relevanceai.operations_new.transform_base import TransformBase
@@ -37,6 +38,24 @@ class ClusterTransform(TransformBase, ClusterAlias):
     @property
     def name(self):
         return "cluster"
+
+    # def centroids(self):
+    #     if hasattr(self.model, "_centroids") and self.model._centroids is not None:
+    #         centroid_vectors = self.model._centroids
+    #         # get the cluster label function
+    #         labels = range(len(centroid_vectors))
+    #         cluster_ids = self.format_cluster_labels(labels)
+    #         if len(self.vector_fields) > 1:
+    #             warnings.warn(
+    #                 "Currently do not support inserting centroids with multiple vector fields"
+    #             )
+    #         centroids = [
+    #             {"_id": k, self.vector_fields[0]: v}
+    #             for k, v in zip(cluster_ids, centroid_vectors)
+    #         ]
+    #         return centroids
+    #     else:
+    #         return []
 
     def fit_predict_documents(self, documents, warm_start=False):
         """
