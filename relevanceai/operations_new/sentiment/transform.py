@@ -129,8 +129,7 @@ class SentimentTransform(TransformBase):
         if not highlight:
             return {
                 "sentiment": sentiment,
-                "score": max_score,
-                "overall_sentiment": overall_sentiment,
+                "overall_sentiment_score": overall_sentiment,
             }
         shap_documents = self.get_shap_values(
             text,

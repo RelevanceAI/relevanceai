@@ -554,13 +554,14 @@ class Operations(Write):
             output_fields=output_fields,
             sensitivity=sensitivity,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
         )
+        return ops
 
     def extract_emotion(
         self,
@@ -571,6 +572,7 @@ class Operations(Write):
         output_fields: list = None,
         min_score: float = 0.3,
         batched: bool = True,
+        refresh: bool = False,
     ):
         """
         Extract an emotion.
@@ -594,13 +596,16 @@ class Operations(Write):
             output_fields=output_fields,
             min_score=min_score,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
+            output_fields=output_fields,
+            refresh=refresh,
         )
+        return ops
 
     def apply_transformers_pipeline(
         self,
@@ -632,13 +637,14 @@ class Operations(Write):
             output_fields=output_fields,
             credentials=self.credentials,
         )
-        return ops.run(
+        ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
         )
+        return ops
 
     def scale(
         self,
@@ -671,6 +677,7 @@ class Operations(Write):
             filters=filters,
             select_fields=vector_fields,
         )
+        return ops
 
     def subcluster(
         self,
@@ -868,10 +875,12 @@ class Operations(Write):
         count_sentences: bool = True,
         filters: list = None,
         chunksize: int = 1000,
+        refresh: bool = False,
     ):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
         ops = CountTextOps(
+            credentials=self.credentials,
             text_fields=text_fields,
             include_char_count=count_characters,
             include_word_count=count_words,
@@ -883,6 +892,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             batched=True,
+            refresh=refresh,
         )
         return ops
 
@@ -1154,3 +1164,37 @@ class Operations(Write):
             lambda x: datetime.fromtimestamp(float(x.replace("-", ".")))
         )
         return df
+
+    def translate(
+        self,
+        fields: list,
+        model_id: str = None,
+        output_fields: list = None,
+        chunksize: int = 20,
+        filters: list = None,
+        refresh: bool = False,
+    ):
+        if model_id is None:
+            model_id = "facebook/mbart-large-50-many-to-many-mmt"
+        from relevanceai.operations_new.processing.text.translate.ops import (
+            TranslateOps,
+        )
+
+        ops = TranslateOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_id=model_id,
+            output_fields=output_fields,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops

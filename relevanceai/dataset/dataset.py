@@ -167,9 +167,9 @@ class Dataset(OperationsNew, Operations, LaunchApps):
         return self.upsert_metadata(metadata_doc)
 
     def _return_sort_in_metrics(self, metric_name, metrics):
-        if metric_name in [m['name'] for m in metrics]:
+        if metric_name in [m["name"] for m in metrics]:
             return metric_name
-        elif metric_name in [m['field'] for m in metrics]:
+        elif metric_name in [m["field"] for m in metrics]:
             for m in metrics:
                 if metric_name == m["field"]:
                     return m["name"]
@@ -182,13 +182,15 @@ class Dataset(OperationsNew, Operations, LaunchApps):
         metric_names = []
         for m in metrics:
             if isinstance(m, str):
-                main_metrics.append({"agg" : "avg", "field": m, "name" : f"{name_prefix}{m}"})
+                main_metrics.append(
+                    {"agg": "avg", "field": m, "name": f"{name_prefix}{m}"}
+                )
                 metric_fields.append(m)
                 metric_names.append(f"{name_prefix}{m}")
             else:
                 main_metrics.append(m)
-                metric_fields.append(m['field'])
-                metric_names.append(m['name'])
+                metric_fields.append(m["field"])
+                metric_names.append(m["name"])
         return main_metrics, metric_fields, metric_names
 
     def _clean_groupby(self, groupby):
@@ -197,33 +199,57 @@ class Dataset(OperationsNew, Operations, LaunchApps):
         for m in groupby:
             if isinstance(m, str):
                 if self.schema[m] == "text":
-                    main_groupby.append({
-                        "agg" : "category", "field": m, "name" : f"{m}"
-                    })
+                    main_groupby.append({"agg": "category", "field": m, "name": f"{m}"})
                 elif self.schema[m] == "numeric":
-                    main_groupby.append({
-                        "agg" : "numeric", "field": m, "name" : f"{m}"
-                    })
+                    main_groupby.append({"agg": "numeric", "field": m, "name": f"{m}"})
                 elif self.schema[m] == "date":
-                    main_groupby.append({
-                        "agg" : "category", "field": m, "name" : f"{m}", "date_interval" : "monthly"
-                    })
+                    main_groupby.append(
+                        {
+                            "agg": "category",
+                            "field": m,
+                            "name": f"{m}",
+                            "date_interval": "monthly",
+                        }
+                    )
                 groupby_fields.append(m)
             else:
                 main_groupby.append(m)
-                groupby_fields.append(m['field'])
+                groupby_fields.append(m["field"])
         return main_groupby, groupby_fields
 
-    def _auto_detect_vector_fields(self, fields, vector_fields="auto", field_type="text"):
+    def _auto_detect_vector_fields(
+        self, fields, vector_fields="auto", field_type="text"
+    ):
         if vector_fields == "auto":
             vector_fields = []
-            print(f'Detected "{field_type}_vector_fields" is set as "auto", will try to determine "{field_type}_vector_fields" from "{field_type}_fields"')
+            print(
+                f'Detected "{field_type}_vector_fields" is set as "auto", will try to determine "{field_type}_vector_fields" from "{field_type}_fields"'
+            )
             for field, field_type in self.schema.items():
                 if isinstance(field_type, dict):
                     for f in fields:
                         if f in field:
                             vector_fields.append(field)
-            print(f'The detected vector fields are {str(vector_fields)}, manually specify the `{field_type}_vector_fields` if those are incorrect.')
+            print(
+                f"The detected vector fields are {str(vector_fields)}, manually specify the `{field_type}_vector_fields` if those are incorrect."
+            )
             if not vector_fields:
-                raise(f'No vector fields associated with the given {field_type} fields were found, run `ds.vectorize_{field_type}({field_type}_fields={str(fields)})` to extract vectors for your {field_type} fields.')
+                raise (
+                    f"No vector fields associated with the given {field_type} fields were found, run `ds.vectorize_{field_type}({field_type}_fields={str(fields)})` to extract vectors for your {field_type} fields."
+                )
         return vector_fields
+
+    def update_alias(self, field: str, alias: str):
+        """Update the alias of a field using the SDK."""
+        try:
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        except:
+            # If there are no settings
+            self.datasets.post_settings(self.dataset_id, settings={})
+            current_settings = self.datasets.get_settings(self.dataset_id)["results"]
+        if "fieldAliases" not in current_settings:
+            current_settings["fieldAliases"] = {}
+        current_settings["fieldAliases"][field] = alias
+        return self.datasets.post_settings(
+            dataset_id=self.dataset_id, settings=current_settings
+        )
