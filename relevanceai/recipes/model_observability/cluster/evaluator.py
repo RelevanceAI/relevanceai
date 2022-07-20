@@ -396,8 +396,8 @@ class ClusterEvaluator:
         report["calinski_harabasz_score"] = self.calinski_harabasz_score()
         report["davies_bouldin_score"] = self.davies_bouldin_score()
         report["silhouette_score"] = self.silhouette_score()
-        report["total_squared_error"] = self.squared_error_score()
-        report["mean_squared_error"] = self.mean_squared_error_score()
+        report["total_squared_error_score"] = self.squared_error_score()
+        report["mean_squared_error_score"] = self.mean_squared_error_score()
         # if self.model:
         #     report["_model_params"] = self.model.__dict__
         report["metric"] = self.metric

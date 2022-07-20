@@ -44,14 +44,47 @@ class ClusterReport(ReportApp):
     def start_cluster_evaluator_from_dataset(
         self, 
         vector_fields:list, 
-        alias:str, 
+        alias:str,
         feature_names: Union[list, dict] = None,
         metric: str = "euclidean",
         verbose: bool = False,
+        show_progress_bar: bool = False,
     ):
-        cluster_field = f"_cluster_.{vector_fields}.{alias}"
-        self.dataset.get_all_documents()
-        return 
+        cluster_field = f"_cluster_.{'.'.join(vector_fields)}.{alias}"
+        documents = self.dataset.get_all_documents(
+            filters=[
+                {
+                    "field": field,
+                    "filter_type": "exists",
+                    "condition": ">=",
+                    "condition_value": " ",
+                } for field in [cluster_field] + vector_fields
+            ],
+            select_fields=[cluster_field] + vector_fields,
+            show_progress_bar=show_progress_bar,
+        )
+        self.X = self.dataset.get_field_across_documents(vector_fields[0], documents)
+        self.cluster_labels = self.dataset.get_field_across_documents(cluster_field, documents)
+        self.centroids = [
+            self.dataset.get_field(cluster_field) : self.dataset.get_field(vector_fields[0])
+            for d in self.dataset.datasets.cluster.centroids.documents(
+                vector_fields=vector_fields,
+                alias=alias,
+                page_size=9999,
+                include_vector=True,
+            )["results"]
+        ]
+        self.start_cluster_evaluator(
+            self.X, 
+            self.cluster_labels, 
+            self.centroids,
+            # cluster_names=cluster_names,
+            feature_names=feature_names,
+            # model=model,
+            # outlier_label=outlier_label,
+            metric=metric,
+            verbose=verbose,
+        )
 
     # create wrapper to make sure cluster_evaluator is started
 
@@ -85,8 +118,9 @@ class ClusterReport(ReportApp):
         )
         for metric, explanation in {
             "davies_bouldin_score" : "[Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
-            "calinski_harabasz_score" : "[Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size.",
+            "calinski_harabasz_score" : "[Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to Variance Ratio Criterion",
             "silhouette_score" : "[Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other cluster. This silhouette score is the average of every point’s silhouette score.",
+            "total_squared_error_score" : "[Compactness] (0 to infinity, higher is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
         }.items():
             metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
