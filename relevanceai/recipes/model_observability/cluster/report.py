@@ -81,15 +81,16 @@ class ClusterReport(ReportApp):
                 "Separation (inter-cluster distance): How well separated are the clusters from each other.",
             ]
         )
-        for metric in [
-            "calinski_harabasz_score",
-            "davies_bouldin_score",
-            "silhouette_score",
-        ]:
+        for metric, explanation in {
+            "davies_bouldin_score" : "[Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
+            "calinski_harabasz_score" : "[Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size.",
+            "silhouette_score" : "[Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other cluster. This silhouette score is the average of every point’s silhouette score.",
+        }.items():
             metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
                 [self.bold(f"{metric_name}: "), self.evaluator.report[metric]], add=add
             )
+            self.paragraph([self.italic(explanation)])
 
     def section_cluster_dendrogram(
         self,
@@ -100,6 +101,9 @@ class ClusterReport(ReportApp):
         add=True,
     ):
         self.h2("Overview of cluster dendrogram")
+        self.paragraph(
+            "A dendrogram shows the hierarchical relationship between cluster. This can be especially useful to determine which clusters to combined with hierarchical linkage."
+        )
         for method in hierarchy_methods:
             plot, plotted_method = self.evaluator.plot_dendrogram(
                 hierarchy_method=method,
@@ -111,5 +115,8 @@ class ClusterReport(ReportApp):
 
     def section_cluster_distance_matrix(self, decimals: int = 4, add=True):
         self.h2("Overview of cluster similarity matrix")
+        self.paragraph(
+            "Shows a heatmap of the similarity scores between different clusters. This can be especially useful to determine which clusters to combined."
+        )
         plot, plotted_method = self.evaluator.plot_distance_matrix(decimals=decimals)
         self.plot_by_method(plot, plot_method=plotted_method, add=add)
