@@ -118,7 +118,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             alias=self.alias,
         )
 
-    def calculate_centroids(self):
+    def calculate_centroids(self, method="mean"):
         """
         calculates the centroids from the dataset vectors
         """
