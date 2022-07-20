@@ -49,6 +49,8 @@ class ClusterReport(ReportApp):
         metric: str = "euclidean",
         verbose: bool = False,
     ):
+        cluster_field = f"_cluster_.{vector_fields}.{alias}"
+        self.dataset.get_all_documents()
         return 
 
     # create wrapper to make sure cluster_evaluator is started

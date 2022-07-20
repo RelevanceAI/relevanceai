@@ -296,9 +296,7 @@ class ClusterEvaluator:
             self.X_silhouette_samples = silhouette_samples(
                 self.X, self.cluster_labels, metric=self.metric
             )
-            return self.X_silhouette_samples
-        else:
-            return self.X_silhouette_samples
+        return self.X_silhouette_samples
 
     def silhouette_score(self):
         if not hasattr(self, "X_silhouette_samples"):
@@ -334,13 +332,25 @@ class ClusterEvaluator:
         )
         return self.summary_statistics(distances_from_centroid_to_another, axis=2)
 
-    def squared_error_samples(self, cluster_data, centroid):
-        return np.square(
-            np.subtract(
-                [centroid] * len(cluster_data),
-                cluster_data,
+    def squared_error_samples(self):
+        if not hasattr(self, "X_squared_error_samples"):
+            self.X_squared_error_samples = np.square(
+                np.subtract(
+                    [self.centroids[c] for c in self.cluster_labels],
+                    self.X,
+                )
             )
-        )
+        return self.X_squared_error_samples
+
+    def squared_error_score(self):
+        if not hasattr(self, "X_silhouette_samples"):
+            self.squared_error_samples()
+        return self.X_squared_error_samples.sum()
+
+    def mean_squared_error_score(self):
+        if not hasattr(self, "X_silhouette_samples"):
+            self.squared_error_samples()
+        return self.X_squared_error_samples.mean()
 
     def squared_error_features_from_samples(self, squared_error_samples):
         squared_errors_by_feature = []
@@ -353,9 +363,6 @@ class ClusterEvaluator:
                 }
             )
         return squared_errors_by_feature
-
-    def mean_squared_error_score(self, cluster_data, centroid):
-        return self.squared_error_samples(cluster_data, centroid).mean()
 
     @staticmethod
     def z_score(value, mean, std):
@@ -383,9 +390,14 @@ class ClusterEvaluator:
         report["silhouette_score_summary"] = self.summary_statistics(
             self.silhouette_samples()
         )
+        report["squared_error_summary"] = self.summary_statistics(
+            self.silhouette_samples()
+        )
         report["calinski_harabasz_score"] = self.calinski_harabasz_score()
         report["davies_bouldin_score"] = self.davies_bouldin_score()
         report["silhouette_score"] = self.silhouette_score()
+        report["total_squared_error"] = self.squared_error_score()
+        report["mean_squared_error"] = self.mean_squared_error_score()
         # if self.model:
         #     report["_model_params"] = self.model.__dict__
         report["metric"] = self.metric
@@ -450,14 +462,11 @@ class ClusterEvaluator:
             }
             # squared errors
             if store_squared_errors:
-                squared_error_samples = self.squared_error_samples(
-                    current_cluster_data, centroid_vector
-                )
                 cluster_document["squared_error_summary"] = self.summary_statistics(
-                    squared_error_samples, axis=2
+                    self.X_squared_error_samples[cluster_bool], axis=2
                 )
                 squared_error_by_features = self.squared_error_features_from_samples(
-                    squared_error_samples
+                    self.X_squared_error_samples[cluster_bool]
                 )
                 cluster_document["features"]["lowest_squared_errors"] = sorted(
                     squared_error_by_features,
@@ -480,14 +489,6 @@ class ClusterEvaluator:
                     current_cluster_data, centroid_vector
                 )
             report["each_cluster"].append(cluster_document)
-
-        if store_squared_errors:
-            report["total_squared_error"] = sum(
-                [c["squared_error_summary"]["sum"] for c in report["each_cluster"]]
-            )
-            report["mean_squared_error"] = (
-                report["total_squared_error"] / report["total_frequency"]
-            )
 
         if store_distances:
             report["dunn_index_score"] = self.dunn_index(
