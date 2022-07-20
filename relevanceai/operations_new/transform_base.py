@@ -9,6 +9,8 @@ from typing import Any, Dict, List
 from relevanceai.utils import DocUtils
 from relevanceai.client import Credentials
 
+DO_NOT_STORE = ["_centroids", Credentials.__slots__]
+
 
 class OperationsCheck(ABC, DocUtils):
     def _check_alias(self):
@@ -97,9 +99,7 @@ class TransformBase(OperationsCheck):
     def get_operation_metadata(self, *args, **kwargs) -> Dict[str, Any]:
         """abstractmethod for return metadata for upsertion"""
 
-        values = {
-            k: v for k, v in self.__dict__.items() if k not in Credentials.__slots__
-        }
+        values = {k: v for k, v in self.__dict__.items() if k not in DO_NOT_STORE}
 
         return dict(
             operation=self.name,
