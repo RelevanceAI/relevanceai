@@ -30,7 +30,8 @@ class SklearnModel(ClusterModelBase):
 
             self.model = model(**model_kwargs)
         else:
-            assert type(model).__name__ in list(sklearn_models.values())
+            # Uncomment out below because this breaks support for sklearn-extra models
+            # assert type(model).__name__ in list(sklearn_models.values())
             self.model = model
 
         super().__init__(model_kwargs=self.model.__dict__)
