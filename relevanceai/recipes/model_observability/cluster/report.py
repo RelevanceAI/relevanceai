@@ -65,7 +65,7 @@ class ClusterReport(ReportApp):
         )
         self.X = self.dataset.get_field_across_documents(vector_fields[0], documents)
         self.cluster_labels = self.dataset.get_field_across_documents(cluster_field, documents)
-        self.centroids = [
+        self.centroids = {
             self.dataset.get_field(cluster_field) : self.dataset.get_field(vector_fields[0])
             for d in self.dataset.datasets.cluster.centroids.documents(
                 vector_fields=vector_fields,
@@ -73,7 +73,7 @@ class ClusterReport(ReportApp):
                 page_size=9999,
                 include_vector=True,
             )["results"]
-        ]
+        }
         self.start_cluster_evaluator(
             self.X, 
             self.cluster_labels, 
