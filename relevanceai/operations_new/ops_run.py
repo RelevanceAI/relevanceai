@@ -120,7 +120,6 @@ class OperationRun(TransformBase):
                     *args,
                     **kwargs,
                 )  # Should be in the transform.py
-
                 dataset.upsert_documents(updated_documents)
 
         return self.post_run(

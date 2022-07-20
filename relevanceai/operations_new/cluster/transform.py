@@ -18,6 +18,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
         model: Any,
         model_kwargs: Optional[dict] = None,
         cluster_field: str = "_cluster_",
+        silhouette_score:bool = False,
         **kwargs,
     ):
 
@@ -28,9 +29,9 @@ class ClusterTransform(TransformBase, ClusterAlias):
         self.alias = self._get_alias(alias)
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
+        self.silhouette_score = silhouette_score
         for k, v in kwargs.items():
             setattr(self, k, v)
-
         self._check_vector_fields()
 
     @property
@@ -60,6 +61,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
                     vectors,
                     # warm_start=warm_start,
                 )
+
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
 
@@ -85,13 +87,24 @@ class ClusterTransform(TransformBase, ClusterAlias):
         labels = self.fit_predict_documents(
             documents=documents,
         )
-
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
         documents_to_upsert = [{"_id": d["_id"]} for d in documents]
-
         self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
+        if self.silhouette_score:
+            try:
+                from sklearn.metrics import silhouette_samples
+                vectors = self.get_field_across_documents(
+                    self.vector_fields[0],
+                    documents,
+                )
+                silhouettes = silhouette_samples(vectors, labels)
+                self.set_field_across_documents(f'_silhouette_score_{self.alias}', silhouettes, documents_to_upsert)
+            except ImportError:
+                raise ImportError("sklearn missing")
+            except:
+                print("Couldn't calculate silhouette scores")
         return documents_to_upsert
 
     def _get_cluster_field_name(self):
