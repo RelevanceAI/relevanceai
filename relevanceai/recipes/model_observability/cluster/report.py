@@ -119,8 +119,8 @@ class ClusterReport(ReportApp):
         )
         for metric, explanation in {
             "davies_bouldin_score" : "      [Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
-            "calinski_harabasz_score" : "      [Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to Variance Ratio Criterion",
-            "silhouette_score" : "      [Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other cluster. This silhouette score is the average of every point’s silhouette score.",
+            "calinski_harabasz_score" : "      [Compactness, Separation] (-infinity to infinity, higher is better) Similar to Davies Bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to the Variance Ratio Criterion",
+            "silhouette_score" : "      [Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other clusters. This silhouette score is the average of every point’s silhouette score.",
             "total_squared_error_score" : "      [Compactness] (0 to infinity, lower is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
         }.items():
             metric_name = " ".join(metric.split("_")).title()
@@ -128,6 +128,10 @@ class ClusterReport(ReportApp):
                 [self.bold(f"{metric_name}: "), self.evaluator.report[metric]], add=add
             )
             self.paragraph([self.italic(explanation)])
+        plot, plotted_method = self.evaluator.plot_boxplot(self.evaluator.report["silhouette_score_summary"], name="Silhouette Score")
+        self.plot_by_method(plot, title="Silhouette Score Box Plot", plot_method=plotted_method, add=add)
+        plot, plotted_method = self.evaluator.plot_boxplot(self.evaluator.report["squared_error_summary"], name="Squared Error")
+        self.plot_by_method(plot, title="Squared Error Box Plot", plot_method=plotted_method, add=add)
 
     def section_cluster_dendrogram(
         self,
@@ -148,9 +152,9 @@ class ClusterReport(ReportApp):
                 color_threshold=color_threshold,
                 orientation=orientation,
             )
-            self.plot_by_method(plot, title=f"{method.title()} lnkage dendrogram", plot_method=plotted_method, add=add)
+            self.plot_by_method(plot, title=f"{method.title()} linkage dendrogram", plot_method=plotted_method, add=add)
 
-    def section_cluster_distance_matrix(self, metrics=["cosince", "euclidean"], decimals: int = 4, add=True):
+    def section_cluster_distance_matrix(self, metrics=["cosine", "euclidean"], decimals: int = 4, add=True):
         self.h2("Overview of cluster similarity matrix")
         self.paragraph(
             "Shows a heatmap of the similarity scores between different clusters. This can be especially useful to determine which clusters to combined."

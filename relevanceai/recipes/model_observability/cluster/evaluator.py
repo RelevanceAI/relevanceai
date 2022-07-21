@@ -274,6 +274,29 @@ class ClusterEvaluator:
                 + " This is a common error that can be fixed with `pip install pyyaml==5.4.1`"
             )
 
+    def plot_boxplot(self, summary_stats, name=""):
+        try:
+            import plotly.graph_objects as go
+            fig = go.Figure()
+            fig.add_trace(
+                go.Box(
+                    y=[
+                        summary_stats['min'], 
+                        summary_stats['25%'], 
+                        summary_stats['50%'], 
+                        summary_stats['75%'], 
+                        summary_stats['max']
+                    ], 
+                    name=name
+                )
+            )
+            return fig, "plotly"
+
+        except ImportError:
+            raise ImportError(
+                "This requires plotly installed, install with `pip install -U plotly`"
+            )
+
     @staticmethod
     def summary_statistics(array: np.ndarray, axis=0, simple=False):
         """
@@ -325,14 +348,6 @@ class ClusterEvaluator:
     @staticmethod
     def dunn_index(min_distance_from_centroid, max_centroid_distance):
         return min_distance_from_centroid / max_centroid_distance
-
-    # def dunn_index_score(self):
-    #     min_distance_from_centroid = min(
-    #         c["distance_from_centroid_summary"]["min"]
-    #         for c in self._internal_report["each"]
-    #     )
-    #     max_centroid_distance = self.distance_matrix.max()
-    #     return self.dunn_index(min_distance_from_centroid, max_centroid_distance)
 
     def distance_from_centroid(self, cluster_data, centroid):
         distances_from_centroid = pairwise_distances([centroid], cluster_data)
