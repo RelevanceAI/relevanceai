@@ -22,7 +22,7 @@ class OperationRun(TransformBase):
     def is_chunk_valid(self, chunk):
         return chunk is not None and len(chunk) > 0
 
-    @abstractmethod
+    # @abstractmethod
     def post_run(self, dataset, documents, updated_documents):
         pass
 

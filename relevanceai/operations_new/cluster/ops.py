@@ -67,6 +67,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             verbose=verbose,
             model=model,
             model_kwargs=model_kwargs,
+            include_cluster_report=include_cluster_report,
             **kwargs,
         )
 
@@ -81,13 +82,27 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
     def post_run(self, dataset, documents, updated_documents):
         centroid_documents = self.get_centroid_documents()
         self.insert_centroids(centroid_documents)
-        # if self.include_cluster_report:
-        #     from relevanceai.recipes.model_observability.cluster.report import ClusterReport
-        #     app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
-        #     app.start_cluster_evaluator(documents, updated_documents, centroids=centroid_documents)
-        #     app.section_cluster_report()
-        #     app.deploy()
-        return
+        if self.include_cluster_report:
+            try:
+                from relevanceai.recipes.model_observability.cluster.report import ClusterReport
+                app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
+                app.start_cluster_evaluator(
+                    self.get_field_across_documents(self.vector_fields[0], documents),
+                    self.get_field_across_documents(self._get_cluster_field_name(), updated_documents),
+                    # centroids=centroid_documents
+                )
+                app.evaluator.X_silhouette_samples = np.array(
+                    self.get_field_across_documents(self._silhouette_score_field_name(), updated_documents)
+                )
+                app.evaluator.X_squared_error_samples = np.array(
+                    self.get_field_across_documents(self._squared_error_field_name(), updated_documents)
+                )
+                app.section_cluster_report()
+                print("We've built your cluster report app:")
+                app.deploy()
+            except:
+                print("Couldnt' create cluster report.")
+        return 
 
     def insert_centroids(
         self,

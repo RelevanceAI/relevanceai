@@ -75,6 +75,8 @@ class ClusterEvaluator:
                 centroids = self._get_centroids_from_model(model)
             except:
                 centroids = self._calculate_centroids(self.X, self.cluster_labels)
+        if isinstance(centroids, (list, np.ndarray)):
+            centroids = {i:c for i, c in enumerate(centroids)}
         if not isinstance(centroids, (list, dict, np.ndarray)):
             raise TypeError("centroid_vectors should be of type List or Numpy array")
 
@@ -111,7 +113,6 @@ class ClusterEvaluator:
         elif hasattr(model, "get_centers"):
             return model.get_centers()
         else:
-            #TODO
             raise Exception
 
     def _calculate_centroids(self, X, cluster_labels):
@@ -130,10 +131,6 @@ class ClusterEvaluator:
         )
         medoids = X[medoid_indexes]
         return medoids
-
-    @staticmethod
-    def _convert_centroids(centroids):
-        return
 
     def hierarchy_linkage(self, hierarchy_method: str = "ward"):
         self.linkage = hierarchy.linkage(
@@ -464,14 +461,14 @@ class ClusterEvaluator:
         report["each_cluster"] = []
         labels, label_counts = np.unique(self.cluster_labels, return_counts=True)
         for i, cluster_label in enumerate(labels):
-            if i == self.outlier_label:
+            if cluster_label == self.outlier_label:
                 cluster_name = "outlier_cluster"
             else:
                 cluster_name = self._get_cluster_name(i)
             cluster_bool = self.cluster_labels == cluster_label
             current_cluster_data = self.X[cluster_bool]
             other_cluster_data = self.X[~cluster_bool]
-            centroid_vector = self.centroids[i]
+            centroid_vector = self.centroids[cluster_label]
             current_summary = self.summary_statistics(current_cluster_data, axis=2)
             silouhette_summary = self.summary_statistics(
                 self.X_silhouette_samples[cluster_bool], axis=2
@@ -514,7 +511,7 @@ class ClusterEvaluator:
                 cluster_document[
                     "distance_from_centroid_to_another_cluster_summary"
                 ] = self.distance_from_centroid_to_another(
-                    current_cluster_data, centroid_vector
+                    other_cluster_data, centroid_vector
                 )
             report["each_cluster"].append(cluster_document)
 

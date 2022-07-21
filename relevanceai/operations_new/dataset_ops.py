@@ -377,7 +377,7 @@ class Operations(Write):
         chunksize: Optional[int] = 100,
         filters: Optional[list] = None,
         batched: Optional[bool] = False,
-        include_cluster_report: bool = True,
+        include_cluster_report: bool = False,
         **kwargs,
     ):
         """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
@@ -437,6 +437,7 @@ class Operations(Write):
             credentials=self.credentials,
             dataset_id=self.dataset_id,
             model_kwargs=model_kwargs,
+            include_cluster_report=include_cluster_report,
             **kwargs,
         )
 
@@ -450,9 +451,6 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
         )
-        # TODO: Create the cluster report
-        if include_cluster_report:
-            pass
         print(
             f"""You can now utilise the ClusterOps object using the below:
 
@@ -462,9 +460,8 @@ class Operations(Write):
         dataset_id='{self.dataset_id}'
     )"""
         )
-
-        print("Configure your new cluster app below:")
         print()
+        print("Configure your new cluster app below:")
         print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 

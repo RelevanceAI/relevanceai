@@ -20,7 +20,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
         model: Any,
         model_kwargs: Optional[dict] = None,
         cluster_field: str = "_cluster_",
-        silhouette_score:bool = False,
+        include_cluster_report: bool = False,
         **kwargs,
     ):
 
@@ -31,7 +31,8 @@ class ClusterTransform(TransformBase, ClusterAlias):
         self.alias = self._get_alias(alias)
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
-        self.silhouette_score = silhouette_score
+        self.include_cluster_report = include_cluster_report
+
         for k, v in kwargs.items():
             setattr(self, k, v)
         self._check_vector_fields()
@@ -39,28 +40,6 @@ class ClusterTransform(TransformBase, ClusterAlias):
     @property
     def name(self):
         return "cluster"
-
-    #TODO
-    # def centroids(self, documents, labels):
-    #     if hasattr(self.model, "_centroids") and self.model._centroids is not None:
-    #         centroid_vectors = self.model._centroids
-    #         # get the cluster label function
-    #         labels = range(len(centroid_vectors))
-    #         cluster_ids = self.format_cluster_labels(labels)
-    #         if len(self.vector_fields) > 1:
-    #             warnings.warn(
-    #                 "Currently do not support inserting centroids with multiple vector fields"
-    #             )
-    #         centroids = [
-    #             {"_id": k, self.vector_fields[0]: v}
-    #             for k, v in zip(cluster_ids, centroid_vectors)
-    #         ]
-    #         return centroids
-    #     else:
-    #         centroid_vectors = {}
-    #         for label in np.unique(labels):
-    #             centroid_vectors[label] = X[labels == label].mean(axis=0)
-    #         return []
 
     def fit_predict_documents(self, documents, warm_start=False):
         """
@@ -116,20 +95,59 @@ class ClusterTransform(TransformBase, ClusterAlias):
 
         documents_to_upsert = [{"_id": d["_id"]} for d in documents]
         self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
-        if self.silhouette_score:
+        if self.include_cluster_report:
+            vectors = self.get_field_across_documents(
+                self.vector_fields[0],
+                documents,
+            )
             try:
-                from sklearn.metrics import silhouette_samples
-                vectors = self.get_field_across_documents(
-                    self.vector_fields[0],
-                    documents,
+                self.set_field_across_documents(
+                    self._silhouette_score_field_name(),
+                    self.calculate_silhouette(vectors, labels),
+                    documents_to_upsert
                 )
-                silhouettes = silhouette_samples(vectors, labels)
-                self.set_field_across_documents(f'_silhouette_score_{self.alias}', silhouettes, documents_to_upsert)
-            except ImportError:
-                raise ImportError("sklearn missing")
             except:
-                print("Couldn't calculate silhouette scores")
+                pass
+            try:
+                self.set_field_across_documents(
+                    self._squared_error_field_name(),
+                    self.calculate_squared_error(vectors, labels, self.model._centroids),
+                    documents_to_upsert
+                )
+            except:
+                import traceback
+                traceback.print_exc()
+                pass
         return documents_to_upsert
+
+    @staticmethod
+    def calculate_silhouette(vectors, labels):
+        try:
+            from sklearn.metrics import silhouette_samples
+            return silhouette_samples(vectors, labels)
+        except ImportError:
+            raise ImportError("sklearn missing")
+        except:
+            raise Exception("Couldn't calculate silhouette scores")
+
+    def _silhouette_score_field_name(self):
+        return f'_silhouette_score_{self.alias}'
+
+    @staticmethod
+    def calculate_squared_error(vectors, labels, centroids):
+        try:
+            label_to_centroid_index = {label: i for i, label in enumerate(sorted(np.unique(labels).tolist()))}
+            return np.square(
+                np.subtract(
+                    [centroids[label_to_centroid_index[l]] for l in labels],
+                    vectors,
+                )
+            )
+        except:
+            raise Exception("Couldn't calculate squared errors")
+
+    def _squared_error_field_name(self):
+        return f'_squared_error_{self.alias}'
 
     def _get_cluster_field_name(self):
         alias = self.alias
