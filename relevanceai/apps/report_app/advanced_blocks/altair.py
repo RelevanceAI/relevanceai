@@ -12,12 +12,12 @@ class AltairReportBlock(ReportBlocks):
         self,
         fig,
         title: str = "",
-        static: bool = True,
+        static: bool = False,
         width: int = 600,
         height: int = 300,
         add: bool = True,
         width_percentage: int = 50,
-        **kwargs
+        **kwargs,
     ):
         try:
             import altair
@@ -37,4 +37,23 @@ class AltairReportBlock(ReportBlocks):
                     ".plotly 'image=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
                 )
         else:
-            json.loads(fig.to_json())
+            block = {
+                "type": "appBlock",
+                # "attrs" : {"id": str(uuid.uuid4())},
+                "content": [
+                    {
+                        "attrs": {
+                            "height": "auto",
+                            "title": title,
+                            "width": f"{width_percentage}%",
+                            "spec": json.loads(fig.to_json()),
+                        },
+                        "type": "vegaChart",
+                    }
+                ],
+            }
+            if add:
+                self.contents.append(block)
+            return block
+
+    altair_plot = altair
