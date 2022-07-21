@@ -1,5 +1,4 @@
 import io
-from turtle import width
 from relevanceai.apps.report_app.blocks import ReportBlocks
 
 
