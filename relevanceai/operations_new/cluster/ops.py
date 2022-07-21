@@ -677,7 +677,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
     def create_parent_cluster(
         self,
         to_merge: dict,
-        parent_field: str,
         new_cluster_field: str,
     ):
         """
@@ -693,9 +692,27 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             }
 
         """
+        parent_field = self._get_cluster_field_name()
         for cluster, clusters_to_combine in to_merge.items():
             for i, cluster_to_combine in enumerate(clusters_to_combine):
-                cluster_filter = ds[parent_field] == cluster_to_combine
+                cluster_filter = [
+                    {
+                        "field": parent_field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_to_combine,
+                    }
+                ]
+                # try:
+                #     status = self.datasets.cluster.centroids.delete_centroid_by_id(
+                #         centroid_id=cluster_to_combine, dataset_id=self.dataset_id,
+                #         vector_fields=self.vector_fields, alias=self.alias
+                #     )
+                #     print("Deleted a centroid: ")
+                #     print(status)
+                # except Exception as e:
+                #     print(e)
+
                 if "cluster_" in cluster_to_combine:
                     cluster_to_combine = cluster_to_combine.replace("cluster_", "")
                 if isinstance(cluster, int):
@@ -704,14 +721,23 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                     }
                 elif isinstance(cluster, str):
                     update = {new_cluster_field: f"{cluster}-{cluster_to_combine}"}
-                self.datasets.documents.update_where(
+                print(cluster_filter)
+                updated = self.datasets.documents.update_where(
                     dataset_id=self.dataset_id, update=update, filters=cluster_filter
                 )
+                print("Update status: ")
+                print(updated)
+
             if isinstance(cluster, int):
-                self.merge(
-                    target_cluster_id=f"mergedCluster_{cluster}",
-                    cluster_ids=clusters_to_combine,
-                )
+                try:
+                    merge_results = self.merge(
+                        target_cluster_id=clusters_to_combine[0],
+                        # target_cluster_id=f"mergedCluster_{cluster}",
+                        cluster_ids=clusters_to_combine[1:],
+                    )
+                    print(merge_results)
+                except Exception as e:
+                    print(e)
             elif isinstance(cluster, str):
                 self.merge(target_cluster_id=cluster, cluster_ids=clusters_to_combine)
 
@@ -724,4 +750,22 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             only_unique=True,
         )
 
-        # TODO: Move the cluster labels over too
+        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        if parent_field in metadata["cluster_metadata"]["labels"]:
+            for k, old_labels in to_merge.items():
+                for l in old_labels:
+                    label = metadata["cluster_metadata"]["labels"][parent_field][
+                        "labels"
+                    ][l]
+                    if new_cluster_field not in metadata["cluster_metadata"]["labels"]:
+                        metadata["cluster_metadata"]["labels"].update(
+                            {new_cluster_field: {"labels": {}}}
+                        )
+                    l = l.replace("cluster_", "")
+                    cluster_id = f"mergedCluster_{k}-{l}"
+                    metadata["cluster_metadata"]["labels"][new_cluster_field]["labels"][
+                        cluster_id
+                    ] = label
+            results = self.datasets.post_metadata(self.dataset_id, metadata)
+            print("Updated metadata")
+            print(results)
