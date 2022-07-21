@@ -63,7 +63,7 @@ class PlotlyReportBlock(ReportBlocks):
                         'title': title,
                         'width': f'{width_percentage}%'
                     },
-                    'type': 'dumbPlotlyChart'
+                    'type': 'plotlyChart'
                 }]
             }
         if add:
