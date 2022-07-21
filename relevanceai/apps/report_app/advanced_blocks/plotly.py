@@ -17,8 +17,11 @@ class PlotlyReportBlock(ReportBlocks):
         height: int = None,
         add: bool = True,
         width_percentage: int = 100,
+        options=None,
         **kwargs
     ):
+        if options is None:
+            options = {"displayLogo":False}
         try:
             import plotly
         except ImportError:
@@ -56,7 +59,7 @@ class PlotlyReportBlock(ReportBlocks):
                         'height': 'auto',
                         'data': fig._data,
                         'layout': layout,
-                        'options': {},
+                        'options': options,
                         'title': title,
                         'width': f'{width_percentage}%'
                     },
