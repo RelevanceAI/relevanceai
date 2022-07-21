@@ -11,7 +11,7 @@ class PlotlyReportBlock(ReportBlocks):
         self,
         fig,
         title: str = "",
-        static: bool = True,
+        static: bool = False,
         width: int = 600,
         height: int = 300,
         add: bool = True,
@@ -36,7 +36,25 @@ class PlotlyReportBlock(ReportBlocks):
                 fig_image, title=title, width_percentage=width_percentage, add=add
             )
         else:
-            raise NotImplementedError
+            block = [{
+                "type": "appBlock",
+                # "attrs" : {"id": str(uuid.uuid4())},
+                "content": [{
+                    'attrs': {
+                        'height': 'auto',
+                        'data': fig._data,
+                        'layout': fig._layout,
+                        'options': {},
+                        'title': title,
+                        'width': f'{width_percentage}%'
+                    },
+                    'type': 'dumbPlotlyChart'
+                }]
+            }]
+        if add:
+            self.contents.append(block)
+        return block
+
 
     def plotly_dendrogram(
         self,
