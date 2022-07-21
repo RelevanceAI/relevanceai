@@ -84,18 +84,27 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         self.insert_centroids(centroid_documents)
         if self.include_cluster_report:
             try:
-                from relevanceai.recipes.model_observability.cluster.report import ClusterReport
+                from relevanceai.recipes.model_observability.cluster.report import (
+                    ClusterReport,
+                )
+
                 app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
                 app.start_cluster_evaluator(
                     self.get_field_across_documents(self.vector_fields[0], documents),
-                    self.get_field_across_documents(self._get_cluster_field_name(), updated_documents),
+                    self.get_field_across_documents(
+                        self._get_cluster_field_name(), updated_documents
+                    ),
                     # centroids=centroid_documents
                 )
                 app.evaluator.X_silhouette_samples = np.array(
-                    self.get_field_across_documents(self._silhouette_score_field_name(), updated_documents)
+                    self.get_field_across_documents(
+                        self._silhouette_score_field_name(), updated_documents
+                    )
                 )
                 app.evaluator.X_squared_error_samples = np.array(
-                    self.get_field_across_documents(self._squared_error_field_name(), updated_documents)
+                    self.get_field_across_documents(
+                        self._squared_error_field_name(), updated_documents
+                    )
                 )
                 app.section_cluster_report()
                 print()
@@ -103,7 +112,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 app.deploy()
             except:
                 print("Couldnt' create cluster report.")
-        return 
+        return
 
     def insert_centroids(
         self,
@@ -194,6 +203,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
     def get_centroid_documents(self):
         centroid_vectors = {}
         if hasattr(self.model, "_centroids") and self.model._centroids is not None:
+            # TODO: fix this so that it creates the proper labels
             centroid_vectors = self.model._centroids
             # get the cluster label function
             labels = range(len(centroid_vectors))

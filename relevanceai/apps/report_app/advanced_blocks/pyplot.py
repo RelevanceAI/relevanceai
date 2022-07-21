@@ -1,4 +1,5 @@
 import io
+from turtle import width
 from relevanceai.apps.report_app.blocks import ReportBlocks
 
 
@@ -11,18 +12,26 @@ class PyplotReportBlock(ReportBlocks):
         self,
         fig,
         title: str = "",
+        width: float = None,
+        height: float = None,
         clear_fig: bool = True,
+        dpi: int = 150,
         add: bool = True,
-        dpi: int = 100,
-        width_percentage: int = 50,
+        width_percentage: int = 100,
         **kwargs
     ):
         try:
             import matplotlib.pyplot as plt
+
             plt.ioff()
         except ImportError:
             raise ImportError(
                 ".pyplot requires matplotlib to be installed, install with 'pip install -U matplotlib'."
+            )
+        if width or height:
+            sizes = fig.get_size_inches()
+            fig.set_size_inches(
+                width / dpi if width else sizes[0], height / dpi if height else sizes[1]
             )
         fig_image = io.BytesIO()
         savefig_kwargs = {"dpi": dpi, "bbox_inches": "tight", "format": "png"}
