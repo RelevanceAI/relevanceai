@@ -161,7 +161,7 @@ class ClusterReport(ReportApp):
         )
         for metric in metrics:
             plot, plotted_method = self.evaluator.plot_distance_matrix(metric=metric, decimals=decimals)
-            chart_title = f"{metric} similarity matrix"
+            chart_title = f"{metric.title()} similarity matrix"
             if metric in ["cosine"]:
                 chart_title += " (higher is more similar)"
             else:
