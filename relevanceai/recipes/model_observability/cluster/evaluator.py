@@ -111,6 +111,7 @@ class ClusterEvaluator:
         elif hasattr(model, "get_centers"):
             return model.get_centers()
         else:
+            #TODO
             raise Exception
 
     def _calculate_centroids(self, X, cluster_labels):

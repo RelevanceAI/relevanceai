@@ -40,6 +40,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
     def name(self):
         return "cluster"
 
+    #TODO
     # def centroids(self, documents, labels):
     #     if hasattr(self.model, "_centroids") and self.model._centroids is not None:
     #         centroid_vectors = self.model._centroids
