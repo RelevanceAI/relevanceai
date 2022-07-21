@@ -231,15 +231,27 @@ class ClusterEvaluator:
                     "pyplot",
                 )
 
-    def plot_distance_matrix(self, decimals=4):
+    def plot_distance_matrix(self, metric="euclidean", decimals=4):
         try:
             import plotly.express as px
 
+            if metric == "euclidean":
+                distance_matrix = self.distance_matrix
+            else:
+                if isinstance(self.centroids, dict):
+                    distance_matrix = pairwise_distances(
+                        list(self.centroids.values()), metric=metric
+                    )
+                else:
+                    distance_matrix = pairwise_distances(
+                        self.centroids, metric=metric
+                    )
+            
             if self.cluster_names:
                 return (
                     px.imshow(
                         pd.DataFrame(
-                            np.round(self.distance_matrix, 4),
+                            np.round(distance_matrix, 4),
                             columns=self.cluster_names,
                             index=self.cluster_names,
                         ),
@@ -249,7 +261,7 @@ class ClusterEvaluator:
                 )
             else:
                 return (
-                    px.imshow(np.round(self.distance_matrix, 4), text_auto=True),
+                    px.imshow(np.round(distance_matrix, 4), text_auto=True),
                     "plotly",
                 )
         except ImportError:
@@ -344,7 +356,7 @@ class ClusterEvaluator:
         return self.X_squared_error_samples
 
     def squared_error_score(self):
-        if not hasattr(self, "X_silhouette_samples"):
+        if not hasattr(self, "X_squared_error_samples"):
             self.squared_error_samples()
         return self.X_squared_error_samples.sum()
 

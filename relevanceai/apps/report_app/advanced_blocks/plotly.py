@@ -1,4 +1,5 @@
 import io
+import numpy as np
 from relevanceai.apps.report_app.blocks import ReportBlocks
 
 
@@ -12,8 +13,8 @@ class PlotlyReportBlock(ReportBlocks):
         fig,
         title: str = "",
         static: bool = False,
-        width: int = 600,
-        height: int = 300,
+        width: int = None,
+        height: int = None,
         add: bool = True,
         width_percentage: int = 100,
         **kwargs
@@ -36,21 +37,32 @@ class PlotlyReportBlock(ReportBlocks):
                 fig_image, title=title, width_percentage=width_percentage, add=add
             )
         else:
-            block = [{
+            layout = fig._layout
+            if width:
+                layout['width'] = width
+            else:
+                if "width" in layout and layout['width'] == np.inf:
+                    layout['width'] = "auto"
+            if height:
+                layout['height'] = height
+            else:
+                if "height" in layout and layout['height'] == np.inf:
+                    layout['height'] = "auto"
+            block = {
                 "type": "appBlock",
                 # "attrs" : {"id": str(uuid.uuid4())},
                 "content": [{
                     'attrs': {
                         'height': 'auto',
                         'data': fig._data,
-                        'layout': fig._layout,
+                        'layout': layout,
                         'options': {},
                         'title': title,
                         'width': f'{width_percentage}%'
                     },
                     'type': 'dumbPlotlyChart'
                 }]
-            }]
+            }
         if add:
             self.contents.append(block)
         return block

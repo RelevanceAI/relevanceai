@@ -66,8 +66,9 @@ class ClusterReport(ReportApp):
         self.X = self.dataset.get_field_across_documents(vector_fields[0], documents)
         self.cluster_labels = self.dataset.get_field_across_documents(cluster_field, documents)
         self.centroids = {
-            self.dataset.get_field(cluster_field) : self.dataset.get_field(vector_fields[0])
+            d["_id"] : self.dataset.get_field(vector_fields[0], d)
             for d in self.dataset.datasets.cluster.centroids.documents(
+                dataset_id= self.dataset.dataset_id,
                 vector_fields=vector_fields,
                 alias=alias,
                 page_size=9999,
@@ -112,15 +113,15 @@ class ClusterReport(ReportApp):
         )
         self.bullet_list(
             [
-                "Compactness (intra-cluster distance): Measures the variation within each cluster, how close observations are within each cluster.",
+                "Compactness (intra-cluster distance): Measures the variation within each cluster - how close observations are within each cluster.",
                 "Separation (inter-cluster distance): How well separated are the clusters from each other.",
             ]
         )
         for metric, explanation in {
-            "davies_bouldin_score" : "[Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
-            "calinski_harabasz_score" : "[Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to Variance Ratio Criterion",
-            "silhouette_score" : "[Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other cluster. This silhouette score is the average of every point’s silhouette score.",
-            "total_squared_error_score" : "[Compactness] (0 to infinity, higher is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
+            "davies_bouldin_score" : "      [Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
+            "calinski_harabasz_score" : "      [Compactness, Separation] (-infinity to infinity, higher is better) Similar to davies bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to Variance Ratio Criterion",
+            "silhouette_score" : "      [Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other cluster. This silhouette score is the average of every point’s silhouette score.",
+            "total_squared_error_score" : "      [Compactness] (0 to infinity, lower is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
         }.items():
             metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
@@ -147,12 +148,18 @@ class ClusterReport(ReportApp):
                 color_threshold=color_threshold,
                 orientation=orientation,
             )
-            self.plot_by_method(plot, plot_method=plotted_method, add=add)
+            self.plot_by_method(plot, title=f"{method.title()} lnkage dendrogram", plot_method=plotted_method, add=add)
 
-    def section_cluster_distance_matrix(self, decimals: int = 4, add=True):
+    def section_cluster_distance_matrix(self, metrics=["cosince", "euclidean"], decimals: int = 4, add=True):
         self.h2("Overview of cluster similarity matrix")
         self.paragraph(
             "Shows a heatmap of the similarity scores between different clusters. This can be especially useful to determine which clusters to combined."
         )
-        plot, plotted_method = self.evaluator.plot_distance_matrix(decimals=decimals)
-        self.plot_by_method(plot, plot_method=plotted_method, add=add)
+        for metric in metrics:
+            plot, plotted_method = self.evaluator.plot_distance_matrix(metric=metric, decimals=decimals)
+            chart_title = f"{metric} similarity matrix"
+            if metric in ["cosine"]:
+                chart_title += " (higher is more similar)"
+            else:
+                chart_title += " (lower is more similar)"
+            self.plot_by_method(plot, title=chart_title, plot_method=plotted_method, add=add)
