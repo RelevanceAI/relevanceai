@@ -419,7 +419,7 @@ class ClusterEvaluator:
             self.silhouette_samples()
         )
         report["squared_error_summary"] = self.summary_statistics(
-            self.silhouette_samples()
+            self.squared_error_samples(), axis=2
         )
         report["calinski_harabasz_score"] = self.calinski_harabasz_score()
         report["davies_bouldin_score"] = self.davies_bouldin_score()
