@@ -175,3 +175,81 @@ class ReportBlocks(ReportMarks):
         if add:
             self.contents.append(block)
         return block
+
+    def audio(
+        self, content, title: str = "", width_percentage: int = 100, add: bool = True
+    ):
+        if isinstance(content, str):
+            if "http" in content and "/":
+                # online audio
+                content_bytes = io.BytesIO(requests.get(content).content).getvalue()
+            else:
+                # local filepath
+                content_bytes = io.BytesIO(open(content, "rb").read()).getvalue()
+        elif isinstance(content, bytes):
+            content_bytes = content
+        elif isinstance(content, io.BytesIO):
+            content_bytes = content.getvalue()
+        else:
+            raise TypeError("'content' needs to be of type str, bytes or io.BytesIO.")
+        filename = f"{title}.png" if title else f"{str(uuid.uuid4())}.png"
+        audio_url = self.dataset.insert_media_bytes(
+            content_bytes, filename=filename, verbose=False
+        )
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "audioDisplayBlock",
+                    "attrs": {
+                        "audioSrc": audio_url,
+                        "title": title,
+                        "width": f"{width_percentage}%",
+                        "height": "auto",
+                    },
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    def video(
+        self, content, title: str = "", width_percentage: int = 100, add: bool = True
+    ):
+        if isinstance(content, str):
+            if "http" in content and "/":
+                # online video
+                content_bytes = io.BytesIO(requests.get(content).content).getvalue()
+            else:
+                # local filepath
+                content_bytes = io.BytesIO(open(content, "rb").read()).getvalue()
+        elif isinstance(content, bytes):
+            content_bytes = content
+        elif isinstance(content, io.BytesIO):
+            content_bytes = content.getvalue()
+        else:
+            raise TypeError("'content' needs to be of type str, bytes or io.BytesIO.")
+        filename = f"{title}.png" if title else f"{str(uuid.uuid4())}.png"
+        video_url = self.dataset.insert_media_bytes(
+            content_bytes, filename=filename, verbose=False
+        )
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "videoDisplayBlock",
+                    "attrs": {
+                        "videoSrc": video_url,
+                        "title": title,
+                        "width": f"{width_percentage}%",
+                        "height": "auto",
+                    },
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
