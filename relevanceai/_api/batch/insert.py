@@ -819,7 +819,7 @@ class BatchInsertClient(BatchRetrieveClient):
             )
             chunksize = min(chunksize, max_chunk_size)
 
-            print(f"Updating chunksize to {chunksize}")
+            print(f"Updating chunksize for batch data insertion to {chunksize}")
             # Add edge case handling
             if chunksize == 0:
                 chunksize = 1

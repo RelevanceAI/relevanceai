@@ -98,6 +98,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                     self.get_field_across_documents(self._squared_error_field_name(), updated_documents)
                 )
                 app.section_cluster_report()
+                print()
                 print("We've built your cluster report app:")
                 app.deploy()
             except:

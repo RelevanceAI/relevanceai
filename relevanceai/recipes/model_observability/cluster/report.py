@@ -146,13 +146,20 @@ class ClusterReport(ReportApp):
             "A dendrogram shows the hierarchical relationship between cluster. This can be especially useful to determine which clusters to combined with hierarchical linkage."
         )
         for method in hierarchy_methods:
+            height = max(20*self.evaluator.num_clusters, 300)
             plot, plotted_method = self.evaluator.plot_dendrogram(
                 hierarchy_method=method,
                 plot_method=plot_method,
                 color_threshold=color_threshold,
                 orientation=orientation,
             )
-            self.plot_by_method(plot, title=f"{method.title()} linkage dendrogram", plot_method=plotted_method, add=add)
+            self.plot_by_method(
+                plot, 
+                title=f"{method.title()} linkage dendrogram", 
+                plot_method=plotted_method,
+                # height=height,
+                add=add
+            )
 
     def section_cluster_distance_matrix(self, metrics=["cosine", "euclidean"], decimals: int = 4, add=True):
         self.h2("Overview of cluster similarity matrix")

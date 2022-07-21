@@ -451,6 +451,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
         )
+        print()
         print(
             f"""You can now utilise the ClusterOps object using the below:
 
