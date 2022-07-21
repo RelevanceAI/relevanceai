@@ -192,7 +192,7 @@ class ReportBlocks(ReportMarks):
             content_bytes = content.getvalue()
         else:
             raise TypeError("'content' needs to be of type str, bytes or io.BytesIO.")
-        filename = f"{title}.png" if title else f"{str(uuid.uuid4())}.png"
+        filename = f"{title}.wav" if title else f"{str(uuid.uuid4())}.wav"
         audio_url = self.dataset.insert_media_bytes(
             content_bytes, filename=filename, verbose=False
         )
@@ -231,7 +231,7 @@ class ReportBlocks(ReportMarks):
             content_bytes = content.getvalue()
         else:
             raise TypeError("'content' needs to be of type str, bytes or io.BytesIO.")
-        filename = f"{title}.png" if title else f"{str(uuid.uuid4())}.png"
+        filename = f"{title}.mp4" if title else f"{str(uuid.uuid4())}.mp4"
         video_url = self.dataset.insert_media_bytes(
             content_bytes, filename=filename, verbose=False
         )
