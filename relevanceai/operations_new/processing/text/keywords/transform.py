@@ -48,6 +48,9 @@ class KeyWordTransform(TransformBase):
             text,
             keyphrase_ngram_range=(self.lower_bound, self.upper_bound),
             stop_words=self.stop_words,
+            top_n=self.max_keywords,
+            use_maxsum=True,
+            nr_candidates=20,
         )
         return [{"keyword": k[0], "score": k[1]} for k in keywords[: self.max_keywords]]
 
