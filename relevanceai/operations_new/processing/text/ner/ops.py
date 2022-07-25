@@ -9,6 +9,7 @@ from relevanceai.operations_new.processing.text.ner.transform import ExtractNER
 class ExtractNEROps(OperationAPIBase, ExtractNER):
     def __init__(self, credentials, fields, output_fields, **kwargs):
         self.credentials = credentials
+        self.fields = fields
         if output_fields is None:
             self.output_fields = [self._generate_output_field(f) for f in fields]
         else:
