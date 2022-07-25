@@ -75,6 +75,8 @@ class ExtractNER(TransformBase):
         # The is_recorded flag allows us to track whether the
         # entity is just 1 syllable and has been recorded or not
         is_recorded = True
+        # Initiate word with something
+        word = ""
         for i, entity in enumerate(entities):
             if entity["entity"].startswith("B-"):
                 if is_recorded:
