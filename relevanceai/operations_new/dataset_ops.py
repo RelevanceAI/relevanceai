@@ -1211,11 +1211,9 @@ class Operations(Write):
         """
         Extract NER
         """
-        from relevanceai.operations_new.processing.text.translate.ops import (
-            TranslateOps,
-        )
+        from relevanceai.operations_new.processing.text.ner.ops import ExtractNEROps
 
-        ops = TranslateOps(
+        ops = ExtractNEROps(
             credentials=self.credentials,
             fields=fields,
             model_id=model_id,
