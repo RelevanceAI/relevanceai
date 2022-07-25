@@ -17,6 +17,8 @@ class ExtractNEROps(OperationAPIBase, ExtractNER):
     ):
         self.credentials = credentials
         self.fields = fields
+        if model_id is None:
+            self.model_id = "dslim/bert-base-NER"
         if output_fields is None:
             self.output_fields = [self._generate_output_field(f) for f in fields]
         else:
