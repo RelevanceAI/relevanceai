@@ -1,3 +1,4 @@
+import traceback
 import warnings
 import numpy as np
 import pandas as pd
@@ -111,6 +112,8 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 print("We've built your cluster report app:")
                 app.deploy()
             except:
+                import traceback
+                traceback.print_exc()
                 print("Couldnt' create cluster report.")
         return
 
