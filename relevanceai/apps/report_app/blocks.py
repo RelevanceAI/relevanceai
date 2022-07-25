@@ -1,6 +1,7 @@
 import io
 import uuid
 import requests
+import numpy as np
 from relevanceai.apps.report_app.marks import ReportMarks
 
 
@@ -8,17 +9,20 @@ class ReportBlocks(ReportMarks):
     def _process_content(self, content):
         if isinstance(content, str):
             return [{"type": "text", "text": content}]
+        elif isinstance(content, (float, int, np.generic)):
+            return [{"type": "text", "text": str(content)}]
         elif isinstance(content, list):
             content_list = []
             for c in content:
-                if isinstance(c, str):
-                    content_list.append({"type": "text", "text": c})
-                elif isinstance(c, list):
+                if isinstance(c, list):
                     content_list.append(c[0])
                 else:
-                    content_list.append(c)
+                    content_list += self._process_content(c)
             return content_list
+        elif isinstance(content, dict):
+            return content
         else:
+            print(type(content))
             return content
 
     def h1(self, content, add=True):

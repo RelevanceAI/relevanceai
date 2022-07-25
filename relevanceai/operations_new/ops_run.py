@@ -6,6 +6,7 @@ import threading
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional
+from abc import ABC, abstractmethod
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
@@ -20,6 +21,10 @@ class OperationRun(TransformBase):
 
     def is_chunk_valid(self, chunk):
         return chunk is not None and len(chunk) > 0
+
+    # @abstractmethod
+    def post_run(self, dataset, documents, updated_documents):
+        pass
 
     def run(
         self,
@@ -114,9 +119,12 @@ class OperationRun(TransformBase):
                     documents,
                     *args,
                     **kwargs,
-                )
-
+                )  # Should be in the transform.py
                 dataset.upsert_documents(updated_documents)
+
+        return self.post_run(
+            dataset=dataset, documents=documents, updated_documents=updated_documents
+        )  # Should be in the ops.py
 
     def batch_transform_upsert(
         self,
