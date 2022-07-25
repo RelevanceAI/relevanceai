@@ -1036,6 +1036,11 @@ class Operations(Write):
         stop_words: list = None,
         filters: list = None,
         batched: bool = True,
+        use_maxsum: bool = False,
+        nr_candidates: int = 20,
+        use_mmr=True,
+        diversity=0.7,
+        **kwargs,
     ):
         """
         Extract the keyphrases of a text field and output and store it into
@@ -1053,6 +1058,10 @@ class Operations(Write):
             output_fields=output_fields,
             stop_words=stop_words,
             max_keywords=max_keywords,
+            nr_candidates=nr_candidates,
+            use_maxsum=use_maxsum,
+            use_mmr=use_mmr,
+            diversity=diversity,
         )
         ops.run(
             self,
