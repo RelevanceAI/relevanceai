@@ -24,4 +24,3 @@ class ExtractNEROps(OperationAPIBase, ExtractNER):
         for k, v in kwargs.items():
             setattr(self, k, v)
         self.model_id = model_id
-        super().__init__()
