@@ -143,3 +143,6 @@ class TransformBase(OperationsCheck):
         else:
             self.package = "custom"
         return self.package
+
+    def _generate_output_field(self, field):
+        return f"_{self.name}_.{field.lower().replace(' ', '_')}"

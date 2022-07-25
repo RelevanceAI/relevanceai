@@ -1196,3 +1196,36 @@ class Operations(Write):
         )
 
         return ops
+
+    def extract_ner(
+        self,
+        fields: list,
+        model_id: str = None,
+        output_fields: list = None,
+        chunksize: int = 20,
+        filters: list = None,
+        refresh: bool = False,
+    ):
+        """
+        Extract NER
+        """
+        from relevanceai.operations_new.processing.text.ner.ops import ExtractNEROps
+
+        ops = ExtractNEROps(
+            credentials=self.credentials,
+            fields=fields,
+            model_id=model_id,
+            output_fields=output_fields,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops
