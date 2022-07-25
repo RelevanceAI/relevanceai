@@ -714,3 +714,144 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 highlight_output_field=highlight_output_field,
             )
         raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
+
+    @track
+    def aggregate(
+        self,
+        metrics: Optional[list] = None,
+        sort: Optional[list] = None,
+        groupby: Optional[list] = None,
+        filters: Optional[list] = None,
+        page_size: int = 20,
+        page: int = 1,
+        asc: bool = False,
+        flatten: bool = True,
+    ):
+        """
+        Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
+        It can only can be used after a vector field has been clustered. \n
+        Aggregation/Groupby of a collection using an aggregation query. The aggregation query is a json body that follows the schema of:
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": <alias>, "field": <field in the collection>, "agg": "category"},
+                    {"name": <alias>, "field": <another groupby field in the collection>, "agg": "numeric"}
+                ],
+                "metrics" : [
+                    {"name": <alias>, "field": <numeric field in the collection>, "agg": "avg"}
+                    {"name": <alias>, "field": <another numeric field in the collection>, "agg": "max"}
+                ]
+            }
+
+        For example, one can use the following aggregations to group score based on region and player name.
+
+        .. code-block::
+
+            {
+                "groupby" : [
+                    {"name": "region", "field": "player_region", "agg": "category"},
+                    {"name": "player_name", "field": "name", "agg": "category"}
+                ],
+                "metrics" : [
+                    {"name": "average_score", "field": "final_score", "agg": "avg"},
+                    {"name": "max_score", "field": "final_score", "agg": "max"},
+                    {'name':'total_score','field':"final_score", 'agg':'sum'},
+                    {'name':'average_deaths','field':"final_deaths", 'agg':'avg'},
+                    {'name':'highest_deaths','field':"final_deaths", 'agg':'max'},
+                ]
+            }
+        "groupby" is the fields you want to split the data into. These are the available groupby types:
+            - category : groupby a field that is a category
+            - numeric: groupby a field that is a numeric
+        "metrics" is the fields and metrics you want to calculate in each of those, every aggregation includes a frequency metric. These are the available metric types:
+            - "avg", "max", "min", "sum", "cardinality"
+        The response returned has the following in descending order. \n
+        If you want to return documents, specify a "group_size" parameter and a "select_fields" parameter if you want to limit the specific fields chosen. This looks as such:
+            .. code-block::
+                {
+                    'groupby':[
+                        {'name':'Manufacturer','field':'manufacturer','agg':'category',
+                        'group_size': 10, 'select_fields': ["name"]},
+                    ],
+                    'metrics':[
+                        {'name':'Price Average','field':'price','agg':'avg'},
+                    ],
+                }
+                # ouptut example:
+                {"title": {"title": "books", "frequency": 200, "documents": [{...}, {...}]}, {"title": "books", "frequency": 100, "documents": [{...}, {...}]}}
+        For array-aggregations, you can add "agg": "array" into the aggregation query.
+
+        Parameters
+        ----------
+        dataset_id : string
+            Unique name of dataset
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+        alias: string
+            Alias used to name a vector field. Belongs in field_{alias} vector
+        metrics: list
+            Fields and metrics you want to calculate
+        groupby: list
+            Fields you want to split the data into
+        filters: list
+            Query for filtering the search results
+        page_size: int
+            Size of each page of results
+        page: int
+            Page of the results
+        asc: bool
+            Whether to sort results by ascending or descending order
+        flatten: bool
+            Whether to flatten
+
+        Example
+        ---------
+        .. code-block::
+            from relevanceai import Client
+            client = Client()
+            df = client.Dataset("sample_dataset_id")
+            from sklearn.cluster import KMeans
+            model = KMeans(n_clusters=2)
+            cluster_ops = client.ClusterOps(alias="kmeans_2", model=model)
+            cluster_ops.run(df, vector_fields=["sample_vector_"])
+            clusterer.aggregate(
+                "sample_dataset_id",
+                groupby=[{
+                    "field": "title",
+                    "agg": "wordcloud",
+                }],
+                vector_fields=['sample_vector_']
+            )
+        """
+        metrics = [] if metrics is None else metrics
+        groupby = [] if groupby is None else groupby
+        filters = [] if filters is None else filters
+        sort = [] if sort is None else sort
+
+        return self.datasets.cluster.aggregate(
+            dataset_id=self.dataset_id,
+            vector_fields=self.vector_fields,
+            groupby=groupby,
+            metrics=metrics,
+            sort=sort,
+            filters=filters,
+            alias=self.alias,
+            page_size=page_size,
+            page=page,
+            asc=asc,
+            flatten=flatten,
+        )
