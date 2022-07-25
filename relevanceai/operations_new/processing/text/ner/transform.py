@@ -120,10 +120,8 @@ class ExtractNER(TransformBase):
 
         """
         for i, text_field in enumerate(self.fields):
-            text = self.get_fields(text_field, document)
+            text = self.get_field(text_field, document)
             split_text = self.extract_ner(text)
-
-            # Format the split text into documents
             split_text_value = [{text_field: s} for s in split_text if s.strip() != ""]
             self.set_field(
                 self.output_fields[i],
