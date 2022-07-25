@@ -16,6 +16,8 @@ class KeyWordTransform(TransformBase):
         output_fields: list = None,
         stop_words: list = None,
         max_keywords: int = 1,
+        use_maxsum: bool = False,
+        nr_candidates: int = 20,
     ):
         self.fields = fields
         self.model_name = model_name
@@ -24,6 +26,9 @@ class KeyWordTransform(TransformBase):
         self.upper_bound = upper_bound
         self.stop_words = stop_words
         self.max_keywords = max_keywords
+
+        self.use_maxsum = use_maxsum
+        self.nr_candidates = nr_candidates
 
     def _get_output_field(self, field):
         return field + "_keyphrase_"
@@ -49,8 +54,8 @@ class KeyWordTransform(TransformBase):
             keyphrase_ngram_range=(self.lower_bound, self.upper_bound),
             stop_words=self.stop_words,
             top_n=self.max_keywords,
-            use_maxsum=True,
-            nr_candidates=20,
+            use_maxsum=self.use_maxsum,
+            nr_candidates=self.nr_candidates,
         )
         return [{"keyword": k[0], "score": k[1]} for k in keywords[: self.max_keywords]]
 
