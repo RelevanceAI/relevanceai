@@ -9,17 +9,23 @@ from relevanceai.utils import MissingPackageError
 class ExtractNER(TransformBase):
     def __init__(
         self,
-        text_fields: List[str],
+        fields: List[str],
         model_id: str = "dslim/bert-base-NER",
-        output_field: str = "_ner_",
+        output_fields: str = None,
+        **kwargs
     ):
-        self.text_fields = text_fields
+        self.fields = fields
         self.model_id = model_id
-        self.output_field = output_field
+        if output_fields is None:
+            self.output_fields = [self._generate_output_field(f) for f in fields]
+        else:
+            self.output_fields = output_fields
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     @property
     def name(self):
-        return "sentence_splitting"
+        return "ner"
 
     @property
     def classifier(self):
@@ -101,7 +107,7 @@ class ExtractNER(TransformBase):
 
         Parameters
         ----------
-        text_fields
+        fields
             The fields in the document that contain the text to be split.
         document
             The document to be split.
@@ -113,14 +119,14 @@ class ExtractNER(TransformBase):
             A list of dictionaries.
 
         """
-        for text_field in self.text_fields:
+        for i, text_field in enumerate(self.fields):
             text = self.get_fields(text_field, document)
             split_text = self.extract_ner(text)
 
             # Format the split text into documents
             split_text_value = [{text_field: s} for s in split_text if s.strip() != ""]
             self.set_field(
-                self.output_field,
+                self.output_fields[i],
                 document,
                 split_text_value,
             )
@@ -136,7 +142,7 @@ class ExtractNER(TransformBase):
 
         Parameters
         ----------
-        text_fields
+        fields
             a list of fields in the document that contain text to be split
         documents
             list of documents to be split
@@ -155,8 +161,6 @@ class ExtractNER(TransformBase):
         [
             self.extract_ner_from_document(
                 document=document,
-                text_fields=self.text_fields,
-                output_field=self.output_field,
             )
             for document in documents
         ]
