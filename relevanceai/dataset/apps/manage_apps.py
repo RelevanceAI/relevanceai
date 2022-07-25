@@ -37,12 +37,6 @@ class ManageApps(Write):
                 if d["dataset_id"] == self.dataset_id:
                     result = {
                         "deployable_id": d["deployable_id"],
-                        "url": self._app_url(
-                            d["dataset_id"],
-                            d["project_id"],
-                            d["configuration"]["type"],
-                            d["deployable_id"],
-                        ),
                     }
                     if "configuration" in d:
                         if "deployable_name" in d["configuration"]:
@@ -51,6 +45,12 @@ class ManageApps(Write):
                             ]
                         if "type" in d["configuration"]:
                             result["type"] = d["configuration"]["type"]
+                            result["url"] = self._app_url(
+                                d["dataset_id"],
+                                d["project_id"],
+                                d["configuration"]["type"],
+                                d["deployable_id"],
+                            )
                     results.append(result)
             return results
 
