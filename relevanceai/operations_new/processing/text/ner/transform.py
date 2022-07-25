@@ -150,8 +150,6 @@ class ExtractNER(TransformBase):
             A list of documents
 
         """
-        if not self.inplace:
-            documents = deepcopy(documents)
 
         # TODO; switch to something faster than list comprehension
         [
