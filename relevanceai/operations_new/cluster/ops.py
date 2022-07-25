@@ -111,9 +111,8 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 print()
                 print("We've built your cluster report app:")
                 app.deploy()
-            except:
-                import traceback
-                traceback.print_exc()
+            except Exception as e:
+                print(e)
                 print("Couldnt' create cluster report.")
         return
 
