@@ -18,6 +18,7 @@ class KeyWordTransform(TransformBase):
         max_keywords: int = 1,
         use_maxsum: bool = False,
         nr_candidates: int = 20,
+        **kwargs
     ):
         self.fields = fields
         self.model_name = model_name
@@ -29,6 +30,8 @@ class KeyWordTransform(TransformBase):
 
         self.use_maxsum = use_maxsum
         self.nr_candidates = nr_candidates
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def _get_output_field(self, field):
         return field + "_keyphrase_"
