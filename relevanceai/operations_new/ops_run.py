@@ -121,10 +121,12 @@ class OperationRun(TransformBase):
                     **kwargs,
                 )  # Should be in the transform.py
                 dataset.upsert_documents(updated_documents)
-
-        return self.post_run(
-            dataset=dataset, documents=documents, updated_documents=updated_documents
-        )  # Should be in the ops.py
+                self.post_run(
+                    dataset=dataset,
+                    documents=documents,
+                    updated_documents=updated_documents,
+                )  # Should be in the ops.py
+        return
 
     def batch_transform_upsert(
         self,
