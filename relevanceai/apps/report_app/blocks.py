@@ -15,13 +15,16 @@ class ReportBlocks(ReportMarks):
         elif isinstance(content, list):
             content_list = []
             for c in content:
-                if isinstance(c, list):
+                if isinstance(c, list) and len(c) == 1:
                     content_list.append(c[0])
                 else:
-                    content_list += self._process_content(c)
+                    processed_content = self._process_content(c)
+                    if not isinstance(processed_content, list):
+                        processed_content = [processed_content]
+                    content_list += processed_content
             return content_list
         elif isinstance(content, dict):
-            return content
+            return [content]
         else:
             print(type(content))
             return content
@@ -87,13 +90,13 @@ class ReportBlocks(ReportMarks):
         return block
 
     def paragraph(self, content, add=True, raw=False):
-        block = {"type": "paragraph", "content": self._process_content(content)}
+        p_block = {"type": "paragraph", "content": self._process_content(content)}
         if raw:
-            return block
+            return p_block
         block = {
             "type": "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
-            "content": [block],
+            "content": [p_block],
         }
         if add:
             self.contents.append(block)
@@ -107,6 +110,23 @@ class ReportBlocks(ReportMarks):
             # "attrs" : {"id": str(uuid.uuid4())},
             "content": [
                 {"type": "spaceBlock", "attrs": {"width": "100%", "height": height}}
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    def tooltip(self, content, tooltip_text, add=True):
+        #has to be text block here.
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "tooltip", 
+                    "attrs": {"content" : tooltip_text},
+                    "content" : self._process_content(content)
+                }
             ],
         }
         if add:
