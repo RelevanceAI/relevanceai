@@ -7,6 +7,7 @@ from relevanceai.apps.report_app.marks import ReportMarks
 
 class ReportBlocks(ReportMarks):
     def _process_content(self, content):
+        #Needs to be done better
         if isinstance(content, str):
             return [{"type": "text", "text": content}]
         elif isinstance(content, (float, int, np.generic)):
