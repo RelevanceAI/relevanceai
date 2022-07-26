@@ -98,6 +98,8 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block
 
+    p = paragraph
+
     def space(self, height: int = 40, add=True):
         block = {
             "type": "appBlock",
@@ -140,6 +142,43 @@ class ReportBlocks(ReportMarks):
         if add:
             self.contents.append(block)
         return block
+
+    def details(self, title_content, contents, collapsed: bool = True, add=True):
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "details",
+                    "attrs": {"open": collapsed},
+                    "content": [
+                        {
+                            "type": "detailsSummary",
+                            "content": self._process_content(title_content),
+                        },
+                        {
+                            "type": "detailsContent",
+                            "content": self._process_content(contents),
+                        },
+                    ],
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    # def table(self, data, add=True):
+    #     if data:
+    #         table_headers = data.columns
+    #         table_rows =
+    #     block = {
+    #         "type": "appBlock",
+    #         "content": [{"type": "table", "content": table_rows}],
+    #     }
+    #     if add:
+    #         self.contents.append(block)
+    #     return block
 
     def image(
         self, content, title: str = "", width_percentage: int = 100, add: bool = True
