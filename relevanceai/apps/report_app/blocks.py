@@ -189,6 +189,22 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block
 
+    def card(self, contents, width, color, add=True):
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "cardBlock",
+                    "attrs": {"width": width, "colour": color},
+                    "content": self._process_content(contents),
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block 
+
     # def table(self, data, add=True):
     #     if data:
     #         table_headers = data.columns
