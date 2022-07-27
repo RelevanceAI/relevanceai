@@ -847,3 +847,6 @@ class Read(ClusterRead):
         Get the settings in dataset
         """
         return self.datasets.get_settings(dataset_id=self.dataset_id)
+
+    def list_cluster_fields(self):
+        return [x for x in self.schema if "_cluster_" in x and x.count(".") >= 2]
