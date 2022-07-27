@@ -841,3 +841,9 @@ class Read(ClusterRead):
             page=page,
             asc=asc,
         )
+
+    def get_settings(self):
+        """
+        Get the settings in dataset
+        """
+        return self.datasets.get_settings(dataset_id=self.dataset_id)
