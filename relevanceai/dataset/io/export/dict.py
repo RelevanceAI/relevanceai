@@ -4,7 +4,7 @@ from relevanceai.dataset.read import Read
 
 class DictExport(Read):
     @track
-    def to_dict(self, orient: str = "records"):
+    def to_dict(self, orient: str = "records", **kwargs):
         """
         Returns the raw list of dicts from Relevance AI
 
@@ -30,6 +30,6 @@ class DictExport(Read):
             dict = df.to_dict(orient="records")
         """
         if orient == "records":
-            return self.get_all_documents()
+            return self.get_all_documents(**kwargs)
         else:
             raise NotImplementedError
