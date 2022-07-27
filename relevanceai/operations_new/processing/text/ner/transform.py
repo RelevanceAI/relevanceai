@@ -93,9 +93,13 @@ class ExtractNER(TransformBase):
                 else:
                     word += " " + entity["word"]
 
-                new_entities.append(
-                    {"word": word, "type": entity["entity"].replace("I-", "")}
-                )
+                # Add to it only if the following token is NOT an entity
+                if i < len(entities) - 1:
+                    if "##" not in entities[i + 1]["word"]:
+                        new_entities.append(
+                            {"word": word, "type": entity["entity"].replace("I-", "")}
+                        )
+
                 is_recorded = True
 
         return new_entities

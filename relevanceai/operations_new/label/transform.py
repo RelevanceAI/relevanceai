@@ -194,9 +194,18 @@ class LabelTransform(TransformBase):
         ]
         self.set_field_across_documents(score_field, sort_key, documents)
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])
-        labels = labels[:max_number_of_labels]
         labels = [l for l in labels if l[score_field] > similarity_threshold]
-        new_labels = deepcopy(labels)
+        counter = 0
+        new_labels = []
+        for label in labels:
+            label_text = self.get_field(self.label_field, label)
+            label_texts = self.get_field_across_documents(self.label_field, new_labels)
+            if label_text not in label_texts:
+                new_labels.append(deepcopy(label))
+                counter += 1
+                if counter == max_number_of_labels:
+                    break
+        # new_labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in new_labels]
         return new_labels
