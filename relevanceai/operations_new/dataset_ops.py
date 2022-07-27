@@ -1211,6 +1211,8 @@ class Operations(Write):
         """
         from relevanceai.operations_new.processing.text.ner.ops import ExtractNEROps
 
+        if model_id is None:
+            model_id = "dslim/bert-base-NER"
         ops = ExtractNEROps(
             credentials=self.credentials,
             fields=fields,
