@@ -206,7 +206,7 @@ class ReportBlocks(ReportMarks):
         return block 
 
     def _column_content(self, content):
-        return [{"type": "columnContent", "content": [self.paragraph(content, raw=True)]}]
+        return [{"type": "columnContent", "content": self._process_content(content)}]
 
     def columns(self, contents, num_columns:int=2, add=True):
         if not isinstance(contents, list):
@@ -219,7 +219,7 @@ class ReportBlocks(ReportMarks):
             "content": [
                 {
                     "type": "columnBlock", 
-                    "attrs": {"num_columns" : 2},
+                    "attrs": {"columns" : num_columns},
                     "content": list_contents
                 }
             ],
@@ -227,7 +227,6 @@ class ReportBlocks(ReportMarks):
         if add:
             self.contents.append(block)
         return block
-
 
     # def table(self, data, add=True):
     #     if data:
