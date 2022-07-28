@@ -205,6 +205,30 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block 
 
+    def _column_content(self, content):
+        return [{"type": "columnContent", "content": [self.paragraph(content, raw=True)]}]
+
+    def columns(self, contents, num_columns:int=2, add=True):
+        if not isinstance(contents, list):
+            raise TypeError("'contents' needs to be a List")
+        list_contents = []
+        for c in contents:
+            list_contents += self._column_content(c)
+        block = {
+            "type": "appBlock",
+            "content": [
+                {
+                    "type": "columnBlock", 
+                    "attrs": {"num_columns" : 2},
+                    "content": list_contents
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+
     # def table(self, data, add=True):
     #     if data:
     #         table_headers = data.columns
