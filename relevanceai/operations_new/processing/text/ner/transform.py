@@ -74,6 +74,10 @@ class ExtractNER(TransformBase):
         # The is_recorded flag allows us to track whether the
         # entity is just 1 syllable and has been recorded or not
         # Initiate word with something
+        for entity in entities:
+            entity.pop("score")
+            entity.pop("start")
+            entity.pop("end")
         return entities
 
     def extract_ner_from_document(
