@@ -57,8 +57,7 @@ class ExtractNER(TransformBase):
             A list of sentences.
 
         """
-        new_entities = []
-        entities = self.classifier(text)
+        entities = self.classifier(text, aggregation_strategy="simple")
         # Sample output looks like this
         # [{'end': 33,
         #   'entity': 'B-ORG',
@@ -74,35 +73,12 @@ class ExtractNER(TransformBase):
         #   'word': 'Wheel'},
         # The is_recorded flag allows us to track whether the
         # entity is just 1 syllable and has been recorded or not
-        is_recorded = True
         # Initiate word with something
-        word = ""
-        for i, entity in enumerate(entities):
-            if entity["entity"].startswith("B-"):
-                if is_recorded:
-                    word = entity["word"]
-                else:
-                    new_entities.append(
-                        {"word": word, "type": entity["entity"].replace("I-", "")}
-                    )
-
-                is_recorded = False
-            elif entity["entity"].startswith("I-"):
-                if "##" in entity["word"]:
-                    word += entity["word"].replace("##", "")
-                else:
-                    word += " " + entity["word"]
-
-                # Add to it only if the following token is NOT an entity
-                if i < len(entities) - 1:
-                    if "##" not in entities[i + 1]["word"]:
-                        new_entities.append(
-                            {"word": word, "type": entity["entity"].replace("I-", "")}
-                        )
-
-                is_recorded = True
-
-        return new_entities
+        for entity in entities:
+            entity.pop("score")
+            entity.pop("start")
+            entity.pop("end")
+        return entities
 
     def extract_ner_from_document(
         self,
