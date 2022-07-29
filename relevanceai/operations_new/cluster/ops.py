@@ -645,6 +645,95 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         print("To view nicely, please use `pd.DataFrame(labels)`.")
         return labels
 
+    def create_parent_cluster(
+        self,
+        to_merge: dict,
+        new_cluster_field: str,
+    ):
+        """
+        to_merge should look similar to below:
+
+        .. code-block::
+
+            to_merge = {
+                0: [
+                    'cluster_1',
+                    'cluster_2'
+                ]
+            }
+
+        """
+        parent_field = self._get_cluster_field_name()
+        for cluster, clusters_to_combine in to_merge.items():
+            for i, cluster_to_combine in enumerate(clusters_to_combine):
+                # Update the documents in the cluster to become a subcluster
+                cluster_filter = [
+                    {
+                        "field": parent_field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_to_combine,
+                    }
+                ]
+
+                if "cluster_" in cluster_to_combine:
+                    cluster_to_combine = cluster_to_combine.replace("cluster_", "")
+                if isinstance(cluster, int):
+                    update = {
+                        new_cluster_field: f"mergedCluster_{cluster}-{cluster_to_combine}"
+                    }
+                elif isinstance(cluster, str):
+                    update = {new_cluster_field: f"{cluster}-{cluster_to_combine}"}
+                updated = self.datasets.documents.update_where(
+                    dataset_id=self.dataset_id, update=update, filters=cluster_filter
+                )
+                print("Update status: ")
+                print(updated)
+
+            # Merge the original clusters combine to create a subcluster
+            if isinstance(cluster, int):
+                try:
+                    merge_results = self.merge(
+                        target_cluster_id=clusters_to_combine[0],
+                        # target_cluster_id=f"mergedCluster_{cluster}",
+                        cluster_ids=clusters_to_combine[1:],
+                    )
+                    print(merge_results)
+                except Exception as e:
+                    print(e)
+            elif isinstance(cluster, str):
+                self.merge(target_cluster_id=cluster, cluster_ids=clusters_to_combine)
+
+        self.append_metadata_list(
+            field="_subcluster_",
+            value_to_append={
+                "parent_field": parent_field,
+                "cluster_field": new_cluster_field,
+            },
+            only_unique=True,
+        )
+
+        # Port over the labels from the cluster to the subcluster
+        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        if parent_field in metadata["cluster_metadata"]["labels"]:
+            for k, old_labels in to_merge.items():
+                for l in old_labels:
+                    label = metadata["cluster_metadata"]["labels"][parent_field][
+                        "labels"
+                    ][l]
+                    if new_cluster_field not in metadata["cluster_metadata"]["labels"]:
+                        metadata["cluster_metadata"]["labels"].update(
+                            {new_cluster_field: {"labels": {}}}
+                        )
+                    l = l.replace("cluster_", "")
+                    cluster_id = f"mergedCluster_{k}-{l}"
+                    metadata["cluster_metadata"]["labels"][new_cluster_field]["labels"][
+                        cluster_id
+                    ] = label
+            results = self.datasets.post_metadata(self.dataset_id, metadata)
+            print("Updated metadata")
+            print(results)
+
     def explain_text_clusters(
         self,
         text_field,
