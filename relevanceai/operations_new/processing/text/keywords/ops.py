@@ -18,6 +18,8 @@ class KeyWordOps(OperationAPIBase, KeyWordTransform):
         output_fields: list = None,
         stop_words: list = None,
         max_keywords: int = 1,
+        use_maxsum: bool = False,
+        nr_candidates: int = 20,
         **kwargs
     ):
         self.fields = fields
@@ -27,4 +29,6 @@ class KeyWordOps(OperationAPIBase, KeyWordTransform):
         self.upper_bound = upper_bound
         self.stop_words = stop_words
         self.max_keywords = max_keywords
+        self.use_maxsum = use_maxsum
+        self.nr_candidates = nr_candidates
         super().__init__(**kwargs)

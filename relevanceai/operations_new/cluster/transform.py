@@ -1,6 +1,8 @@
 """
 Base class for clustering
 """
+import numpy as np
+import warnings
 from typing import List, Dict, Any, Optional
 from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 from relevanceai.operations_new.transform_base import TransformBase
@@ -16,23 +18,23 @@ class ClusterTransform(TransformBase, ClusterAlias):
         vector_fields: List[str],
         alias: str,
         model: Any,
-        cluster_field: str = "_cluster_",
         model_kwargs: Optional[dict] = None,
-        byo_cluster_name: str = None,
+        cluster_field: str = "_cluster_",
+        include_cluster_report: bool = False,
         **kwargs,
     ):
 
         self.vector_fields = vector_fields
+        self.cluster_field = cluster_field
 
         self.model_kwargs = {} if model_kwargs is None else model_kwargs
         self.alias = self._get_alias(alias)
         self.model = self._get_model(model=model, model_kwargs=self.model_kwargs)
 
-        self.cluster_field = cluster_field
-        self.byo_cluster_name = byo_cluster_name
+        self.include_cluster_report = include_cluster_report
+
         for k, v in kwargs.items():
             setattr(self, k, v)
-
         self._check_vector_fields()
 
     @property
@@ -62,6 +64,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
                     vectors,
                     # warm_start=warm_start,
                 )
+
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
 
@@ -87,14 +90,64 @@ class ClusterTransform(TransformBase, ClusterAlias):
         labels = self.fit_predict_documents(
             documents=documents,
         )
-        # from sklearn.metrics import silhouette_samples
         # Get the cluster field name
         cluster_field_name = self._get_cluster_field_name()
 
         documents_to_upsert = [{"_id": d["_id"]} for d in documents]
-
         self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
+        if self.include_cluster_report:
+            vectors = self.get_field_across_documents(
+                self.vector_fields[0],
+                documents,
+            )
+            try:
+                self.set_field_across_documents(
+                    self._silhouette_score_field_name(),
+                    self.calculate_silhouette(vectors, labels),
+                    documents_to_upsert
+                )
+            except:
+                pass
+            try:
+                self.set_field_across_documents(
+                    self._squared_error_field_name(),
+                    self.calculate_squared_error(vectors, labels, self.model._centroids),
+                    documents_to_upsert
+                )
+            except:
+                import traceback
+                traceback.print_exc()
+                pass
         return documents_to_upsert
+
+    @staticmethod
+    def calculate_silhouette(vectors, labels):
+        try:
+            from sklearn.metrics import silhouette_samples
+            return silhouette_samples(vectors, labels)
+        except ImportError:
+            raise ImportError("sklearn missing")
+        except:
+            raise Exception("Couldn't calculate silhouette scores")
+
+    def _silhouette_score_field_name(self):
+        return f'_silhouette_score_{self.alias}'
+
+    @staticmethod
+    def calculate_squared_error(vectors, labels, centroids):
+        try:
+            label_to_centroid_index = {label: i for i, label in enumerate(sorted(np.unique(labels).tolist()))}
+            return np.square(
+                np.subtract(
+                    [centroids[label_to_centroid_index[l]] for l in labels],
+                    vectors,
+                )
+            )
+        except:
+            raise Exception("Couldn't calculate squared errors")
+
+    def _squared_error_field_name(self):
+        return f'_squared_error_{self.alias}'
 
     def _get_cluster_field_name(self):
         alias = self.alias

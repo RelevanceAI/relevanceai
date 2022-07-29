@@ -3,6 +3,9 @@ from relevanceai.apps.report_app.base import ReportBase
 
 
 class ReportMarks(ReportBase):
+    def _process_marks(self):
+        return
+
     def bold(self, content):
         return [{"type": "text", "text": content, "marks": [{"type": "bold"}]}]
 
@@ -17,6 +20,36 @@ class ReportMarks(ReportBase):
 
     def code(self, content):
         return [{"type": "text", "text": content, "marks": [{"type": "code"}]}]
+
+    def highlight(self, content, start, end, color):
+        return [
+            {
+                "type": "text",
+                "text": content,
+                "marks": [
+                    {
+                        "type": "highlight",
+                        "attrs": {"color": color},
+                        "from": start,
+                        "to": end,
+                    }
+                ],
+            }
+        ]
+
+    def color(self, content, color, background_color):
+        return [
+            {
+                "type": "text",
+                "text": content,
+                "marks": [
+                    {
+                        "type": "textStyle",
+                        "attrs": {"color": color, "backgroundColor": background_color},
+                    }
+                ],
+            }
+        ]
 
     def link(self, content, href):
         return [

@@ -62,11 +62,6 @@ class OperationManager:
             ]
             results = self.operation.insert_centroids(centroid_documents)
 
-        elif isinstance(self.operation, ClusterOps):
-            # If we get here, the operetion must be clustering and we should upsert centroid docs
-            centroid_documents = self.operation.get_centroid_documents()
-            self.operation.insert_centroids(centroid_documents)
-
         for h in self.post_hooks:
             h()
 
