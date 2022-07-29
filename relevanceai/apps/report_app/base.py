@@ -4,6 +4,7 @@ class ReportBase:
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
         self.deployable_id = deployable_id
+        self.base_url = "https://cloud.relevance.ai"
         app_config = None
         self.reloaded = False
         if deployable_id:
@@ -11,9 +12,10 @@ class ReportBase:
                 app_config = self.dataset.get_app(deployable_id)
                 self.reloaded = True
             except:
-                raise Exception(
+                print(
                     f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app."
                 )
+            self.deployable_id = deployable_id
         if app_config:
             self.config = app_config["configuration"]
         else:
@@ -23,18 +25,72 @@ class ReportBase:
                 "type": "page",
                 "page-content": {"type": "doc", "content": []},
             }
+            if self.deployable_id:
+                self.config['deployable_id'] = self.deployable_id
 
     @property
     def contents(self):
         return self.config["page-content"]["content"]
 
-    def deploy(self, overwrite: bool = False):
-        if self.deployable_id and self.reloaded:
-            status = self.dataset.update_app(
-                self.deployable_id, self.config, overwrite=overwrite
+    def refresh(self, verbose=True):
+        try:
+            app_config = self.dataset.get_app(self.deployable_id)['configuration']
+            self.reloaded = True
+        except:
+            raise Exception(
+                f"{self.deployable_id} does not exist in the dataset."
             )
-            if status["status"] == "success":
-                return self.dataset.get_app(self.deployable_id)
-            else:
-                raise Exception("Failed to update app")
-        return self.dataset.create_app(self.config)
+        if self.config == app_config:
+            if verbose: print("No updates, app is still same")
+            return {}
+        else:
+            if verbose: print("Updated, returning the differences in the app")
+            self.config = app_config
+            return {}
+
+    def reset(self):
+        self.config = {
+            "dataset_name": self.dataset_id,
+            "deployable_name": self.name,
+            "type": "page",
+            "page-content": {"type": "doc", "content": []},
+        }
+
+    def deploy(self, overwrite: bool = False, new:bool=False):
+        if new:
+            return self.dataset.create_app({
+                k:v for k,v in self.config.items() if k != "deployable_id"
+            })
+        else:
+            if self.deployable_id and self.reloaded:
+                status = self.dataset.update_app(
+                    self.deployable_id, self.config, overwrite=overwrite
+                )
+                if status["status"] == "success":
+                    return self.dataset.get_app(self.deployable_id)
+                else:
+                    raise Exception("Failed to update app")
+            result = self.dataset.create_app(self.config)
+            self.deployable_id = result['deployable_id']
+            self.reloaded = True
+            return result
+
+    def app_url(
+        self,
+    ):
+        return f"{self.base_url}/dataset/{self.dataset_id}/deploy/page/{self.dataset.project}/{self.dataset.api_key}/{self.deployable_id}/{self.dataset.region}"
+        
+    def gui(self, width:int=1000, height:int=800):
+        try:
+            self.dataset.get_app(self.deployable_id)
+        except:
+            raise Exception(f"{self.deployable_id} does not exist in the dataset, run `.deploy` first to create the app.")
+        return self._show_ipython(url=self.app_url(), width=width, height=height)
+
+    def _show_ipython(self, url, width:int=1000, height:int=800):
+        try:
+            from IPython.display import IFrame
+            return IFrame(url, width=width, height=height)
+        except:
+            print("This only works within an IPython, Notebook environment.")
+            return url
