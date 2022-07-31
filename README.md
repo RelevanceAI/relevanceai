@@ -10,38 +10,33 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/development/guides/quickstart_guide.ipynb)
 
 
-For guides and tutorials on how to use this package, visit https://relevanceai.readthedocs.io/en/development/ .
+For guides and tutorials on how to use this package, visit https://sdk.relevance.ai.
 
-This SDK is used in conjunction with RelevanceAI's [dashboard](https://hubs.ly/Q017CkXK0). Sign up and getting started [here](https://hubs.ly/Q017CkXK0)!
+This Python API is used in conjunction with Relevance AI's [dashboard](https://hubs.ly/Q017CkXK0). 
 
-## 🔥 Features
+🌎 80% of data in the world is unstructured in the form of text, image, audio, videos, and much more.
 
-- Fast vector search with free dashboard to preview and visualise results
-- Vector clustering with support for libraries like scikit-learn and easy built-in customisation
-- Store nested documents with support for multiple vectors and metadata in one object
-- Multi-vector search with filtering, facets, weighting
-- Hybrid search with support for weighting keyword matching and vector search
-... and more!
+## 🔥 Relevance AI unlocks the value of unstructured data by helping you:
+- ⚡ Quickly analyze unstructured data with pre-trained machine learning models in a few lines of code.
+- ✨ Visualize your unstructured data. Text highlights from Named entity recognition, Word cloud from keywords, Bounding box from images.
+- 📊 Create charts for both structured and unstructured.
+- 🔎 Drilldown with filters and similarity search to explore and find insights.
+- 🚀 Share data apps with your team.
+
+Sign up and getting started [here](https://hubs.ly/Q017CkXK0)!
+
+Relevance AI also acts as a platform for:
+- 🔑 Vectors, storing and querying vectors with flexible vector similarity search, that can be combined with multiple vectors, aggregates and filters.
+- 🔮 ML Dataset Evaluation, for debugging dataset labels, model outputs and surfacing edge cases.
 
 
 ## 🧠 Documentation
 
 | API type      | Link |
 | ------------- | ----------- |
-| Guides | [Documentation](https://docs.relevance.ai/) |
+| Python API | [Documentation](https://sdk.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
-
-You can easily access our documentation while using the SDK using:
-
-```{python}
-from relevanceai import Client
-client = Client()
-
-# Easy one line of code to access our docs
-client.docs
-
-```
-
+| Dashboard Guide | [Documentation](https://docs.relevance.ai/) |
 
 ## 🛠️ Installation
 
@@ -63,7 +58,7 @@ conda install -c relevance relevanceai
 ```{python}
 from relevanceai import Client
 
-client = Client(<project_name>, <api_key>)
+client = Client()
 ```
 
 Prepare your documents for insertion by following the below format:
@@ -84,58 +79,41 @@ docs = [
 ### Insert data into a dataset
 
 Create a dataset object with the name of the dataset you'd like to use. If it doesn't exist, it'll be created for you.
-> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
 ```{python}
 ds = client.Dataset("quickstart")
 ds.insert_documents(docs)
 ```
+> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
 ### Perform vector search
 
 ```{python}
-results = ds.vector_search(
-    multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
+query = [
+    {"vector": [0.2, 0.2, 0.2], "field": "example_vector_"}
+]
+results = ds.search(
+    vector_search_query=query,
     page_size=3,
-    query="sample search" # optional, name to display in dashboard
 )
 ```
+For more information on how to configure vector search flexibly: https://sdk.relevance.ai/docs/vector-search 
 
-### Cluster dataset with Auto Cluster
+### Perform vector clustering
 
-Generate 12 clusters using kmeans
+Generate clusters
 ```{python}
-clusterop = ds.cluster("kmeans-12", vector_fields=["example_vector_"])
+clusterop = ds.cluster(vector_fields=["example_vector_"])
 clusterop.list_closest()
 ```
-> Quick tip! After each of these steps, the output will provide a URL to the Relevance AI dashboard where you can see a visualisation of your results
 
-## 🚧 Development
+Generate clusters with sklearn
+```{python}
+from sklearn.cluster import AgglomerativeClustering
 
-### Getting Started
-To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
-
-```{bash}
-python -m pip install pytest mypy
-```
-
-Then run testing using:
-
-> Don't forget to set your test credentials!
-
-```{bash}
-export TEST_PROJECT = xxx
-export TEST_API_KEY = xxx
-
-python -m pytest
-mypy relevanceai
-```
-
-Set up precommit
-
-```{bash}
-pip install precommit
-pre-commit install
+cluster_model = AgglomerativeClustering()
+clusterop = ds.cluster(vector_fields=["example_vector_"], model=cluster_model, alias="agglomerative")
+clusterop.list_closest()
 ```
 
 ## 🧰 Config
@@ -164,8 +142,30 @@ You can change the base URL as such:
 client.base_url = "https://.../latest"
 ```
 
-You can also update the ingest base URL:
+## 🚧 Development
 
-```{python}
-client.ingest_base_url = "https://.../latest
+### Getting Started
+To get started with development, ensure you have pytest and mypy installed. These will help ensure typechecking and testing.
+
+```{bash}
+python -m pip install pytest mypy
+```
+
+Then run testing using:
+
+> Don't forget to set your test credentials!
+
+```{bash}
+export TEST_PROJECT = xxx
+export TEST_API_KEY = xxx
+
+python -m pytest
+mypy relevanceai
+```
+
+Set up precommit
+
+```{bash}
+pip install precommit
+pre-commit install
 ```
