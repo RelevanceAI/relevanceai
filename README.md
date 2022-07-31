@@ -90,7 +90,7 @@ results = ds.search(
     page_size=3,
 )
 ```
-[How to use more advanced vector search techniques ->](https://sdk.relevance.ai/docs/search)
+[Learn more about how to flexibly configure your vector search ->](https://sdk.relevance.ai/docs/search)
 
 ### Perform clustering
 
@@ -108,7 +108,7 @@ cluster_model = AgglomerativeClustering()
 clusterop = ds.cluster(vector_fields=["example_vector_"], model=cluster_model, alias="agglomerative")
 clusterop.list_closest()
 ```
-[How to use more advanced clustering techniques ->](https://sdk.relevance.ai/docs/search)
+[Learn more about how to flexibly configure your clustering ->](https://sdk.relevance.ai/docs/search)
 
 ## 🧰 Config
 
