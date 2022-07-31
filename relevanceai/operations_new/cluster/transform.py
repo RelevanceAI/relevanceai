@@ -95,7 +95,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
 
         documents_to_upsert = [{"_id": d["_id"]} for d in documents]
         self.set_field_across_documents(cluster_field_name, labels, documents_to_upsert)
-        if self.include_cluster_report:
+        if hasattr(self, "include_cluster_report") and self.include_cluster_report:
             vectors = self.get_field_across_documents(
                 self.vector_fields[0],
                 documents,
@@ -104,18 +104,21 @@ class ClusterTransform(TransformBase, ClusterAlias):
                 self.set_field_across_documents(
                     self._silhouette_score_field_name(),
                     self.calculate_silhouette(vectors, labels),
-                    documents_to_upsert
+                    documents_to_upsert,
                 )
             except:
                 pass
             try:
                 self.set_field_across_documents(
                     self._squared_error_field_name(),
-                    self.calculate_squared_error(vectors, labels, self.model._centroids),
-                    documents_to_upsert
+                    self.calculate_squared_error(
+                        vectors, labels, self.model._centroids
+                    ),
+                    documents_to_upsert,
                 )
             except:
                 import traceback
+
                 traceback.print_exc()
                 pass
         return documents_to_upsert
@@ -124,6 +127,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
     def calculate_silhouette(vectors, labels):
         try:
             from sklearn.metrics import silhouette_samples
+
             return silhouette_samples(vectors, labels)
         except ImportError:
             raise ImportError("sklearn missing")
@@ -131,12 +135,14 @@ class ClusterTransform(TransformBase, ClusterAlias):
             raise Exception("Couldn't calculate silhouette scores")
 
     def _silhouette_score_field_name(self):
-        return f'_silhouette_score_{self.alias}'
+        return f"_silhouette_score_{self.alias}"
 
     @staticmethod
     def calculate_squared_error(vectors, labels, centroids):
         try:
-            label_to_centroid_index = {label: i for i, label in enumerate(sorted(np.unique(labels).tolist()))}
+            label_to_centroid_index = {
+                label: i for i, label in enumerate(sorted(np.unique(labels).tolist()))
+            }
             return np.square(
                 np.subtract(
                     [centroids[label_to_centroid_index[l]] for l in labels],
@@ -147,7 +153,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
             raise Exception("Couldn't calculate squared errors")
 
     def _squared_error_field_name(self):
-        return f'_squared_error_{self.alias}'
+        return f"_squared_error_{self.alias}"
 
     def _get_cluster_field_name(self):
         alias = self.alias
