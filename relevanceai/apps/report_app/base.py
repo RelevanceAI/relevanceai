@@ -32,7 +32,7 @@ class ReportBase:
     def contents(self):
         return self.config["page-content"]["content"]
 
-    def refresh(self, verbose=True):
+    def refresh(self, verbose=True, prompt_update:bool=False):
         try:
             app_config = self.dataset.get_app(self.deployable_id)['configuration']
             self.reloaded = True
@@ -41,10 +41,10 @@ class ReportBase:
                 f"{self.deployable_id} does not exist in the dataset."
             )
         if self.config == app_config:
-            if verbose: print("No updates, app is still same")
+            if verbose: print("No updates made, no differences detected.")
             return {}
         else:
-            if verbose: print("Updated, returning the differences in the app")
+            if verbose: print("Differences deteced app update made, returning the differences")
             self.config = app_config
             return {}
 
@@ -94,3 +94,11 @@ class ReportBase:
         except:
             print("This only works within an IPython, Notebook environment.")
             return url
+
+    # def replace_by_id(self, id):
+    #     """replace an existing block with another"""
+    #     return
+
+    # def generate_code(self):
+    #     """generate python code from json"""
+    #     return 
