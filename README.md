@@ -1,28 +1,20 @@
 ![Github Banner](assets/github_banner.png)
 
-[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
 [Join our slack channel!](https://join.slack.com/t/relevance-ai/shared_invite/zt-11fo8oush-dHPd57wamhoQ7J5arNv1mg)
 
-**Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
+## Relevance AI [![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest) [![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/development/guides/quickstart_guide.ipynb)
+🌎 80% of data in the world is unstructured in the form of text, image, audio, videos, and more.
 
-
-For guides and tutorials on how to use this package, visit https://sdk.relevance.ai.
-
-
-🌎 80% of data in the world is unstructured in the form of text, image, audio, videos, and much more.
-
-## 🔥 Relevance AI unlocks the value of unstructured data by helping you:
+🔥 Use Relevance to unlock the value of your unstructured data:
 - ⚡ Quickly analyze unstructured data with pre-trained machine learning models in a few lines of code.
 - ✨ Visualize your unstructured data. Text highlights from Named entity recognition, Word cloud from keywords, Bounding box from images.
 - 📊 Create charts for both structured and unstructured.
 - 🔎 Drilldown with filters and similarity search to explore and find insights.
 - 🚀 Share data apps with your team.
 
-Sign up and getting started [here](https://hubs.ly/Q017CkXK0)!
+[Sign up for a free account ->](https://hubs.ly/Q017CkXK0)!
 
 Relevance AI also acts as a platform for:
 - 🔑 Vectors, storing and querying vectors with flexible vector similarity search, that can be combined with multiple vectors, aggregates and filters.
@@ -31,13 +23,11 @@ Relevance AI also acts as a platform for:
 
 ## 🧠 Documentation
 
-| API type      | Link |
+| Type      | Link |
 | ------------- | ----------- |
 | Python API | [Documentation](https://sdk.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
-| Dashboard Guide | [Documentation](https://docs.relevance.ai/) |
-
-This Python API is used in conjunction with Relevance AI's [dashboard](https://cloud.relevance.ai). 
+| Cloud Dashboard | [Documentation](https://docs.relevance.ai/) |
 
 ## 🛠️ Installation
 
@@ -53,9 +43,9 @@ conda install -c relevance relevanceai
 ```
 
 ## ⏩ Quickstart
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/development/guides/quickstart_guide.ipynb)
 
-### Login into your project space
-
+Login to `relevanceai`:
 ```{python}
 from relevanceai import Client
 
@@ -98,9 +88,9 @@ results = ds.search(
     page_size=3,
 )
 ```
-For more information on how to configure vector search flexibly: https://sdk.relevance.ai/docs/vector-search 
+For more information on how to configure vector search flexibly: https://sdk.relevance.ai/docs/search
 
-### Perform vector clustering
+### Perform clustering
 
 Generate clusters
 ```{python}
