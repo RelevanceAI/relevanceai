@@ -16,7 +16,7 @@
 - 🔎 Drilldown with filters and similarity search to explore and find insights.
 - 🚀 Share data apps with your team.
 
-[Sign up for a free account ->](https://hubs.ly/Q017CkXK0)!
+[Sign up for a free account ->](https://hubs.ly/Q017CkXK0)
 
 Relevance AI also acts as a platform for:
 - 🔑 Vectors, storing and querying vectors with flexible vector similarity search, that can be combined with multiple vectors, aggregates and filters.
@@ -90,7 +90,7 @@ results = ds.search(
     page_size=3,
 )
 ```
-For more information on how to configure vector search flexibly: https://sdk.relevance.ai/docs/search
+[How to use more advanced vector search techniques ->](https://sdk.relevance.ai/docs/search)
 
 ### Perform clustering
 
@@ -108,6 +108,7 @@ cluster_model = AgglomerativeClustering()
 clusterop = ds.cluster(vector_fields=["example_vector_"], model=cluster_model, alias="agglomerative")
 clusterop.list_closest()
 ```
+[How to use more advanced clustering techniques ->](https://sdk.relevance.ai/docs/search)
 
 ## 🧰 Config
 
