@@ -377,7 +377,7 @@ class Operations(Write):
         chunksize: Optional[int] = 100,
         filters: Optional[list] = None,
         batched: Optional[bool] = False,
-        include_cluster_report: bool = True,
+        include_cluster_report: bool = False,
         **kwargs,
     ):
         """`cluster` is a function that takes in a list of vector fields, a model, an alias, a list of
@@ -437,6 +437,7 @@ class Operations(Write):
             credentials=self.credentials,
             dataset_id=self.dataset_id,
             model_kwargs=model_kwargs,
+            include_cluster_report=include_cluster_report,
             **kwargs,
         )
 
@@ -450,9 +451,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
         )
-        # TODO: Create the cluster report
-        if include_cluster_report:
-            pass
+        print()
         print(
             f"""You can now utilise the ClusterOps object using the below:
 
@@ -462,9 +461,8 @@ class Operations(Write):
         dataset_id='{self.dataset_id}'
     )"""
         )
-
-        print("Configure your new cluster app below:")
         print()
+        print("Configure your new cluster app below:")
         print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 
@@ -1036,6 +1034,11 @@ class Operations(Write):
         stop_words: list = None,
         filters: list = None,
         batched: bool = True,
+        use_maxsum: bool = False,
+        nr_candidates: int = 20,
+        use_mmr=True,
+        diversity=0.7,
+        **kwargs,
     ):
         """
         Extract the keyphrases of a text field and output and store it into
@@ -1053,6 +1056,10 @@ class Operations(Write):
             output_fields=output_fields,
             stop_words=stop_words,
             max_keywords=max_keywords,
+            nr_candidates=nr_candidates,
+            use_maxsum=use_maxsum,
+            use_mmr=use_mmr,
+            diversity=diversity,
         )
         ops.run(
             self,
@@ -1181,6 +1188,41 @@ class Operations(Write):
         )
 
         ops = TranslateOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_id=model_id,
+            output_fields=output_fields,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops
+
+    def extract_ner(
+        self,
+        fields: list,
+        model_id: str = None,
+        output_fields: list = None,
+        chunksize: int = 20,
+        filters: list = None,
+        refresh: bool = False,
+    ):
+        """
+        Extract NER
+        """
+        from relevanceai.operations_new.processing.text.ner.ops import ExtractNEROps
+
+        if model_id is None:
+            model_id = "dslim/bert-base-NER"
+        ops = ExtractNEROps(
             credentials=self.credentials,
             fields=fields,
             model_id=model_id,

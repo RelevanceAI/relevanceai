@@ -37,12 +37,6 @@ class ManageApps(Write):
                 if d["dataset_id"] == self.dataset_id:
                     result = {
                         "deployable_id": d["deployable_id"],
-                        "url": self._app_url(
-                            d["dataset_id"],
-                            d["project_id"],
-                            d["configuration"]["type"],
-                            d["deployable_id"],
-                        ),
                     }
                     if "configuration" in d:
                         if "deployable_name" in d["configuration"]:
@@ -51,12 +45,18 @@ class ManageApps(Write):
                             ]
                         if "type" in d["configuration"]:
                             result["type"] = d["configuration"]["type"]
+                            result["url"] = self._app_url(
+                                d["dataset_id"],
+                                d["project_id"],
+                                d["configuration"]["type"],
+                                d["deployable_id"],
+                            )
                     results.append(result)
             return results
 
     def create_app(self, config: Dict):
         result = self.deployables.create(
-            dataset_id=self.dataset_id, configuration=config
+            dataset_id=self.dataset_id, configuration=self.json_encoder(config)
         )
         print(
             f"""Your app can be accessed at: {self._app_url(
@@ -72,7 +72,7 @@ class ManageApps(Write):
         status = self.deployables.update(
             deployable_id=deployable_id,
             dataset_id=self.dataset_id,
-            configuration=config,
+            configuration=self.json_encoder(config),
             overwrite=overwrite,
         )
         if status["status"] == "success":

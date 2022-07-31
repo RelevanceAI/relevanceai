@@ -35,6 +35,7 @@ class SubClusterOps(SubClusterTransform, ClusterOps):
         self.model = self._get_model(model=model, model_kwargs=model_kwargs)
         self.outlier_value = outlier_value
         self.dataset_id = dataset_id
+        self.include_cluster_report = False
         for k, v in kw.items():
             setattr(self, k, v)
 

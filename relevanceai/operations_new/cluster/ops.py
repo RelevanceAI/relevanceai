@@ -1,3 +1,4 @@
+import traceback
 import warnings
 import numpy as np
 import pandas as pd
@@ -28,11 +29,12 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         dataset_id: str,
         vector_fields: list,
         alias: str,
-        cluster_field: str = "_cluster_",
-        verbose: bool = False,
         model=None,
         model_kwargs=None,
+        cluster_field: str = "_cluster_",
         byo_cluster_field: str = None,
+        include_cluster_report: bool = False,
+        verbose: bool = False,
         **kwargs,
     ):
         """
@@ -53,6 +55,8 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
 
         self.model_kwargs = model_kwargs
 
+        self.include_cluster_report = include_cluster_report
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -64,6 +68,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             verbose=verbose,
             model=model,
             model_kwargs=model_kwargs,
+            include_cluster_report=include_cluster_report,
             **kwargs,
         )
 
@@ -74,6 +79,42 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         self.byo_cluster_field = byo_cluster_field
         if byo_cluster_field is not None:
             self.create_byo_clusters()
+
+    def post_run(self, dataset, documents, updated_documents):
+        centroid_documents = self.get_centroid_documents()
+        self.insert_centroids(centroid_documents)
+        if hasattr(self, "include_cluster_report") and self.include_cluster_report:
+            try:
+                from relevanceai.recipes.model_observability.cluster.report import (
+                    ClusterReport,
+                )
+
+                app = ClusterReport(f"Cluster Report for {self.alias}", dataset)
+                app.start_cluster_evaluator(
+                    self.get_field_across_documents(self.vector_fields[0], documents),
+                    self.get_field_across_documents(
+                        self._get_cluster_field_name(), updated_documents
+                    ),
+                    # centroids=centroid_documents
+                )
+                app.evaluator.X_silhouette_samples = np.array(
+                    self.get_field_across_documents(
+                        self._silhouette_score_field_name(), updated_documents
+                    )
+                )
+                app.evaluator.X_squared_error_samples = np.array(
+                    self.get_field_across_documents(
+                        self._squared_error_field_name(), updated_documents
+                    )
+                )
+                app.section_cluster_report()
+                print()
+                print("We've built your cluster report app:")
+                app.deploy()
+            except Exception as e:
+                print(e)
+                print("Couldnt' create cluster report.")
+        return
 
     def insert_centroids(
         self,
@@ -97,7 +138,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             )
 
         """
-        # Centroid documents are in the format {"cluster-0": [1, 1, 1]}
         return self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=self.json_encoder(centroid_documents),
@@ -105,7 +145,10 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             alias=self.alias,
         )
 
-    def calculate_centroids(self):
+    def calculate_centroids(self, method="mean"):
+        """
+        calculates the centroids from the dataset vectors
+        """
 
         # calculate the centroids
         centroid_vectors = {}
@@ -118,7 +161,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             field=self.vector_fields[0], func=calculate_centroid
         )
 
-        # Does this insert properly?
         if isinstance(centroid_vectors, dict):
             centroid_vectors = [
                 {"_id": k, self.vector_fields[0]: v}
@@ -159,6 +201,74 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                 centroid_documents=centroid_vectors,
             )
         return centroid_vectors
+
+    def get_centroid_documents(self):
+        centroid_vectors = {}
+        if hasattr(self.model, "_centroids") and self.model._centroids is not None:
+            # TODO: fix this so that it creates the proper labels
+            centroid_vectors = self.model._centroids
+            # get the cluster label function
+            labels = range(len(centroid_vectors))
+            cluster_ids = self.format_cluster_labels(labels)
+            if len(self.vector_fields) > 1:
+                warnings.warn(
+                    "Currently do not support inserting centroids with multiple vector fields"
+                )
+            centroids = [
+                {"_id": k, self.vector_fields[0]: v}
+                for k, v in zip(cluster_ids, centroid_vectors)
+            ]
+        else:
+            centroids = self.create_centroids()
+        return centroids
+
+    @property
+    def centroids(self):
+        """
+        Access the centroids of your dataset easily
+
+        .. code-block::
+
+            ds = client.Dataset("sample")
+            cluster_ops = ds.ClusterOps(
+                vector_fields=["sample_vector_"],
+                alias="simple"
+            )
+            cluster_ops.centroids
+
+        """
+        if not hasattr(self, "_centroids"):
+            self._centroids = self.datasets.cluster.centroids.documents(
+                dataset_id=self.dataset_id,
+                vector_fields=self.vector_fields,
+                alias=self.alias,
+                page_size=9999,
+                include_vector=True,
+            )["results"]
+        return self._centroids
+
+    def get_centroid_from_id(
+        self,
+        cluster_id: str,
+    ) -> Dict[str, Any]:
+        """> It takes a cluster id and returns the centroid with that id
+
+        Parameters
+        ----------
+        cluster_id : str
+            The id of the cluster to get the centroid for.
+
+        Returns
+        -------
+            The centroid with the given id.
+
+        """
+
+        for centroid in self.centroids:
+            if centroid["_id"] == cluster_id:
+                return centroid
+
+        raise ValueError(f"Missing the centroid with id {cluster_id}")
 
     def list_cluster_ids(
         self,
@@ -223,73 +333,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
                         return list(all_cluster_ids)
 
         return list(all_cluster_ids)
-
-    def get_centroid_documents(self):
-        centroid_vectors = {}
-        if hasattr(self.model, "_centroids") and self.model._centroids is not None:
-            centroid_vectors = self.model._centroids
-            # get the cluster label function
-            labels = range(len(centroid_vectors))
-            cluster_ids = self.format_cluster_labels(labels)
-            if len(self.vector_fields) > 1:
-                warnings.warn(
-                    "Currently do not support inserting centroids with multiple vector fields"
-                )
-            centroids = [
-                {"_id": k, self.vector_fields[0]: v}
-                for k, v in zip(cluster_ids, centroid_vectors)
-            ]
-        else:
-            centroids = self.create_centroids()
-        return centroids
-
-    @property
-    def centroids(self):
-        """
-        Access the centroids of your dataset easily
-
-        .. code-block::
-
-            ds = client.Dataset("sample")
-            cluster_ops = ds.ClusterOps(
-                vector_fields=["sample_vector_"],
-                alias="simple"
-            )
-            cluster_ops.centroids
-
-        """
-        if not hasattr(self, "_centroids"):
-            self._centroids = self.datasets.cluster.centroids.documents(
-                dataset_id=self.dataset_id,
-                vector_fields=self.vector_fields,
-                alias=self.alias,
-                page_size=9999,
-                include_vector=True,
-            )["results"]
-        return self._centroids
-
-    def get_centroid_from_id(
-        self,
-        cluster_id: str,
-    ) -> Dict[str, Any]:
-        """> It takes a cluster id and returns the centroid with that id
-
-        Parameters
-        ----------
-        cluster_id : str
-            The id of the cluster to get the centroid for.
-
-        Returns
-        -------
-            The centroid with the given id.
-
-        """
-
-        for centroid in self.centroids:
-            if centroid["_id"] == cluster_id:
-                return centroid
-
-        raise ValueError(f"Missing the centroid with id {cluster_id}")
 
     def list_closest(
         self,
@@ -442,78 +485,6 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             include_count=include_count,
             cluster_properties_filter=cluster_properties_filter,
         )
-
-    def explain_text_clusters(
-        self,
-        text_field,
-        encode_fn_or_model,
-        n_closest: int = 5,
-        highlight_output_field="_explain_",
-        algorithm: str = "relational",
-        model_kwargs: Optional[dict] = None,
-    ):
-        """
-        It takes a text field and a function that encodes the text field into a vector.
-        It then returns the top n closest vectors to each cluster centroid.
-        .. code-block::
-            def encode(X):
-                return [1, 2, 1]
-            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
-
-        Parameters
-        ----------
-        text_field
-            The field in the dataset that contains the text to be explained.
-        encode_fn
-            This is the function that will be used to encode the text.
-        n_closest : int, optional
-            The number of closest documents to each cluster to return.
-        highlight_output_field, optional
-            The name of the field that will be added to the output dataset.
-        algorithm: str
-            Algorithm is either "centroid" or "relational"
-
-        Returns
-        -------
-            A new dataset with the same data as the original dataset, but with a new field called _explain_
-        """
-        if isinstance(encode_fn_or_model, str):
-            # Get the model
-            from relevanceai.operations_new.vectorize.text.transform import (
-                VectorizeTextTransform,
-            )
-
-            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
-            encode_fn = self.model.encode
-        else:
-            encode_fn = encode_fn_or_model
-
-        from relevanceai.operations_new.cluster.text.explainer.ops import (
-            TextClusterExplainerOps,
-        )
-
-        ops = TextClusterExplainerOps(credentials=self.credentials)
-        if algorithm == "centroid":
-            return ops.explain_clusters(
-                dataset_id=self.dataset_id,
-                alias=self.alias,
-                vector_fields=self.vector_fields,
-                text_field=text_field,
-                encode_fn=encode_fn,
-                n_closest=n_closest,
-                highlight_output_field=highlight_output_field,
-            )
-        elif algorithm == "relational":
-            return ops.explain_clusters_relational(
-                dataset_id=self.dataset_id,
-                alias=self.alias,
-                vector_fields=self.vector_fields,
-                text_field=text_field,
-                encode_fn=encode_fn,
-                n_closest=n_closest,
-                highlight_output_field=highlight_output_field,
-            )
-        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
 
     def store_operation_metadatas(self):
         self.store_operation_metadata(
@@ -673,6 +644,167 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         labels = metadata.get("labels", {}).get(cluster_field, {})
         print("To view nicely, please use `pd.DataFrame(labels)`.")
         return labels
+
+    def create_parent_cluster(
+        self,
+        to_merge: dict,
+        new_cluster_field: str,
+    ):
+        """
+        to_merge should look similar to below:
+
+        .. code-block::
+
+            to_merge = {
+                0: [
+                    'cluster_1',
+                    'cluster_2'
+                ]
+            }
+
+        """
+        parent_field = self._get_cluster_field_name()
+        for cluster, clusters_to_combine in to_merge.items():
+            for i, cluster_to_combine in enumerate(clusters_to_combine):
+                # Update the documents in the cluster to become a subcluster
+                cluster_filter = [
+                    {
+                        "field": parent_field,
+                        "filter_type": "contains",
+                        "condition": "==",
+                        "condition_value": cluster_to_combine,
+                    }
+                ]
+
+                if "cluster_" in cluster_to_combine:
+                    cluster_to_combine = cluster_to_combine.replace("cluster_", "")
+                if isinstance(cluster, int):
+                    update = {
+                        new_cluster_field: f"mergedCluster_{cluster}-{cluster_to_combine}"
+                    }
+                elif isinstance(cluster, str):
+                    update = {new_cluster_field: f"{cluster}-{cluster_to_combine}"}
+                updated = self.datasets.documents.update_where(
+                    dataset_id=self.dataset_id, update=update, filters=cluster_filter
+                )
+                print("Update status: ")
+                print(updated)
+
+            # Merge the original clusters combine to create a subcluster
+            if isinstance(cluster, int):
+                try:
+                    merge_results = self.merge(
+                        target_cluster_id=clusters_to_combine[0],
+                        # target_cluster_id=f"mergedCluster_{cluster}",
+                        cluster_ids=clusters_to_combine[1:],
+                    )
+                    print(merge_results)
+                except Exception as e:
+                    print(e)
+            elif isinstance(cluster, str):
+                self.merge(target_cluster_id=cluster, cluster_ids=clusters_to_combine)
+
+        self.append_metadata_list(
+            field="_subcluster_",
+            value_to_append={
+                "parent_field": parent_field,
+                "cluster_field": new_cluster_field,
+            },
+            only_unique=True,
+        )
+
+        # Port over the labels from the cluster to the subcluster
+        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        if parent_field in metadata["cluster_metadata"]["labels"]:
+            for k, old_labels in to_merge.items():
+                for l in old_labels:
+                    label = metadata["cluster_metadata"]["labels"][parent_field][
+                        "labels"
+                    ][l]
+                    if new_cluster_field not in metadata["cluster_metadata"]["labels"]:
+                        metadata["cluster_metadata"]["labels"].update(
+                            {new_cluster_field: {"labels": {}}}
+                        )
+                    l = l.replace("cluster_", "")
+                    cluster_id = f"mergedCluster_{k}-{l}"
+                    metadata["cluster_metadata"]["labels"][new_cluster_field]["labels"][
+                        cluster_id
+                    ] = label
+            results = self.datasets.post_metadata(self.dataset_id, metadata)
+            print("Updated metadata")
+            print(results)
+
+    def explain_text_clusters(
+        self,
+        text_field,
+        encode_fn_or_model,
+        n_closest: int = 5,
+        highlight_output_field="_explain_",
+        algorithm: str = "relational",
+        model_kwargs: Optional[dict] = None,
+    ):
+        """
+        It takes a text field and a function that encodes the text field into a vector.
+        It then returns the top n closest vectors to each cluster centroid.
+        .. code-block::
+            def encode(X):
+                return [1, 2, 1]
+            cluster_ops.explain_text_clusters(text_field="hey", encode_fn_or_model=encode)
+
+        Parameters
+        ----------
+        text_field
+            The field in the dataset that contains the text to be explained.
+        encode_fn
+            This is the function that will be used to encode the text.
+        n_closest : int, optional
+            The number of closest documents to each cluster to return.
+        highlight_output_field, optional
+            The name of the field that will be added to the output dataset.
+        algorithm: str
+            Algorithm is either "centroid" or "relational"
+
+        Returns
+        -------
+            A new dataset with the same data as the original dataset, but with a new field called _explain_
+        """
+        if isinstance(encode_fn_or_model, str):
+            # Get the model
+            from relevanceai.operations_new.vectorize.text.transform import (
+                VectorizeTextTransform,
+            )
+
+            self.model = VectorizeTextTransform._get_model(encode_fn_or_model)
+            encode_fn = self.model.encode
+        else:
+            encode_fn = encode_fn_or_model
+
+        from relevanceai.operations_new.cluster.text.explainer.ops import (
+            TextClusterExplainerOps,
+        )
+
+        ops = TextClusterExplainerOps(credentials=self.credentials)
+        if algorithm == "centroid":
+            return ops.explain_clusters(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        elif algorithm == "relational":
+            return ops.explain_clusters_relational(
+                dataset_id=self.dataset_id,
+                alias=self.alias,
+                vector_fields=self.vector_fields,
+                text_field=text_field,
+                encode_fn=encode_fn,
+                n_closest=n_closest,
+                highlight_output_field=highlight_output_field,
+            )
+        raise ValueError("Algorithm needs to be either `relational` or `centroid`.")
 
     @track
     def aggregate(

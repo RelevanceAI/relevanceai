@@ -108,18 +108,29 @@ class ClusterModelBase(ABC, _ModelUtils):
     def fit(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
+
+    def get_centroids_from_model(self):
+        if hasattr(self.model, "cluster_centers_"):
+            return self.model.cluster_centers_
+        elif hasattr(self.model, "get_centers"):
+            return self.model.get_centers()
+        else:
+            return None
+
     def calculate_centroids(
         self, labels: np.ndarray, vectors: np.ndarray
     ) -> np.ndarray:
+        centroids = self.get_centroids_from_model()
+        if centroids is None:
+            if not isinstance(vectors, np.ndarray):
+                vectors = np.array(vectors)
 
-        if not isinstance(vectors, np.ndarray):
-            vectors = np.array(vectors)
-
-        centroids = []
-        for label in sorted(np.unique(labels).tolist()):
-            centroid = vectors[labels == label].mean(axis=0)
-            centroids.append(centroid)
-        centroids = np.array(centroids)
+            centroids = []
+            for label in sorted(np.unique(labels).tolist()):
+                centroid = vectors[labels == label].mean(axis=0)
+                centroids.append(centroid)
+            centroids = np.array(centroids)
+        self._centroids = centroids
         return centroids
 
     @abstractmethod
