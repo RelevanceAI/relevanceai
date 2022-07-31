@@ -83,7 +83,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
     def post_run(self, dataset, documents, updated_documents):
         centroid_documents = self.get_centroid_documents()
         self.insert_centroids(centroid_documents)
-        if self.include_cluster_report:
+        if hasattr(self, "include_cluster_report") and self.include_cluster_report:
             try:
                 from relevanceai.recipes.model_observability.cluster.report import (
                     ClusterReport,
