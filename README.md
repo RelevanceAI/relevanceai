@@ -12,7 +12,6 @@
 
 For guides and tutorials on how to use this package, visit https://sdk.relevance.ai.
 
-This Python API is used in conjunction with Relevance AI's [dashboard](https://hubs.ly/Q017CkXK0). 
 
 🌎 80% of data in the world is unstructured in the form of text, image, audio, videos, and much more.
 
@@ -37,6 +36,8 @@ Relevance AI also acts as a platform for:
 | Python API | [Documentation](https://sdk.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
 | Dashboard Guide | [Documentation](https://docs.relevance.ai/) |
+
+This Python API is used in conjunction with Relevance AI's [dashboard](https://cloud.relevance.ai). 
 
 ## 🛠️ Installation
 
