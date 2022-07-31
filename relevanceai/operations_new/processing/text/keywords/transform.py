@@ -34,7 +34,7 @@ class KeyWordTransform(TransformBase):
             setattr(self, k, v)
 
     def _get_output_field(self, field):
-        return field + "_keyphrase_"
+        return "_keyphrase_." + field
 
     @property
     def name(self):
