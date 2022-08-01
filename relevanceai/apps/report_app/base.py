@@ -25,8 +25,8 @@ class ReportBase:
                 "type": "page",
                 "page-content": {"type": "doc", "content": []},
             }
-            if self.deployable_id:
-                self.config['deployable_id'] = self.deployable_id
+        if self.deployable_id:
+            self.config['deployable_id'] = self.deployable_id
 
     @property
     def contents(self):
@@ -62,7 +62,7 @@ class ReportBase:
                 k:v for k,v in self.config.items() if k != "deployable_id"
             })
         else:
-            if self.deployable_id and self.reloaded:
+            if self.deployable_id:
                 status = self.dataset.update_app(
                     self.deployable_id, self.config, overwrite=overwrite
                 )
