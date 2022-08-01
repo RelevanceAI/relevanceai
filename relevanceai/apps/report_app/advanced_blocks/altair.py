@@ -34,7 +34,7 @@ class AltairReportBlock(ReportBlocks):
                 self.image(fp, title=title, width_percentage=width_percentage, add=add)
             except ImportError:
                 raise ImportError(
-                    ".plotly 'image=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
+                    ".altair 'static=True' requires altair_saver to be installed, install with 'pip install -U altair_saver'."
                 )
         else:
             block = {
