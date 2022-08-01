@@ -89,6 +89,19 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block
 
+    def code(self, content, language="python", add=True):
+        block = {
+            "type": "codeBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "attrs" : {"language": language},
+            "content": [
+                {"type": "blockquote", "content": self._process_content(content)}
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
     def paragraph(self, content, add=True, raw=False):
         p_block = {"type": "paragraph", "content": self._process_content(content)}
         if raw:

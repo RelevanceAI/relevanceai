@@ -1,4 +1,5 @@
 import uuid
+import click
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
 from relevanceai.dataset.write import Write
@@ -59,13 +60,14 @@ class ManageApps(Write):
             dataset_id=self.dataset_id, configuration=self.json_encoder(config)
         )
         if verbose:
-            print(
-                f"""Your app can be accessed at: {self._app_url(
-                dataset_id=result['dataset_id'],
-                project_id=result['project_id'],
-                deployable_id=result['deployable_id'],
-                app_type=result['configuration']['type']
-            )}"""
+            click.secho(" You can now view your app in your browser.")
+            click.secho(
+                f""" {self._app_url(
+                    dataset_id=result['dataset_id'],
+                    project_id=result['project_id'],
+                    deployable_id=result['deployable_id'],
+                    app_type=result['configuration']['type']
+                )}""", bold=True
             )
         return result
 
@@ -82,13 +84,14 @@ class ManageApps(Write):
             elif "type" in config["configuration"]:
                 app_type = config["configuration"]["type"]
             if verbose:
-                print(
-                    f"""Your app can be accessed at: {self._app_url(
-                    dataset_id=self.dataset_id,
-                    project_id=self.project,
-                    deployable_id=deployable_id,
-                    app_type=app_type
-                )}"""
+                click.secho(" You can now view your app in your browser.")
+                click.secho(
+                    f""" {self._app_url(
+                        dataset_id=self.dataset_id,
+                        project_id=self.project,
+                        deployable_id=deployable_id,
+                        app_type=app_type
+                    )}""", bold=True
                 )
         else:
             print("Failed to update")

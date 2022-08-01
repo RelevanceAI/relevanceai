@@ -34,7 +34,7 @@ class ReportMarks(ReportBase):
     def underline(self, content):
         return self._process_marks(content, [{"type": "underline"}])
 
-    def code(self, content):
+    def inline_code(self, content):
         return self._process_marks(content, [{"type": "code"}])
 
     def highlight(self, content, start, end, color):
