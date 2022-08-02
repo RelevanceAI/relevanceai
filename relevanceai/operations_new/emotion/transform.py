@@ -15,7 +15,7 @@ class EmotionTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,
-        model_name="joeddav/distilbert-base-uncased-go-emotions-student",
+        model_name="Emanuel/bertweet-emotion-base",
         output_fields: list = None,
         min_score: float = 0.3,
         **kwargs,
