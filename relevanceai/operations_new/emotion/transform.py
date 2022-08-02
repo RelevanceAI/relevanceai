@@ -57,7 +57,7 @@ class EmotionTransform(TransformBase):
         if text is None:
             return {}
         # we force limiting string because Huggingface has unreliable truncation
-        output = self.classifier(text[:512], truncation=True, max_length=512)
+        output = self.classifier(text[:450], truncation=True, max_length=512)
         # [{'label': 'desire', 'score': 0.30693167448043823}]
         if output[0]["score"] > self.min_score:
             return output
