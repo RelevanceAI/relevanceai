@@ -15,7 +15,7 @@ class EmotionTransform(TransformBase):
     def __init__(
         self,
         text_fields: list,
-        model_name="joeddav/distilbert-base-uncased-go-emotions-student",
+        model_name="Emanuel/bertweet-emotion-base",
         output_fields: list = None,
         min_score: float = 0.3,
         **kwargs,
@@ -56,7 +56,8 @@ class EmotionTransform(TransformBase):
         """
         if text is None:
             return {}
-        output = self.classifier(text, truncation=True, max_length=512)
+        # we force limiting string because Huggingface has unreliable truncation
+        output = self.classifier(text[:450], truncation=True, max_length=512)
         # [{'label': 'desire', 'score': 0.30693167448043823}]
         if output[0]["score"] > self.min_score:
             return output
