@@ -29,6 +29,9 @@ class ReportBlocks(ReportMarks):
             print(type(content))
             return content
 
+    def markdown(self):
+        pass        
+
     def h1(self, content, add=True):
         block = {
             "type": "appBlock",
