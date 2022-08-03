@@ -103,9 +103,15 @@ class ReportBase:
     #     return
 
     def generate_code(self):
-        """generate python code from contents"""
-        import pprint
+        """
+        generate python code from contents
 
+        `
+            raw = app.generate_code()
+            print(raw)
+        `
+
+        """
         code_lines = []
         code_lines.append("app.reset()")
         code_lines.append("")
