@@ -100,7 +100,7 @@ class ReportBase:
     #     return
 
     def generate_code(self):
-        """generate python code from json"""
+        """generate python code from contents"""
 
         code_lines = []
         code_lines.append("app.reset()")
