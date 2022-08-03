@@ -99,6 +99,38 @@ class ReportBase:
     #     """replace an existing block with another"""
     #     return
 
-    # def generate_code(self):
-    #     """generate python code from json"""
-    #     return 
+    def generate_code(self):
+        """generate python code from json"""
+
+        code_lines = []
+        code_lines.append("app.reset()")
+        code_lines.append("\n")
+
+
+        for block in self.contents:
+            line = "app."
+            
+            data = block["content"][0]
+            block_type = data["type"]
+
+            if block_type  == "heading":
+                level = data["attrs"]["level"]
+                text = data["content"][0]["text"]
+
+                func = 'h{}("{}")'.format(level, text)
+                line += func
+
+            elif block_type  == "paragraph":
+                text = data["content"][0]["text"]
+
+                func = 'paragraph("{}")'.format(text)
+                line += func
+
+            code_lines.append(line)
+
+        code_lines.append("\n")
+        code_lines.append("app.deploy()")
+
+        code = "\n".join(code_lines)
+        print(code)
+        return code
