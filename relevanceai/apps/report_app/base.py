@@ -1,3 +1,7 @@
+from typing import Any, Dict, List, Union
+import uuid
+
+
 class ReportBase:
     def __init__(self, name: str, dataset, deployable_id: str = None):
         self.name = name
@@ -26,25 +30,25 @@ class ReportBase:
                 "page-content": {"type": "doc", "content": []},
             }
         if self.deployable_id:
-            self.config['deployable_id'] = self.deployable_id
+            self.config["deployable_id"] = self.deployable_id
 
     @property
-    def contents(self):
+    def contents(self) -> List:
         return self.config["page-content"]["content"]
 
-    def refresh(self, verbose=True, prompt_update:bool=False):
+    def refresh(self, verbose=True, prompt_update: bool = False):
         try:
-            app_config = self.dataset.get_app(self.deployable_id)['configuration']
+            app_config = self.dataset.get_app(self.deployable_id)["configuration"]
             self.reloaded = True
         except:
-            raise Exception(
-                f"{self.deployable_id} does not exist in the dataset."
-            )
+            raise Exception(f"{self.deployable_id} does not exist in the dataset.")
         if self.config == app_config:
-            if verbose: print("No updates made, no differences detected.")
+            if verbose:
+                print("No updates made, no differences detected.")
             return {}
         else:
-            if verbose: print("Differences deteced app update made, returning the differences")
+            if verbose:
+                print("Differences deteced app update made, returning the differences")
             self.config = app_config
             return {}
 
@@ -56,11 +60,11 @@ class ReportBase:
             "page-content": {"type": "doc", "content": []},
         }
 
-    def deploy(self, overwrite: bool = False, new:bool=False):
+    def deploy(self, overwrite: bool = False, new: bool = False):
         if new:
-            return self.dataset.create_app({
-                k:v for k,v in self.config.items() if k != "deployable_id"
-            })
+            return self.dataset.create_app(
+                {k: v for k, v in self.config.items() if k != "deployable_id"}
+            )
         else:
             if self.deployable_id:
                 status = self.dataset.update_app(
@@ -71,7 +75,7 @@ class ReportBase:
                 else:
                     raise Exception("Failed to update app")
             result = self.dataset.create_app(self.config)
-            self.deployable_id = result['deployable_id']
+            self.deployable_id = result["deployable_id"]
             self.reloaded = True
             return result
 
@@ -79,17 +83,20 @@ class ReportBase:
         self,
     ):
         return f"{self.base_url}/dataset/{self.dataset_id}/deploy/page/{self.dataset.project}/{self.dataset.api_key}/{self.deployable_id}/{self.dataset.region}"
-        
-    def gui(self, width:int=1000, height:int=800):
+
+    def gui(self, width: int = 1000, height: int = 800):
         try:
             self.dataset.get_app(self.deployable_id)
         except:
-            raise Exception(f"{self.deployable_id} does not exist in the dataset, run `.deploy` first to create the app.")
+            raise Exception(
+                f"{self.deployable_id} does not exist in the dataset, run `.deploy` first to create the app."
+            )
         return self._show_ipython(url=self.app_url(), width=width, height=height)
 
-    def _show_ipython(self, url, width:int=1000, height:int=800):
+    def _show_ipython(self, url, width: int = 1000, height: int = 800):
         try:
             from IPython.display import IFrame
+
             return IFrame(url, width=width, height=height)
         except:
             print("This only works within an IPython, Notebook environment.")
@@ -101,4 +108,78 @@ class ReportBase:
 
     # def generate_code(self):
     #     """generate python code from json"""
-    #     return 
+    #     return
+
+    def _header(
+        self,
+        content: str,
+        block: Dict[str, Any],
+    ) -> Dict[str, Any]:
+
+        level = int(content.count("#"))
+        content = content.replace("#", "").strip()
+
+        block["content"].append(
+            {
+                "type": "heading",
+                "attrs": {"level": level},
+                "content": [{"text": content, "type": "text"}],
+            }
+        )
+        return block
+
+    def _italic(
+        self,
+        content: str,
+        block: Dict[str, Any],
+    ) -> Dict[str, Any]:
+
+        block["content"].append(
+            {
+                "type": "paragraph",
+                "attrs": {"level": 1},
+                "content": content,
+            }
+        )
+        if "marks" not in block["content"][0]:
+            block["content"][0]["marks"] = []
+
+        block["content"][0]["marks"].append({"type": "italic"})
+        return block
+
+    def _bold(
+        self,
+        content: str,
+        block: Dict[str, Any],
+    ) -> Dict[str, Any]:
+
+        block["content"].append(
+            {
+                "type": "paragraph",
+                "attrs": {"level": 1},
+                "content": content,
+            }
+        )
+
+        if "marks" not in block["content"][0]:
+            block["content"][0]["marks"] = []
+
+        block["content"][0]["marks"].append({"type": "bold"})
+        return block
+
+    def markdown(self, content: str) -> None:
+        block = {
+            "type": "appBlock",
+            "attrs": {"id": str(uuid.uuid4())},
+            "content": [],
+        }
+        if content.startswith("#"):
+            block = self._header(content, block)
+
+        if content.startswith("**"):
+            block = self._bold(content, block)
+
+        if content.startswith("*"):
+            block = self._italic(content, block)
+
+        self.contents.append(block)
