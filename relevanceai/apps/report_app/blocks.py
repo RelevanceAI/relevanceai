@@ -7,9 +7,13 @@ from relevanceai.apps.report_app.marks import ReportMarks
 
 class ReportBlocks(ReportMarks):
     def _process_content(self, content):
-        #Needs to be done better
+        # Needs to be done better
         if isinstance(content, str):
-            return [{"type": "text", "text": content}]
+            content, marks = self._get_md_config(content)
+            data = {"type": "text", "text": content}
+            if marks is not None:
+                data["marks"] = marks
+            return [data]
         elif isinstance(content, (float, int, np.generic)):
             return [{"type": "text", "text": str(content)}]
         elif isinstance(content, list):
@@ -28,6 +32,12 @@ class ReportBlocks(ReportMarks):
         else:
             print(type(content))
             return content
+
+    def _get_md_config(self, content: str):
+        if content.startswith("*") and content.endswith("*"):
+            content = content.replace("*", "")
+            return content, [{"type": "italic"}]
+        return content, None
 
     def h1(self, content, add=True):
         block = {
@@ -93,7 +103,7 @@ class ReportBlocks(ReportMarks):
         block = {
             "type": "codeBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
-            "attrs" : {"language": language},
+            "attrs": {"language": language},
             "content": [
                 {"type": "blockquote", "content": self._process_content(content)}
             ],
@@ -130,15 +140,15 @@ class ReportBlocks(ReportMarks):
         return block
 
     def tooltip(self, content, tooltip_text, add=True):
-        #has to be text block here.
+        # has to be text block here.
         block = {
             "type": "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
             "content": [
                 {
-                    "type": "tooltip", 
-                    "attrs": {"content" : tooltip_text},
-                    "content" : self._process_content(content)
+                    "type": "tooltip",
+                    "attrs": {"content": tooltip_text},
+                    "content": self._process_content(content),
                 }
             ],
         }
@@ -216,12 +226,12 @@ class ReportBlocks(ReportMarks):
         }
         if add:
             self.contents.append(block)
-        return block 
+        return block
 
     def _column_content(self, content):
         return [{"type": "columnContent", "content": self._process_content(content)}]
 
-    def columns(self, contents, num_columns:int=2, add=True):
+    def columns(self, contents, num_columns: int = 2, add=True):
         if not isinstance(contents, list):
             raise TypeError("'contents' needs to be a List")
         list_contents = []
@@ -231,9 +241,9 @@ class ReportBlocks(ReportMarks):
             "type": "appBlock",
             "content": [
                 {
-                    "type": "columnBlock", 
-                    "attrs": {"columns" : num_columns},
-                    "content": list_contents
+                    "type": "columnBlock",
+                    "attrs": {"columns": num_columns},
+                    "content": list_contents,
                 }
             ],
         }

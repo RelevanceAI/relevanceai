@@ -19,7 +19,7 @@ class ExtractNER(TransformBase):
         if output_fields is None:
             self.output_fields = [self._generate_output_field(f) for f in fields]
         else:
-            self.output_fields = output_fields
+            self.output_fields = output_fields  # type: ignore
         for k, v in kwargs.items():
             setattr(self, k, v)
 
