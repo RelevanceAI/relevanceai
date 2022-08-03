@@ -34,7 +34,11 @@ class ReportBlocks(ReportMarks):
             return content
 
     def _get_md_config(self, content: str):
-        if content.startswith("**") and content.endswith("**"):
+        if content.startswith("***") and content.endswith("***"):
+            content = content.replace("*", "")
+            return content, [{"type": "bold"}, {"type": "italic"}]
+
+        elif content.startswith("**") and content.endswith("**"):
             content = content.replace("*", "")
             return content, [{"type": "bold"}]
 
