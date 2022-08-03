@@ -26,25 +26,25 @@ class ReportBase:
                 "page-content": {"type": "doc", "content": []},
             }
         if self.deployable_id:
-            self.config['deployable_id'] = self.deployable_id
+            self.config["deployable_id"] = self.deployable_id
 
     @property
     def contents(self):
         return self.config["page-content"]["content"]
 
-    def refresh(self, verbose=True, prompt_update:bool=False):
+    def refresh(self, verbose=True, prompt_update: bool = False):
         try:
-            app_config = self.dataset.get_app(self.deployable_id)['configuration']
+            app_config = self.dataset.get_app(self.deployable_id)["configuration"]
             self.reloaded = True
         except:
-            raise Exception(
-                f"{self.deployable_id} does not exist in the dataset."
-            )
+            raise Exception(f"{self.deployable_id} does not exist in the dataset.")
         if self.config == app_config:
-            if verbose: print("No updates made, no differences detected.")
+            if verbose:
+                print("No updates made, no differences detected.")
             return {}
         else:
-            if verbose: print("Differences deteced app update made, returning the differences")
+            if verbose:
+                print("Differences deteced app update made, returning the differences")
             self.config = app_config
             return {}
 
@@ -56,11 +56,11 @@ class ReportBase:
             "page-content": {"type": "doc", "content": []},
         }
 
-    def deploy(self, overwrite: bool = False, new:bool=False):
+    def deploy(self, overwrite: bool = False, new: bool = False):
         if new:
-            return self.dataset.create_app({
-                k:v for k,v in self.config.items() if k != "deployable_id"
-            })
+            return self.dataset.create_app(
+                {k: v for k, v in self.config.items() if k != "deployable_id"}
+            )
         else:
             if self.deployable_id:
                 status = self.dataset.update_app(
@@ -71,7 +71,7 @@ class ReportBase:
                 else:
                     raise Exception("Failed to update app")
             result = self.dataset.create_app(self.config)
-            self.deployable_id = result['deployable_id']
+            self.deployable_id = result["deployable_id"]
             self.reloaded = True
             return result
 
@@ -79,17 +79,20 @@ class ReportBase:
         self,
     ):
         return f"{self.base_url}/dataset/{self.dataset_id}/deploy/page/{self.dataset.project}/{self.dataset.api_key}/{self.deployable_id}/{self.dataset.region}"
-        
-    def gui(self, width:int=1000, height:int=800):
+
+    def gui(self, width: int = 1000, height: int = 800):
         try:
             self.dataset.get_app(self.deployable_id)
         except:
-            raise Exception(f"{self.deployable_id} does not exist in the dataset, run `.deploy` first to create the app.")
+            raise Exception(
+                f"{self.deployable_id} does not exist in the dataset, run `.deploy` first to create the app."
+            )
         return self._show_ipython(url=self.app_url(), width=width, height=height)
 
-    def _show_ipython(self, url, width:int=1000, height:int=800):
+    def _show_ipython(self, url, width: int = 1000, height: int = 800):
         try:
             from IPython.display import IFrame
+
             return IFrame(url, width=width, height=height)
         except:
             print("This only works within an IPython, Notebook environment.")
@@ -101,26 +104,26 @@ class ReportBase:
 
     def generate_code(self):
         """generate python code from contents"""
+        import pprint
 
         code_lines = []
         code_lines.append("app.reset()")
-        code_lines.append("\n")
-
+        code_lines.append("")
 
         for block in self.contents:
             line = "app."
-            
+
             data = block["content"][0]
             block_type = data["type"]
 
-            if block_type  == "heading":
+            if block_type == "heading":
                 level = data["attrs"]["level"]
                 text = data["content"][0]["text"]
 
                 func = 'h{}("{}")'.format(level, text)
                 line += func
 
-            elif block_type  == "paragraph":
+            elif block_type == "paragraph":
                 text = data["content"][0]["text"]
 
                 func = 'paragraph("{}")'.format(text)
@@ -128,9 +131,9 @@ class ReportBase:
 
             code_lines.append(line)
 
-        code_lines.append("\n")
+        code_lines.append("")
         code_lines.append("app.deploy()")
 
         code = "\n".join(code_lines)
-        print(code)
+
         return code

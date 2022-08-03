@@ -11,7 +11,7 @@ class ExtractNER(TransformBase):
         self,
         fields: List[str],
         model_id: str = "dslim/bert-base-NER",
-        output_fields: str = None,
+        output_fields: str = None,  # type: ignore
         **kwargs
     ):
         self.fields = fields
@@ -19,7 +19,7 @@ class ExtractNER(TransformBase):
         if output_fields is None:
             self.output_fields = [self._generate_output_field(f) for f in fields]
         else:
-            self.output_fields = output_fields
+            self.output_fields = output_fields  # type: ignore
         for k, v in kwargs.items():
             setattr(self, k, v)
 
