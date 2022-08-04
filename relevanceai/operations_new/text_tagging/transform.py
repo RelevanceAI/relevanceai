@@ -18,7 +18,7 @@ class TextTagTransform(TransformBase):
         text_field: str,
         labels: list,
         minimum_score: float = 0.25,
-        model_id="cross-encoder/nli-deberta-v3-large",
+        model_id=None,
         maximum_number_of_labels: int = 5,
         **kwargs,
     ):

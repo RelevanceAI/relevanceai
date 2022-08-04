@@ -17,7 +17,7 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
         fields,
         labels,
         output_fields,
-        model_id="cross-encoder/nli-deberta-v3-large",
+        model_id=None,
         **kwargs
     ):
         self.credentials = credentials
