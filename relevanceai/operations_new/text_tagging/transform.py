@@ -95,7 +95,7 @@ class TextTagTransform(TransformBase):
 
         counter = 0
         new_labels = []
-        for i, label in labels:
+        for i, label in enumerate(labels):
             if counter >= self.maximum_number_of_labels:
                 return new_labels
 
