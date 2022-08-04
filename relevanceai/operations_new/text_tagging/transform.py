@@ -63,7 +63,7 @@ class TextTagTransform(TransformBase):
 
     @property
     def name(self):
-        return "texttags"
+        return "texttag"
 
     def tag_text(
         self,
