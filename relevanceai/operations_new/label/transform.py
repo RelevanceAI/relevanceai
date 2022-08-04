@@ -203,8 +203,9 @@ class LabelTransform(TransformBase):
             if label_text not in label_texts:
                 new_labels.append(deepcopy(label))
                 counter += 1
-                if counter == max_number_of_labels:
-                    break
+                if counter >= max_number_of_labels:
+                    [l.pop(vector_field) for l in new_labels]
+                    return new_labels
         # new_labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in new_labels]
