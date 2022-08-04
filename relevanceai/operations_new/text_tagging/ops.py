@@ -15,6 +15,7 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
         self,
         credentials,
         fields,
+        labels,
         output_fields,
         model_id="cross-encoder/nli-deberta-v3-large",
         **kwargs
@@ -22,6 +23,7 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
         self.credentials = credentials
         self.fields = fields
         self.text_field = fields[0]
+        self.labels = labels
         if len(fields) > 1:
             raise ValueError("cannot support more than 1 field.")
         if model_id is None:
