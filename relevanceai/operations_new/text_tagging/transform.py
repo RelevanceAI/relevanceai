@@ -98,7 +98,10 @@ class TextTagTransform(TransformBase):
         counter = 0
         new_labels = []
         for i, label in enumerate(labels):
-            if counter >= self.maximum_number_of_labels:
+            if (
+                self.maximum_number_of_labels is not None
+                and counter >= self.maximum_number_of_labels
+            ):
                 return new_labels
 
             if label not in new_labels:
