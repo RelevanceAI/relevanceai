@@ -46,7 +46,7 @@ class TextTagTransform(TransformBase):
         for doc in documents:
             query = self.get_field(self.text_field, doc)
             labels = self.tag_text(query, self.labels)
-            new_doc = {"_id", doc["_id"]}
+            new_doc = {"_id": doc["_id"]}
             self.set_field(
                 self._generate_output_field(self.text_field), new_doc, labels
             )
