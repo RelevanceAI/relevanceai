@@ -88,7 +88,9 @@ class TextTagTransform(TransformBase):
         """
         output = self.classifier(query, labels, multi_label=True)
         labels = [
-            l for l in output["labels"] if output["scores"][i] > self.minimum_score
+            l
+            for i, l in enumerate(output["labels"])
+            if output["scores"][i] > self.minimum_score
         ]
 
         counter = 0
