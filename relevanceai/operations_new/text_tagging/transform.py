@@ -127,3 +127,6 @@ class TextTagTransform(TransformBase):
                 }
             ),
         )
+
+    def _generate_output_field(self, field):
+        return f"_{self.name}_.{field.lower().replace(' ', '_')}.{self.model_id}"

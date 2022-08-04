@@ -12,13 +12,7 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
     """
 
     def __init__(
-        self,
-        credentials,
-        fields,
-        labels,
-        output_fields,
-        model_id=None,
-        **kwargs
+        self, credentials, fields, labels, output_fields, model_id=None, **kwargs
     ):
         self.credentials = credentials
         self.fields = fields
