@@ -35,7 +35,14 @@ class TextTagTransform(TransformBase):
         if not hasattr(self, "_classifier"):
             from transformers import pipeline
 
-            self._classifier = pipeline("zero-shot-classification", model=self.model_id)
+            try:
+                self._classifier = pipeline(
+                    "zero-shot-classification", model=self.model_id, device=0
+                )
+            except:
+                self._classifier = pipeline(
+                    "zero-shot-classification", model=self.model_id, device=-1
+                )
         return self._classifier
 
     def transform(  # type: ignore
