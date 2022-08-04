@@ -22,6 +22,8 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
             raise ValueError("cannot support more than 1 field.")
         if model_id is None:
             self.model_id = "cross-encoder/nli-deberta-v3-large"
+        else:
+            self.model_id = model_id
         if output_fields is None:
             self.output_fields = [self._generate_output_field(f) for f in fields]
         else:
