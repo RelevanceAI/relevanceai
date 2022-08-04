@@ -1,6 +1,7 @@
 """
 Labelling with API-related functions
 """
+from re import I
 from relevanceai.operations_new.text_tagging.transform import TextTagTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 
@@ -20,6 +21,9 @@ class TextTagOps(TextTagTransform, OperationAPIBase):  # type: ignore
     ):
         self.credentials = credentials
         self.fields = fields
+        self.text_field = fields[0]
+        if len(fields) > 1:
+            raise ValueError("cannot support more than 1 field.")
         if model_id is None:
             self.model_id = ("cross-encoder/nli-deberta-v3-large",)
         if output_fields is None:
