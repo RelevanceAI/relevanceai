@@ -1245,6 +1245,7 @@ class Operations(Write):
         self,
         fields: list,
         model_id: str = None,
+        labels: list = None,
         output_fields: list = None,
         chunksize: int = 20,
         minimum_score: float = 0.2,
@@ -1264,6 +1265,7 @@ class Operations(Write):
             output_fields=output_fields,
             minimum_score=minimum_score,
             maximum_number_of_labels=maximum_number_of_labels,
+            labels=self.labels,
         )
 
         ops.run(
