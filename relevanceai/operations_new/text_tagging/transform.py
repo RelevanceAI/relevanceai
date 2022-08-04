@@ -32,7 +32,7 @@ class TextTagTransform(TransformBase):
 
     @property
     def classifier(self):
-        if not hasattr(self, "classifier"):
+        if not hasattr(self, "_classifier"):
             from transformers import pipeline
 
             self._classifier = pipeline("zero-shot-classification", model=self.model_id)
