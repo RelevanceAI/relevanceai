@@ -1,5 +1,41 @@
-from typing import Any, Dict, List, Union
 import uuid
+
+try:
+    import marko
+
+    from marko import block
+    from marko import inline
+
+    from marko.block import BlockElement
+    from marko.inline import InlineElement
+
+    def get_type(obj: BlockElement):
+        if isinstance(obj, block.CodeBlock):
+            return "paragraph"
+        if isinstance(obj, block.BlankLine):
+            return "paragraph"
+        if isinstance(obj, block.Document):
+            return "paragraph"
+        if isinstance(obj, block.Heading):
+            return "heading"
+        if isinstance(obj, block.FencedCode):
+            return "test"
+        if isinstance(obj, block.List):
+            return "orderedList"
+        if isinstance(obj, block.ListItem):
+            return "listItem"
+        if isinstance(obj, block.Quote):
+            return "blockquote"
+        if isinstance(obj, block.Paragraph):
+            return "paragraph"
+
+except ModuleNotFoundError:
+    raise ModuleNotFoundError(
+        "`pip install marko` to use markdown functionality in report app"
+    )
+
+
+from typing import Any, Dict, List, Tuple, Union
 
 
 class ReportBase:
@@ -110,76 +146,63 @@ class ReportBase:
     #     """generate python code from json"""
     #     return
 
-    def _header(
-        self,
-        content: str,
-        block: Dict[str, Any],
-    ) -> Dict[str, Any]:
-
-        level = int(content.count("#"))
-        content = content.replace("#", "").strip()
-
-        block["content"].append(
-            {
-                "type": "heading",
-                "attrs": {"level": level},
-                "content": [{"text": content, "type": "text"}],
-            }
+    def _format_block(self, obj: BlockElement):
+        block = dict(
+            type=get_type(obj),
+            attrs=dict(id=str(uuid.uuid4())),
         )
+        if hasattr(obj, "children"):
+            block["content"] = []
+
+            for child in obj.children:
+                formatted_child = None
+
+                if isinstance(child, BlockElement):
+                    formatted_child = self._format_block(child)
+
+                elif isinstance(child, InlineElement):
+                    formatted_child = self._format_inline(child)
+
+                block["content"].append(formatted_child)
+
+        if hasattr(obj, "level"):
+            block["attrs"]["level"] = obj.level
+
+        if hasattr(obj, "start"):
+            block["attrs"]["start"] = obj.start
+
         return block
 
-    def _italic(
-        self,
-        content: str,
-        block: Dict[str, Any],
-    ) -> Dict[str, Any]:
-
-        block["content"].append(
-            {
-                "type": "paragraph",
-                "attrs": {"level": 1},
-                "content": content,
-            }
+    def _format_inline(self, obj: InlineElement):
+        block = dict(
+            type="text",
+            marks=[],
+            attrs=dict(id=str(uuid.uuid4())),
         )
-        if "marks" not in block["content"][0]:
-            block["content"][0]["marks"] = []
+        if hasattr(obj, "children"):
+            if isinstance(obj.children, list):
 
-        block["content"][0]["marks"].append({"type": "italic"})
+                for child in obj.children:
+                    if isinstance(child, inline.RawText):
+                        block["text"] = child.children
+
+            elif isinstance(obj.children, str):
+                block["text"] = obj.children
+
+        if isinstance(obj, inline.StrongEmphasis):
+            block["marks"].append(dict(type="bold"))  # type: ignore
+
+        elif isinstance(obj, inline.Emphasis):
+            block["marks"].append(dict(type="italic"))  # type: ignore
+
         return block
 
-    def _bold(
-        self,
-        content: str,
-        block: Dict[str, Any],
-    ) -> Dict[str, Any]:
-
-        block["content"].append(
-            {
-                "type": "paragraph",
-                "attrs": {"level": 1},
-                "content": content,
-            }
-        )
-
-        if "marks" not in block["content"][0]:
-            block["content"][0]["marks"] = []
-
-        block["content"][0]["marks"].append({"type": "bold"})
-        return block
-
-    def markdown(self, content: str) -> None:
-        block = {
-            "type": "appBlock",
-            "attrs": {"id": str(uuid.uuid4())},
-            "content": [],
-        }
-        if content.startswith("#"):
-            block = self._header(content, block)
-
-        if content.startswith("**"):
-            block = self._bold(content, block)
-
-        if content.startswith("*"):
-            block = self._italic(content, block)
-
-        self.contents.append(block)
+    def markdown(self, raw: str) -> None:
+        markdown = marko.parse(raw)
+        for child in markdown.children:
+            b = dict(
+                type="appBlock",
+                attrs=dict(id=str(uuid.uuid4())),
+                content=[self._format_block(child)],
+            )
+            self.contents.append(b)
