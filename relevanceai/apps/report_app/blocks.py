@@ -9,11 +9,7 @@ class ReportBlocks(ReportMarks):
     def _process_content(self, content):
         # Needs to be done better
         if isinstance(content, str):
-            content, marks = self._get_md_config(content)
-            data = {"type": "text", "text": content}
-            if marks is not None:
-                data["marks"] = marks
-            return [data]
+            return [{"type": "text", "text": content}]
         elif isinstance(content, (float, int, np.generic)):
             return [{"type": "text", "text": str(content)}]
         elif isinstance(content, list):
@@ -32,21 +28,6 @@ class ReportBlocks(ReportMarks):
         else:
             print(type(content))
             return content
-
-    def _get_md_config(self, content: str):
-        if content.startswith("***") and content.endswith("***"):
-            content = content.replace("*", "")
-            return content, [{"type": "bold"}, {"type": "italic"}]
-
-        elif content.startswith("**") and content.endswith("**"):
-            content = content.replace("*", "")
-            return content, [{"type": "bold"}]
-
-        elif content.startswith("*") and content.endswith("*"):
-            content = content.replace("*", "")
-            return content, [{"type": "italic"}]
-
-        return content, None
 
     def h1(self, content, add=True):
         block = {
