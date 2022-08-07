@@ -196,7 +196,7 @@ class LabelTransform(TransformBase):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])
         labels = [l for l in labels if l[score_field] > similarity_threshold]
         counter = 0
-        new_labels = []
+        new_labels: List[str] = []
         for label in labels:
             label_text = self.get_field(self.label_field, label)
             label_texts = self.get_field_across_documents(self.label_field, new_labels)
