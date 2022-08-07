@@ -825,7 +825,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 chunksize = 1
 
         # Initialise number of inserted documents
-        inserted: List[str] = []
+        inserted: List[bool] = []
 
         # Initialise failed documents
         failed_ids: List[str] = []
