@@ -56,4 +56,4 @@ class AltairReportBlock(ReportBlocks):
                 self.contents.append(block)
             return block
 
-    altair_plot = altair
+    altair_chart = altair
