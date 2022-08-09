@@ -587,6 +587,7 @@ class Operations(Write):
         """
         from relevanceai.operations_new.emotion.ops import EmotionOps
 
+        filters = [] if filters is None else filters
         ops = EmotionOps(
             credentials=self.credentials,
             text_fields=text_fields,
