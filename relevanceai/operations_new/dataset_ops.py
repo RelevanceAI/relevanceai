@@ -594,6 +594,15 @@ class Operations(Write):
             output_fields=output_fields,
             min_score=min_score,
         )
+        filters += [
+            {
+                "field": text_field,
+                "filter_type": "exists",
+                "condition": ">=",
+                "condition_value": " ",
+            }
+            for text_field in text_fields
+        ]
         ops.run(
             self,
             filters=filters,
