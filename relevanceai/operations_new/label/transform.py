@@ -196,15 +196,16 @@ class LabelTransform(TransformBase):
         labels = sorted(documents, reverse=reverse, key=lambda x: x[score_field])
         labels = [l for l in labels if l[score_field] > similarity_threshold]
         counter = 0
-        new_labels = []
+        new_labels: List[dict] = []
         for label in labels:
             label_text = self.get_field(self.label_field, label)
             label_texts = self.get_field_across_documents(self.label_field, new_labels)
             if label_text not in label_texts:
                 new_labels.append(deepcopy(label))
                 counter += 1
-                if counter == max_number_of_labels:
-                    break
+                if counter >= max_number_of_labels:
+                    [l.pop(vector_field) for l in new_labels]
+                    return new_labels
         # new_labels = deepcopy(labels)
         # remove labels from labels
         [l.pop(vector_field) for l in new_labels]

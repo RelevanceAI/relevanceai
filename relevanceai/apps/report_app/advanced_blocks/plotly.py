@@ -33,7 +33,7 @@ class PlotlyReportBlock(ReportBlocks):
                 import kaleido
             except ImportError:
                 raise ImportError(
-                    ".plotly 'image=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
+                    ".plotly 'static=True' requires kaleido to be installed, install with 'pip install -U kaleido'."
                 )
             fig_image = fig.to_image(format="png", width=width, height=height)
             self.image(

@@ -7,6 +7,7 @@ from relevanceai.apps.report_app.marks import ReportMarks
 
 class ReportBlocks(ReportMarks):
     def _process_content(self, content):
+        #Needs to be done better
         if isinstance(content, str):
             return [{"type": "text", "text": content}]
         elif isinstance(content, (float, int, np.generic)):
@@ -14,16 +15,22 @@ class ReportBlocks(ReportMarks):
         elif isinstance(content, list):
             content_list = []
             for c in content:
-                if isinstance(c, list):
+                if isinstance(c, list) and len(c) == 1:
                     content_list.append(c[0])
                 else:
-                    content_list += self._process_content(c)
+                    processed_content = self._process_content(c)
+                    if not isinstance(processed_content, list):
+                        processed_content = [processed_content]
+                    content_list += processed_content
             return content_list
         elif isinstance(content, dict):
-            return content
+            return [content]
         else:
             print(type(content))
             return content
+
+    def markdown(self):
+        pass        
 
     def h1(self, content, add=True):
         block = {
@@ -85,14 +92,27 @@ class ReportBlocks(ReportMarks):
             self.contents.append(block)
         return block
 
+    def code(self, content, language="python", add=True):
+        block = {
+            "type": "codeBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "attrs" : {"language": language},
+            "content": [
+                {"type": "blockquote", "content": self._process_content(content)}
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
     def paragraph(self, content, add=True, raw=False):
-        block = {"type": "paragraph", "content": self._process_content(content)}
+        p_block = {"type": "paragraph", "content": self._process_content(content)}
         if raw:
-            return block
+            return p_block
         block = {
             "type": "appBlock",
             # "attrs" : {"id": str(uuid.uuid4())},
-            "content": [block],
+            "content": [p_block],
         }
         if add:
             self.contents.append(block)
@@ -106,6 +126,23 @@ class ReportBlocks(ReportMarks):
             # "attrs" : {"id": str(uuid.uuid4())},
             "content": [
                 {"type": "spaceBlock", "attrs": {"width": "100%", "height": height}}
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    def tooltip(self, content, tooltip_text, add=True):
+        #has to be text block here.
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "tooltip", 
+                    "attrs": {"content" : tooltip_text},
+                    "content" : self._process_content(content)
+                }
             ],
         }
         if add:
@@ -161,6 +198,45 @@ class ReportBlocks(ReportMarks):
                             "content": self._process_content(contents),
                         },
                     ],
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block
+
+    def card(self, contents, width, color, add=True):
+        block = {
+            "type": "appBlock",
+            # "attrs" : {"id": str(uuid.uuid4())},
+            "content": [
+                {
+                    "type": "cardBlock",
+                    "attrs": {"width": width, "colour": color},
+                    "content": self._process_content(contents),
+                }
+            ],
+        }
+        if add:
+            self.contents.append(block)
+        return block 
+
+    def _column_content(self, content):
+        return [{"type": "columnContent", "content": self._process_content(content)}]
+
+    def columns(self, contents, num_columns:int=2, add=True):
+        if not isinstance(contents, list):
+            raise TypeError("'contents' needs to be a List")
+        list_contents = []
+        for c in contents:
+            list_contents += self._column_content(c)
+        block = {
+            "type": "appBlock",
+            "content": [
+                {
+                    "type": "columnBlock", 
+                    "attrs": {"columns" : num_columns},
+                    "content": list_contents
                 }
             ],
         }

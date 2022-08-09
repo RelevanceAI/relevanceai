@@ -1,4 +1,5 @@
 import uuid
+import click
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
 from relevanceai.dataset.write import Write
@@ -22,9 +23,9 @@ class ManageApps(Write):
             return f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/explore/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
 
     def list_apps(self, return_config: bool = False):
-        print(
-            "Note: Deployable is the same as App. Deployables are legacy names of what we call Apps in the backend."
-        )
+        # print(
+        #     "Note: Deployable is the same as App. Deployables are legacy names of what we call Apps in the backend."
+        # )
         if return_config:
             return [
                 d
@@ -54,21 +55,23 @@ class ManageApps(Write):
                     results.append(result)
             return results
 
-    def create_app(self, config: Dict):
+    def create_app(self, config: Dict, verbose:bool=True):
         result = self.deployables.create(
             dataset_id=self.dataset_id, configuration=self.json_encoder(config)
         )
-        print(
-            f"""Your app can be accessed at: {self._app_url(
-            dataset_id=result['dataset_id'],
-            project_id=result['project_id'],
-            deployable_id=result['deployable_id'],
-            app_type=result['configuration']['type']
-        )}"""
-        )
+        if verbose:
+            click.secho(" You can now view your app in your browser.")
+            click.secho(
+                f""" {self._app_url(
+                    dataset_id=result['dataset_id'],
+                    project_id=result['project_id'],
+                    deployable_id=result['deployable_id'],
+                    app_type=result['configuration']['type']
+                )}""", bold=True
+            )
         return result
 
-    def update_app(self, deployable_id: str, config: Dict, overwrite: bool = False):
+    def update_app(self, deployable_id: str, config: Dict, overwrite: bool = False, verbose:bool=True):
         status = self.deployables.update(
             deployable_id=deployable_id,
             dataset_id=self.dataset_id,
@@ -80,14 +83,16 @@ class ManageApps(Write):
                 app_type = config["type"]
             elif "type" in config["configuration"]:
                 app_type = config["configuration"]["type"]
-            print(
-                f"""Your app can be accessed at: {self._app_url(
-                dataset_id=self.dataset_id,
-                project_id=self.project,
-                deployable_id=deployable_id,
-                app_type=app_type
-            )}"""
-            )
+            if verbose:
+                click.secho(" You can now view your app in your browser.")
+                click.secho(
+                    f""" {self._app_url(
+                        dataset_id=self.dataset_id,
+                        project_id=self.project,
+                        deployable_id=deployable_id,
+                        app_type=app_type
+                    )}""", bold=True
+                )
         else:
             print("Failed to update")
         return status
