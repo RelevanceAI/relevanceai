@@ -30,7 +30,7 @@ class ReportBlocks(ReportMarks):
             return content
 
     def markdown(self):
-        pass        
+        pass
 
     def h1(self, content, add=True):
         block = {

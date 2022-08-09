@@ -2,8 +2,10 @@ from relevanceai.apps.report_app.advanced_blocks.connected_charts import Connect
 from relevanceai.apps.report_app.advanced_blocks.pyplot import PyplotReportBlock
 from relevanceai.apps.report_app.advanced_blocks.plotly import PlotlyReportBlock
 from relevanceai.apps.report_app.advanced_blocks.altair import AltairReportBlock
+from relevanceai.apps.report_app.advanced_blocks.markdown import MarkdownBlock
 
-class ReportAdvancedBlocks(PyplotReportBlock, PlotlyReportBlock, AltairReportBlock, ConnectedChartsBlocks):
+
+class ReportAdvancedBlocks(PyplotReportBlock, PlotlyReportBlock, AltairReportBlock, MarkdownBlock):
     def plot_by_method(
         self, plot, plot_method, title="", height=None, width=None, add=True
     ):
