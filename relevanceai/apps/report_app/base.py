@@ -1,3 +1,6 @@
+import webbrowser
+
+
 class ReportBase:
     def __init__(self, name: str, dataset, deployable_id: str = None):
         self.name = name
@@ -56,9 +59,9 @@ class ReportBase:
             "page-content": {"type": "doc", "content": []},
         }
 
-    def deploy(self, overwrite: bool = False, new:bool=False):
+    def deploy(self, overwrite: bool = False, new:bool=False, browser:bool=False, gui:bool=False, width:int=1000, height:int=800):
         if new:
-            return self.dataset.create_app({
+            result = self.dataset.create_app({
                 k:v for k,v in self.config.items() if k != "deployable_id"
             })
         else:
@@ -72,8 +75,12 @@ class ReportBase:
                     raise Exception("Failed to update app")
             result = self.dataset.create_app(self.config)
             self.deployable_id = result['deployable_id']
-            self.reloaded = True
-            return result
+            self.reloaded = True       
+        if browser:
+            webbrowser.open(self.app_url())
+        if gui:
+            self.gui(width=width, height=height)
+        return result
 
     def app_url(
         self,
