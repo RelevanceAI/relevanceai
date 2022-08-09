@@ -1,11 +1,16 @@
 import uuid
+
+from typing import Any, Dict, List, Union
+
 from relevanceai.apps.report_app.blocks import ReportBlocks
+
 
 class MarkdownBlock(ReportBlocks):
     def _format_block(self, obj):
         from marko import block
         from marko.block import BlockElement
         from marko.inline import InlineElement
+
         block = dict(
             type=self._get_marko_block_type(obj),
             attrs=dict(id=str(uuid.uuid4())),
@@ -39,6 +44,7 @@ class MarkdownBlock(ReportBlocks):
             attrs=dict(id=str(uuid.uuid4())),
         )
         from marko import inline
+
         if hasattr(obj, "children"):
             if isinstance(obj.children, list):
 
@@ -57,28 +63,39 @@ class MarkdownBlock(ReportBlocks):
 
         return block
 
-    def _get_marko_block_type(self, obj):
+    def _get_marko_block_type(self, obj) -> Union[None, str]:
         from marko import block
+
         if isinstance(obj, block.CodeBlock):
             return "paragraph"
+
         if isinstance(obj, block.BlankLine):
             return "paragraph"
+
         if isinstance(obj, block.Document):
             return "paragraph"
+
         if isinstance(obj, block.Heading):
             return "heading"
+
         if isinstance(obj, block.FencedCode):
             return "test"
+
         if isinstance(obj, block.List):
             return "orderedList"
+
         if isinstance(obj, block.ListItem):
             return "listItem"
+
         if isinstance(obj, block.Quote):
             return "blockquote"
+
         if isinstance(obj, block.Paragraph):
             return "paragraph"
 
-    def markdown(self, raw: str, add=True) -> None:
+        return None
+
+    def markdown(self, raw: str, add: bool = True) -> List[Dict[str, Any]]:
         try:
             import marko
         except ModuleNotFoundError:
@@ -97,4 +114,5 @@ class MarkdownBlock(ReportBlocks):
             blocks.append(b)
             if add:
                 self.contents.append(b)
+
         return blocks
