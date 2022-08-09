@@ -909,7 +909,7 @@ class BatchInsertClient(BatchRetrieveClient):
         failed_ids.extend(cancelled_ids)
 
         output = {
-            "inserted": sum(inserted),
+            "inserted": sum(inserted),  # type: ignore
             "failed_documents": failed_ids,
             "failed_documents_detailed": failed_ids_detailed,
         }
