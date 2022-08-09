@@ -1240,3 +1240,42 @@ class Operations(Write):
         )
 
         return ops
+
+    def tag_text(
+        self,
+        fields: list,
+        model_id: str = None,
+        labels: list = None,
+        output_fields: list = None,
+        chunksize: int = 20,
+        minimum_score: float = 0.2,
+        maximum_number_of_labels: int = 5,
+        filters: list = None,
+        refresh: bool = False,
+    ):
+        """
+        Tag Text
+        """
+        from relevanceai.operations_new.text_tagging.ops import TextTagOps
+
+        ops = TextTagOps(
+            credentials=self.credentials,
+            fields=fields,
+            model_id=model_id,
+            output_fields=output_fields,
+            minimum_score=minimum_score,
+            maximum_number_of_labels=maximum_number_of_labels,
+            labels=labels,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=fields,
+            output_fields=output_fields,
+            refresh=refresh,
+        )
+
+        return ops

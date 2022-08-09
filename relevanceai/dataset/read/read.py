@@ -754,7 +754,7 @@ class Read(ClusterRead):
                 yield docs["documents"]
                 docs = self.get_documents(
                     number_of_documents=chunksize,
-                    include_cursor=True,
+                    include_cursor=False,
                     after_id=docs["after_id"],
                     filters=filters,
                     select_fields=select_fields,
