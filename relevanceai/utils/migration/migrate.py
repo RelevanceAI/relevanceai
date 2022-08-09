@@ -47,7 +47,10 @@ def migrate_dataset(
     ds = client.Dataset(dataset_id)
     with FileLogger():
         docs = ds.get_documents(
-            number_of_documents=chunksize, include_cursor=True, filters=filters
+            number_of_documents=chunksize,
+            include_cursor=False,
+            filters=filters,
+            include_after_id=True,
         )
         while len(docs["documents"]) > 0:
             new_client = Client(token=new_token)
@@ -60,8 +63,9 @@ def migrate_dataset(
             # we need to reset the config
             client = Client(token=old_token)
             docs = ds.get_documents(
+                include_cursor=False,
                 number_of_documents=chunksize,
-                include_cursor=True,
+                after_id=docs["after_id"],
                 cursor=docs["cursor"],
                 filters=filters,
             )
