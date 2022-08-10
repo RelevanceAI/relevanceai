@@ -17,6 +17,7 @@ from relevanceai.utils.datasets import mock_documents
 import requests
 
 from relevanceai.constants.warning import Warning
+from relevanceai.operations_new.document_vectorizer import DocumentVectorizer
 
 # Import useful utility if possible as well
 try:
