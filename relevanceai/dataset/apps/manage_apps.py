@@ -1,5 +1,4 @@
 import uuid
-import click
 from copy import deepcopy
 from typing import Dict, List, Optional, Union
 from relevanceai.dataset.write import Write
@@ -55,11 +54,13 @@ class ManageApps(Write):
                     results.append(result)
             return results
 
-    def create_app(self, config: Dict, verbose:bool=True):
+    def create_app(self, config: Dict, verbose: bool = True):
         result = self.deployables.create(
             dataset_id=self.dataset_id, configuration=self.json_encoder(config)
         )
         if verbose:
+            import click
+
             click.secho(" You can now view your app in your browser.")
             click.secho(
                 f""" {self._app_url(
@@ -67,11 +68,18 @@ class ManageApps(Write):
                     project_id=result['project_id'],
                     deployable_id=result['deployable_id'],
                     app_type=result['configuration']['type']
-                )}""", bold=True
+                )}""",
+                bold=True,
             )
         return result
 
-    def update_app(self, deployable_id: str, config: Dict, overwrite: bool = False, verbose:bool=True):
+    def update_app(
+        self,
+        deployable_id: str,
+        config: Dict,
+        overwrite: bool = False,
+        verbose: bool = True,
+    ):
         status = self.deployables.update(
             deployable_id=deployable_id,
             dataset_id=self.dataset_id,
@@ -84,6 +92,8 @@ class ManageApps(Write):
             elif "type" in config["configuration"]:
                 app_type = config["configuration"]["type"]
             if verbose:
+                import click
+
                 click.secho(" You can now view your app in your browser.")
                 click.secho(
                     f""" {self._app_url(
@@ -91,7 +101,8 @@ class ManageApps(Write):
                         project_id=self.project,
                         deployable_id=deployable_id,
                         app_type=app_type
-                    )}""", bold=True
+                    )}""",
+                    bold=True,
                 )
         else:
             print("Failed to update")
