@@ -1,11 +1,12 @@
 from typing import Optional, Union, Dict, List, Mapping
 from relevanceai.dataset.read.statistics import Statistics
 
+
 class ClusterRead(Statistics):
     def list_closest_to_center(
         self,
         vector_fields: list,
-        alias:str,
+        alias: str,
         cluster_ids: Optional[list] = None,
         select_fields: Optional[List] = None,
         approx: int = 0,
