@@ -150,7 +150,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
 
         # Initialise values
         length = 1
-        cursor = None
+        after_id = None
         full_data = []
 
         # Find number of iterations
@@ -167,7 +167,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             x = self.datasets.documents.get_where(
                 dataset_id,
                 filters=filters,
-                cursor=cursor,
+                cursor=after_id,
                 page_size=chunksize,
                 sort=sort,
                 select_fields=select_fields,
@@ -175,7 +175,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             )
             try:
                 length = len(x["documents"])
-                cursor = x["cursor"]
+                after_id = x["after_id"]
 
                 # Append fetched data to the full data
                 if length > 0:
