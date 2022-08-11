@@ -187,5 +187,5 @@ STOPWORDS = [
     "wouldn't",
     "everything",
     "many",
-    "x000d"
+    "x000d",
 ]
