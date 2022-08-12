@@ -705,7 +705,11 @@ class Read(ClusterRead):
 
     @track
     def chunk_dataset(
-        self, select_fields: List = None, chunksize: int = 100, filters: list = None
+        self,
+        select_fields: List = None,
+        chunksize: int = 100,
+        filters: list = None,
+        after_id: list = None,
     ):
         """
 
@@ -736,6 +740,7 @@ class Read(ClusterRead):
             filters=filters,
             select_fields=select_fields,
             include_after_id=True,
+            after_id=after_id,
         )
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
