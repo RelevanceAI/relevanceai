@@ -710,6 +710,7 @@ class Read(ClusterRead):
         chunksize: int = 100,
         filters: list = None,
         after_id: list = None,
+        max_number_of_documents: int = None,
     ):
         """
 
@@ -745,7 +746,10 @@ class Read(ClusterRead):
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
         )
-        with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:
+        if max_number_of_documents is None:
+            max_number_of_documents = number_of_documents
+        curr_number_of_documents = chunksize
+        with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:  #
             # update after we get the first batch
             pbar.update(1)
             self._update_workflow_progress(metadata=pbar.format_dict)
@@ -758,7 +762,9 @@ class Read(ClusterRead):
                 # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
                 yield docs["documents"]
                 docs = self.get_documents(
-                    number_of_documents=chunksize,
+                    number_of_documents=min(
+                        chunksize, max_number_of_documents - curr_number_of_documents
+                    ),
                     include_cursor=False,
                     after_id=docs["after_id"],
                     filters=filters,
@@ -767,6 +773,9 @@ class Read(ClusterRead):
                 # Final update at the end
                 pbar.update(1)
                 self._update_workflow_progress(metadata=pbar.format_dict)
+                curr_number_of_documents += chunksize
+                if curr_number_of_documents >= max_number_of_documents:
+                    return
         return
 
     @track
