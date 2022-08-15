@@ -736,6 +736,21 @@ class Read(ClusterRead):
                 ds.upsert_documents(docs)
 
         """
+        filters = [] if filters is None else filters
+        filters += [
+            {
+                "filter_type": "or",
+                "condition_value": [
+                    {
+                        "field": f,
+                        "filter_type": "exists",
+                        "condition": ">=",
+                        "condition_value": " ",
+                    }
+                    for f in select_fields
+                ],
+            }
+        ]
         docs = self.get_documents(
             number_of_documents=chunksize,
             filters=filters,
@@ -746,9 +761,8 @@ class Read(ClusterRead):
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
         )
-        if max_number_of_documents is None:
-            max_number_of_documents = number_of_documents
-        curr_number_of_documents = chunksize
+
+        curr_number_of_documents = 0
         with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:  #
             # update after we get the first batch
             pbar.update(1)
@@ -762,9 +776,7 @@ class Read(ClusterRead):
                 # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
                 yield docs["documents"]
                 docs = self.get_documents(
-                    number_of_documents=min(
-                        chunksize, max_number_of_documents - curr_number_of_documents
-                    ),
+                    number_of_documents=chunksize,
                     include_cursor=False,
                     after_id=docs["after_id"],
                     filters=filters,
@@ -774,7 +786,10 @@ class Read(ClusterRead):
                 pbar.update(1)
                 self._update_workflow_progress(metadata=pbar.format_dict)
                 curr_number_of_documents += chunksize
-                if curr_number_of_documents >= max_number_of_documents:
+                if (
+                    max_number_of_documents is not None
+                    and curr_number_of_documents >= max_number_of_documents
+                ):
                     return
         return
 
