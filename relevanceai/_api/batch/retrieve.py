@@ -167,7 +167,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             x = self.datasets.documents.get_where(
                 dataset_id,
                 filters=filters,
-                cursor=after_id,
+                after_id=after_id,
                 page_size=chunksize,
                 sort=sort,
                 select_fields=select_fields,
