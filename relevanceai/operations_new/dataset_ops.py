@@ -129,7 +129,7 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
-            output_fields=output_fields
+            output_fields=output_fields,
         )
 
         return ops
