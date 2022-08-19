@@ -55,7 +55,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         self.alias = self._get_alias(alias)
 
-    def run(self, dataset: Dataset, filters: list = None):
+    def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
         """
         Run batch clustering
         """
@@ -63,7 +63,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         # Avoid looping through dataset twice
         print("Fitting...")
         for chunk in dataset.chunk_dataset(
-            select_fields=self.vector_fields, filters=filters
+            select_fields=self.vector_fields, filters=filters, chunksize=chunksize
         ):
             vectors = self.get_field_across_documents(
                 self.vector_fields[0], chunk, missing_treatment="skip"
@@ -71,7 +71,9 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             self.model.partial_fit(vectors)
 
         print("Predicting...")
-        for chunk in dataset.chunk_dataset(select_fields=self.vector_fields):
+        for chunk in dataset.chunk_dataset(
+            select_fields=self.vector_fields, chunksize=chunksize
+        ):
             # Provide a chunk
             chunk = self.transform(chunk)
             results = dataset.upsert_documents(chunk)

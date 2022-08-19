@@ -502,6 +502,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         include_cluster_report: bool = True,
         model_kwargs: dict = None,
+        chunksize: int = 100,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
@@ -513,11 +514,10 @@ class Operations(Write):
             model_kwargs=model_kwargs,
             **kwargs,
         )
-
         if filters is not None:
             filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters=filters)
+        cluster_ops.run(self, filters=filters, chunksize=chunksize)
 
         return cluster_ops
 
