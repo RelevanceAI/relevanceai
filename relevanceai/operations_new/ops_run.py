@@ -128,12 +128,16 @@ class PullUpdatePush:
 
     @staticmethod
     def _postprocess(
-        new: List[Dict[str, Any]],
-        old: List[Dict[str, Any]],
+        new_batch: List[Dict[str, Any]],
+        old_batch: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         batch = [
-            {k: v for k, v in new[i].items() if k not in old[i].keys() or k == "_id"}
-            for i in range(len(new))
+            {
+                key: value
+                for key, value in new_batch[idx].items()
+                if key not in old_batch[idx].keys() or key == "_id"
+            }
+            for idx in range(len(new_batch))
         ]
         return batch
 
@@ -162,6 +166,8 @@ class PullUpdatePush:
                 batch = []
 
     def run(self):
+        if self.ndocs <= 0:
+            return
 
         pull_bar = tqdm(
             desc="pull",
