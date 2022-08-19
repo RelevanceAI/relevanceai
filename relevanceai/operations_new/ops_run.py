@@ -4,6 +4,7 @@ All functions related to running operations on datasets.
 """
 import threading
 import multiprocessing as mp
+import warnings
 
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union, Optional, Callable
@@ -31,7 +32,14 @@ class PullUpdatePush:
         push_workers: int = 1,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
+        timeout: int = 3,
+        ingest_in_background: bool = False,
     ):
+        """
+        Buffer size:
+            number of documents in queue for transform
+
+        """
         super().__init__()
 
         self.dataset = dataset
@@ -46,6 +54,8 @@ class PullUpdatePush:
         self.pull_batch_size = min(pull_batch_size, ndocs)
         self.update_batch_size = min(update_batch_size, ndocs)
         self.push_batch_size = min(push_batch_size, ndocs)
+        self.timeout = timeout
+        self.ingest_in_background = ingest_in_background
 
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
@@ -144,17 +154,18 @@ class PullUpdatePush:
         while progress_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
-                    document = self.pq.get(timeout=3)
+                    document = self.pq.get(timeout=self.timeout)
                 except:
                     break
                 batch.append(document)
 
             batch = self.dataset.json_encoder(batch)
+            # TODO: check if there's failed documents
             res = self.dataset.datasets.documents.bulk_update(
                 self.dataset_id,
                 batch,
                 return_documents=True,
-                ingest_in_background=False,
+                ingest_in_background=self.ingest_in_background,
             )
 
             with self.lock:
@@ -323,17 +334,23 @@ class OperationRun(TransformBase):
         timeout: int = 30,
         buffer_size: int = 1024,
         show_progress_bar: bool = True,
+        update_batch_size: int = 32,
+        multithreaded_update: bool = False,
         *args,
         **kwargs,
     ):
+        if multithreaded_update:
+            warnings.warn(
+                "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
+            )
         pup = PullUpdatePush(
             dataset=dataset,
             func=self.transform,
             func_args=args,
             func_kwargs=kwargs,
-            multithreaded_update=False,
+            multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
-            update_batch_size=32,
+            update_batch_size=update_batch_size,
             push_batch_size=chunksize,
             filters=filters,
             select_fields=select_fields,
@@ -341,6 +358,7 @@ class OperationRun(TransformBase):
             push_workers=max_active_threads,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
+            timeout=timeout,
         )
         pup.run()
 
