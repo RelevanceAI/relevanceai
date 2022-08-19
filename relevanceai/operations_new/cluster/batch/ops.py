@@ -76,6 +76,6 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         ):
             # Provide a chunk
             chunk = self.transform(chunk)
-            results = dataset.upsert_documents(chunk)
+            results = dataset.upsert_documents(chunk, ingest_in_background=True)
 
         return
