@@ -55,7 +55,13 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         self.alias = self._get_alias(alias)
 
-    def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
+    def run(
+        self,
+        dataset: Dataset,
+        filters: list = None,
+        chunksize: int = 500,
+        ingest_in_background: bool = True,
+    ):
         """
         Run batch clustering
         """
@@ -76,6 +82,8 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         ):
             # Provide a chunk
             chunk = self.transform(chunk)
-            results = dataset.upsert_documents(chunk, ingest_in_background=True)
+            results = dataset.upsert_documents(
+                chunk, ingest_in_background=ingest_in_background
+            )
 
         return

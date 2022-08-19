@@ -503,6 +503,7 @@ class Operations(Write):
         include_cluster_report: bool = True,
         model_kwargs: dict = None,
         chunksize: int = 100,
+        ingest_in_background: bool = True,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
@@ -517,7 +518,12 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)
 
-        cluster_ops.run(self, filters=filters, chunksize=chunksize)
+        cluster_ops.run(
+            self,
+            ingest_in_background=ingest_in_background,
+            filters=filters,
+            chunksize=chunksize,
+        )
 
         return cluster_ops
 
