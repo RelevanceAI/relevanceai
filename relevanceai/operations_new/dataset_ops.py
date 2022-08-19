@@ -514,8 +514,7 @@ class Operations(Write):
             model_kwargs=model_kwargs,
             **kwargs,
         )
-        if filters is not None:
-            filters = cluster_ops._get_filters(filters, vector_fields)
+        filters = cluster_ops._get_filters(filters, vector_fields)
 
         cluster_ops.run(self, filters=filters, chunksize=chunksize)
 
