@@ -3,15 +3,200 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
 import threading
-import time
+import multiprocessing as mp
+
 from datetime import datetime
-from typing import Any, Dict, Optional
-from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Tuple, Union, Optional, Callable
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
 
-from relevanceai.utils import fire_and_forget
+from tqdm.auto import tqdm
+
+
+class PullUpdatePush:
+    def __init__(
+        self,
+        dataset: Dataset,
+        func: Callable,
+        func_args: Tuple[Any, ...],
+        func_kwargs: Dict[str, Any],
+        multithreaded_update: bool = True,
+        pull_batch_size: Optional[int] = 128,
+        update_batch_size: Optional[int] = 128,
+        push_batch_size: Optional[int] = 128,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        update_workers: int = 1,
+        push_workers: int = 1,
+        buffer_size: int = 0,
+        show_progress_bar: bool = True,
+    ):
+        super().__init__()
+
+        self.dataset = dataset
+        self.dataset_id = dataset.dataset_id
+
+        ndocs = self.dataset.get_number_of_documents(
+            dataset_id=self.dataset_id,
+            filters=filters,
+        )
+        self.ndocs = ndocs
+
+        self.pull_batch_size = min(pull_batch_size, ndocs)
+        self.update_batch_size = min(update_batch_size, ndocs)
+        self.push_batch_size = min(push_batch_size, ndocs)
+
+        self.filters = [] if filters is None else filters
+        self.select_fields = [] if select_fields is None else select_fields
+
+        self.lock = threading.Lock()
+
+        self.func_lock: Union[threading.Lock, None]
+        if not multithreaded_update:
+            self.func_lock = threading.Lock()
+            self.update_workers = 1
+        else:
+            self.func_lock = None
+            self.update_workers = update_workers
+
+        self.push_workers = push_workers
+
+        self.func_args = () if func_args is None else func_args
+        self.func_kwargs = {} if func_kwargs is None else func_kwargs
+
+        self.tq: mp.Queue = mp.Queue(maxsize=buffer_size)
+        self.pq: mp.Queue = mp.Queue(maxsize=buffer_size)
+        self.func = func
+
+        self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
+
+    def pull(self, progress_bar: tqdm):
+
+        documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
+        after_id: Union[str, None] = None
+        overflow: List[Dict[str, Any]] = []
+
+        while documents:
+            res = self.dataset.datasets.documents.get_where(
+                dataset_id=self.dataset_id,
+                page_size=self.pull_batch_size,
+                filters=self.filters,
+                select_fields=self.select_fields,
+                sort=[],
+                after_id=after_id,
+            )
+            documents = res["documents"]
+            after_id = res["after_id"]
+
+            if len(documents + overflow) >= self.update_batch_size:
+                nb = int(len(documents + overflow) / self.update_batch_size)
+                for i in range(nb):
+                    batch = documents[i : i + self.update_batch_size]
+                    self.tq.put(batch)
+                    with self.lock:
+                        progress_bar.update(len(batch))
+
+                overflow += documents[nb * self.update_batch_size :]
+            else:
+                overflow += documents
+
+        if overflow:
+            self.tq.put(overflow)
+            with self.lock:
+                progress_bar.update(len(overflow))
+
+    def update(self, progress_bar: tqdm):
+        while progress_bar.n < self.ndocs:
+            try:
+                batch = self.tq.get(timeout=3)
+            except:
+                break
+
+            if self.func_lock is not None:
+                with self.func_lock:
+                    new_batch = self.func(batch, *self.func_args, **self.func_kwargs)
+            else:
+                new_batch = self.func(batch, **self.func_kwargs)
+            batch = PullUpdatePush._postprocess(new_batch, batch)
+
+            for document in batch:
+                self.pq.put(document)
+
+            with self.lock:
+                progress_bar.update(len(batch))
+
+    @staticmethod
+    def _postprocess(
+        new: List[Dict[str, Any]],
+        old: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        batch = [
+            {k: v for k, v in new[i].items() if k not in old[i].keys() or k == "_id"}
+            for i in range(len(new))
+        ]
+        return batch
+
+    def push(self, progress_bar: tqdm):
+
+        batch = [self.pq.get()]
+
+        while progress_bar.n < self.ndocs:
+            while len(batch) < self.push_batch_size:
+                try:
+                    document = self.pq.get(timeout=3)
+                except:
+                    break
+                batch.append(document)
+
+            batch = self.dataset.json_encoder(batch)
+            res = self.dataset.datasets.documents.bulk_update(
+                self.dataset_id,
+                batch,
+                return_documents=True,
+                ingest_in_background=False,
+            )
+
+            with self.lock:
+                progress_bar.update(len(batch))
+                batch = []
+
+    def run(self):
+
+        pull_bar = tqdm(
+            desc="pull",
+            position=0,
+            total=self.ndocs,
+            **self.tqdm_kwargs,
+        )
+        update_bar = tqdm(
+            range(self.ndocs),
+            desc="update",
+            position=1,
+            **self.tqdm_kwargs,
+        )
+        push_bar = tqdm(
+            range(self.ndocs),
+            desc="push",
+            position=2,
+            **self.tqdm_kwargs,
+        )
+        pull_threads = [threading.Thread(target=self.pull, args=(pull_bar,))]
+        update_threads = [
+            threading.Thread(target=self.update, args=(update_bar,))
+            for _ in range(self.update_workers)
+        ]
+        push_threads = [
+            threading.Thread(target=self.push, args=(push_bar,))
+            for _ in range(self.push_workers)
+        ]
+        threads = pull_threads + update_threads + push_threads
+
+        for thread in threads:
+            thread.start()
+
+        # for thread in reversed(threads):
+        #     thread.join()
 
 
 class OperationRun(TransformBase):
@@ -136,43 +321,28 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         max_active_threads: int = 2,
         timeout: int = 30,
+        buffer_size: int = 1024,
+        show_progress_bar: bool = True,
         *args,
         **kwargs,
     ):
-        # Here we limit the number of threadsA
-        thread_count = 0
-
-        for chunk in dataset.chunk_dataset(
-            select_fields=select_fields,
+        pup = PullUpdatePush(
+            dataset=dataset,
+            func=self.transform,
+            func_args=args,
+            func_kwargs=kwargs,
+            multithreaded_update=False,
+            pull_batch_size=chunksize,
+            update_batch_size=32,
+            push_batch_size=chunksize,
             filters=filters,
-            chunksize=chunksize,
-        ):
-            updated_chunk = self.transform(
-                chunk,
-                *args,
-                **kwargs,
-            )
-            if self.is_chunk_valid(updated_chunk):
-
-                @fire_and_forget
-                def fire_upsert_docs():
-                    dataset.upsert_documents(updated_chunk)
-
-                # Add a check for timecount
-                thread_count += 1
-                if thread_count >= max_active_threads:
-                    # Check if thread count decreases
-                    checker = 0
-                    curr_thread_count = threading.active_count()
-                    while (
-                        threading.active_count() >= curr_thread_count
-                        and checker < timeout
-                    ):
-                        time.sleep(1)
-                        checker += 1
-                    thread_count -= 1
-
-                fire_upsert_docs()
+            select_fields=select_fields,
+            update_workers=max_active_threads,
+            push_workers=max_active_threads,
+            buffer_size=buffer_size,
+            show_progress_bar=show_progress_bar,
+        )
+        pup.run()
 
     def store_operation_metadata(
         self,
