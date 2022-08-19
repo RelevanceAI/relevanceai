@@ -72,7 +72,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         print("Predicting...")
         for chunk in dataset.chunk_dataset(
-            select_fields=self.vector_fields, chunksize=chunksize
+            select_fields=self.vector_fields, chunksize=chunksize, filters=filters
         ):
             # Provide a chunk
             chunk = self.transform(chunk)
