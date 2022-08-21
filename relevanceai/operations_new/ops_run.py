@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+import psutil
 import threading
 import multiprocessing as mp
 import warnings
@@ -75,8 +76,20 @@ class PullUpdatePush:
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
-        self.tq: mp.Queue = mp.Queue(maxsize=buffer_size)
-        self.pq: mp.Queue = mp.Queue(maxsize=buffer_size)
+        if buffer_size == 0:
+            ram_size = psutil.virtual_memory().total  # in bytes
+            ram_ratio = 0.2
+            average_document_size_inmem = 2**17
+            self.total_buffer_size = int(
+                ram_size * ram_ratio / average_document_size_inmem
+            )
+        else:
+            self.total_buffer_size = buffer_size
+
+        self.single_buffer_size = int(self.total_buffer_size / 2)
+
+        self.tq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
+        self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.func = func
 
         self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
@@ -119,7 +132,8 @@ class PullUpdatePush:
     def update(self, progress_bar: tqdm):
         while progress_bar.n < self.ndocs:
             try:
-                batch = self.tq.get(timeout=3)
+                batch = self.tq.get(timeout=self.timeout)
+                self.tq.task_done()
             except:
                 break
 
@@ -153,12 +167,15 @@ class PullUpdatePush:
 
     def push(self, progress_bar: tqdm):
 
-        batch = [self.pq.get()]
+        initial = self.pq.get()
+        self.pq.task_done()
+        batch = [initial]
 
         while progress_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
                     document = self.pq.get(timeout=self.timeout)
+                    self.pq.task_done()
                 except:
                     break
                 batch.append(document)
