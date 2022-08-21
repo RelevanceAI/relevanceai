@@ -5,7 +5,9 @@ import collections
 import re
 import math
 import warnings
+import os
 import pandas as pd
+from relevanceai.utils.decorators.thread import fire_and_forget
 
 from tqdm.auto import tqdm
 from typing import Optional, Union, Dict, List, Mapping
@@ -14,7 +16,7 @@ from relevanceai.dataset.series import Series
 
 
 from relevanceai.dataset.read.metadata import Metadata
-from relevanceai.dataset.read.statistics import Statistics
+from relevanceai.dataset.read.cluster import ClusterRead
 from relevanceai.dataset.helpers import _build_filters
 
 from relevanceai.utils.cache import lru_cache
@@ -53,7 +55,7 @@ def update_nested_dictionary(d: dict, u: Union[dict, Mapping]):
     return d
 
 
-class Read(Statistics):
+class Read(ClusterRead):
     """
 
     Dataset Read
@@ -684,9 +686,30 @@ class Read(Statistics):
         else:
             return results
 
+    def _update_workflow_progress(self, metadata: dict, workflow_id: str = None):
+        """
+        Updates the workflow progress
+        """
+        # RUn it asynchronously
+        if workflow_id is None:
+            workflow_id = os.getenv("WORKFLOW_ID", None)
+
+        @fire_and_forget
+        def update():
+            return self.workflows.metadata(
+                workflow_id=workflow_id, metadata=self.json_encoder(metadata)
+            )
+
+        if workflow_id is not None and workflow_id != "":
+            update()
+
     @track
     def chunk_dataset(
-        self, select_fields: List = None, chunksize: int = 100, filters: list = None
+        self,
+        select_fields: List = None,
+        chunksize: int = 100,
+        filters: list = None,
+        after_id: list = None,
     ):
         """
 
@@ -717,21 +740,33 @@ class Read(Statistics):
             filters=filters,
             select_fields=select_fields,
             include_after_id=True,
+            after_id=after_id,
         )
         number_of_documents = self.get_number_of_documents(
             self.dataset_id, filters=filters
         )
         with tqdm(range(math.ceil(number_of_documents / chunksize))) as pbar:
+            # update after we get the first batch
+            pbar.update(1)
+            self._update_workflow_progress(metadata=pbar.format_dict)
             while len(docs["documents"]) > 0:
+                # Update metadata if possible
+                # {'n': 0, 'total': 3, 'elapsed': 1.3828277587890625e-05,
+                # 'ncols': 143, 'nrows': 23, 'prefix': '',
+                # 'ascii': False, 'unit': 'it', 'unit_scale': False,
+                # 'rate': None, 'bar_format': None, 'postfix': None,
+                # 'unit_divisor': 1000, 'initial': 0, 'colour': None}
                 yield docs["documents"]
                 docs = self.get_documents(
                     number_of_documents=chunksize,
-                    include_cursor=True,
+                    include_cursor=False,
                     after_id=docs["after_id"],
                     filters=filters,
                     select_fields=select_fields,
                 )
+                # Final update at the end
                 pbar.update(1)
+                self._update_workflow_progress(metadata=pbar.format_dict)
         return
 
     @track
@@ -811,3 +846,12 @@ class Read(Statistics):
             page=page,
             asc=asc,
         )
+
+    def get_settings(self):
+        """
+        Get the settings in dataset
+        """
+        return self.datasets.get_settings(dataset_id=self.dataset_id)
+
+    def list_cluster_fields(self):
+        return [x for x in self.schema if "_cluster_" in x and x.count(".") >= 2]

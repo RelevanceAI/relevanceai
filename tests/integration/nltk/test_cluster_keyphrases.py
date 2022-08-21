@@ -5,7 +5,8 @@ import pytest
 from relevanceai.client import Client
 from relevanceai.operations.labels.labels import LabelOps
 
-# @pytest.mark.skip(reason="skipping integration tests for now.")
+
+@pytest.mark.skip(reason="no longer relevant")
 def test_cluster_keyphrases(test_client: Client, clustered_dataset_id: str):
     os.system("pip install nltk")
     ds = test_client.Dataset(clustered_dataset_id)

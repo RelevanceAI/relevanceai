@@ -35,6 +35,8 @@ requirements = [
     "orjson>=3.6.7",
 ]
 
+models_requirements = requirements + ["sentence-transformers"]
+
 excel_requirements = requirements + ["openpyxl>=3.0.9", "fsspec>=2021.10.1"]
 
 umap = ["umap-learn>=0.5.2"]
@@ -57,6 +59,7 @@ test_requirements = (
     ]
     + excel_requirements
     + requirements
+    + umap
 )
 
 doc_requirements = [
@@ -67,7 +70,7 @@ doc_requirements = [
 ]
 
 dev_requirements = (
-    ["autopep8", "pylint", "jupyter", "pre-commit", "black", "mypy"]
+    ["autopep8", "pylint", "jupyter", "pre-commit", "black", "mypy", "xenon"]
     + test_requirements
     + doc_requirements
 )
@@ -122,6 +125,7 @@ setup(
         # "ivis-gpu": ivis_gpu,
         "kmedoids": kmedoids,
         "hdbscan": hdbscan,
+        "models": models_requirements,
     },
     python_requires=">=3.6",
     classifiers=[

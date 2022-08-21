@@ -1,47 +1,35 @@
 ![Github Banner](assets/github_banner.png)
 
-[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
-[![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
 [Join our slack channel!](https://join.slack.com/t/relevance-ai/shared_invite/zt-11fo8oush-dHPd57wamhoQ7J5arNv1mg)
 
-**Run Our Colab Notebook And Get Started In Less Than 10 Lines Of Code!**
+## Relevance AI - The ML Platform for Unstructured Data Analysis 
+[![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RelevanceAI/workflows/blob/main/workflows/quickstart_workflow/%E2%98%98%EF%B8%8F_Relevance_AI_Quickstart.ipynb)
+🌎 80% of data in the world is unstructured in the form of text, image, audio, videos, and more.
 
+🔥 Use Relevance to unlock the value of your unstructured data:
+- ⚡ Quickly analyze unstructured data with pre-trained machine learning models in a few lines of code.
+- ✨ Visualize your unstructured data. Text highlights from Named entity recognition, Word cloud from keywords, Bounding box from images.
+- 📊 Create charts for both structured and unstructured.
+- 🔎 Drilldown with filters and similarity search to explore and find insights.
+- 🚀 Share data apps with your team.
 
-For guides and tutorials on how to use this package, visit https://relevanceai.readthedocs.io/en/development/ .
+[Sign up for a free account ->](https://hubs.ly/Q017CkXK0)
 
-This SDK is used in conjunction with RelevanceAI's [dashboard](https://hubs.ly/Q017CkXK0). Sign up and getting started [here](https://hubs.ly/Q017CkXK0)!
-
-## 🔥 Features
-
-- Fast vector search with free dashboard to preview and visualise results
-- Vector clustering with support for libraries like scikit-learn and easy built-in customisation
-- Store nested documents with support for multiple vectors and metadata in one object
-- Multi-vector search with filtering, facets, weighting
-- Hybrid search with support for weighting keyword matching and vector search
-... and more!
+Relevance AI also acts as a platform for:
+- 🔑 Vectors, storing and querying vectors with flexible vector similarity search, that can be combined with multiple vectors, aggregates and filters.
+- 🔮 ML Dataset Evaluation, for debugging dataset labels, model outputs and surfacing edge cases.
 
 
 ## 🧠 Documentation
 
-| API type      | Link |
+| Type      | Link |
 | ------------- | ----------- |
-| Guides | [Documentation](https://docs.relevance.ai/) |
+| Python API | [Documentation](https://sdk.relevance.ai/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
-
-You can easily access our documentation while using the SDK using:
-
-```{python}
-from relevanceai import Client
-client = Client()
-
-# Easy one line of code to access our docs
-client.docs
-
-```
-
+| Cloud Dashboard | [Documentation](https://docs.relevance.ai/) |
 
 ## 🛠️ Installation
 
@@ -57,13 +45,13 @@ conda install -c relevance relevanceai
 ```
 
 ## ⏩ Quickstart
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RelevanceAI/RelevanceAI/blob/development/guides/quickstart_guide.ipynb)
 
-### Login into your project space
-
+Login to `relevanceai`:
 ```{python}
 from relevanceai import Client
 
-client = Client(<project_name>, <api_key>)
+client = Client()
 ```
 
 Prepare your documents for insertion by following the below format:
@@ -84,31 +72,69 @@ docs = [
 ### Insert data into a dataset
 
 Create a dataset object with the name of the dataset you'd like to use. If it doesn't exist, it'll be created for you.
-> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
 ```{python}
 ds = client.Dataset("quickstart")
 ds.insert_documents(docs)
 ```
+> Quick tip! Our Dataset object is compatible with common dataframes methods like `.head()`, `.shape()` and `.info()`.
 
 ### Perform vector search
 
 ```{python}
-results = ds.vector_search(
-    multivector_query=[{"vector": [0.2, 0.2, 0.2], "fields": ["example_vector_"]}],
+query = [
+    {"vector": [0.2, 0.2, 0.2], "field": "example_vector_"}
+]
+results = ds.search(
+    vector_search_query=query,
     page_size=3,
-    query="sample search" # optional, name to display in dashboard
 )
 ```
+[Learn more about how to flexibly configure your vector search ->](https://sdk.relevance.ai/docs/search)
 
-### Cluster dataset with Auto Cluster
+### Perform clustering
 
-Generate 12 clusters using kmeans
+Generate clusters
 ```{python}
-clusterop = ds.cluster("kmeans-12", vector_fields=["example_vector_"])
+clusterop = ds.cluster(vector_fields=["example_vector_"])
 clusterop.list_closest()
 ```
-> Quick tip! After each of these steps, the output will provide a URL to the Relevance AI dashboard where you can see a visualisation of your results
+
+Generate clusters with sklearn
+```{python}
+from sklearn.cluster import AgglomerativeClustering
+
+cluster_model = AgglomerativeClustering()
+clusterop = ds.cluster(vector_fields=["example_vector_"], model=cluster_model, alias="agglomerative")
+clusterop.list_closest()
+```
+[Learn more about how to flexibly configure your clustering ->](https://sdk.relevance.ai/docs/search)
+
+## 🧰 Config
+
+The config object contains the adjustable global settings for the SDK. For a description of all the settings, see [here](https://github.com/RelevanceAI/RelevanceAI/blob/development/relevanceai/constants/config.ini).
+
+To view setting options, run the following:
+
+```{python}
+client.config.options
+```
+
+The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
+
+```{python}
+client.config.set_option('logging.enable_logging', False)
+```
+
+To restore all options to their default, run the following:
+
+### Changing the base URL
+
+You can change the base URL as such:
+
+```{python}
+client.base_url = "https://.../latest"
+```
 
 ## 🚧 Development
 
@@ -136,36 +162,4 @@ Set up precommit
 ```{bash}
 pip install precommit
 pre-commit install
-```
-
-## 🧰 Config
-
-The config object contains the adjustable global settings for the SDK. For a description of all the settings, see here.
-
-To view setting options, run the following:
-
-```{python}
-client.config.options
-```
-
-The syntax for selecting an option is section.key. For example, to disable logging, run the following to modify logging.enable_logging:
-
-```{python}
-client.config.set_option('logging.enable_logging', False)
-```
-
-To restore all options to their default, run the following:
-
-### Changing the base URL
-
-You can change the base URL as such:
-
-```{python}
-client.base_url = "https://.../latest"
-```
-
-You can also update the ingest base URL:
-
-```{python}
-client.ingest_base_url = "https://.../latest
 ```

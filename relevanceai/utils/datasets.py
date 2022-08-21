@@ -133,6 +133,74 @@ class ExampleDatasets:
         return data
 
 
+def get_ebay_app_review_dataset(
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
+) -> List:
+    """
+    Download an example playstore reviews data for ebay \n
+    Total Len: 10000 \n
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+        Fields to include in the dataset, empty array/list means all fields.
+
+    Example
+    -------
+    .. code-block::
+
+        {
+            '_id': '4b9b92c3-011d-4f43-98ca-e131958a49f4',
+            'at': datetime.datetime(2022, 6, 20, 12, 22, 23),
+            'content': "PLEASE change the way your app works in terms of swiping through images. If you pull down, you refresh the page. If you swipe left/right, you change images. Problem is, it's far too easy to accidentally pull down while swiping left/right, which ends up resetting the gallery!!!! Please fix this! Otherwise, app works as expected.",
+            'repliedAt': None,
+            'replyContent': None,
+            'reviewCreatedVersion': '6.64.0.3',
+            'reviewId': '4b9b92c3-011d-4f43-98ca-e131958a49f4',
+            'score': 4.0,
+            'thumbsUpCount': 50,
+            'userImage': 'https://play-lh.googleusercontent.com/a/AATXAJwrSs35SJYs5BUzJ2blj0zJagZgUZuPfglwcT_f=mo',
+            'userName': 'Mitchel Wood'
+        }
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 100
+
+    return ExampleDatasets._get_dummy_dataset(
+        "playstore_ebay",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+
+
+def get_ebay_app_review_encoded_dataset(
+    number_of_documents: Union[None, int] = 100, select_fields: Optional[List] = None
+) -> List:
+    """
+    Download an example playstore reviews data for ebay (all encoded) \n
+    Total Len: 10000 \n
+
+    Parameters
+    ----------
+    number_of_documents: int
+        Number of documents to download
+    select_fields : list
+        Fields to include in the dataset, empty array/list means all fields.
+    """
+    select_fields = [] if select_fields is None else select_fields
+    if number_of_documents is None:
+        number_of_documents = 100
+
+    return ExampleDatasets._get_dummy_dataset(
+        "playstore_ebay_encoded",
+        number_of_documents=number_of_documents,
+        select_fields=select_fields,
+    )
+
+
 def get_games_dataset(
     number_of_documents: Union[None, int] = 365, select_fields: Optional[List] = None
 ) -> List:

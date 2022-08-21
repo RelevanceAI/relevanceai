@@ -12,9 +12,9 @@ unstructured data With just a few lines of code, you’ll get rich,
 interactive, shareable dashboards
 
 .. figure:: dashboard_screenshot.png
-   :alt: dashboard_screenshot.png
+   :alt: Dashboard screenshot
 
-   dashboard_screenshot.png
+   Dashboard screenshot
 
 🔒 Data & Privacy
 ~~~~~~~~~~~~~~~~~
@@ -231,15 +231,16 @@ another.
 
 You can now see the labels on your dataset on Relevance AI.
 
-.. figure:: attachment:image.png
-   :alt: image.png
+.. figure:: label.png
+   :alt: Labels
 
-   image.png
+   Labels
 
 🌹 Extract Sentiment
 --------------------
 
-You can add sentiment to your dataset. After adding sentiment
+You can add sentiment to your dataset - whicih will label sentiment as
+one of ``neutral``, ``positive``, ``negative``.
 
 .. code:: ipython3
 

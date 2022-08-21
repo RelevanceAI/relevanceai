@@ -6,8 +6,8 @@ from relevanceai.utils.base import _Base
 from relevanceai._api.endpoints.admin.admin import AdminClient
 from relevanceai._api.endpoints.datasets.datasets import DatasetsClient
 from relevanceai._api.endpoints.services.services import ServicesClient
-from relevanceai._api.endpoints.reports.reports import ReportsClient
 from relevanceai._api.endpoints.deployables.deployables import DeployableClient
+from relevanceai._api.endpoints.workflows.workflows import WorkflowsClient
 
 from relevanceai.constants.errors import FieldNotFoundError
 
@@ -63,18 +63,18 @@ class APIEndpointsClient(_Base, DocUtils):
         return self._admin_client
 
     @property
-    def reports(self):
-        if hasattr(self, "_reports_client"):
-            return self._reports_client
-        self._reports_client = ReportsClient(self.credentials)
-        return self._reports_client
-
-    @property
     def deployables(self):
         if hasattr(self, "_deployables_client"):
             self._deployables_client = DeployableClient(self.credentials)
         self._deployables_client = DeployableClient(self.credentials)
         return self._deployables_client
+
+    @property
+    def workflows(self):
+        if hasattr(self, "_workflows_client"):
+            self._workflows_client = WorkflowsClient(self.credentials)
+        self._workflows_client = WorkflowsClient(self.credentials)
+        return self._workflows_client
 
     def _convert_id_to_string(self, documents, create_id: bool = False):
         try:

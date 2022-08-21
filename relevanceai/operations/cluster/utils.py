@@ -23,7 +23,6 @@ from relevanceai.utils.integration_checks import (
     is_hdbscan_available,
 )
 
-from relevanceai.reports.cluster.evaluate import ClusterEvaluate
 from relevanceai.constants.errors import MissingClusterError
 
 
@@ -271,21 +270,23 @@ class ClusterUtils(APIClient, DocUtils):
 
         docs = self._get_documents(
             dataset_id=self.dataset_id,
-            include_cursor=True,
+            include_cursor=False,
             number_of_documents=chunksize,
             select_fields=select_fields,
             filters=filters,
+            include_after_id=True,
         )
 
         while len(docs["documents"]) > 0:
             yield docs["documents"]
             docs = self._get_documents(
                 dataset_id=self.dataset_id,
-                cursor=docs["cursor"],
-                include_cursor=True,
+                include_cursor=False,
                 select_fields=select_fields,
                 number_of_documents=chunksize,
                 filters=filters,
+                after_id=docs["after_id"],
+                include_after_id=True,
             )
 
     def _get_parent_cluster_values(

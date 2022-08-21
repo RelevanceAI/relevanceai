@@ -262,52 +262,6 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
             text_fields=text_fields,
         )
 
-    ### Clustering
-
-    @track
-    def ClusterOps(
-        self,
-        dataset_id: str,
-        vector_fields: list,
-        alias: str,
-        model=None,
-        **kwargs,
-    ):
-        from relevanceai.operations_new.cluster.ops import ClusterOps
-
-        return ClusterOps(
-            credentials=self.credentials,
-            dataset_id=dataset_id,
-            vector_fields=vector_fields,
-            alias=alias,
-            model=model,
-            **kwargs,
-        )
-
-    @track
-    def SubClusterOps(
-        self,
-        credentials,
-        alias,
-        dataset,
-        model,
-        vector_fields: list,
-        parent_field: str,
-    ):
-        """
-        Sub Cluster Ops.
-        """
-        from relevanceai.operations.cluster.sub import SubClusterOps
-
-        return SubClusterOps(
-            credentials=self.credentials,
-            alias=alias,
-            dataset=dataset,
-            model=model,
-            vector_fields=vector_fields,
-            parent_field=parent_field,
-        )
-
     def _set_logger_to_verbose(self):
         # Use this for debugging
         self.config["logging.logging_level"] = "INFO"
@@ -457,16 +411,6 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
 
     docs = references
 
-    def search_app(self, dataset_id: Optional[str] = None):
-        if dataset_id is not None:
-            self.print_search_dashboard_url(dataset_id)
-        elif hasattr(self, "_dataset_id"):
-            self.print_search_dashboard_url(self._dataset_id)
-        elif hasattr(self, "dataset_id"):
-            self.print_search_dashboard_url(self.dataset_id)
-        else:
-            print("You can build your search app at https://cloud.relevance.ai")
-
     @added(version="1.1.3")
     @track
     def search_datasets(self, query: str):
@@ -474,62 +418,6 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         Search through your datasets.
         """
         return [x for x in self.list_datasets()["datasets"] if query in x]
-
-    @added(version="2.1.3")
-    @beta
-    def list_cluster_reports(self):
-        """
-
-        List all cluster reports.
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            client.list_cluster_reports()
-
-        """
-        return pd.DataFrame(self.reports.clusters.list()["results"])
-
-    @added(version="2.1.3")
-    @beta
-    @track
-    def delete_cluster_report(self, cluster_report_id: str):
-        """
-
-        Delete Cluster Report
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            client.delete_cluster_report("cluster_id_goes_here")
-
-        """
-        return self.reports.clusters.delete(cluster_report_id)
-
-    @added(version="2.1.3")
-    @beta
-    @track
-    def store_cluster_report(self, report_name: str, report: dict):
-        """
-
-        Store the cluster data.
-
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-            client.store_cluster_report("sample", {"value": 3})
-
-        """
-        response: dict = self.reports.clusters.create(
-            name=report_name, report=self.json_encoder(report)
-        )
-        print(
-            f"You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
-        )
-        return response
 
     def disable_analytics_tracking(self):
         """Disable analytics tracking if you would prefer not to send usage

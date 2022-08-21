@@ -1,15 +1,15 @@
 """
 Batch Cluster Operations
 """
-from relevanceai.operations_new.cluster.batch.base import BatchClusterBase
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.cluster.batch.transform import BatchClusterTransform
+from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 from relevanceai.dataset import Dataset
 from typing import Any
 
 
-class BatchClusterOps(BatchClusterBase, ClusterOps):
+class BatchClusterOps(BatchClusterTransform, ClusterOps):
     """Batch Clustering related Operations"""
 
     def __init__(
@@ -55,7 +55,7 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
 
         self.alias = self._get_alias(alias)
 
-    def run(self, dataset: Dataset, filters: list = None):
+    def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
         """
         Run batch clustering
         """
@@ -63,7 +63,7 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
         # Avoid looping through dataset twice
         print("Fitting...")
         for chunk in dataset.chunk_dataset(
-            select_fields=self.vector_fields, filters=filters
+            select_fields=self.vector_fields, filters=filters, chunksize=chunksize
         ):
             vectors = self.get_field_across_documents(
                 self.vector_fields[0], chunk, missing_treatment="skip"
@@ -71,7 +71,9 @@ class BatchClusterOps(BatchClusterBase, ClusterOps):
             self.model.partial_fit(vectors)
 
         print("Predicting...")
-        for chunk in dataset.chunk_dataset(select_fields=self.vector_fields):
+        for chunk in dataset.chunk_dataset(
+            select_fields=self.vector_fields, chunksize=chunksize, filters=filters
+        ):
             # Provide a chunk
             chunk = self.transform(chunk)
             results = dataset.upsert_documents(chunk)

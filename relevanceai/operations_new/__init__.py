@@ -1,1 +1,1 @@
-from relevanceai.operations_new.ops import Operations
+from relevanceai.operations_new.dataset_ops import Operations

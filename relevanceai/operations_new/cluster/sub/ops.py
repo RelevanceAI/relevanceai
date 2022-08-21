@@ -1,12 +1,12 @@
 import warnings
-from relevanceai.operations_new.cluster.sub.base import SubClusterBase
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.cluster.sub.transform import SubClusterTransform
+from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
 from typing import Optional, Union
 from copy import deepcopy
 
 
-class SubClusterOps(SubClusterBase, ClusterOps):
+class SubClusterOps(SubClusterTransform, ClusterOps):
     def __init__(
         self,
         model,
@@ -35,6 +35,7 @@ class SubClusterOps(SubClusterBase, ClusterOps):
         self.model = self._get_model(model=model, model_kwargs=model_kwargs)
         self.outlier_value = outlier_value
         self.dataset_id = dataset_id
+        self.include_cluster_report = False
         for k, v in kw.items():
             setattr(self, k, v)
 

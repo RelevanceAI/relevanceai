@@ -5,12 +5,12 @@ from typing import Any, List, Dict, Optional, Tuple
 
 import numpy as np
 
-from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 
 from faiss import Kmeans
 
 
-class FaissModelBase(ModelBase):
+class FaissModel(ClusterModelBase):
     """Faiss model base"""
 
     model: Kmeans
@@ -22,7 +22,7 @@ class FaissModelBase(ModelBase):
     ):
 
         if isinstance(model, str):
-            model = ModelBase.import_from_string(f"faiss.Kmeans")
+            model = ClusterModelBase.import_from_string(f"faiss.Kmeans")
             if model_kwargs is None:
                 model_kwargs = {}
 
@@ -70,7 +70,7 @@ class FaissModelBase(ModelBase):
             The labels of the vectors.
 
         """
-        vectors = FaissModelBase.check_vectors(vectors)
+        vectors = FaissModel.check_vectors(vectors)
 
         self.fit(vectors)
         res: Tuple[np.ndarray, np.ndarray] = self.model.assign(vectors)
@@ -92,7 +92,7 @@ class FaissModelBase(ModelBase):
             The model is being trained on the vectors.
 
         """
-        vectors = FaissModelBase.check_vectors(vectors)
+        vectors = FaissModel.check_vectors(vectors)
 
         return self.model.train(vectors)
 
@@ -109,7 +109,7 @@ class FaissModelBase(ModelBase):
             The labels of the vectors.
 
         """
-        vectors = FaissModelBase.check_vectors(vectors)
+        vectors = FaissModel.check_vectors(vectors)
 
         res: Tuple[np.ndarray, np.ndarray] = self.model.assign(vectors)
 

@@ -13,6 +13,12 @@ class _ModelUtils(DocUtils):
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
             return self.predict(vectors)
+        # else:
+        #     vectors = [
+        #         [val for val in vector]
+        #         for vector in self.get_fields_across_documents(vector_fields, documents)
+        #     ]
+        #     return self.predict(vectors)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
         )
@@ -23,9 +29,12 @@ class _ModelUtils(DocUtils):
         documents: List[Dict[str, Any]],
         warm_start: bool = False,
     ):
+        if warm_start:
+            raise NotImplementedError("`warm_start` is not supported.")
+
         if len(vector_fields) == 1:
             vectors = self.get_field_across_documents(vector_fields[0], documents)
-            cluster_labels = self.fit_predict(vectors, warm_start)
+            cluster_labels = self.fit_predict(vectors)
             return self.format_cluster_labels(cluster_labels)
         raise NotImplementedError(
             "support for multiple vector fields not available right now."
@@ -59,7 +68,7 @@ class _ModelUtils(DocUtils):
         return [self.format_cluster_label(label) for label in labels]
 
 
-class ModelBase(ABC, _ModelUtils):
+class ClusterModelBase(ABC, _ModelUtils):
     def __init__(self, *args, **kwargs):
         model_kwargs = kwargs.pop("model_kwargs", {})
         for key, value in model_kwargs.items():
@@ -99,18 +108,29 @@ class ModelBase(ABC, _ModelUtils):
     def fit(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
+
+    def get_centroids_from_model(self):
+        if hasattr(self.model, "cluster_centers_"):
+            return self.model.cluster_centers_
+        elif hasattr(self.model, "get_centers"):
+            return self.model.get_centers()
+        else:
+            return None
+
     def calculate_centroids(
         self, labels: np.ndarray, vectors: np.ndarray
     ) -> np.ndarray:
+        centroids = self.get_centroids_from_model()
+        if centroids is None:
+            if not isinstance(vectors, np.ndarray):
+                vectors = np.array(vectors)
 
-        if not isinstance(vectors, np.ndarray):
-            vectors = np.array(vectors)
-
-        centroids = []
-        for label in sorted(np.unique(labels).tolist()):
-            centroid = vectors[labels == label].mean(axis=0)
-            centroids.append(centroid)
-        centroids = np.array(centroids)
+            centroids = []
+            for label in sorted(np.unique(labels).tolist()):
+                centroid = vectors[labels == label].mean(axis=0)
+                centroids.append(centroid)
+            centroids = np.array(centroids)
+        self._centroids = centroids
         return centroids
 
     @abstractmethod

@@ -4,7 +4,7 @@
 from tqdm.auto import tqdm
 from typing import Optional
 from relevanceai.operations_new.cluster.text.explainer.base import BaseExplainer
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 
 
 class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
@@ -220,6 +220,7 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         self.datasets.post_settings(
+            dataset_id=cluster_ops.dataset_id,
             settings={
                 "settings": {
                     "highlightingRules": [
@@ -230,6 +231,6 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
                         }
                     ]
                 }
-            }
+            },
         )
         return closest

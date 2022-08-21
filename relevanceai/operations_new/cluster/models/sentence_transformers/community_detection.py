@@ -2,10 +2,10 @@
 """
 import numpy as np
 from relevanceai.constants import MissingPackageError
-from relevanceai.operations_new.cluster.models.base import ModelBase
+from relevanceai.operations_new.cluster.models.base import ClusterModelBase
 
 
-class CommunityDetection(ModelBase):
+class CommunityDetection(ClusterModelBase):
     def __init__(
         self,
         threshold: float = 0.75,
@@ -22,7 +22,9 @@ class CommunityDetection(ModelBase):
     def __call__(self, *args, **kwargs):
         return self.fit_predict(*args, **kwargs)
 
-    def fit_predict(self, vectors):
+    def fit_predict(self, vectors, **kwargs):
+        if isinstance(vectors, list):
+            vectors = np.array(vectors)
         if self.gpu:
             communities = self.community_detection_gpu(vectors)
         else:
@@ -139,3 +141,7 @@ class CommunityDetection(ModelBase):
     def predict(self, *args, **kwargs):
         # Not necessary
         pass
+
+
+# to stay with convention
+CommunityDetectionModel = CommunityDetection

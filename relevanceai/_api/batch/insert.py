@@ -4,11 +4,13 @@ import os
 import sys
 import json
 import math
+import uuid
 import time
 
 import warnings
 import traceback
 
+import numpy as np
 import pandas as pd
 
 from ast import literal_eval
@@ -47,13 +49,15 @@ class BatchInsertClient(BatchRetrieveClient):
         dataset_id: str,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 2,
+        max_workers: Optional[int] = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
         use_json_encoder: bool = True,
         verbose: bool = True,
         create_id: bool = False,
+        overwrite: bool = True,
+        ingest_in_background: bool = False,
         *args,
         **kwargs,
     ):
@@ -104,16 +108,17 @@ class BatchInsertClient(BatchRetrieveClient):
         # Check if the collection exists
         self.datasets.create(dataset_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         self._convert_id_to_string(documents, create_id=create_id)
 
         def bulk_insert_func(documents):
+            if use_json_encoder:
+                documents = self.json_encoder(documents)
             return self.datasets.bulk_insert(
                 dataset_id,
                 documents,
                 return_documents=True,
+                overwrite=overwrite,
+                ingest_in_background=ingest_in_background,
                 *args,
                 **kwargs,
             )
@@ -144,6 +149,7 @@ class BatchInsertClient(BatchRetrieveClient):
         show_progress_bar=False,
         use_json_encoder: bool = True,
         create_id: bool = False,
+        ingest_in_background: bool = False,
         *args,
         **kwargs,
     ):
@@ -194,14 +200,14 @@ class BatchInsertClient(BatchRetrieveClient):
         # Turn _id into string
         self._convert_id_to_string(documents, create_id=create_id)
 
-        if use_json_encoder:
-            documents = self.json_encoder(documents)
-
         def bulk_update_func(documents):
+            if use_json_encoder:
+                documents = self.json_encoder(documents)
             return self.datasets.documents.bulk_update(
                 dataset_id,
                 documents,
                 return_documents=True,
+                ingest_in_background=ingest_in_background,
                 *args,
                 **kwargs,
             )
@@ -427,7 +433,7 @@ class BatchInsertClient(BatchRetrieveClient):
         These documents are then uploaded into either an updated collection, or back into the original collection.
 
         Parameters
-        ----------
+        ------------
         original_dataset_id: string
             The dataset_id of the collection where your original documents are
         logging_dataset_id: string
@@ -627,7 +633,8 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: int = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        **csv_kwargs,
+        csv_args: Optional[Dict[str, Any]] = None,
+        **kwargs,
     ):
 
         """
@@ -656,15 +663,35 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> df.insert_csv("temp.csv")
 
         """
-        df = pd.read_csv(filepath_or_buffer, **csv_kwargs)
+        df = pd.read_csv(filepath_or_buffer, **csv_args)
 
         # Initialise output
         inserted = 0
         failed_documents = []
         failed_documents_detailed = []
 
+        test_doc = json.dumps(self.json_encoder(df.loc[0].to_dict()))
+        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+
+        target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
+        max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
+        chunksize = (
+            int(target_chunk_mb / doc_mb) + 1
+            if int(target_chunk_mb / doc_mb) + 1 < df.shape[0]
+            else df.shape[0]
+        )
+        chunksize = min(chunksize, max_chunk_size)
+
+        # Add edge case handling
+        if chunksize == 0:
+            chunksize = 1
+
         # Chunk inserts
-        for chunk in df:
+        for chunk in self.chunk(
+            documents=df,
+            chunksize=chunksize,
+            show_progress_bar=show_progress_bar,
+        ):
             response = self._insert_csv_chunk(
                 chunk=chunk,
                 dataset_id=dataset_id,
@@ -672,7 +699,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 create_id=create_id,
                 max_workers=max_workers,
                 retry_chunk_mult=retry_chunk_mult,
-                show_progress_bar=show_progress_bar,
+                show_progress_bar=False,
             )
             inserted += response["inserted"]
             failed_documents += response["failed_documents"]
@@ -686,13 +713,13 @@ class BatchInsertClient(BatchRetrieveClient):
 
     def _insert_csv_chunk(
         self,
-        chunk,
-        dataset_id,
-        id_col,
-        create_id,
-        max_workers,
-        retry_chunk_mult,
-        show_progress_bar,
+        chunk: pd.DataFrame,
+        dataset_id: str,
+        id_col: Optional[str] = None,
+        create_id: bool = False,
+        max_workers: int = 2,
+        retry_chunk_mult: float = 0.5,
+        show_progress_bar: bool = False,
     ):
         # generate '_id' if possible
         # id_col
@@ -764,7 +791,7 @@ class BatchInsertClient(BatchRetrieveClient):
         insert_function,
         documents: list,
         bulk_fn: Callable = None,
-        max_workers: int = 2,
+        max_workers: Optional[int] = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
         chunksize: int = 0,
@@ -780,7 +807,7 @@ class BatchInsertClient(BatchRetrieveClient):
             }
 
         # Insert documents
-        test_doc = json.dumps(documents[0], indent=4)
+        test_doc = json.dumps(self.json_encoder(documents[0]), indent=4)
         doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
@@ -791,12 +818,14 @@ class BatchInsertClient(BatchRetrieveClient):
                 else len(documents)
             )
             chunksize = min(chunksize, max_chunk_size)
+
+            print(f"Updating chunksize for batch data insertion to {chunksize}")
             # Add edge case handling
             if chunksize == 0:
                 chunksize = 1
 
         # Initialise number of inserted documents
-        inserted: List[str] = []
+        inserted: List[bool] = []
 
         # Initialise failed documents
         failed_ids: List[str] = []
@@ -880,7 +909,7 @@ class BatchInsertClient(BatchRetrieveClient):
         failed_ids.extend(cancelled_ids)
 
         output = {
-            "inserted": sum(inserted),
+            "inserted": sum(inserted),  # type: ignore
             "failed_documents": failed_ids,
             "failed_documents_detailed": failed_ids_detailed,
         }
@@ -967,6 +996,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 print(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
+                return results
 
         elif "failed_document_ids" in results:
             if len(results["failed_document_ids"]) == 0:
@@ -975,6 +1005,7 @@ class BatchInsertClient(BatchRetrieveClient):
                 print(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
+                return results
 
         # Make backwards compatible on errors
         if (
@@ -983,3 +1014,5 @@ class BatchInsertClient(BatchRetrieveClient):
             > 0
         ) or return_json:
             return results
+
+        return results

@@ -20,13 +20,19 @@ from requests import Request
 
 from relevanceai.constants.config import Config
 from relevanceai.utils.logger import AbstractLogger, FileLogger
-from relevanceai.dashboard.dashboard_mappings import DASHBOARD_MAPPINGS
 from relevanceai.constants.errors import APIError
 from relevanceai.utils.json_encoder import JSONEncoderUtils
 from relevanceai.utils.config_mixin import ConfigMixin
 
 DO_NOT_REPEAT_STATUS_CODES = {400, 401, 413, 404, 422}
 _HAS_PRINTED = False
+
+DASHBOARD_MAPPINGS = {
+    "multivector_search": "/sdk/search",
+    "cluster_centroids_closest": "/sdk/cluster/centroids/closest",
+    "cluster_centroids_furthest": "/sdk/cluster/centroids/furthest",
+    "cluster_aggregation": "/sdk/cluster/aggregation",
+}
 
 
 class Transport(JSONEncoderUtils, ConfigMixin):
@@ -51,14 +57,16 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             dir = user_cache_dir("relevanceai", version=__version__)
             os.makedirs(dir, exist_ok=True)
 
-            self.request_logging_fpath = os.path.join(
-                dir, request_log_filename
-            ).replace("\\", "/")
+            self.request_logging_fpath = os.path.join(dir, request_log_filename)
 
             from relevanceai.utils import FileLogger
 
-            self.request_logger = FileLogger(fn=self.request_logging_fpath)
-            self.hooks = {"response": self.log}
+            self.request_logger = FileLogger(
+                fn=self.request_logging_fpath, verbose=True
+            )
+            # if hasattr(self.request_logger, "log"):
+            #     self.hooks = {"response": self.request_logger.log}
+            self.hooks = None
 
         else:
             self.hooks = None
@@ -93,7 +101,6 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
             response = {"send": log, "recv": content}
             pprint(response, sort_dicts=False)
-
             print()
             print()
 
@@ -200,15 +207,6 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/{suburl}"
             )
 
-    def _log_search_to_dashboard(self, method: str, parameters: dict, endpoint: str):
-        """Log search to dashboard"""
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="multivector_search",
-        )
-
     def print_dashboard_message(self, message: str):
         if self.config["dashboard.show_dashboard_link"]:
             print(message)
@@ -263,10 +261,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
             self.logger.info("URL you are trying to access:" + request_url)
             try:
-                if Transport._is_search_in_path(request_url):
-                    self._log_search_to_dashboard(
-                        method=method, parameters=parameters, endpoint=endpoint
-                    )
+                # if Transport._is_search_in_path(request_url):
+                #     self._log_to_dashboard(
+                #         method=method, parameters=parameters, endpoint=endpoint, dashboard_type="multivector_search"
+                #     )
 
                 # TODO: Add other endpoints in here too
                 if method.upper() in {"POST", "PUT"}:
@@ -296,7 +294,8 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
                 with requests.Session() as s:
                     response = s.send(req)
-
+                if hasattr(self, "request_logger"):
+                    self.log_response_to_file(response)
                 # Successful response
                 if response.status_code == 200:
                     self._log_response_success(base_url, endpoint)
@@ -391,10 +390,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         for _ in range(retries):
             self.logger.info(f"URL you are trying to access: {request_url}")
             try:
-                if Transport._is_search_in_path(request_url):
-                    self._log_search_to_dashboard(
-                        method=method, parameters=parameters, endpoint=endpoint
-                    )
+                # if Transport._is_search_in_path(request_url):
+                #     self._log_to_dashboard(
+                #         method=method, parameters=parameters, endpoint=endpoint, dashboard_type="multivector_search"
+                #     )
 
                 async with aiohttp.request(
                     method=method.upper(),

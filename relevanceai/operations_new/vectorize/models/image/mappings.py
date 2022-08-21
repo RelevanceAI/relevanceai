@@ -5,34 +5,30 @@ CLIP_MODELS: Dict[str, Dict[str, Any]] = {
         "vector_length": 512,
         "url": "ViT-B/32",
     },
+    "ViT-B/16": {
+        "vector_length": 512,
+        "url": "ViT-B/16",
+    },
     "ViT-B/32": {
         "vector_length": 512,
         "url": "ViT-B/32",
     },
+    "ViT-L/14": {
+        "vector_length": 768,
+        "url": "ViT-L/14",
+    },
+    "ViT-L/14@336px": {
+        "vector_length": 768,
+        "url": "ViT-L/14@336px",
+    },
     "RN50": {
-        "vector_length": 512,
+        "vector_length": 1024,
         "url": "RN50",
     },
-    # "RN101": {
-    #     "vector_length": 512,
-    #     "url": "RN101"
-    # },
-    # "RN50x4": {
-    #     "vector_length": 512,
-    #     "url": "RN50x4"
-    # },
-    # "RN50x16": {
-    #     "vector_length": 512,
-    #     "url": "RN50x16"
-    # },
-    # "RN50x64": {
-    #     "vector_length": 512,
-    #     "url": "RN50x64"
-    # },
-    # "RN50x64": {
-    #     "vector_length": 512,
-    #     "url": "RN50x64"
-    # }
+    "RN101": {"vector_length": 512, "url": "RN101"},
+    "RN50x4": {"vector_length": 640, "url": "RN50x4"},
+    "RN50x16": {"vector_length": 512, "url": "RN50x16"},
+    "RN50x64": {"vector_length": 1024, "url": "RN50x64"},
 }
 
 TFHUB_MODELS: Dict[str, Dict[str, Any]] = {

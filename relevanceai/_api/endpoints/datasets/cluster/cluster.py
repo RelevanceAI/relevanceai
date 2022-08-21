@@ -26,7 +26,6 @@ class ClusterClient(_Base):
         """
         Takes an aggregation query and gets the aggregate of each cluster in a collection. This helps you interpret each cluster and what is in them.
         It can only can be used after a vector field has been clustered. \n
-        For more information about aggregations check out services.aggregate.aggregate.
         Parameters
         ----------
         dataset_id : string
@@ -68,12 +67,12 @@ class ClusterClient(_Base):
             "vector_fields": vector_fields,
             "alias": alias,
         }
-        self._log_to_dashboard(
-            method=method,
-            parameters=parameters,
-            endpoint=endpoint,
-            dashboard_type="cluster_aggregation",
-        )
+        # self._log_to_dashboard(
+        #     method=method,
+        #     parameters=parameters,
+        #     endpoint=endpoint,
+        #     dashboard_type="cluster_aggregation",
+        # )
         return self.make_http_request(
             endpoint=endpoint, method=method, parameters=parameters
         )
