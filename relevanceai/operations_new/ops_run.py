@@ -46,7 +46,7 @@ class PullUpdatePush:
         show_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
-        block_return: bool = False,
+        background_execution: bool = True,
         ram_ratio: float = 0.25,
     ):
         """
@@ -106,8 +106,8 @@ class PullUpdatePush:
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.func = func
 
-        self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
-        self.block_return = block_return
+        self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
+        self.background_execution = background_execution
 
     def _pull(self):
 
@@ -153,7 +153,7 @@ class PullUpdatePush:
     def _update(self):
         while self.update_bar.n < self.ndocs:
             try:
-                batch = self.tq.get(timeout=3)
+                batch = self.tq.get()
             except:
                 break
 
@@ -219,7 +219,7 @@ class PullUpdatePush:
         while self.push_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
-                    document = self.pq.get(timeout=3)
+                    document = self.pq.get(timeout=1)
                 except:
                     break
                 batch.append(document)
@@ -281,11 +281,12 @@ class PullUpdatePush:
                     thread.start()
                 break
 
-        for thread in self.push_threads:
-            thread.join()
-        for thread in self.update_threads:
-            thread.join()
-        self.pull_thread.join()
+        if self.background_execution:
+            for thread in self.push_threads:
+                thread.join()
+            for thread in self.update_threads:
+                thread.join()
+            self.pull_thread.join()
 
     def run(self):
         """
