@@ -2,6 +2,8 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+import os
+import time
 import psutil
 import threading
 import multiprocessing as mp
@@ -21,8 +23,8 @@ class PullUpdatePush:
         self,
         dataset: Dataset,
         func: Callable,
-        func_args: Tuple[Any, ...],
-        func_kwargs: Dict[str, Any],
+        func_args: Optional[Tuple[Any, ...]] = None,
+        func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = True,
         pull_batch_size: Optional[int] = 128,
         update_batch_size: Optional[int] = 128,
@@ -35,6 +37,7 @@ class PullUpdatePush:
         show_progress_bar: bool = True,
         timeout: int = 3,
         ingest_in_background: bool = False,
+        block_return: bool = False,
     ):
         """
         Buffer size:
@@ -87,12 +90,17 @@ class PullUpdatePush:
             self.total_buffer_size = buffer_size
 
         self.single_buffer_size = int(self.total_buffer_size / 2)
+        print(f"Setting single queue size to be: {self.single_buffer_size:,}")
 
         self.tq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.func = func
 
         self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
+
+        self.worker_threads: List[threading.Thread] = []
+
+        self.block_return = block_return
 
     def pull(self, progress_bar: tqdm):
 
@@ -132,8 +140,7 @@ class PullUpdatePush:
     def update(self, progress_bar: tqdm):
         while progress_bar.n < self.ndocs:
             try:
-                batch = self.tq.get(timeout=self.timeout)
-                self.tq.task_done()
+                batch = self.tq.get()
             except:
                 break
 
@@ -168,14 +175,12 @@ class PullUpdatePush:
     def push(self, progress_bar: tqdm):
 
         initial = self.pq.get()
-        self.pq.task_done()
         batch = [initial]
 
         while progress_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
-                    document = self.pq.get(timeout=self.timeout)
-                    self.pq.task_done()
+                    document = self.pq.get()
                 except:
                     break
                 batch.append(document)
@@ -193,10 +198,7 @@ class PullUpdatePush:
                 progress_bar.update(len(batch))
                 batch = []
 
-    def run(self):
-        if self.ndocs <= 0:
-            return
-
+    def _init_worker_threads(self):
         pull_bar = tqdm(
             desc="pull",
             position=0,
@@ -215,22 +217,53 @@ class PullUpdatePush:
             position=2,
             **self.tqdm_kwargs,
         )
-        pull_threads = [threading.Thread(target=self.pull, args=(pull_bar,))]
+        pull_threads = [
+            threading.Thread(
+                target=self.pull,
+                args=(pull_bar,),
+            )
+        ]
         update_threads = [
-            threading.Thread(target=self.update, args=(update_bar,))
+            threading.Thread(
+                target=self.update,
+                args=(update_bar,),
+            )
             for _ in range(self.update_workers)
         ]
         push_threads = [
-            threading.Thread(target=self.push, args=(push_bar,))
+            threading.Thread(
+                target=self.push,
+                args=(push_bar,),
+            )
             for _ in range(self.push_workers)
         ]
-        threads = pull_threads + update_threads + push_threads
+        self.worker_threads = pull_threads + update_threads + push_threads
 
-        for thread in threads:
-            thread.start()
+    def _all_workers_running(self) -> bool:
+        """
+        iteratively check if all worker threads are alive.
+        If at least one is return True else False
+        """
+        for worker in self.worker_threads:
+            if worker.is_alive():
+                return True
+        return False
 
-        # for thread in reversed(threads):
-        #     thread.join()
+    def run(self):
+        """
+        Do the pulling, the updating, and of course, the pushing.
+        """
+        if self.ndocs <= 0:
+            return
+
+        self._init_worker_threads()
+
+        for worker in self.worker_threads:
+            worker.start()
+
+        if os.environ.get("WORKFLOW_ID") or self.block_return:
+            for worker in self.worker_threads:
+                worker.join()
 
 
 class OperationRun(TransformBase):
@@ -355,7 +388,7 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         max_active_threads: int = 2,
         timeout: int = 30,
-        buffer_size: int = 1024,
+        buffer_size: int = 0,
         show_progress_bar: bool = True,
         update_batch_size: int = 32,
         multithreaded_update: bool = False,
