@@ -2,7 +2,6 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
-import os
 import time
 import psutil
 import threading
@@ -35,13 +34,14 @@ class PullUpdatePush:
         push_workers: int = 1,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        timeout: int = 3,
+        timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         block_return: bool = False,
+        ram_ratio: float = 0.25,
     ):
         """
         Buffer size:
-            number of documents in queue for transform
+            number of documents to be held in limbo by both queues at any one time
 
         """
         super().__init__()
@@ -58,6 +58,7 @@ class PullUpdatePush:
         self.pull_batch_size = min(pull_batch_size, ndocs)
         self.update_batch_size = min(update_batch_size, ndocs)
         self.push_batch_size = min(push_batch_size, ndocs)
+
         self.timeout = timeout
         self.ingest_in_background = ingest_in_background
 
@@ -65,8 +66,8 @@ class PullUpdatePush:
         self.select_fields = [] if select_fields is None else select_fields
 
         self.lock = threading.Lock()
-
         self.func_lock: Union[threading.Lock, None]
+
         if not multithreaded_update:
             self.func_lock = threading.Lock()
             self.update_workers = 1
@@ -81,7 +82,6 @@ class PullUpdatePush:
 
         if buffer_size == 0:
             ram_size = psutil.virtual_memory().total  # in bytes
-            ram_ratio = 0.2
             average_document_size_inmem = 2**17
             self.total_buffer_size = int(
                 ram_size * ram_ratio / average_document_size_inmem
@@ -90,19 +90,16 @@ class PullUpdatePush:
             self.total_buffer_size = buffer_size
 
         self.single_buffer_size = int(self.total_buffer_size / 2)
-        print(f"Setting single queue size to be: {self.single_buffer_size:,}")
+        tqdm.write(f"Setting single queue size to be: {self.single_buffer_size:,}")
 
         self.tq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.func = func
 
-        self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
-
-        self.worker_threads: List[threading.Thread] = []
-
+        self.tqdm_kwargs = dict(leave=False, disable=(not show_progress_bar))
         self.block_return = block_return
 
-    def pull(self, progress_bar: tqdm):
+    def pull(self):
 
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[str, None] = None
@@ -120,27 +117,33 @@ class PullUpdatePush:
             documents = res["documents"]
             after_id = res["after_id"]
 
-            if len(documents + overflow) >= self.update_batch_size:
-                nb = int(len(documents + overflow) / self.update_batch_size)
-                for i in range(nb):
-                    batch = documents[i : i + self.update_batch_size]
-                    self.tq.put(batch)
-                    with self.lock:
-                        progress_bar.update(len(batch))
+            pool = documents + overflow
+            if len(pool) >= self.update_batch_size:
+                n_batches = int(len(pool) / self.update_batch_size)
 
-                overflow += documents[nb * self.update_batch_size :]
+                for batch_idx in range(n_batches):
+                    batch_start = batch_idx * self.update_batch_size
+                    batch_end = (batch_idx + 1) * self.update_batch_size
+                    batch = pool[batch_start:batch_end]
+
+                    self.tq.put(batch)
+
+                    with self.lock:
+                        self.pull_bar.update(len(batch))
+
+                overflow = pool[n_batches * self.update_batch_size :]
             else:
-                overflow += documents
+                overflow = pool
 
         if overflow:
             self.tq.put(overflow)
             with self.lock:
-                progress_bar.update(len(overflow))
+                self.pull_bar.update(len(overflow))
 
-    def update(self, progress_bar: tqdm):
-        while progress_bar.n < self.ndocs:
+    def update(self):
+        while self.update_bar.n < self.ndocs:
             try:
-                batch = self.tq.get()
+                batch = self.tq.get(timeout=self.timeout)
             except:
                 break
 
@@ -155,7 +158,7 @@ class PullUpdatePush:
                 self.pq.put(document)
 
             with self.lock:
-                progress_bar.update(len(batch))
+                self.update_bar.update(len(batch))
 
     @staticmethod
     def _postprocess(
@@ -172,21 +175,46 @@ class PullUpdatePush:
         ]
         return batch
 
-    def push(self, progress_bar: tqdm):
+    def _handle_failed_documents(
+        self,
+        res: Dict[str, Any],
+        batch: List[Dict[str, Any]],
+    ) -> None:
 
-        initial = self.pq.get()
-        batch = [initial]
+        # check if there is any failed documents...
+        failed_documents = res["response_json"]["failed_documents"]
 
-        while progress_bar.n < self.ndocs:
+        if failed_documents:
+            with self.lock:
+                self.ndocs += len(failed_documents)
+                desc = f"push - failed_documents = {self.ndocs - self.ndocs}"
+                self.push_bar.set_description(desc)
+
+            # ...find these failed documents within the batch...
+            failed_ids = set(map(lambda x: x["_id"], failed_documents))
+            failed_documents = [
+                document for document in batch if document["_id"] in failed_ids
+            ]
+
+            # ...and re add them to the push queue
+            for failed_document in failed_documents:
+                self.pq.put(failed_document)
+
+        return failed_documents
+
+    def push(self):
+
+        batch = [self.pq.get(timeout=self.timeout)]
+
+        while self.push_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
-                    document = self.pq.get()
+                    document = self.pq.get(timeout=1)
                 except:
                     break
                 batch.append(document)
 
             batch = self.dataset.json_encoder(batch)
-            # TODO: check if there's failed documents
             res = self.dataset.datasets.documents.bulk_update(
                 self.dataset_id,
                 batch,
@@ -194,60 +222,53 @@ class PullUpdatePush:
                 ingest_in_background=self.ingest_in_background,
             )
 
+            failed_documents = self._handle_failed_documents(res, batch)
+
             with self.lock:
-                progress_bar.update(len(batch))
+                self.push_bar.update(len(batch) - len(failed_documents))
                 batch = []
 
-    def _init_worker_threads(self):
-        pull_bar = tqdm(
+    def _init_worker_pool(self):
+        self.pull_bar = tqdm(
             desc="pull",
             position=0,
             total=self.ndocs,
             **self.tqdm_kwargs,
         )
-        update_bar = tqdm(
+        self.update_bar = tqdm(
             range(self.ndocs),
             desc="update",
             position=1,
             **self.tqdm_kwargs,
         )
-        push_bar = tqdm(
+        self.push_bar = tqdm(
             range(self.ndocs),
             desc="push",
             position=2,
             **self.tqdm_kwargs,
         )
-        pull_threads = [
+        threads = [
             threading.Thread(
                 target=self.pull,
-                args=(pull_bar,),
             )
         ]
-        update_threads = [
+        threads += [
             threading.Thread(
                 target=self.update,
-                args=(update_bar,),
             )
             for _ in range(self.update_workers)
         ]
-        push_threads = [
+        threads += [
             threading.Thread(
                 target=self.push,
-                args=(push_bar,),
             )
             for _ in range(self.push_workers)
         ]
-        self.worker_threads = pull_threads + update_threads + push_threads
+        for thread in threads:
+            thread.start()
 
-    def _all_workers_running(self) -> bool:
-        """
-        iteratively check if all worker threads are alive.
-        If at least one is return True else False
-        """
-        for worker in self.worker_threads:
-            if worker.is_alive():
-                return True
-        return False
+        # for thread in threads:
+        #     thread.join()
 
     def run(self):
         """
@@ -256,14 +277,7 @@ class PullUpdatePush:
         if self.ndocs <= 0:
             return
 
-        self._init_worker_threads()
-
-        for worker in self.worker_threads:
-            worker.start()
-
-        if os.environ.get("WORKFLOW_ID") or self.block_return:
-            for worker in self.worker_threads:
-                worker.join()
+        self._init_worker_pool()
 
 
 class OperationRun(TransformBase):
@@ -386,7 +400,7 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        max_active_threads: int = 2,
+        max_active_threads: int = 1,
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
@@ -451,7 +465,7 @@ class OperationRun(TransformBase):
         if values is None:
             values = self.get_operation_metadata()
 
-        print("Storing operation metadata...")
+        tqdm.write("Storing operation metadata...")
         timestamp = str(datetime.now().timestamp()).replace(".", "-")
         metadata = dataset.metadata.to_dict()
         if "_operationhistory_" not in metadata:

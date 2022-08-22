@@ -90,6 +90,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
         output_fields: list = None,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -130,6 +131,7 @@ class Operations(Write):
             batched=batched,
             chunksize=chunksize,
             output_fields=output_fields,
+            **kwargs,
         )
 
         return ops
@@ -553,6 +555,8 @@ class Operations(Write):
             output_fields=output_fields,
             sensitivity=sensitivity,
         )
+        filters = [] if filters is None else filters
+        filters += SentimentOps._get_filters(text_fields, model_name)
         ops.run(
             self,
             filters=filters,

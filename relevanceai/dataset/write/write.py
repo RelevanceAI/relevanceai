@@ -497,10 +497,17 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
-        retrieve_chunksize: int = 100,
+        chunksize: int = 128,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         max_active_threads: int = 2,
+        timeout: Optional[int] = None,
+        buffer_size: int = 0,
+        show_progress_bar: bool = True,
+        update_batch_size: int = 32,
+        multithreaded_update: bool = True,
+        *args,
+        **kwargs,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -539,32 +546,27 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        thread_count = 0
-        filters = [] if filters is None else filters
-        select_fields = [] if select_fields is None else select_fields
+        # from async_test import PullUpdatePush
+        from relevanceai.operations_new.ops_run import PullUpdatePush
 
-        for chunk in self.chunk_dataset(
-            select_fields=select_fields,
+        pup = PullUpdatePush(
+            dataset=self,
+            func=bulk_func,
+            func_args=args,
+            func_kwargs=kwargs,
+            multithreaded_update=multithreaded_update,
+            pull_batch_size=chunksize,
+            update_batch_size=update_batch_size,
+            push_batch_size=chunksize,
             filters=filters,
-            chunksize=retrieve_chunksize,
-        ):
-            updated_chunk = bulk_func(
-                chunk,
-            )
-
-            @fire_and_forget
-            def fire_upsert_docs():
-                self.upsert_documents(updated_chunk)
-
-            thread_count += 1
-            if thread_count >= max_active_threads:
-                # Check if thread count decreases
-                curr_thread_count = threading.active_count()
-                while threading.active_count() >= curr_thread_count:
-                    time.sleep(1)
-                thread_count -= 1
-
-            fire_upsert_docs()
+            select_fields=select_fields,
+            update_workers=max_active_threads,
+            push_workers=max_active_threads,
+            buffer_size=buffer_size,
+            show_progress_bar=show_progress_bar,
+            timeout=timeout,
+        )
+        pup.run()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
@@ -731,7 +733,6 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
-
 
     def _upload_media(
         self, presigned_url: str, media_content: bytes, verbose: bool = True

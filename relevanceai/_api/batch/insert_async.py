@@ -18,6 +18,8 @@ from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.constants.warning import Warning
 
+from tqdm.auto import tqdm
+
 MB_TO_BYTE = 1024 * 1024
 
 
@@ -254,7 +256,7 @@ class BatchInsertAsyncHelpers(BatchRetrieveClient, APIEndpointsClient):
             chunk_size = self._determine_optimal_chunk_size(
                 dataset_id, filters, select_fields
             )
-            print(f"Chunk size set to {chunk_size}")
+            tqdm.write(f"Chunk size set to {chunk_size}")
             self.logger.info(f"Chunk size set to {chunk_size}")
             retrieve_chunk_size = chunk_size
 
