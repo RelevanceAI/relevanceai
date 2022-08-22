@@ -546,7 +546,6 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        # from async_test import PullUpdatePush
         from relevanceai.operations_new.ops_run import PullUpdatePush
 
         pup = PullUpdatePush(

@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+from re import L
 import time
 import psutil
 import threading
@@ -18,6 +19,15 @@ from tqdm.auto import tqdm
 
 
 class PullUpdatePush:
+
+    pull_bar: tqdm
+    update_bar: tqdm
+    push_bar: tqdm
+
+    pull_thread: threading.Thread
+    update_threads: List[threading.Thread]
+    push_threads: List[threading.Thread]
+
     def __init__(
         self,
         dataset: Dataset,
@@ -59,7 +69,7 @@ class PullUpdatePush:
         self.update_batch_size = min(update_batch_size, ndocs)
         self.push_batch_size = min(push_batch_size, ndocs)
 
-        self.timeout = timeout
+        self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
 
         self.filters = [] if filters is None else filters
@@ -96,10 +106,10 @@ class PullUpdatePush:
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
         self.func = func
 
-        self.tqdm_kwargs = dict(leave=False, disable=(not show_progress_bar))
+        self.tqdm_kwargs = dict(leave=False, disable=not show_progress_bar)
         self.block_return = block_return
 
-    def pull(self):
+    def _pull(self):
 
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[str, None] = None
@@ -140,10 +150,10 @@ class PullUpdatePush:
             with self.lock:
                 self.pull_bar.update(len(overflow))
 
-    def update(self):
+    def _update(self):
         while self.update_bar.n < self.ndocs:
             try:
-                batch = self.tq.get(timeout=self.timeout)
+                batch = self.tq.get(timeout=3)
             except:
                 break
 
@@ -160,26 +170,11 @@ class PullUpdatePush:
             with self.lock:
                 self.update_bar.update(len(batch))
 
-    @staticmethod
-    def _postprocess(
-        new_batch: List[Dict[str, Any]],
-        old_batch: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
-        batch = [
-            {
-                key: value
-                for key, value in new_batch[idx].items()
-                if key not in old_batch[idx].keys() or key == "_id"
-            }
-            for idx in range(len(new_batch))
-        ]
-        return batch
-
     def _handle_failed_documents(
         self,
         res: Dict[str, Any],
         batch: List[Dict[str, Any]],
-    ) -> None:
+    ) -> List[Dict[str, Any]]:
 
         # check if there is any failed documents...
         failed_documents = res["response_json"]["failed_documents"]
@@ -202,14 +197,29 @@ class PullUpdatePush:
 
         return failed_documents
 
-    def push(self):
+    @staticmethod
+    def _postprocess(
+        new_batch: List[Dict[str, Any]],
+        old_batch: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        batch = [
+            {
+                key: value
+                for key, value in new_batch[idx].items()
+                if key not in old_batch[idx].keys() or key == "_id"
+            }
+            for idx in range(len(new_batch))
+        ]
+        return batch
 
-        batch = [self.pq.get(timeout=self.timeout)]
+    def _push(self) -> None:
+
+        batch = [self.pq.get()]
 
         while self.push_bar.n < self.ndocs:
             while len(batch) < self.push_batch_size:
                 try:
-                    document = self.pq.get(timeout=1)
+                    document = self.pq.get(timeout=3)
                 except:
                     break
                 batch.append(document)
@@ -226,9 +236,10 @@ class PullUpdatePush:
 
             with self.lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
-                batch = []
 
-    def _init_worker_pool(self):
+            batch = []
+
+    def _init_progress_bars(self) -> None:
         self.pull_bar = tqdm(
             desc="pull",
             position=0,
@@ -247,28 +258,34 @@ class PullUpdatePush:
             position=2,
             **self.tqdm_kwargs,
         )
-        threads = [
-            threading.Thread(
-                target=self.pull,
-            )
-        ]
-        threads += [
-            threading.Thread(
-                target=self.update,
-            )
-            for _ in range(self.update_workers)
-        ]
-        threads += [
-            threading.Thread(
-                target=self.push,
-            )
-            for _ in range(self.push_workers)
-        ]
-        for thread in threads:
-            thread.start()
 
-        # for thread in threads:
-        #     thread.join()
+    def _init_worker_threads(self) -> None:
+        self.pull_thread = threading.Thread(target=self._pull)
+        self.update_threads = [
+            threading.Thread(target=self._update) for _ in range(self.update_workers)
+        ]
+        self.push_threads = [
+            threading.Thread(target=self._push) for _ in range(self.push_workers)
+        ]
+
+    def _run_worker_threads(self):
+        self.pull_thread.start()
+        while True:
+            if not self.tq.empty():
+                for thread in self.update_threads:
+                    thread.start()
+                break
+        while True:
+            if not self.pq.empty():
+                for thread in self.push_threads:
+                    thread.start()
+                break
+
+        for thread in self.push_threads:
+            thread.join()
+        for thread in self.update_threads:
+            thread.join()
+        self.pull_thread.join()
 
     def run(self):
         """
@@ -277,7 +294,9 @@ class PullUpdatePush:
         if self.ndocs <= 0:
             return
 
-        self._init_worker_pool()
+        self._init_progress_bars()
+        self._init_worker_threads()
+        self._run_worker_threads()
 
 
 class OperationRun(TransformBase):
