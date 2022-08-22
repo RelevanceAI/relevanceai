@@ -1,6 +1,10 @@
 """Code for migrating datasets
 """
-from typing import Optional
+import math
+
+from typing import Any, Dict, List, Optional
+
+from tqdm.auto import tqdm
 
 
 def migrate_dataset(
@@ -10,6 +14,7 @@ def migrate_dataset(
     new_dataset_id: Optional[str] = None,
     chunksize: int = 100,
     filters: list = None,
+    show_progress_bar: bool = True,
 ):
     """
     Migrate dataset
@@ -43,30 +48,60 @@ def migrate_dataset(
     if new_dataset_id is None:
         new_dataset_id = dataset_id
 
-    client = Client(token=old_token)
-    ds = client.Dataset(dataset_id)
+    old_client = Client(token=old_token)
+    new_client = Client(token=new_token)
+
+    old_dataset = old_client.Dataset(dataset_id)
+    new_dataset = new_client.Dataset(dataset_id)
+
+    after_id = None
+
+    number_of_documents = old_client.get_number_of_documents(
+        dataset_id=dataset_id, filters=filters
+    )
+    iterations_required = math.ceil(number_of_documents / chunksize)
+    bar = tqdm(range(iterations_required), disable=(not show_progress_bar))
+    overflow: List[Dict[str, Any]] = []
+
     with FileLogger():
-        docs = ds.get_documents(
-            number_of_documents=chunksize,
-            include_cursor=False,
-            filters=filters,
-            include_after_id=True,
-        )
-        while len(docs["documents"]) > 0:
-            new_client = Client(token=new_token)
-            new_ds = new_client.Dataset(new_dataset_id)
-            for d in docs["documents"]:
-                # backwards compatibility for clusters
-                if "_clusters_" in d:
-                    d["_cluster_"] = d.pop("_clusters_")
-            new_ds.upsert_documents(docs["documents"])
-            # we need to reset the config
-            client = Client(token=old_token)
-            docs = ds.get_documents(
-                include_cursor=False,
-                number_of_documents=chunksize,
-                after_id=docs["after_id"],
-                cursor=docs["cursor"],
+        while True:
+            res = old_dataset.get_documents(
+                page_size=chunksize,
                 filters=filters,
+                after_id=after_id,
             )
-    print("Finished migrating.")
+            documents = res["documents"]
+            after_id = res["after_id"]
+
+            if not documents:
+                break
+
+            for document in documents:
+                # backwards compatibility for clusters
+                if "_clusters_" in document:
+                    document["_cluster_"] = document.pop("_clusters_")
+
+            pool = documents + overflow
+            n_batches = int(len(pool) / chunksize)
+
+            for i in range(n_batches):
+                batch_start = i * chunksize
+                batch_end = (i + 1) * chunksize
+
+                batch = pool[batch_start:batch_end]
+                new_dataset.upsert_documents(batch)
+
+                failed_documents = res["response_json"]["failed_documents"]
+
+                failed_ids = set(map(lambda x: x["_id"], failed_documents))
+                failed_documents = [
+                    document for document in documents if document["_id"] in failed_ids
+                ]
+                overflow += failed_documents
+
+            bar.update(1)
+
+        new_dataset.upsert_documents(overflow)
+        bar.update(1)
+
+    tqdm.write("Finished migrating.")
