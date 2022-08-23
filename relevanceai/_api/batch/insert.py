@@ -19,6 +19,8 @@ from datetime import datetime
 
 from typing import Any, Callable, Dict, List, Optional, Union
 
+from tqdm.auto import tqdm
+
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
 
