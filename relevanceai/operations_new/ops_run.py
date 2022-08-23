@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+from queue import Empty
 import psutil
 import threading
 import multiprocessing as mp
@@ -15,6 +16,8 @@ from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
 
 from tqdm.auto import tqdm
+
+from relevanceai.utils.helpers.helpers import getsizeof
 
 
 class PullUpdatePush:
@@ -36,7 +39,7 @@ class PullUpdatePush:
         multithreaded_update: bool = True,
         pull_batch_size: Optional[int] = 128,
         update_batch_size: Optional[int] = 128,
-        push_batch_size: Optional[int] = 128,
+        push_batch_size: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         update_workers: int = 1,
@@ -67,7 +70,7 @@ class PullUpdatePush:
 
         self.pull_batch_size = min(pull_batch_size, ndocs)
         self.update_batch_size = min(update_batch_size, ndocs)
-        self.push_batch_size = min(push_batch_size, ndocs)
+        self.push_batch_size = push_batch_size
 
         self.update_all_at_once = update_all_at_once
         if update_all_at_once:
@@ -79,8 +82,9 @@ class PullUpdatePush:
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
 
-        self.lock = threading.Lock()
-        self.batch_lock = threading.Lock()
+        self.general_lock = threading.Lock()
+        self.update_batch_lock = threading.Lock()
+        self.push_batch_lock = threading.Lock()
         self.func_lock: Union[threading.Lock, None]
 
         if not multithreaded_update:
@@ -144,25 +148,62 @@ class PullUpdatePush:
             for document in documents:
                 self.tq.put(document)
 
-            with self.lock:
+            with self.general_lock:
                 self.pull_bar.update(len(documents))
 
-    def _get_batch_to_update(self):
-        batch = []
-        while self.update_all_at_once or not self.tq.empty():
-            if len(batch) >= self.update_batch_size:
-                break
-            try:
-                document = self.tq.get()
-            except:
-                break
-            batch.append(document)
+    def _get_optimal_push_batch_size(self, sample_document: Dict[str, Any]) -> int:
+        document_size = getsizeof(sample_document) / 2**20
+        target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
+        max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
+        chunksize = int(target_chunk_mb / document_size)
+        chunksize = min(chunksize, max_chunk_size)
+        tqdm.write(f"Setting upload chunksize to {chunksize} documents")
+        return chunksize
+
+    def _get_batch(self, queue_id: str):
+        batch: List[Dict[str, Any]] = []
+
+        if queue_id == "update":
+            queue = self.tq
+            timeout = None
+            batch_size = self.update_batch_size
+
+            while self.update_all_at_once or not queue.empty():
+                if len(batch) >= batch_size:
+                    break
+                try:
+                    document = queue.get(timeout=timeout)
+                except:
+                    break
+                batch.append(document)
+
+        elif queue_id == "push":
+            queue = self.pq
+            timeout = 1
+
+            # Calculate optimal batch size
+            if self.push_batch_size is None:
+                sample_document = queue.get(timeout=timeout)
+                self.push_batch_size = self._get_optimal_push_batch_size(
+                    sample_document
+                )
+                batch = [sample_document]
+
+            batch_size = self.push_batch_size
+
+            while len(batch) < batch_size:
+                try:
+                    document = queue.get(timeout=timeout)
+                except:
+                    break
+                batch.append(document)
+
         return batch
 
     def _update(self):
         while self.update_bar.n < self.ndocs:
-            with self.batch_lock:
-                batch = self._get_batch_to_update()
+            with self.update_batch_lock:
+                batch = self._get_batch(queue_id="update")
 
             old_keys = [set(document.keys()) for document in batch]
 
@@ -177,7 +218,7 @@ class PullUpdatePush:
             for document in batch:
                 self.pq.put(document)
 
-            with self.lock:
+            with self.general_lock:
                 self.update_bar.update(len(batch))
 
     def _handle_failed_documents(
@@ -190,7 +231,7 @@ class PullUpdatePush:
         failed_documents = res["response_json"]["failed_documents"]
 
         if failed_documents:
-            with self.lock:
+            with self.general_lock:
                 self.ndocs += len(failed_documents)
                 desc = f"push - failed_documents = {self.ndocs - self.ndocs}"
                 self.push_bar.set_description(desc)
@@ -223,18 +264,11 @@ class PullUpdatePush:
         return batch
 
     def _push(self) -> None:
-
-        batch = [self.pq.get()]
-
         while self.push_bar.n < self.ndocs:
-            while len(batch) < self.push_batch_size:
-                try:
-                    document = self.pq.get(timeout=1)
-                except:
-                    break
-                batch.append(document)
-
+            with self.push_batch_lock:
+                batch = self._get_batch(queue_id="push")
             batch = self.dataset.json_encoder(batch)
+
             res = self.dataset.datasets.documents.bulk_update(
                 self.dataset_id,
                 batch,
@@ -244,10 +278,8 @@ class PullUpdatePush:
 
             failed_documents = self._handle_failed_documents(res, batch)
 
-            with self.lock:
+            with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
-
-            batch = []
 
     def _init_progress_bars(self) -> None:
         self.pull_bar = tqdm(
@@ -411,7 +443,7 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        max_active_threads: int = 1,
+        max_active_threads: int = 2,
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
