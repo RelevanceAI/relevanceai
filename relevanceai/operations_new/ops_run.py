@@ -46,6 +46,7 @@ class PullUpdatePush:
         ingest_in_background: bool = False,
         background_execution: bool = True,
         ram_ratio: float = 0.25,
+        update_all_at_once: bool = False,
     ):
         """
         Buffer size:
@@ -67,6 +68,10 @@ class PullUpdatePush:
         self.update_batch_size = min(update_batch_size, ndocs)
         self.push_batch_size = min(push_batch_size, ndocs)
 
+        self.update_all_at_once = update_all_at_once
+        if update_all_at_once:
+            self.update_batch_size = ndocs
+
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
 
@@ -74,6 +79,7 @@ class PullUpdatePush:
         self.select_fields = [] if select_fields is None else select_fields
 
         self.lock = threading.Lock()
+        self.batch_lock = threading.Lock()
         self.func_lock: Union[threading.Lock, None]
 
         if not multithreaded_update:
@@ -90,7 +96,7 @@ class PullUpdatePush:
 
         if buffer_size == 0:
             ram_size = psutil.virtual_memory().total  # in bytes
-            average_document_size_inmem = 2**17
+            average_document_size_inmem = 2**20
             self.total_queue_size = int(
                 ram_size * ram_ratio / average_document_size_inmem
             )
@@ -98,13 +104,14 @@ class PullUpdatePush:
             self.total_queue_size = buffer_size
 
         self.single_queue_size = int(self.total_queue_size / 2)
-        tqdm.write(f"Setting max documents queue to be: {self.single_queue_size:,}")
+        if update_all_at_once:
+            self.single_queue_size = ndocs
 
-        max_batches_transform_queue = int(
-            self.single_queue_size / self.update_batch_size
+        tqdm.write(
+            f"Setting max number of documents in queue to be: {self.single_queue_size:,}"
         )
 
-        self.tq: mp.Queue = mp.Queue(maxsize=max_batches_transform_queue)
+        self.tq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.func = func
 
@@ -129,42 +136,38 @@ class PullUpdatePush:
             documents = res["documents"]
             after_id = res["after_id"]
 
-            pool = documents + overflow
-            if len(pool) >= self.update_batch_size:
-                n_batches = int(len(pool) / self.update_batch_size)
+            for document in documents:
+                self.tq.put(document)
 
-                for batch_idx in range(n_batches):
-                    batch_start = batch_idx * self.update_batch_size
-                    batch_end = (batch_idx + 1) * self.update_batch_size
-                    batch = pool[batch_start:batch_end]
-
-                    self.tq.put(batch)
-
-                    with self.lock:
-                        self.pull_bar.update(len(batch))
-
-                overflow = pool[n_batches * self.update_batch_size :]
-            else:
-                overflow = pool
-
-        if overflow:
-            self.tq.put(overflow)
             with self.lock:
-                self.pull_bar.update(len(overflow))
+                self.pull_bar.update(len(documents))
+
+    def _get_batch_to_update(self):
+        batch = []
+        while self.update_all_at_once or not self.tq.empty():
+            if len(batch) >= self.update_batch_size:
+                break
+            try:
+                document = self.tq.get()
+            except:
+                break
+            batch.append(document)
+        return batch
 
     def _update(self):
         while self.update_bar.n < self.ndocs:
-            try:
-                batch = self.tq.get()
-            except:
-                break
+            with self.batch_lock:
+                batch = self._get_batch_to_update()
+
+            old_keys = [set(document.keys()) for document in batch]
 
             if self.func_lock is not None:
                 with self.func_lock:
                     new_batch = self.func(batch, *self.func_args, **self.func_kwargs)
             else:
                 new_batch = self.func(batch, **self.func_kwargs)
-            batch = PullUpdatePush._postprocess(new_batch, batch)
+
+            batch = PullUpdatePush._postprocess(new_batch, old_keys)
 
             for document in batch:
                 self.pq.put(document)
@@ -202,13 +205,13 @@ class PullUpdatePush:
     @staticmethod
     def _postprocess(
         new_batch: List[Dict[str, Any]],
-        old_batch: List[Dict[str, Any]],
+        old_keys: List[str],
     ) -> List[Dict[str, Any]]:
         batch = [
             {
                 key: value
                 for key, value in new_batch[idx].items()
-                if key not in old_batch[idx].keys() or key == "_id"
+                if key not in old_keys[idx] or key == "_id"
             }
             for idx in range(len(new_batch))
         ]
@@ -352,8 +355,6 @@ class OperationRun(TransformBase):
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
 
-        schema = dataset.schema
-
         self._check_fields_in_schema(select_fields)
 
         filters += [
@@ -389,31 +390,14 @@ class OperationRun(TransformBase):
             dataset=dataset,
             operation=self,
         ) as dataset:
-
-            if batched:
-                self.batch_transform_upsert(
-                    dataset=dataset,
-                    select_fields=select_fields,
-                    filters=filters,
-                    chunksize=chunksize,
-                    **kwargs,
-                )
-            else:
-                documents = dataset.get_all_documents(
-                    select_fields=select_fields,
-                    filters=filters,
-                )
-                updated_documents = self.transform(
-                    documents,
-                    *args,
-                    **kwargs,
-                )  # Should be in the transform.py
-                dataset.upsert_documents(updated_documents)
-                self.post_run(
-                    dataset=dataset,
-                    documents=documents,
-                    updated_documents=updated_documents,
-                )  # Should be in the ops.py
+            self.batch_transform_upsert(
+                dataset=dataset,
+                select_fields=select_fields,
+                filters=filters,
+                chunksize=chunksize,
+                update_all_at_once=(not batched),
+                **kwargs,
+            )
         return
 
     def batch_transform_upsert(
@@ -428,6 +412,7 @@ class OperationRun(TransformBase):
         show_progress_bar: bool = True,
         update_batch_size: int = 32,
         multithreaded_update: bool = False,
+        update_all_at_once: bool = False,
         *args,
         **kwargs,
     ):
@@ -451,6 +436,7 @@ class OperationRun(TransformBase):
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
             timeout=timeout,
+            update_all_at_once=update_all_at_once,
         )
         pup.run()
 
