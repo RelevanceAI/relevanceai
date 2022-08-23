@@ -15,7 +15,7 @@ from concurrent.futures import (
     ProcessPoolExecutor,
     ThreadPoolExecutor,
 )
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from relevanceai.constants.constants import HALF_CHUNK_CODES, RETRY_CODES, SUCCESS_CODES
 from relevanceai.utils.json_encoder import json_encoder
 
@@ -173,8 +173,8 @@ class Push:
         )
 
     @property
-    def failed_documents(self) -> List[str]:
-        return sum((document for document, fails in self.frontier.items() if fails > 0))
+    def failed_ids(self) -> List[str]:
+        return [document for document, fails in self.frontier.items() if fails > 0]
 
     def _get_batch(self):
         batch = []
@@ -199,7 +199,7 @@ class Push:
 
         if failed_documents:
             with self.lock:
-                desc = f"push - failed_documents = {self.failed_documents}"
+                desc = f"push - failed_documents = {self.failed_ids}"
                 self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
@@ -254,4 +254,4 @@ class Push:
             for thread in push_threads:
                 thread.join()
 
-        return self.insert_count, list(self.frontier.keys())
+        return self.insert_count, self.failed_ids
