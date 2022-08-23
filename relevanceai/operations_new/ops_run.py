@@ -9,6 +9,7 @@ import warnings
 
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union, Optional, Callable
+from relevanceai.constants.constants import CONFIG
 
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
@@ -94,18 +95,21 @@ class PullUpdatePush:
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
-        if buffer_size == 0:
-            ram_size = psutil.virtual_memory().total  # in bytes
-            average_document_size_inmem = 2**20
-            self.total_queue_size = int(
-                ram_size * ram_ratio / average_document_size_inmem
-            )
-        else:
-            self.total_queue_size = buffer_size
-
-        self.single_queue_size = int(self.total_queue_size / 2)
         if update_all_at_once:
             self.single_queue_size = ndocs
+
+        else:
+            if buffer_size == 0:
+                ram_size = psutil.virtual_memory().total  # in bytes
+
+                # assuming documents are 1MB, this is an upper limit and accounts for alot
+                max_document_size = 2**20
+
+                total_queue_size = int(ram_size * ram_ratio / max_document_size)
+            else:
+                total_queue_size = buffer_size
+
+            self.single_queue_size = int(total_queue_size / 2)
 
         tqdm.write(
             f"Setting max number of documents in queue to be: {self.single_queue_size:,}"
@@ -118,11 +122,12 @@ class PullUpdatePush:
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
         self.background_execution = background_execution
 
+        self.config = CONFIG
+
     def _pull(self):
 
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[str, None] = None
-        overflow: List[Dict[str, Any]] = []
 
         while documents:
             res = self.dataset.datasets.documents.get_where(
