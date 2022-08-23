@@ -66,7 +66,7 @@ def migrate_dataset(
     with FileLogger():
         while True:
             res = old_dataset.get_documents(
-                page_size=chunksize,
+                number_of_documents=chunksize,
                 filters=filters,
                 after_id=after_id,
             )
@@ -89,9 +89,9 @@ def migrate_dataset(
                 batch_end = (i + 1) * chunksize
 
                 batch = pool[batch_start:batch_end]
-                new_dataset.upsert_documents(batch)
+                res = new_dataset.insert_documents(batch)
 
-                failed_documents = res["response_json"]["failed_documents"]
+                failed_documents = res["failed_documents"]
 
                 failed_ids = set(map(lambda x: x["_id"], failed_documents))
                 failed_documents = [
@@ -101,7 +101,8 @@ def migrate_dataset(
 
             bar.update(1)
 
-        new_dataset.upsert_documents(overflow)
-        bar.update(1)
+        if overflow:
+            new_dataset.upsert_documents(overflow)
+            bar.update(1)
 
     tqdm.write("Finished migrating.")
