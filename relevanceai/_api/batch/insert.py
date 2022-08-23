@@ -22,13 +22,15 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
 
+from tqdm.auto import tqdm
+
 from relevanceai.utils import make_id
 from relevanceai.utils.helpers.helpers import getsizeof
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.version import beta
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.concurrency import multiprocess, multithread
+from relevanceai.utils.concurrency import Push, multiprocess, multithread
 
 from relevanceai.constants.errors import FieldNotFoundError
 from relevanceai.constants.warning import Warning
@@ -136,7 +138,7 @@ class BatchInsertClient(BatchRetrieveClient):
             max_workers,
             retry_chunk_mult,
             show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
+            batch_size=chunksize,
         )
 
     def _update_documents(
@@ -220,7 +222,7 @@ class BatchInsertClient(BatchRetrieveClient):
             max_workers,
             retry_chunk_mult,
             show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
+            batch_size=chunksize,
         )
 
     update_documents = _update_documents
@@ -795,7 +797,7 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: Optional[int] = 2,
         retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize: int = 0,
+        batch_size: int = 0,
     ):
 
         # Get one document to test the size
@@ -811,107 +813,31 @@ class BatchInsertClient(BatchRetrieveClient):
         test_doc = self.json_encoder(documents[0])
         doc_mb = getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
 
-        if chunksize == 0:
+        if batch_size == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
-            chunksize = (
-                int(target_chunk_mb / doc_mb) + 1
-                if int(target_chunk_mb / doc_mb) + 1 < len(documents)
-                else len(documents)
-            )
-            chunksize = min(chunksize, max_chunk_size)
 
-            print(f"Updating chunksize for batch data insertion to {chunksize}")
+            batch_size = math.ceil(target_chunk_mb / doc_mb)
+            batch_size = min(batch_size, len(documents), max_chunk_size)
+
+            tqdm.write(f"Updating chunksize for batch data insertion to {batch_size}")
             # Add edge case handling
-            if chunksize == 0:
-                chunksize = 1
+            if batch_size == 0:
+                batch_size = 1
 
-        # Initialise number of inserted documents
-        inserted: List[bool] = []
+        push = Push(
+            dataset=self,
+            documents=documents,
+            batch_size=batch_size,
+            max_workers=max_workers,
+            show_progress_bar=show_progress_bar,
+        )
+        inserted, failed_ids = push.run()
 
-        # Initialise failed documents
-        failed_ids: List[str] = []
-
-        # Initialise failed documents detailed
         failed_ids_detailed: List[str] = []
 
-        # Initialise cancelled documents
-        cancelled_ids = []
-
-        for i in range(int(self.config.get_option("retries.number_of_retries"))):
-            if len(documents) > 0:
-                self.logger.info(f"Inserting with chunksize {chunksize}")
-                if bulk_fn is not None:
-                    insert_json = multiprocess(
-                        func=bulk_fn,
-                        iterables=documents,
-                        post_func_hook=insert_function,
-                        max_workers=max_workers,
-                        chunksize=chunksize,
-                        show_progress_bar=show_progress_bar,
-                    )
-                else:
-                    insert_json = multithread(
-                        insert_function,
-                        documents,
-                        max_workers=max_workers,
-                        chunksize=chunksize,
-                        show_progress_bar=show_progress_bar,
-                    )
-
-                failed_ids = []
-                failed_ids_detailed = []
-
-                # Update inserted amount
-                def is_successfully_inserted(chunk: Union[Dict, Any]) -> bool:
-                    return chunk["status_code"] == 200
-
-                inserted += list(
-                    map(
-                        lambda x: x["response_json"]["inserted"],
-                        filter(is_successfully_inserted, insert_json),
-                    )
-                )
-
-                for chunk in insert_json:
-
-                    # Track failed in 200
-                    if chunk["status_code"] in SUCCESS_CODES:
-                        failed_ids += [
-                            i["_id"] for i in chunk["response_json"]["failed_documents"]
-                        ]
-
-                        failed_ids_detailed += [
-                            i for i in chunk["response_json"]["failed_documents"]
-                        ]
-
-                    # Cancel documents with 400 or 404
-                    elif chunk["status_code"] in RETRY_CODES:
-                        cancelled_ids += [i["_id"] for i in chunk["documents"]]
-
-                    # Half chunksize with 413 or 524
-                    elif chunk["status_code"] in HALF_CHUNK_CODES:
-                        failed_ids += [i["_id"] for i in chunk["documents"]]
-                        chunksize = int(chunksize * retry_chunk_mult)
-
-                    # Retry all other errors
-                    else:
-                        failed_ids += [i["_id"] for i in chunk["documents"]]
-
-                # Update documents to retry which have failed
-                if failed_ids:
-                    warnings.warn(Warning.UPLOAD_FAILED)
-                    documents = [i for i in documents if i["_id"] in failed_ids]
-
-            else:
-                break
-            time.sleep(int(self.config["retries.seconds_between_retries"]))
-
-        # When returning, add in the cancelled id
-        failed_ids.extend(cancelled_ids)
-
         output = {
-            "inserted": sum(inserted),  # type: ignore
+            "inserted": inserted,  # type: ignore
             "failed_documents": failed_ids,
             "failed_documents_detailed": failed_ids_detailed,
         }
@@ -993,18 +919,18 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if "failed_documents" in results:
             if len(results["failed_documents"]) == 0:
-                print("✅ All documents inserted/edited successfully.")
+                tqdm.write("✅ All documents inserted/edited successfully.")
             else:
-                print(
+                tqdm.write(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
                 return results
 
         elif "failed_document_ids" in results:
             if len(results["failed_document_ids"]) == 0:
-                print("✅ All documents inserted/edited successfully.")
+                tqdm.write("✅ All documents inserted/edited successfully.")
             else:
-                print(
+                tqdm.write(
                     "❗Few errors with inserting/editing documents. Please check logs."
                 )
                 return results

@@ -1,13 +1,23 @@
 """Multithreading Module
 """
+import json
 import math
+
+import threading
+import multiprocessing as mp
+import uuid
+
+from tqdm.auto import tqdm
+
 from concurrent.futures import (
     as_completed,
     wait,
     ProcessPoolExecutor,
     ThreadPoolExecutor,
 )
-from typing import Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
+from relevanceai.constants.constants import HALF_CHUNK_CODES, RETRY_CODES, SUCCESS_CODES
+from relevanceai.utils.json_encoder import json_encoder
 
 from relevanceai.utils.progress_bar import NullProgressBar, progress_bar
 
@@ -111,3 +121,137 @@ def multiprocess_list(
             if show_progress_bar is True:
                 progress_tracker.update(1)
         return results
+
+
+class Push:
+    def __init__(
+        self,
+        dataset,
+        documents: List[Dict[str, Any]],
+        batch_size: int,
+        overwrite: bool = True,
+        max_workers: Optional[int] = None,
+        ingest_in_background: bool = False,
+        show_progress_bar: bool = True,
+        background_execution: bool = False,
+        *args,
+        **kwargs,
+    ):
+        from relevanceai.dataset.dataset import Dataset
+
+        self.dataset: Dataset = dataset
+        self.dataset_id: str = dataset.dataset_id
+
+        documents = [
+            document if "_id" in document else {"_id": str(uuid.uuid4()), **document}
+            for document in documents
+        ]
+        documents = json_encoder(documents)
+
+        self.frontier = {document["_id"]: 0 for document in documents}
+        self.push_queue: mp.Queue = mp.Queue(maxsize=len(documents))
+        for document in documents:
+            self.push_queue.put(document)
+
+        self.push_args = args
+        self.push_kwargs = kwargs
+        self.overwrite = overwrite
+        self.ingest_in_background = ingest_in_background
+        self.batch_size = batch_size
+        self.max_workers = 2 if max_workers is None else max_workers
+        self.show_progress_bar = show_progress_bar
+        self.background_execution = background_execution
+
+        self.lock = threading.Lock()
+        self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
+        self.insert_count = 0
+
+        self.push_bar = tqdm(
+            range(len(documents)),
+            desc="push",
+            **self.tqdm_kwargs,
+        )
+
+    @property
+    def failed_docs(self):
+        return sum(self.frontier.values())
+
+    def _get_batch(self):
+        batch = []
+        while not self.push_queue.empty():
+            if len(batch) >= self.batch_size:
+                break
+            try:
+                document = self.push_queue.get()
+            except:
+                break
+            batch.append(document)
+        return batch
+
+    def _handle_failed_documents(
+        self,
+        res: Dict[str, Any],
+        batch: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+
+        failed_documents = res["response_json"]["failed_documents"]
+        readded_documents = []
+
+        if failed_documents:
+            with self.lock:
+                desc = f"push - failed_documents = {self.failed_docs}"
+                self.push_bar.set_description(desc)
+
+            # ...find these failed documents within the batch...
+            failed_ids = set(map(lambda x: x["_id"], failed_documents))
+            failed_documents = [
+                document for document in batch if document["_id"] in failed_ids
+            ]
+
+            # ...and re add them to the push queue
+            for failed_document in failed_documents:
+                _id = hash(json.dumps(failed_document))
+                if self.frontier[_id] <= 3:
+                    self.frontier[_id] += 1
+                    self.push_queue.put(failed_document)
+                    readded_documents.append(failed_document)
+
+        return readded_documents
+
+    def _push(self) -> None:
+
+        while True:
+            with self.lock:
+                batch = self._get_batch()
+
+            if not batch:
+                break
+
+            result = self.dataset.datasets.bulk_insert(
+                self.dataset_id,
+                batch,
+                return_documents=True,
+                overwrite=self.overwrite,
+                ingest_in_background=self.ingest_in_background,
+                *self.push_args,
+                **self.push_kwargs,
+            )
+
+            failed_documents = self._handle_failed_documents(result, batch)
+
+            inserted = len(batch) - len(failed_documents)
+
+            with self.lock:
+                self.insert_count += inserted
+                self.push_bar.update(inserted)
+
+    def run(self) -> Tuple[int, List[str]]:
+        push_threads = [threading.Thread(target=self._push)]
+        for thread in push_threads:
+            thread.start()
+
+        if not self.background_execution:
+            for thread in push_threads:
+                thread.join()
+
+        return self.insert_count, list(self.frontier.keys())
