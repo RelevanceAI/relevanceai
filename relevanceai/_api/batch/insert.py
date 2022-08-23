@@ -23,6 +23,7 @@ from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
 
 from relevanceai.utils import make_id
+from relevanceai.utils.helpers.helpers import getsizeof
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.version import beta
@@ -807,8 +808,9 @@ class BatchInsertClient(BatchRetrieveClient):
             }
 
         # Insert documents
-        test_doc = json.dumps(self.json_encoder(documents[0]), indent=4)
-        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+        test_doc = self.json_encoder(documents[0])
+        doc_mb = getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+
         if chunksize == 0:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
