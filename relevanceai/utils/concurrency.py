@@ -173,8 +173,8 @@ class Push:
         )
 
     @property
-    def failed_docs(self):
-        return sum(self.frontier.values())
+    def failed_documents(self) -> List[str]:
+        return sum((document for document, fails in self.frontier.items() if fails > 0))
 
     def _get_batch(self):
         batch = []
@@ -199,7 +199,7 @@ class Push:
 
         if failed_documents:
             with self.lock:
-                desc = f"push - failed_documents = {self.failed_docs}"
+                desc = f"push - failed_documents = {self.failed_documents}"
                 self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
