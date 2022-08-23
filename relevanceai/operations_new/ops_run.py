@@ -93,17 +93,21 @@ class PullUpdatePush:
         if buffer_size == 0:
             ram_size = psutil.virtual_memory().total  # in bytes
             average_document_size_inmem = 2**17
-            self.total_buffer_size = int(
+            self.total_queue_size = int(
                 ram_size * ram_ratio / average_document_size_inmem
             )
         else:
-            self.total_buffer_size = buffer_size
+            self.total_queue_size = buffer_size
 
-        self.single_buffer_size = int(self.total_buffer_size / 2)
-        tqdm.write(f"Setting single queue size to be: {self.single_buffer_size:,}")
+        self.single_queue_size = int(self.total_queue_size / 2)
+        tqdm.write(f"Setting max documents queue to be: {self.single_queue_size:,}")
 
-        self.tq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
-        self.pq: mp.Queue = mp.Queue(maxsize=self.single_buffer_size)
+        max_batches_transform_queue = int(
+            self.single_queue_size / self.update_batch_size
+        )
+
+        self.tq: mp.Queue = mp.Queue(maxsize=max_batches_transform_queue)
+        self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.func = func
 
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
