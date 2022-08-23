@@ -19,6 +19,8 @@ from datetime import datetime
 
 from typing import Any, Callable, Dict, List, Optional, Union
 
+from tqdm.auto import tqdm
+
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
 from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
 
@@ -991,19 +993,21 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if "failed_documents" in results:
             if len(results["failed_documents"]) == 0:
-                print("✅ All documents inserted/edited successfully.")
+                tqdm.write(
+                    " All documents inserted/edited successfully.",
+                )
             else:
-                print(
-                    "❗Few errors with inserting/editing documents. Please check logs."
+                tqdm.write(
+                    "Few errors with inserting/editing documents. Please check logs.",
                 )
                 return results
 
         elif "failed_document_ids" in results:
             if len(results["failed_document_ids"]) == 0:
-                print("✅ All documents inserted/edited successfully.")
+                tqdm.write(" All documents inserted/edited successfully.")
             else:
-                print(
-                    "❗Few errors with inserting/editing documents. Please check logs."
+                tqdm.write(
+                    "Few errors with inserting/editing documents. Please check logs.",
                 )
                 return results
 
