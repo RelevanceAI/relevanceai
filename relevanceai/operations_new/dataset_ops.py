@@ -515,7 +515,7 @@ class Operations(Write):
             **kwargs,
         )
 
-        filters = cluster_ops._get_filters(filters, vector_fields)
+        filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
         cluster_ops.run(self, filters=filters, chunksize=chunksize)
 
