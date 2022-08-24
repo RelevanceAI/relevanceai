@@ -110,6 +110,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         return self._write_documents(
             dataset_id=dataset_id,
+            bulk_func=self.datasets.bulk_insert,
             documents=documents,
             max_workers=max_workers,
             show_progress_bar=show_progress_bar,
@@ -125,7 +126,6 @@ class BatchInsertClient(BatchRetrieveClient):
         max_workers: Optional[int] = 2,
         show_progress_bar: bool = False,
         batch_size: Optional[int] = None,
-        overwrite: bool = True,
         ingest_in_background: bool = True,
         verbose: Optional[bool] = False,
     ):
@@ -176,10 +176,10 @@ class BatchInsertClient(BatchRetrieveClient):
         return self._write_documents(
             dataset_id=dataset_id,
             documents=documents,
+            bulk_func=self.datasets.documents.bulk_update,
             max_workers=max_workers,
             show_progress_bar=show_progress_bar,
             batch_size=batch_size,
-            overwrite=overwrite,
             ingest_in_background=ingest_in_background,
         )
 
@@ -369,12 +369,11 @@ class BatchInsertClient(BatchRetrieveClient):
     def _write_documents(
         self,
         dataset_id: str,
+        bulk_func: Callable,
         documents: List[Dict[str, Any]],
-        show_progress_bar: bool = False,
         max_workers: Optional[int] = 2,
         batch_size: Optional[int] = None,
-        overwrite: bool = True,
-        ingest_in_background: bool = True,
+        **kwargs,
     ):
 
         documents = self._validate_ids(documents)
@@ -413,12 +412,11 @@ class BatchInsertClient(BatchRetrieveClient):
 
         push = Push(
             dataset=dataset,
+            func=bulk_func,
+            func_kwargs=kwargs,
             documents=documents,
             batch_size=batch_size,
             max_workers=max_workers,
-            show_progress_bar=show_progress_bar,
-            overwrite=overwrite,
-            ingest_in_background=ingest_in_background,
         )
         inserted, failed_ids = push.run()
 

@@ -410,7 +410,7 @@ class DocumentsClient(_Base):
     def bulk_update(
         self,
         dataset_id: str,
-        updates: list,
+        documents: list,
         insert_date: bool = True,
         return_documents: bool = False,
         ingest_in_background: bool = True,
@@ -439,7 +439,7 @@ class DocumentsClient(_Base):
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={
-                    "updates": updates,
+                    "updates": documents,
                     "insert_date": insert_date,
                     "ingest_in_background": ingest_in_background,
                 },
@@ -450,7 +450,7 @@ class DocumentsClient(_Base):
                 endpoint=f"/datasets/{dataset_id}/documents/bulk_update",
                 method="POST",
                 parameters={
-                    "updates": updates,
+                    "updates": documents,
                     "insert_date": insert_date,
                     "ingest_in_background": ingest_in_background,
                 },
@@ -464,7 +464,7 @@ class DocumentsClient(_Base):
 
             return {
                 "response_json": response_json,
-                "documents": updates,
+                "documents": documents,
                 "status_code": status_code,
             }
 

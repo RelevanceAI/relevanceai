@@ -321,7 +321,6 @@ class Write(Read):
         media_workers: Optional[int] = None,
         show_progress_bar: bool = False,
         batch_size: Optional[int] = None,
-        overwrite: bool = True,
         ingest_in_background: bool = True,
         media_fields: Optional[List[str]] = None,
     ) -> Dict:
@@ -385,7 +384,6 @@ class Write(Read):
             max_workers=max_workers,
             show_progress_bar=show_progress_bar,
             batch_size=batch_size,
-            overwrite=overwrite,
             ingest_in_background=ingest_in_background,
         )
         return self._process_insert_results(results)
