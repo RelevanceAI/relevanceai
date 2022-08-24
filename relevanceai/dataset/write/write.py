@@ -463,16 +463,12 @@ class Write(Read):
                 new_documents.append(new_d)
             return documents
 
-        results = self.pull_update_push_async(
-            self.dataset_id,
-            bulk_fn,
-            retrieve_chunk_size=retrieve_chunksize,
+        results = self.bulk_apply(
+            bulk_func=bulk_fn,
+            retrieve_chunksize=retrieve_chunksize,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
-            log_to_file=log_to_file,
-            log_file=log_file,
         )
         if results is None:
             print("✅ Successfully ran!")
@@ -630,7 +626,7 @@ class Write(Read):
             )
             return documents
 
-        self.pull_update_push(self.dataset_id, add_cluster_labels)
+        self.bulk_apply(add_cluster_labels)
 
     @track
     def create(self, schema: Optional[dict] = None) -> Dict:

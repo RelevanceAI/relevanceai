@@ -239,10 +239,9 @@ class Operations(Write, IO):
                 )
                 return docs
 
-            self.pull_update_push_async(
+            self.bulk_apply(
                 dataset_id=self.dataset_id,
-                update_function=encode,
-                updating_args=None,
+                bulk_func=encode,
                 select_fields=all_fields,
             )
 
