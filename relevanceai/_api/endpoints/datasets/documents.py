@@ -413,7 +413,7 @@ class DocumentsClient(_Base):
         updates: list,
         insert_date: bool = True,
         return_documents: bool = False,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
     ):
 
         """

@@ -129,23 +129,20 @@ class Push:
         dataset,
         documents: List[Dict[str, Any]],
         batch_size: int,
-        overwrite: bool = True,
         max_workers: Optional[int] = None,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
         show_progress_bar: bool = True,
         background_execution: bool = False,
-        *args,
-        **kwargs,
+        insert_date: bool = True,
+        overwrite: bool = True,
+        update_schema: bool = True,
+        field_transformers: Optional[List] = None,
     ):
         from relevanceai.dataset.dataset import Dataset
 
         self.dataset: Dataset = dataset
         self.dataset_id: str = dataset.dataset_id
 
-        documents = [
-            document if "_id" in document else {"_id": str(uuid.uuid4()), **document}
-            for document in documents
-        ]
         documents = json_encoder(documents)
 
         self.frontier = {document["_id"]: 0 for document in documents}
@@ -153,8 +150,6 @@ class Push:
         for document in documents:
             self.push_queue.put(document)
 
-        self.push_args = args
-        self.push_kwargs = kwargs
         self.overwrite = overwrite
         self.ingest_in_background = ingest_in_background
         self.batch_size = batch_size
@@ -165,6 +160,10 @@ class Push:
         self.lock = threading.Lock()
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
         self.insert_count = 0
+
+        self.insert_date = insert_date
+        self.update_schema = update_schema
+        self.field_transformers = field_transformers
 
         self.push_bar = tqdm(
             range(len(documents)),
@@ -227,14 +226,15 @@ class Push:
             if not batch:
                 break
 
-            result = self.dataset.datasets.bulk_insert(
-                self.dataset_id,
-                batch,
-                return_documents=True,
+            result = self.dataset.datasets.documents.bulk_update(
+                dataset_id=self.dataset_id,
+                documents=batch,
+                insert_date=self.insert_date,
                 overwrite=self.overwrite,
+                update_schema=self.update_schema,
+                field_transformers=self.field_transformers,
+                return_documents=True,
                 ingest_in_background=self.ingest_in_background,
-                *self.push_args,
-                **self.push_kwargs,
             )
 
             failed_documents = self._handle_failed_documents(result, batch)

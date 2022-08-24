@@ -34,18 +34,13 @@ class Write(Read):
     def insert_documents(
         self,
         documents: list,
-        bulk_fn: Callable = None,
         max_workers: Optional[int] = 2,
         media_workers: Optional[int] = None,
-        retry_chunk_mult: float = 0.5,
         show_progress_bar: bool = False,
-        chunksize: int = 0,
-        use_json_encoder: bool = True,
-        create_id: bool = False,
+        batch_size: Optional[int] = None,
         overwrite: bool = True,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
         media_fields: Optional[List[str]] = None,
-        **kwargs,
     ) -> Dict:
 
         """
@@ -110,16 +105,11 @@ class Write(Read):
         results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
-            bulk_fn=bulk_fn,
             max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-            create_id=create_id,
+            batch_size=batch_size,
             overwrite=overwrite,
             ingest_in_background=ingest_in_background,
-            **kwargs,
         )
         return self._process_insert_results(results)
 
@@ -327,15 +317,13 @@ class Write(Read):
     def upsert_documents(
         self,
         documents: list,
-        bulk_fn: Callable = None,
-        max_workers: int = 2,
-        retry_chunk_mult: float = 0.5,
-        chunksize: int = 0,
-        show_progress_bar=False,
-        use_json_encoder: bool = True,
-        return_json: bool = False,
-        create_id: bool = False,
-        ingest_in_background: bool = False,
+        max_workers: Optional[int] = 2,
+        media_workers: Optional[int] = None,
+        show_progress_bar: bool = False,
+        batch_size: Optional[int] = None,
+        overwrite: bool = True,
+        ingest_in_background: bool = True,
+        media_fields: Optional[List[str]] = None,
     ) -> Dict:
 
         """
@@ -384,19 +372,23 @@ class Write(Read):
             ds.upsert_documents(documents)
 
         """
+        if media_fields is not None:
+            documents = self.prepare_media_documents(
+                documents,
+                media_fields,
+                max_workers=media_workers,
+            )
+
         results = self._update_documents(
-            self.dataset_id,
+            dataset_id=self.dataset_id,
             documents=documents,
-            bulk_fn=bulk_fn,
             max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
-            chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-            create_id=create_id,
+            batch_size=batch_size,
+            overwrite=overwrite,
             ingest_in_background=ingest_in_background,
         )
-        return self._process_insert_results(results, return_json=return_json)
+        return self._process_insert_results(results)
 
     @track
     def apply(
@@ -731,7 +723,6 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
-
 
     def _upload_media(
         self, presigned_url: str, media_content: bytes, verbose: bool = True

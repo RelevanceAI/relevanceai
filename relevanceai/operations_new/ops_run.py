@@ -64,8 +64,6 @@ class OperationRun(TransformBase):
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
 
-        schema = dataset.schema
-
         self._check_fields_in_schema(select_fields)
 
         filters += [
