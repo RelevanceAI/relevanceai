@@ -499,7 +499,7 @@ class Write(Read):
         bulk_func: Callable,
         bulk_func_args: Optional[Tuple[Any]] = None,
         bulk_func_kwargs: Optional[Dict[str, Any]] = None,
-        chunksize: int = 128,
+        chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         update_workers: int = 2,

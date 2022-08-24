@@ -71,8 +71,9 @@ class PullUpdatePush:
         )
         self.ndocs = ndocs
 
-        self.pull_batch_size = min(pull_batch_size, ndocs)
+        self.pull_batch_size = pull_batch_size
         self.update_batch_size = min(update_batch_size, ndocs)
+        tqdm.write(f"Transform chunksize is set to {self.update_batch_size} documents")
         self.push_batch_size = push_batch_size
 
         self.update_all_at_once = update_all_at_once
@@ -133,31 +134,6 @@ class PullUpdatePush:
         self.failed_frontier: Dict[str, int] = {}
         self.retry_count = retry_count
 
-    def _pull(self):
-        """
-        Iteratively pulls documents from a dataset and places them in the transform queue
-        """
-        documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
-        after_id: Union[str, None] = None
-
-        while documents:
-            res = self.dataset.datasets.documents.get_where(
-                dataset_id=self.dataset_id,
-                page_size=self.pull_batch_size,
-                filters=self.filters,
-                select_fields=self.select_fields,
-                sort=[],
-                after_id=after_id,
-            )
-            documents = res["documents"]
-            after_id = res["after_id"]
-
-            for document in documents:
-                self.tq.put(document)
-
-            with self.general_lock:
-                self.pull_bar.update(len(documents))
-
     def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
         """
         Get average size of a document in memory.
@@ -168,7 +144,9 @@ class PullUpdatePush:
         ]
         return sum(document_sizes) / len(sample_documents)
 
-    def _get_optimal_batch_size(self, sample_documents: List[Dict[str, Any]]) -> int:
+    def _get_optimal_batch_size(
+        self, sample_documents: List[Dict[str, Any]], method: str
+    ) -> int:
         """
         Calculates the optimal batch size given a list of sampled documents and constraints in config
         """
@@ -178,8 +156,39 @@ class PullUpdatePush:
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
-        tqdm.write(f"Setting upload chunksize to {chunksize} documents")
+        tqdm.write(f"Setting {method} chunksize to {chunksize} documents")
         return chunksize
+
+    def _pull(self):
+        """
+        Iteratively pulls documents from a dataset and places them in the transform queue
+        """
+        documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
+        after_id: Union[str, None] = None
+
+        while documents:
+            res = self.dataset.datasets.documents.get_where(
+                dataset_id=self.dataset_id,
+                page_size=20 if self.pull_batch_size is None else self.pull_batch_size,
+                filters=self.filters,
+                select_fields=self.select_fields,
+                sort=[],
+                after_id=after_id,
+            )
+
+            documents = res["documents"]
+            after_id = res["after_id"]
+
+            if self.pull_batch_size is None:
+                self.pull_batch_size = self._get_optimal_batch_size(
+                    documents[:10], "pull"
+                )
+
+            for document in documents:
+                self.tq.put(document)
+
+            with self.general_lock:
+                self.pull_bar.update(len(documents))
 
     def _get_update_batch(self) -> List[Dict[str, Any]]:
         """
@@ -214,7 +223,9 @@ class PullUpdatePush:
         # Calculate optimal batch size
         if self.push_batch_size is None:
             sample_documents = [queue.get(timeout=timeout) for _ in range(10)]
-            self.push_batch_size = self._get_optimal_batch_size(sample_documents)
+            self.push_batch_size = self._get_optimal_batch_size(
+                sample_documents, "push"
+            )
             batch = sample_documents
 
         batch_size = self.push_batch_size
@@ -421,7 +432,7 @@ class OperationRun(TransformBase):
         self,
         dataset: Dataset,
         batched: Optional[bool] = False,
-        chunksize: Optional[int] = 100,
+        chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         output_fields: Optional[list] = None,
