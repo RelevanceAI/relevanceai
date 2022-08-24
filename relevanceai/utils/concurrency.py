@@ -228,7 +228,7 @@ class Push:
 
             result = self.dataset.datasets.documents.bulk_update(
                 dataset_id=self.dataset_id,
-                documents=batch,
+                updates=batch,
                 insert_date=self.insert_date,
                 overwrite=self.overwrite,
                 update_schema=self.update_schema,
