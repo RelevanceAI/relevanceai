@@ -229,7 +229,9 @@ class Push:
                 self.push_bar.update(inserted)
 
     def run(self) -> Tuple[int, List[str]]:
-        push_threads = [threading.Thread(target=self._push)]
+        push_threads = [
+            threading.Thread(target=self._push) for _ in range(self.max_workers)
+        ]
         for thread in push_threads:
             thread.start()
 
