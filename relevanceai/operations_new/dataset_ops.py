@@ -88,7 +88,7 @@ class Operations(Write):
         batched: bool = True,
         models: Optional[List[Any]] = None,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = 20,
+        chunksize: Optional[int] = 128,
         output_fields: list = None,
         **kwargs,
     ):

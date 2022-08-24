@@ -85,14 +85,6 @@ class PullUpdatePush:
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
 
-        sample_documents = self.dataset.sample(
-            n=10,
-            filters=self.filters,
-            select_fields=self.select_fields,
-            random_state=hash(random.random()),
-        )
-        self.pull_batch_size = self._get_optimal_batch_size(sample_documents)
-
         self.general_lock = threading.Lock()
         self.update_batch_lock = threading.Lock()
         self.push_batch_lock = threading.Lock()
@@ -118,7 +110,7 @@ class PullUpdatePush:
                 ram_size = psutil.virtual_memory().total  # in bytes
 
                 # assuming documents are 1MB, this is an upper limit and accounts for alot
-                average_size = self._get_average_document_size(sample_documents)
+                average_size = 2**20
                 max_document_size = min(average_size, 2**20)
 
                 total_queue_size = int(ram_size * ram_ratio / max_document_size)
