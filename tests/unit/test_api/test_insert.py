@@ -2,7 +2,6 @@
 """
 import pytest
 
-from functools import partial
 from typing import Dict, List
 
 from relevanceai import Client
