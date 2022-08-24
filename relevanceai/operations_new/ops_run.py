@@ -52,6 +52,7 @@ class PullUpdatePush:
         background_execution: bool = True,
         ram_ratio: float = 0.25,
         update_all_at_once: bool = False,
+        retry_count: int = 3,
     ):
         """
         Buffer size:
@@ -137,6 +138,9 @@ class PullUpdatePush:
         self.background_execution = background_execution
 
         self.config = CONFIG
+
+        self.failed_frontier: Dict[str, int] = {}
+        self.retry_count = retry_count
 
     def _pull(self):
         """
@@ -283,9 +287,16 @@ class PullUpdatePush:
                 document for document in batch if document["_id"] in failed_ids
             ]
 
-            # ...and re add them to the push queue
+            # ...and re add them to the push queue...
             for failed_document in failed_documents:
-                self.pq.put(failed_document)
+                _id = failed_document["_id"]
+                if _id not in self.failed_frontier:
+                    self.failed_frontier[_id] = 0
+
+                # ...only if they have failed less than the retry count
+                if self.failed_frontier[_id] < self.retry_count:
+                    self.failed_frontier[_id] += 1
+                    self.pq.put(failed_document)
 
         return failed_documents
 
@@ -388,17 +399,19 @@ class PullUpdatePush:
                 thread.join()
             self.pull_thread.join()
 
-    def run(self):
+    def run(self) -> List[str]:
         """
         (Main Method)
         Do the pulling, the updating, and of course, the pushing.
-        """
-        if self.ndocs <= 0:
-            return
 
-        self._init_progress_bars()
-        self._init_worker_threads()
-        self._run_worker_threads()
+        return the _ids of any failed documents
+        """
+        if self.ndocs > 0:
+            self._init_progress_bars()
+            self._init_worker_threads()
+            self._run_worker_threads()
+
+        return list(self.failed_frontier.keys())
 
 
 class OperationRun(TransformBase):
