@@ -3,6 +3,7 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
 from queue import Empty
+import random
 import psutil
 import threading
 import multiprocessing as mp
@@ -82,6 +83,14 @@ class PullUpdatePush:
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
 
+        sample_documents = self.dataset.sample(
+            n=10,
+            filters=self.filters,
+            select_fields=self.select_fields,
+            random_state=hash(random.random()),
+        )
+        self.pull_batch_size = self._get_optimal_batch_size(sample_documents)
+
         self.general_lock = threading.Lock()
         self.update_batch_lock = threading.Lock()
         self.push_batch_lock = threading.Lock()
@@ -107,7 +116,8 @@ class PullUpdatePush:
                 ram_size = psutil.virtual_memory().total  # in bytes
 
                 # assuming documents are 1MB, this is an upper limit and accounts for alot
-                max_document_size = 2**20
+                average_size = self._get_average_document_size(sample_documents)
+                max_document_size = min(average_size, 2**20)
 
                 total_queue_size = int(ram_size * ram_ratio / max_document_size)
             else:
@@ -129,7 +139,9 @@ class PullUpdatePush:
         self.config = CONFIG
 
     def _pull(self):
-
+        """
+        Iteratively pulls documents from a dataset and places them in the transform queue
+        """
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[str, None] = None
 
@@ -151,8 +163,22 @@ class PullUpdatePush:
             with self.general_lock:
                 self.pull_bar.update(len(documents))
 
-    def _get_optimal_push_batch_size(self, sample_document: Dict[str, Any]) -> int:
-        document_size = getsizeof(sample_document) / 2**20
+    def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
+        """
+        Get average size of a document in memory.
+        Returns size in bytes.
+        """
+        document_sizes = [
+            getsizeof(sample_document) for sample_document in sample_documents
+        ]
+        return sum(document_sizes) / len(sample_documents)
+
+    def _get_optimal_batch_size(self, sample_documents: List[Dict[str, Any]]) -> int:
+        """
+        Calculates the optimal batch size given a list of sampled documents and constraints in config
+        """
+        document_size = self._get_average_document_size(sample_documents)
+        document_size = document_size / 2**20
         target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
@@ -160,50 +186,62 @@ class PullUpdatePush:
         tqdm.write(f"Setting upload chunksize to {chunksize} documents")
         return chunksize
 
-    def _get_batch(self, queue_id: str):
+    def _get_update_batch(self) -> List[Dict[str, Any]]:
+        """
+        Collects a batches of of size `update_batch_size` from the transform queue
+        """
         batch: List[Dict[str, Any]] = []
 
-        if queue_id == "update":
-            queue = self.tq
-            timeout = None
-            batch_size = self.update_batch_size
+        queue = self.tq
+        timeout = None
+        batch_size = self.update_batch_size
 
-            while self.update_all_at_once or not queue.empty():
-                if len(batch) >= batch_size:
-                    break
-                try:
-                    document = queue.get(timeout=timeout)
-                except:
-                    break
-                batch.append(document)
+        while self.update_all_at_once or not queue.empty():
+            if len(batch) >= batch_size:
+                break
+            try:
+                document = queue.get(timeout=timeout)
+            except:
+                break
+            batch.append(document)
 
-        elif queue_id == "push":
-            queue = self.pq
-            timeout = 1
+        return batch
 
-            # Calculate optimal batch size
-            if self.push_batch_size is None:
-                sample_document = queue.get(timeout=timeout)
-                self.push_batch_size = self._get_optimal_push_batch_size(
-                    sample_document
-                )
-                batch = [sample_document]
+    def _get_push_batch(self) -> List[Dict[str, Any]]:
+        """
+        Collects a batches of of size `push_batch_size` from the transform queue
+        """
+        batch: List[Dict[str, Any]] = []
 
-            batch_size = self.push_batch_size
+        queue = self.pq
+        timeout = 1
 
-            while len(batch) < batch_size:
-                try:
-                    document = queue.get(timeout=timeout)
-                except:
-                    break
-                batch.append(document)
+        # Calculate optimal batch size
+        if self.push_batch_size is None:
+            sample_documents = [queue.get(timeout=timeout) for _ in range(10)]
+            self.push_batch_size = self._get_optimal_batch_size(sample_documents)
+            batch = sample_documents
+
+        batch_size = self.push_batch_size
+        while len(batch) < batch_size:
+            try:
+                document = queue.get(timeout=timeout)
+            except:
+                break
+            batch.append(document)
 
         return batch
 
     def _update(self):
+        """
+        Updates a batch of documents given an update function.
+        After updating, remove all fields that are present in both old and new batches.
+        ^ necessary to avoid reinserting stuff that is already in the cloud.
+        Then, repeatedly put each document from the processed batch in the push queue
+        """
         while self.update_bar.n < self.ndocs:
             with self.update_batch_lock:
-                batch = self._get_batch(queue_id="update")
+                batch = self._get_update_batch()
 
             old_keys = [set(document.keys()) for document in batch]
 
@@ -226,7 +264,10 @@ class PullUpdatePush:
         res: Dict[str, Any],
         batch: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
-
+        """
+        Handles any documents that failed to upload.
+        Does so by collecting by `_id` from the batch, and reinserting them in the push queue.
+        """
         # check if there is any failed documents...
         failed_documents = res["response_json"]["failed_documents"]
 
@@ -253,6 +294,10 @@ class PullUpdatePush:
         new_batch: List[Dict[str, Any]],
         old_keys: List[str],
     ) -> List[Dict[str, Any]]:
+        """
+        Removes fields from `new_batch` that are present in the `old_keys` list.
+        Necessary to avoid bloating the upload payload with unnecesary information.
+        """
         batch = [
             {
                 key: value
@@ -264,9 +309,13 @@ class PullUpdatePush:
         return batch
 
     def _push(self) -> None:
+        """
+        Iteratively gather a batch of processed documents and push these to cloud
+        """
         while self.push_bar.n < self.ndocs:
             with self.push_batch_lock:
-                batch = self._get_batch(queue_id="push")
+                batch = self._get_push_batch()
+
             batch = self.dataset.json_encoder(batch)
 
             res = self.dataset.datasets.documents.bulk_update(
@@ -282,6 +331,9 @@ class PullUpdatePush:
                 self.push_bar.update(len(batch) - len(failed_documents))
 
     def _init_progress_bars(self) -> None:
+        """
+        Initialise the progress bars for dispay progress on pulling updating and pushing.
+        """
         self.pull_bar = tqdm(
             desc="pull",
             position=0,
@@ -302,6 +354,9 @@ class PullUpdatePush:
         )
 
     def _init_worker_threads(self) -> None:
+        """
+        Initialise the worker threads for each process
+        """
         self.pull_thread = threading.Thread(target=self._pull)
         self.update_threads = [
             threading.Thread(target=self._update) for _ in range(self.update_workers)
@@ -311,6 +366,9 @@ class PullUpdatePush:
         ]
 
     def _run_worker_threads(self):
+        """
+        Start the worker threads and then join them in reversed order.
+        """
         self.pull_thread.start()
         while True:
             if not self.tq.empty():
@@ -332,6 +390,7 @@ class PullUpdatePush:
 
     def run(self):
         """
+        (Main Method)
         Do the pulling, the updating, and of course, the pushing.
         """
         if self.ndocs <= 0:
@@ -440,17 +499,20 @@ class OperationRun(TransformBase):
     def batch_transform_upsert(
         self,
         dataset: Dataset,
+        func_args: Optional[Tuple[Any]] = None,
+        func_kwargs: Optional[Dict[str, Any]] = None,
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        max_active_threads: int = 2,
+        update_workers: int = 2,
+        push_workers: int = 2,
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         update_batch_size: int = 32,
         multithreaded_update: bool = False,
         update_all_at_once: bool = False,
-        *args,
+        ingest_in_background: bool = True,
         **kwargs,
     ):
         if multithreaded_update:
@@ -460,20 +522,21 @@ class OperationRun(TransformBase):
         pup = PullUpdatePush(
             dataset=dataset,
             func=self.transform,
-            func_args=args,
-            func_kwargs=kwargs,
+            func_args=func_args,
+            func_kwargs=func_kwargs,
             multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
             update_batch_size=update_batch_size,
             push_batch_size=chunksize,
             filters=filters,
             select_fields=select_fields,
-            update_workers=max_active_threads,
-            push_workers=max_active_threads,
+            update_workers=update_workers,
+            push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
             timeout=timeout,
             update_all_at_once=update_all_at_once,
+            ingest_in_background=ingest_in_background,
         )
         pup.run()
 

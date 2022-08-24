@@ -12,7 +12,7 @@ import uuid
 import concurrent.futures
 
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
@@ -497,16 +497,19 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
+        bulk_func_args: Optional[Tuple[Any]] = None,
+        bulk_func_kwargs: Optional[Dict[str, Any]] = None,
         chunksize: int = 128,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        max_active_threads: int = 2,
+        update_workers: int = 2,
+        push_workers: int = 2,
         timeout: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         update_batch_size: int = 32,
         multithreaded_update: bool = True,
-        *args,
+        ingest_in_background: bool = True,
         **kwargs,
     ):
         """
@@ -551,19 +554,21 @@ class Write(Read):
         pup = PullUpdatePush(
             dataset=self,
             func=bulk_func,
-            func_args=args,
-            func_kwargs=kwargs,
+            func_args=bulk_func_args,
+            func_kwargs=bulk_func_kwargs,
             multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
             update_batch_size=update_batch_size,
             push_batch_size=chunksize,
             filters=filters,
             select_fields=select_fields,
-            update_workers=max_active_threads,
-            push_workers=max_active_threads,
+            update_workers=update_workers,
+            push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
             timeout=timeout,
+            ingest_in_background=ingest_in_background,
+            **kwargs,
         )
         pup.run()
 
