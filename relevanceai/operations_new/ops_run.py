@@ -63,6 +63,7 @@ class PullUpdatePush:
 
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
+        self.config = CONFIG
 
         ndocs = self.dataset.get_number_of_documents(
             dataset_id=self.dataset_id,
@@ -136,8 +137,6 @@ class PullUpdatePush:
 
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
         self.background_execution = background_execution
-
-        self.config = CONFIG
 
         self.failed_frontier: Dict[str, int] = {}
         self.retry_count = retry_count
