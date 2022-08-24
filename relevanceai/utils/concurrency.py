@@ -210,7 +210,7 @@ class Push:
 
             # ...and re add them to the push queue
             for failed_document in failed_documents:
-                _id = hash(json.dumps(failed_document))
+                _id = failed_document["_id"]
                 if self.frontier[_id] <= 3:
                     self.frontier[_id] += 1
                     self.push_queue.put(failed_document)
