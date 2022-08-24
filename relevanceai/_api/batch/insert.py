@@ -135,6 +135,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         return self._write_documents(
             bulk_insert_func,
+            dataset_id,
             documents,
             bulk_fn,
             max_workers,
@@ -219,6 +220,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         return self._write_documents(
             bulk_update_func,
+            dataset_id,
             documents,
             bulk_fn,
             max_workers,
@@ -794,6 +796,7 @@ class BatchInsertClient(BatchRetrieveClient):
     def _write_documents(
         self,
         insert_function,
+        dataset_id,
         documents: list,
         bulk_fn: Callable = None,
         max_workers: Optional[int] = 2,
@@ -827,8 +830,15 @@ class BatchInsertClient(BatchRetrieveClient):
             if batch_size == 0:
                 batch_size = 1
 
+        # handles if the client calls _insert_documents
+        invert_op = getattr(self, "Dataset", None)
+        if callable(invert_op):
+            dataset = invert_op(dataset_id)
+        else:
+            dataset = self
+
         push = Push(
-            dataset=self,
+            dataset=dataset,
             documents=documents,
             batch_size=batch_size,
             max_workers=max_workers,
