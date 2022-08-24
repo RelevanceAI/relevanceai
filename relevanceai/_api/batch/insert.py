@@ -121,7 +121,7 @@ class BatchInsertClient(BatchRetrieveClient):
     def _update_documents(
         self,
         dataset_id: str,
-        documents: list,
+        documents: List[Dict[str, Any]],
         max_workers: Optional[int] = 2,
         show_progress_bar: bool = False,
         batch_size: Optional[int] = None,
