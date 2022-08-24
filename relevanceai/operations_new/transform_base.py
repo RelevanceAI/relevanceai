@@ -4,7 +4,7 @@ Checks fields, contains key abstract methods, etc
 """
 from abc import ABC, abstractmethod
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from relevanceai.utils import DocUtils
 from relevanceai.client import Credentials
@@ -63,11 +63,15 @@ class OperationsCheck(ABC, DocUtils):
     def normalize_string(string: str):
         return string.lower().replace("-", "").replace("_", "")
 
-    def _check_fields_in_schema(self, fields):
+    def _check_fields_in_schema(
+        self,
+        schema: Dict[str, str],
+        fields: List[Union[str, None]],
+    ) -> None:
         # Check fields in schema
         if fields is not None:
             for field in fields:
-                if field not in self.datasets.schema(self.dataset_id):
+                if field not in schema:
                     raise ValueError(f"{field} not in Dataset schema")
 
 

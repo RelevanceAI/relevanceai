@@ -122,7 +122,7 @@ class Read(ClusterRead):
 
             length, width = df.shape
         """
-        schema = self.datasets.schema(self.dataset_id)
+        schema = self.schema
         n_documents = self.get_number_of_documents(dataset_id=self.dataset_id)
         return (n_documents, len(schema))
 
@@ -789,7 +789,7 @@ class Read(ClusterRead):
             ds.list_vector_fields()
 
         """
-        schema = self.datasets.schema(self.dataset_id)
+        schema = self.schema
         return [
             k for k in schema.keys() if k.endswith("_vector_") and "_cluster_" not in k
         ]
