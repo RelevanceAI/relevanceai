@@ -21,42 +21,9 @@ class TestInsert:
         test_dataset: Dataset,
         vector_documents: List[Dict],
     ):
-        results = test_dataset._insert_documents(
+        results = test_dataset.insert_documents(
             test_dataset.dataset_id,
             vector_documents,
-        )
-        assert len(results["failed_documents"]) == 0
-
-    def test_datetime_upload(
-        self,
-        test_dataset: Dataset,
-        datetime_documents: List[Dict],
-    ):
-        results = test_dataset._insert_documents(
-            test_dataset.dataset_id,
-            datetime_documents,
-        )
-        assert len(results["failed_documents"]) == 0
-
-    def test_numpy_upload(
-        self,
-        test_dataset: Dataset,
-        numpy_documents: List[Dict],
-    ):
-        results = test_dataset._insert_documents(
-            test_dataset.dataset_id,
-            numpy_documents,
-        )
-        assert len(results["failed_documents"]) == 0
-
-    def test_pandas_upload(
-        self,
-        test_dataset: Dataset,
-        pandas_documents: List[Dict],
-    ):
-        results = test_dataset._insert_documents(
-            test_dataset.dataset_id,
-            pandas_documents,
         )
         assert len(results["failed_documents"]) == 0
 
@@ -65,7 +32,7 @@ class TestInsert:
         test_dataset: Dataset,
         assorted_nested_documents: List[Dict],
     ):
-        results = test_dataset._insert_documents(
+        results = test_dataset.insert_documents(
             test_dataset.dataset_id,
             assorted_nested_documents,
         )
