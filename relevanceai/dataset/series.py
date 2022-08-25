@@ -613,9 +613,9 @@ class Series:
         return [kwargs]
 
     def set_dtype(self, dtype):
-        metadata = self.dataset_id.datasets.metadata(self.dataset_id)["results"]
+        metadata = self.dataset.datasets.metadata(self.dataset_id)["results"]
         metadata[self.field] = dtype
-        self.dataset_id.datasets.post_metadata(
+        self.dataset.datasets.post_metadata(
             self.dataset_id,
             metadata=metadata,
         )
