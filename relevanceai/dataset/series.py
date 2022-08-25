@@ -452,7 +452,6 @@ class Series:
     @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_pandas_series(self):
         documents = self.dataset.get_all_documents(
-            dataset_id=self.dataset_id,
             select_fields=[self.field],
             include_vector=False,
             show_progress_bar=True,
@@ -610,3 +609,7 @@ class Series:
             self.dataset_id,
             metadata=metadata,
         )
+
+    @property
+    def values(self):
+        return self._get_pandas_series()
