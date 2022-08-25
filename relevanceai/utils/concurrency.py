@@ -137,11 +137,10 @@ class Push:
 
         self.func = func
         self.func_kwargs = func_kwargs
-        documents = json_encoder(documents)
 
         self.frontier = {document["_id"]: 0 for document in documents}
         self.push_queue: mp.Queue = mp.Queue(maxsize=len(documents))
-        for document in documents:
+        for document in tqdm(documents):
             self.push_queue.put(document)
 
         self.batch_size = batch_size
@@ -167,11 +166,13 @@ class Push:
 
     def _get_batch(self):
         batch = []
-        while not self.push_queue.empty():
+        while True:
             if len(batch) >= self.batch_size:
                 break
+            # if self.push_queue.empty():
+            #     break
             try:
-                document = self.push_queue.get()
+                document = self.push_queue.get(timeout=1)
             except:
                 break
             batch.append(document)
@@ -216,6 +217,7 @@ class Push:
             if not batch:
                 break
 
+            batch = json_encoder(batch)
             result = self.func(
                 dataset_id=self.dataset_id, documents=batch, **self.func_kwargs
             )

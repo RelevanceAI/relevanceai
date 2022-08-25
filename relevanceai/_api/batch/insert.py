@@ -37,11 +37,8 @@ from relevanceai.utils.concurrency import Push, multiprocess, multithread
 from relevanceai.constants.errors import FieldNotFoundError
 from relevanceai.constants.warning import Warning
 from relevanceai.constants import (
-    MB_TO_BYTE,
+    ONE_MB,
     LIST_SIZE_MULTIPLIER,
-    SUCCESS_CODES,
-    RETRY_CODES,
-    HALF_CHUNK_CODES,
 )
 
 
@@ -245,15 +242,17 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> df.insert_csv("temp.csv")
 
         """
-        df = pd.read_csv(filepath_or_buffer, **csv_args)
+        df: pd.DataFrame = pd.read_csv(filepath_or_buffer, **csv_args)
 
         # Initialise output
         inserted = 0
         failed_documents = []
         failed_documents_detailed = []
 
-        test_doc = json.dumps(self.json_encoder(df.loc[0].to_dict()))
-        doc_mb = sys.getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+        test_docs = self.json_encoder(df.loc[:19].to_dict("records"))
+        doc_mbs = [getsizeof(test_doc) for test_doc in test_docs]
+        doc_mb = sum(doc_mbs) / len(doc_mbs)
+        doc_mb /= ONE_MB
 
         target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
@@ -388,8 +387,10 @@ class BatchInsertClient(BatchRetrieveClient):
             }
 
         # Insert documents
-        test_doc = self.json_encoder(documents[0])
-        doc_mb = getsizeof(test_doc) * LIST_SIZE_MULTIPLIER / MB_TO_BYTE
+        test_docs = self.json_encoder(documents[:20])
+        doc_mbs = [getsizeof(test_doc) for test_doc in test_docs]
+        doc_mb = sum(doc_mbs) / len(doc_mbs)
+        doc_mb /= ONE_MB
 
         if batch_size is None:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
@@ -398,7 +399,9 @@ class BatchInsertClient(BatchRetrieveClient):
             batch_size = math.ceil(target_chunk_mb / doc_mb)
             batch_size = min(batch_size, len(documents), max_chunk_size)
 
-            tqdm.write(f"Updating chunksize for batch data insertion to {batch_size}")
+            tqdm.write(
+                f"Size (MB) / Document: {doc_mb:.2f}\nInsert Batch Size: {batch_size:,}"
+            )
             # Add edge case handling
             if batch_size == 0:
                 batch_size = 1
