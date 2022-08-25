@@ -70,7 +70,7 @@ class Series:
     ):
         from relevanceai.dataset import Dataset
 
-        self.dataset: Dataset = self.dataset
+        self.dataset: Dataset = dataset
         self.dataset_id: str = dataset.dataset_id
         self.field = field
         self.image_fields = [] if image_fields is None else image_fields
