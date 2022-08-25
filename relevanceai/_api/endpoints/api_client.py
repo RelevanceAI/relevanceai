@@ -1,6 +1,6 @@
 """API Client
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import uuid
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
@@ -83,11 +83,18 @@ class APIEndpointsClient(_Base, DocUtils):
         Not inplace anymore
         """
         return [
-            {"_id": str(document.get("_id", uuid.uuid4())), **document}
+            {"_id": str(uuid.uuid4()), **document}
+            if "_id" not in document
+            else document
             for document in documents
         ]
 
-    def _are_fields_in_schema(self, fields, dataset_id, schema=None):
+    def _are_fields_in_schema(
+        self,
+        fields: List[str],
+        dataset_id: str,
+        schema: Optional[Dict[str, str]] = None,
+    ) -> None:
         """
         Check fields are in schema
         """
