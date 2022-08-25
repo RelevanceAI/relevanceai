@@ -517,6 +517,11 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
+        # Increase chunksize if n clusters is greater
+        if "n_clusters" in model_kwargs:
+            if model_kwargs["n_clusters"] >= chunksize:
+                chunksize = model_kwargs["n_clusters"] + 100
+                print(f"Updating chunksize to {chunksize}")
         cluster_ops.run(self, filters=filters, chunksize=chunksize)
 
         return cluster_ops
