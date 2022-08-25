@@ -657,7 +657,10 @@ class Read(ClusterRead):
         """
         Store Metadata
         """
-        return self.datasets.metadata(self.dataset_id)["results"]
+        try:
+            return self.datasets.metadata(self.dataset_id)["results"]
+        except:
+            return {}
 
     @property
     def metadata(self):

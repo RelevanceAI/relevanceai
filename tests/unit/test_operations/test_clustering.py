@@ -19,6 +19,7 @@ class TestClusterOps:
             cluster_config=dict(n_clusters=3),
             alias=alias,
             vector_fields=[self.vector_field],
+            ingest_in_background=False,
         )
         assert f"_cluster_.{self.vector_field}.{alias}" in test_dataset.schema
 

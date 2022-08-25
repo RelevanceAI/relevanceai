@@ -483,6 +483,7 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
+        bulk_func_kwargs: Optional[Dict[str, Any]] = None,
         retrieve_chunksize: int = 100,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
@@ -528,15 +529,14 @@ class Write(Read):
         thread_count = 0
         filters = [] if filters is None else filters
         select_fields = [] if select_fields is None else select_fields
+        bulk_func_kwargs = {} if bulk_func_kwargs is None else bulk_func_kwargs
 
         for chunk in self.chunk_dataset(
             select_fields=select_fields,
             filters=filters,
             chunksize=retrieve_chunksize,
         ):
-            updated_chunk = bulk_func(
-                chunk,
-            )
+            updated_chunk = bulk_func(chunk, **bulk_func_kwargs)
 
             @fire_and_forget
             def fire_upsert_docs():
@@ -598,8 +598,10 @@ class Write(Read):
             ]
             return cat_vector_documents
 
-        self.pull_update_push_async(
-            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        self.bulk_apply(
+            self.dataset_id,
+            bulk_func=cat_fields,
+            bulk_func_kwargs=dict(field_name=vector_name),
         )
 
     concat = cat
