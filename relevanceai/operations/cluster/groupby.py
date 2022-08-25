@@ -133,7 +133,7 @@ class ClusterAgg(APIClient):
             Alias used to name a vector field. Belongs in field_{alias} vector
         """
         self.metrics = {} if metrics is None else metrics
-        self._are_fields_in_schema(self.metrics.keys(), self.dataset_id)
+        self._are_fields_in_schema(list(self.metrics.keys()), self.dataset_id)
         self.metrics_call = self._create_metrics()
         return self.datasets.cluster.aggregate(
             dataset_id=self.dataset_id,

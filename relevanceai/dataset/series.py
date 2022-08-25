@@ -465,15 +465,6 @@ class Series:
         except KeyError:
             raise Exception("No documents found")
 
-    def __getattr__(self, attr):
-        if hasattr(pd.Series, attr):
-            series = self._get_pandas_series()
-            try:
-                return getattr(series, attr)
-            except SyntaxError:
-                raise AttributeError(f"'{attr}' is an invalid attribute")
-        raise AttributeError(f"'{attr}' is an invalid attribute")
-
     def __add__(self, other: "Series") -> "Series":
         schema = self.dataset.schema
         if schema[self.field] != "numeric":

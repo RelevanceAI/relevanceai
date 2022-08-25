@@ -56,6 +56,7 @@ class TestVectorizeOps:
 
         assert "_dim4_feature_vector_" in dataset.schema
 
+    @pytest.mark.xfail(reason="deprecated")
     def test_custom_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_penguins")
 

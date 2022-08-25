@@ -21,10 +21,7 @@ class TestInsert:
         test_dataset: Dataset,
         vector_documents: List[Dict],
     ):
-        results = test_dataset.insert_documents(
-            test_dataset.dataset_id,
-            vector_documents,
-        )
+        results = test_dataset.insert_documents(vector_documents)
         assert len(results["failed_documents"]) == 0
 
     def test_assorted_nested_upload(
@@ -32,10 +29,7 @@ class TestInsert:
         test_dataset: Dataset,
         assorted_nested_documents: List[Dict],
     ):
-        results = test_dataset.insert_documents(
-            test_dataset.dataset_id,
-            assorted_nested_documents,
-        )
+        results = test_dataset.insert_documents(assorted_nested_documents)
         assert len(results["failed_documents"]) == 0
 
 
