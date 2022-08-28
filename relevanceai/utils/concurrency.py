@@ -140,7 +140,7 @@ class Push:
 
         self.frontier = {document["_id"]: 0 for document in documents}
         self.push_queue: mp.Queue = mp.Queue(maxsize=len(documents))
-        for document in tqdm(documents):
+        for document in documents:
             self.push_queue.put(document)
 
         self.batch_size = batch_size
@@ -189,7 +189,7 @@ class Push:
 
         if failed_documents:
             with self.lock:
-                desc = f"push - failed_documents = {self.failed_ids}"
+                desc = f"push - failed_documents = {len(self.failed_ids)}"
                 self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...

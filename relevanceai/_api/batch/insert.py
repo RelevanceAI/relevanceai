@@ -399,12 +399,11 @@ class BatchInsertClient(BatchRetrieveClient):
             batch_size = math.ceil(target_chunk_mb / doc_mb)
             batch_size = min(batch_size, len(documents), max_chunk_size)
 
+            payload_size = doc_mb * batch_size
+
             tqdm.write(
-                f"Size (MB) / Document: {doc_mb:.2f}\nInsert Batch Size: {batch_size:,}"
+                f"Size (MB) / Document: {doc_mb:.3f}\nInsert Batch Size: {batch_size:,}\nPayload Size (MB): ~{payload_size:.2f}"
             )
-            # Add edge case handling
-            if batch_size == 0:
-                batch_size = 1
 
         # handles if the client calls _insert_documents
         invert_op = getattr(self, "Dataset", None)

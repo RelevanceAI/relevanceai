@@ -36,7 +36,7 @@ class Write(Read):
         documents: list,
         max_workers: Optional[int] = 2,
         media_workers: Optional[int] = None,
-        show_progress_bar: bool = False,
+        show_progress_bar: bool = True,
         batch_size: Optional[int] = None,
         overwrite: bool = True,
         ingest_in_background: bool = True,
