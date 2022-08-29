@@ -209,17 +209,16 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = None
+        timeout = 1
         batch_size = self.transform_batch_size
 
-        while self.update_all_at_once or not queue.empty():
-            if len(batch) >= batch_size:
-                break
+        while self.update_all_at_once or len(batch) < batch_size:
             try:
                 document = queue.get(timeout=timeout)
+                batch.append(document)
             except:
-                break
-            batch.append(document)
+                if len(batch) > 0:
+                    break
 
         return batch
 

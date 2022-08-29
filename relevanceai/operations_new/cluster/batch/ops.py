@@ -1,6 +1,7 @@
 """
 Batch Cluster Operations
 """
+from relevanceai.constants.links import EXPLORER_APP_LINK
 from relevanceai.operations_new.cluster.batch.transform import BatchClusterTransform
 from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.cluster.ops import ClusterOps
@@ -68,6 +69,9 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         """
         Run batch clustering
         """
+        from tqdm.auto import tqdm
+
+        tqdm.write("\nFitting Model...")
         pup = PullTransformPush(
             dataset=dataset,
             func=self.fit,
@@ -79,6 +83,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         )
         pup.run()
 
+        tqdm.write("\nPredicting Documents...")
         pup = PullTransformPush(
             dataset=dataset,
             func=self.transform,
@@ -90,4 +95,6 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         )
         pup.run()
 
+        tqdm.write("\nConfigure your new explore app below:")
+        tqdm.write(EXPLORER_APP_LINK.format(dataset.dataset_id))
         return

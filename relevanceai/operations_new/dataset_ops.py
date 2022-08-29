@@ -560,7 +560,7 @@ class Operations(Write):
     )"""
         )
         print()
-        print("Configure your new cluster app below:")
+        print("Configure your new explore app below:")
         print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 
