@@ -43,6 +43,7 @@ class Export(CSVExport, DictExport, PandasExport):
         chunksize : int, optional
             The number of documents to be processed at a time.
         """
+
         for i, chunk in enumerate(
             self.chunk_dataset(chunksize=chunksize, filters=filters)
         ):
@@ -52,6 +53,7 @@ class Export(CSVExport, DictExport, PandasExport):
                 self._insert_documents(child_dataset_id, documents=chunk, verbose=True)
             else:
                 self._insert_documents(child_dataset_id, documents=chunk, verbose=False)
+
         self.datasets.post_metadata(
             dataset_id=child_dataset_id, metadata={"parent_dataset_id": self.dataset_id}
         )
