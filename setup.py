@@ -33,6 +33,7 @@ requirements = [
     "aiohttp>=3.8.1",
     "appdirs>=1.4.4",
     "orjson>=3.6.7",
+    "psutil>=5.9.1",
 ]
 
 models_requirements = requirements + ["sentence-transformers"]

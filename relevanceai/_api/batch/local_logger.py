@@ -8,7 +8,7 @@ from relevanceai.utils.logger import LoguruLogger
 from relevanceai.constants import CONFIG
 
 
-class PullUpdatePushLocalLogger(LoguruLogger):
+class PullTransformPushLocalLogger(LoguruLogger):
     """This logger class is specifically for pull_update_push to log
     failures locally as opposed to on the cloud.
     """

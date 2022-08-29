@@ -108,7 +108,7 @@ class TestInsertImages:
         self.directory.rmdir()
 
 
-class TestPullUpdatePush:
+class TestPullTransformPush:
     def test_pull_update_push_simple(
         self,
         test_client: Client,
@@ -155,7 +155,7 @@ class TestPullUpdatePush:
         assert len(response["failed_documents"]) == 0
 
 
-class TestPullUpdatePushAsync:
+class TestPullTransformPushAsync:
     def test_pull_update_push_async(
         self,
         test_client: Client,
