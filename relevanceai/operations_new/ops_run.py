@@ -85,9 +85,7 @@ class PullTransformPush:
         if update_all_at_once:
             self.transform_chunksize = ndocs
 
-        tqdm.write(
-            f"Transform chunksize is set to {self.transform_chunksize:,} documents"
-        )
+        tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
@@ -129,9 +127,7 @@ class PullTransformPush:
 
             self.single_queue_size = int(total_queue_size / 2)
 
-        tqdm.write(
-            f"Setting max number of documents in queue to be: {self.single_queue_size:,}"
-        )
+        tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
         self.tq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
@@ -166,7 +162,7 @@ class PullTransformPush:
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
-        tqdm.write(f"Setting {method} chunksize to {chunksize} documents")
+        tqdm.write(f"{method.capitalize()} Chunksize: {chunksize}")
         return chunksize
 
     def _pull(self):

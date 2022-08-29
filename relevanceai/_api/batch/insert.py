@@ -777,7 +777,7 @@ class BatchInsertClient(BatchRetrieveClient):
             payload_size = doc_mb * chunksize
 
             tqdm.write(
-                f"Size (MB) / Document: {doc_mb:.3f}\nInsert Batch Size: {chunksize:,}\nPayload Size (MB): ~{payload_size:.2f}"
+                f"Size (MB) / Document: {doc_mb:.3f}\nInsert Chunksize: {chunksize:,}\nPayload Size (MB): ~{payload_size:.2f}"
             )
 
         # handles if the client calls _insert_documents
