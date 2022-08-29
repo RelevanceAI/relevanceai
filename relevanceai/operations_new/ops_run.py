@@ -51,6 +51,8 @@ class PullTransformPush:
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
         retry_count: int = 3,
+        after_id: Optional[List[str]] = None,
+        pull_limit: Optional[int] = None,
     ):
         """
         Buffer size:
@@ -63,11 +65,15 @@ class PullTransformPush:
         self.dataset_id = dataset.dataset_id
         self.config = CONFIG
 
+        self.pull_limit = pull_limit
         ndocs = self.dataset.get_number_of_documents(
             dataset_id=self.dataset_id,
             filters=filters,
         )
-        self.ndocs = ndocs
+        if pull_limit is None:
+            self.ndocs = ndocs
+        else:
+            self.ndocs = pull_limit
 
         self.pull_batch_size = pull_batch_size
         self.transform_batch_size = min(transform_batch_size, ndocs)
@@ -134,6 +140,7 @@ class PullTransformPush:
 
         self.failed_frontier: Dict[str, int] = {}
         self.retry_count = retry_count
+        self.after_id = after_id
 
     def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
         """
@@ -165,7 +172,7 @@ class PullTransformPush:
         Iteratively pulls documents from a dataset and places them in the transform queue
         """
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
-        after_id: Union[str, None] = None
+        after_id: Union[List[str], None] = self.after_id
 
         while documents:
             res = self.dataset.datasets.documents.get_where(
@@ -190,6 +197,10 @@ class PullTransformPush:
 
             with self.general_lock:
                 self.pull_bar.update(len(documents))
+
+            if self.pull_limit is not None:
+                if self.pull_bar.n > self.pull_limit:
+                    break
 
     def _get_update_batch(self) -> List[Dict[str, Any]]:
         """
