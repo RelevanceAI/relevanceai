@@ -22,7 +22,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
-from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai._api.batch.local_logger import PullTransformPushLocalLogger
 
 from tqdm.auto import tqdm
 
@@ -181,6 +181,381 @@ class BatchInsertClient(BatchRetrieveClient):
         )
 
     update_documents = _update_documents
+
+    def pull_update_push(
+        self,
+        dataset_id: str,
+        update_function,
+        updated_dataset_id: str = None,
+        log_file: str = None,
+        updated_documents_file: str = None,
+        updating_args: Optional[dict] = None,
+        retrieve_chunk_size: int = 100,
+        max_workers: int = 2,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        show_progress_bar: bool = True,
+        log_to_file: bool = True,
+    ):
+        """
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
+        Parameters
+        ----------
+        dataset_id: string
+            The dataset_id of the collection where your original documents are
+
+        update_function: function
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+
+        updated_dataset_id: string
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+
+        log_file: str
+            The log file to direct any information or issues that may crop up.
+            If no log file is specified, one will automatically be created.
+
+        updated_documents_file: str
+            A file to keep track of documents that have already been update.
+            If a file is not specified, one will automatically be created.
+
+        updating_args: dict
+            Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+
+        max_workers: int
+            The number of processors you want to parallelize with
+
+        filters: list
+            A list of filters to apply on the retrieval query
+
+        select_fields: list
+            A list of fields to query over
+
+        use_json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
+        if not callable(update_function):
+            raise TypeError(
+                "Your update function needs to be a function! Please read the documentation if it is not."
+            )
+
+        # Check if a logging_collection has been supplied
+        if log_file is None:
+            log_file = (
+                dataset_id
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+                + ".log"
+            )
+            self.logger.info(f"Created {log_file}")
+
+        if updated_documents_file is None:
+            updated_documents_file = "_".join(
+                [
+                    dataset_id,
+                    str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S")),
+                    "pull_update_push-updated_documents.temp",
+                ]
+            )
+            self.logger.info(f"Created {updated_documents_file}")
+
+        with FileLogger(fn=log_file, verbose=True, log_to_file=log_to_file):
+            # Instantiate the logger to document the successful IDs
+            PULL_UPDATE_PUSH_LOGGER = PullTransformPushLocalLogger(
+                updated_documents_file
+            )
+
+            # Track failed documents
+            failed_documents: List[Dict] = []
+            failed_documents_detailed: List[Dict] = []
+
+            # Track successful documents
+            success_documents: List[str] = []
+
+            # Get document lengths to calculate iterations
+            original_length = self.get_number_of_documents(dataset_id, filters)
+
+            # get the remaining number in case things break
+            remaining_length = (
+                original_length - PULL_UPDATE_PUSH_LOGGER.count_ids_in_fn()
+            )
+
+            # iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+            iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+
+            # Get incomplete documents from raw collection
+            for _ in progress_bar(
+                range(iterations_required), show_progress_bar=show_progress_bar
+            ):
+                retrieve_filters = filters + [
+                    {
+                        "field": "ids",
+                        "filter_type": "ids",
+                        "condition": "!=",
+                        "condition_value": success_documents,
+                    }
+                ]
+
+                orig_json = self.datasets.documents.get_where(
+                    dataset_id,
+                    filters=retrieve_filters,
+                    page_size=retrieve_chunk_size,
+                    select_fields=select_fields,
+                )
+
+                documents = orig_json["documents"]
+
+                try:
+                    updated_data = update_function(documents, **updating_args)
+                except Exception as e:
+                    self.logger.error("Your updating function does not work: " + str(e))
+                    traceback.print_exc()
+                    return
+
+                updated_documents = [i["_id"] for i in documents]
+
+                # Upload documents
+                if updated_dataset_id is None:
+                    insert_json = self._update_documents(
+                        dataset_id=dataset_id,
+                        documents=updated_data,
+                        max_workers=max_workers,
+                        show_progress_bar=False,
+                    )
+                else:
+                    insert_json = self._insert_documents(
+                        dataset_id=updated_dataset_id,
+                        documents=updated_data,
+                        max_workers=max_workers,
+                        show_progress_bar=False,
+                    )
+
+                chunk_failed = insert_json["failed_documents"]
+                chunk_documents_detailed = insert_json["failed_documents_detailed"]
+                failed_documents.extend(chunk_failed)
+                failed_documents_detailed.extend(chunk_documents_detailed)
+                success_documents += list(
+                    set(updated_documents) - set(failed_documents)
+                )
+                PULL_UPDATE_PUSH_LOGGER.log_ids(success_documents)
+                self.logger.success(
+                    f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+                )
+
+            if failed_documents:
+                # This will be picked up by FileLogger
+                print("The following documents failed to be updated/inserted:")
+                for failed_document in failed_documents:
+                    print(f"  * {failed_document}")
+
+        self.logger.info(f"Deleting {updated_documents_file}")
+        if os.path.exists(updated_documents_file):
+            os.remove(updated_documents_file)
+
+        self.logger.success(f"Pull, Update, Push is complete!")
+
+        return {
+            "failed_documents": failed_documents,
+            "failed_documents_detailed": failed_documents_detailed,
+        }
+
+    def pull_update_push_to_cloud(
+        self,
+        dataset_id: str,
+        update_function,
+        updated_dataset_id: str = None,
+        logging_dataset_id: str = None,
+        updating_args: Optional[dict] = None,
+        retrieve_chunk_size: int = 100,
+        retrieve_chunk_size_failure_retry_multiplier: float = 0.5,
+        number_of_retrieve_retries: int = 3,
+        max_workers: int = 2,
+        max_error: int = 1000,
+        filters: Optional[list] = None,
+        select_fields: Optional[list] = None,
+        show_progress_bar: bool = True,
+    ):
+        """
+        Loops through every document in your collection and applies a function (that is specified by you) to the documents.
+        These documents are then uploaded into either an updated collection, or back into the original collection.
+
+        Parameters
+        ------------
+        original_dataset_id: string
+            The dataset_id of the collection where your original documents are
+        logging_dataset_id: string
+            The dataset_id of the collection which logs which documents have been updated. If 'None', then one will be created for you.
+        updated_dataset_id: string
+            The dataset_id of the collection where your updated documents are uploaded into. If 'None', then your original collection will be updated.
+        update_function: function
+            A function created by you that converts documents in your original collection into the updated documents. The function must contain a field which takes in a list of documents from the original collection. The output of the function must be a list of updated documents.
+        updating_args: dict
+            Additional arguments to your update_function, if they exist. They must be in the format of {'Argument': Value}
+        retrieve_chunk_size: int
+            The number of documents that are received from the original collection with each loop iteration.
+        retrieve_chunk_size_failure_retry_multiplier: int
+            If fails, retry on each chunk
+        max_workers: int
+            The number of processors you want to parallelize with
+        max_error: int
+            How many failed uploads before the function breaks
+        json_encoder : bool
+            Whether to automatically convert documents to json encodable format
+        """
+        updating_args = {} if updating_args is None else updating_args
+        filters = [] if filters is None else filters
+        select_fields = [] if select_fields is None else select_fields
+
+        # Check if a logging_collection has been supplied
+        if logging_dataset_id is None:
+            logging_dataset_id = (
+                dataset_id
+                + "_"
+                + str(datetime.now().strftime("%d-%m-%Y-%H-%M-%S"))
+                + "_pull_update_push"
+            )
+
+        with FileLogger(fn=f"{logging_dataset_id}.log", verbose=True):
+            # Check collections and create completed list if needed
+            collection_list = self.datasets.list()
+            if logging_dataset_id not in collection_list["datasets"]:
+                self.logger.info("Creating a logging collection for you.")
+                self.logger.info(self.datasets.create(logging_dataset_id))
+
+            # Track failed documents
+            failed_documents: List[Dict] = []
+
+            # Trust the process
+            for _ in range(number_of_retrieve_retries):
+
+                # Get document lengths to calculate iterations
+                original_length = self.get_number_of_documents(dataset_id, filters)
+                completed_length = self.get_number_of_documents(logging_dataset_id)
+                remaining_length = original_length - completed_length
+                iterations_required = math.ceil(remaining_length / retrieve_chunk_size)
+
+                self.logger.debug(f"{original_length}")
+                self.logger.debug(f"{completed_length}")
+                self.logger.debug(f"{iterations_required}")
+
+                # Return if no documents to update
+                if remaining_length == 0:
+                    self.logger.success(f"Pull, Update, Push is complete!")
+                    return {
+                        "failed_documents": failed_documents,
+                        "logging_collection": logging_dataset_id,
+                    }
+
+                for _ in progress_bar(
+                    range(iterations_required), show_progress_bar=show_progress_bar
+                ):
+
+                    # Get completed documents
+                    log_json = self._get_all_documents(
+                        logging_dataset_id, show_progress_bar=False
+                    )
+                    completed_documents_list = [i["_id"] for i in log_json]
+
+                    # Get incomplete documents from raw collection
+                    retrieve_filters = filters + [
+                        {
+                            "field": "ids",
+                            "filter_type": "ids",
+                            "condition": "!=",
+                            "condition_value": completed_documents_list,
+                        }
+                    ]
+
+                    orig_json = self.datasets.documents.get_where(
+                        dataset_id,
+                        filters=retrieve_filters,
+                        page_size=retrieve_chunk_size,
+                        select_fields=select_fields,
+                    )
+
+                    documents = orig_json["documents"]
+                    self.logger.debug(f"{len(documents)}")
+
+                    # Update documents
+                    try:
+                        updated_data = update_function(documents, **updating_args)
+                    except Exception as e:
+                        self.logger.error(
+                            "Your updating function does not work: " + str(e)
+                        )
+                        traceback.print_exc()
+                        return
+                    updated_documents = [i["_id"] for i in documents]
+                    self.logger.debug(f"{len(updated_data)}")
+
+                    # Upload documents
+                    if updated_dataset_id is None:
+                        insert_json = self._update_documents(
+                            dataset_id=dataset_id,
+                            documents=updated_data,
+                            max_workers=max_workers,
+                            show_progress_bar=False,
+                        )
+                    else:
+                        insert_json = self._insert_documents(
+                            dataset_id=updated_dataset_id,
+                            documents=updated_data,
+                            max_workers=max_workers,
+                            show_progress_bar=False,
+                        )
+
+                    # Check success
+                    chunk_failed = insert_json["failed_documents"]
+                    self.logger.success(
+                        f"Chunk of {retrieve_chunk_size} original documents updated and uploaded with {len(chunk_failed)} failed documents!"
+                    )
+                    failed_documents.extend(chunk_failed)
+                    success_documents = list(
+                        set(updated_documents) - set(failed_documents)
+                    )
+                    upload_documents = [{"_id": i} for i in success_documents]
+
+                    self._insert_documents(
+                        logging_dataset_id,
+                        upload_documents,
+                        max_workers=max_workers,
+                        show_progress_bar=False,
+                    )
+
+                    # If fail, try to reduce retrieve chunk
+                    if len(chunk_failed) > 0:
+                        warnings.warn(Warning.UPLOAD_FAILED)
+                        retrieve_chunk_size = int(
+                            retrieve_chunk_size
+                            * retrieve_chunk_size_failure_retry_multiplier
+                        )
+                        time.sleep(self.config.seconds_between_retries)
+                        break
+
+                    if len(failed_documents) > max_error:
+                        self.logger.error(
+                            f"You have over {max_error} failed documents which failed to upload!"
+                        )
+                        return {
+                            "failed_documents": failed_documents,
+                            "logging_collection": logging_dataset_id,
+                        }
+
+                self.logger.success(f"Pull, Update, Push is complete!")
+
+            return {
+                "failed_documents": failed_documents,
+                "logging_collection": logging_dataset_id,
+            }
 
     @track
     def insert_df(self, dataset_id, dataframe, *args, **kwargs):

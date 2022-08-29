@@ -12,7 +12,7 @@ import uuid
 import concurrent.futures
 
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
@@ -483,11 +483,20 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
+        bulk_func_args: Optional[Tuple[Any]] = None,
         bulk_func_kwargs: Optional[Dict[str, Any]] = None,
-        retrieve_chunksize: int = 100,
+        chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        max_active_threads: int = 2,
+        transform_workers: int = 2,
+        push_workers: int = 2,
+        timeout: Optional[int] = None,
+        buffer_size: int = 0,
+        show_progress_bar: bool = True,
+        transform_batch_size: int = 32,
+        multithreaded_update: bool = True,
+        ingest_in_background: bool = True,
+        **kwargs,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -526,31 +535,28 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        thread_count = 0
-        filters = [] if filters is None else filters
-        select_fields = [] if select_fields is None else select_fields
-        bulk_func_kwargs = {} if bulk_func_kwargs is None else bulk_func_kwargs
+        from relevanceai.operations_new.ops_run import PullTransformPush
 
-        for chunk in self.chunk_dataset(
-            select_fields=select_fields,
+        pup = PullTransformPush(
+            dataset=self,
+            func=bulk_func,
+            func_args=bulk_func_args,
+            func_kwargs=bulk_func_kwargs,
+            multithreaded_update=multithreaded_update,
+            pull_batch_size=chunksize,
+            transform_batch_size=transform_batch_size,
+            push_batch_size=chunksize,
             filters=filters,
-            chunksize=retrieve_chunksize,
-        ):
-            updated_chunk = bulk_func(chunk, **bulk_func_kwargs)
-
-            @fire_and_forget
-            def fire_upsert_docs():
-                self.upsert_documents(updated_chunk)
-
-            thread_count += 1
-            if thread_count >= max_active_threads:
-                # Check if thread count decreases
-                curr_thread_count = threading.active_count()
-                while threading.active_count() >= curr_thread_count:
-                    time.sleep(1)
-                thread_count -= 1
-
-            fire_upsert_docs()
+            select_fields=select_fields,
+            transform_workers=transform_workers,
+            push_workers=push_workers,
+            buffer_size=buffer_size,
+            show_progress_bar=show_progress_bar,
+            timeout=timeout,
+            ingest_in_background=ingest_in_background,
+            **kwargs,
+        )
+        pup.run()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):

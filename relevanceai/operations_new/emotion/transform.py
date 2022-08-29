@@ -18,6 +18,7 @@ class EmotionTransform(TransformBase):
         model_name="Emanuel/bertweet-emotion-base",
         output_fields: list = None,
         min_score: float = 0.3,
+        device: int = None,
         **kwargs,
     ):
         """
@@ -34,17 +35,21 @@ class EmotionTransform(TransformBase):
         self.text_fields = text_fields
         self.output_fields = output_fields
         self.min_score = min_score
+
+        import transformers
+
+        self.device = self.get_transformers_device(device)
+        self._classifier = transformers.pipeline(
+            "sentiment-analysis",
+            return_all_scores=False,
+            model=self.model_name,
+            device=self.device,
+        )
         for k, v in kwargs.items():
             setattr(self, k, v)
 
     @property
     def classifier(self):
-        if not hasattr(self, "_classifier"):
-            import transformers
-
-            self._classifier = transformers.pipeline(
-                "sentiment-analysis", return_all_scores=False, model=self.model_name
-            )
         return self._classifier
 
     def analyze_emotion(
