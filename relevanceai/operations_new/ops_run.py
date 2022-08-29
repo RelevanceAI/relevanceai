@@ -37,6 +37,7 @@ class PullTransformPush:
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = True,
         pull_batch_size: Optional[int] = 128,
+        warmup_batch_size: Optional[int] = None,
         transform_batch_size: Optional[int] = 128,
         push_batch_size: Optional[int] = None,
         filters: Optional[list] = None,
@@ -77,6 +78,7 @@ class PullTransformPush:
 
         self.pull_batch_size = pull_batch_size
         self.transform_batch_size = min(transform_batch_size, ndocs)
+        self.warmup_batch_size = warmup_batch_size
         self.push_batch_size = push_batch_size
 
         self.update_all_at_once = update_all_at_once
@@ -210,7 +212,12 @@ class PullTransformPush:
 
         queue = self.tq
         timeout = 1
-        batch_size = self.transform_batch_size
+
+        if self.transform_bar.n == 0 and self.warmup_batch_size is not None:
+            batch_size = self.warmup_batch_size
+            tqdm.write("Processing Warmup Batch")
+        else:
+            batch_size = self.transform_batch_size
 
         while self.update_all_at_once or len(batch) < batch_size:
             try:
@@ -536,7 +543,8 @@ class OperationRun(TransformBase):
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        transform_batch_size: int = 4,
+        warmup_batch_size: int = None,
+        transform_batch_size: int = 32,
         multithreaded_update: bool = False,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
@@ -553,6 +561,7 @@ class OperationRun(TransformBase):
             func_kwargs=func_kwargs,
             multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
+            warmup_batch_size=warmup_batch_size,
             transform_batch_size=transform_batch_size,
             push_batch_size=chunksize,
             filters=filters,

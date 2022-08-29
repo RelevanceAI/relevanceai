@@ -628,6 +628,7 @@ class Operations(Write):
         output_fields: list = None,
         chunksize: int = 100,
         batched: bool = True,
+        **kwargs,
     ):
         """
         Extract sentiment from the dataset
@@ -656,6 +657,7 @@ class Operations(Write):
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
+            **kwargs,
         )
         return ops
 
