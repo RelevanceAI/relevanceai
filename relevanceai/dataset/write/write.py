@@ -502,12 +502,12 @@ class Write(Read):
         chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        update_workers: int = 2,
+        transform_workers: int = 2,
         push_workers: int = 2,
         timeout: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        update_batch_size: int = 32,
+        transform_batch_size: int = 32,
         multithreaded_update: bool = True,
         ingest_in_background: bool = True,
         **kwargs,
@@ -549,20 +549,20 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        from relevanceai.operations_new.ops_run import PullUpdatePush
+        from relevanceai.operations_new.ops_run import PullTransformPush
 
-        pup = PullUpdatePush(
+        pup = PullTransformPush(
             dataset=self,
             func=bulk_func,
             func_args=bulk_func_args,
             func_kwargs=bulk_func_kwargs,
             multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
-            update_batch_size=update_batch_size,
+            transform_batch_size=transform_batch_size,
             push_batch_size=chunksize,
             filters=filters,
             select_fields=select_fields,
-            update_workers=update_workers,
+            transform_workers=transform_workers,
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,

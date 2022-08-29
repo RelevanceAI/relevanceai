@@ -2,8 +2,6 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
-from queue import Empty
-import random
 import psutil
 import threading
 import multiprocessing as mp
@@ -21,7 +19,7 @@ from tqdm.auto import tqdm
 from relevanceai.utils.helpers.helpers import getsizeof
 
 
-class PullUpdatePush:
+class PullTransformPush:
 
     pull_bar: tqdm
     update_bar: tqdm
@@ -39,18 +37,18 @@ class PullUpdatePush:
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = True,
         pull_batch_size: Optional[int] = 128,
-        update_batch_size: Optional[int] = 128,
+        transform_batch_size: Optional[int] = 128,
         push_batch_size: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        update_workers: int = 1,
+        transform_workers: int = 1,
         push_workers: int = 1,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         background_execution: bool = True,
-        ram_ratio: float = 0.25,
+        ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
         retry_count: int = 3,
     ):
@@ -72,13 +70,16 @@ class PullUpdatePush:
         self.ndocs = ndocs
 
         self.pull_batch_size = pull_batch_size
-        self.update_batch_size = min(update_batch_size, ndocs)
-        tqdm.write(f"Transform chunksize is set to {self.update_batch_size} documents")
+        self.transform_batch_size = min(transform_batch_size, ndocs)
         self.push_batch_size = push_batch_size
 
         self.update_all_at_once = update_all_at_once
         if update_all_at_once:
-            self.update_batch_size = ndocs
+            self.transform_batch_size = ndocs
+
+        tqdm.write(
+            f"Transform chunksize is set to {self.transform_batch_size} documents"
+        )
 
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
@@ -93,10 +94,10 @@ class PullUpdatePush:
 
         if not multithreaded_update:
             self.func_lock = threading.Lock()
-            self.update_workers = 1
+            self.transform_workers = 1
         else:
             self.func_lock = None
-            self.update_workers = update_workers
+            self.transform_workers = transform_workers
 
         self.push_workers = push_workers
 
@@ -192,13 +193,13 @@ class PullUpdatePush:
 
     def _get_update_batch(self) -> List[Dict[str, Any]]:
         """
-        Collects a batches of of size `update_batch_size` from the transform queue
+        Collects a batches of of size `transform_batch_size` from the transform queue
         """
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
         timeout = None
-        batch_size = self.update_batch_size
+        batch_size = self.transform_batch_size
 
         while self.update_all_at_once or not queue.empty():
             if len(batch) >= batch_size:
@@ -257,7 +258,7 @@ class PullUpdatePush:
             else:
                 new_batch = self.func(batch, **self.func_kwargs)
 
-            batch = PullUpdatePush._postprocess(new_batch, old_keys)
+            batch = PullTransformPush._postprocess(new_batch, old_keys)
 
             for document in batch:
                 self.pq.put(document)
@@ -372,7 +373,7 @@ class PullUpdatePush:
         """
         self.pull_thread = threading.Thread(target=self._pull)
         self.update_threads = [
-            threading.Thread(target=self._update) for _ in range(self.update_workers)
+            threading.Thread(target=self._update) for _ in range(self.transform_workers)
         ]
         self.push_threads = [
             threading.Thread(target=self._push) for _ in range(self.push_workers)
@@ -519,12 +520,12 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        update_workers: int = 2,
+        transform_workers: int = 2,
         push_workers: int = 2,
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        update_batch_size: int = 32,
+        transform_batch_size: int = 32,
         multithreaded_update: bool = False,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
@@ -534,18 +535,18 @@ class OperationRun(TransformBase):
             warnings.warn(
                 "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
             )
-        pup = PullUpdatePush(
+        pup = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             func_args=func_args,
             func_kwargs=func_kwargs,
             multithreaded_update=multithreaded_update,
             pull_batch_size=chunksize,
-            update_batch_size=update_batch_size,
+            transform_batch_size=transform_batch_size,
             push_batch_size=chunksize,
             filters=filters,
             select_fields=select_fields,
-            update_workers=update_workers,
+            transform_workers=transform_workers,
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,

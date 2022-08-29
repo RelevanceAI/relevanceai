@@ -22,7 +22,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from tqdm.auto import tqdm
 
 from relevanceai._api.batch.retrieve import BatchRetrieveClient
-from relevanceai._api.batch.local_logger import PullUpdatePushLocalLogger
+from relevanceai._api.batch.local_logger import PullTransformPushLocalLogger
 
 from relevanceai.utils import make_id
 from relevanceai.utils.helpers.helpers import getsizeof
@@ -316,7 +316,9 @@ class BatchInsertClient(BatchRetrieveClient):
 
         with FileLogger(fn=log_file, verbose=True, log_to_file=log_to_file):
             # Instantiate the logger to document the successful IDs
-            PULL_UPDATE_PUSH_LOGGER = PullUpdatePushLocalLogger(updated_documents_file)
+            PULL_UPDATE_PUSH_LOGGER = PullTransformPushLocalLogger(
+                updated_documents_file
+            )
 
             # Track failed documents
             failed_documents: List[Dict] = []
