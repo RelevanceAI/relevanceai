@@ -536,7 +536,7 @@ class OperationRun(TransformBase):
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        transform_batch_size: int = 32,
+        transform_batch_size: int = 4,
         multithreaded_update: bool = False,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
