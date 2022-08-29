@@ -21,7 +21,7 @@ class SentimentTransform(TransformBase):
         min_abs_score: float = 0.1,
         output_fields: list = None,
         sensitivity: float = 0,
-        device: int = -1,
+        device: int = None,
         **kwargs,
     ):
         """
@@ -45,12 +45,7 @@ class SentimentTransform(TransformBase):
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
         self.sensitivity = sensitivity
-        import torch
-
-        if torch.cuda.is_available():
-            self.device = 0
-        else:
-            self.device = device
+        self.device = self.get_transformers_device(device)
 
         import transformers
 
