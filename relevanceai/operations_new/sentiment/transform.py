@@ -47,7 +47,7 @@ class SentimentTransform(TransformBase):
         self.sensitivity = sensitivity
         import torch
 
-        if torch.cuda.is_available() and device is None:
+        if torch.cuda.is_available():
             self.device = 0
         else:
             self.device = device
