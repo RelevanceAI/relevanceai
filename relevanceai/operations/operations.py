@@ -983,7 +983,7 @@ class Operations(Write, IO):
             ops = SupervisedTripleLossFinetuneOps.from_dataset(
                 dataset=ds,
                 base_model="distilbert-base-uncased",
-                batch_size=16,
+                chunksize=16,
                 triple_loss_type:str='BatchHardSoftMarginTripletLoss'
             )
             ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)

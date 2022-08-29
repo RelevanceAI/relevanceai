@@ -94,7 +94,7 @@ class CommunityDetection(Write):
 
 #             model = SentenceTransformer("all-MiniLM-L6-v2")
 #             # encode defaults:
-#             #  batch_size: int = 32
+#             #  chunksize: int = 32
 #             #  show_progress_bar: bool = None
 #             #  output_value: str = 'sentence_embedding'
 #             #  convert_to_numpy: bool = True

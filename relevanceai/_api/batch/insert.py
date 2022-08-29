@@ -52,7 +52,7 @@ class BatchInsertClient(BatchRetrieveClient):
         documents: list,
         max_workers: Optional[int] = 2,
         show_progress_bar: bool = False,
-        batch_size: Optional[int] = None,
+        chunksize: Optional[int] = None,
         overwrite: bool = True,
         ingest_in_background: bool = True,
         verbose: Optional[bool] = False,
@@ -111,7 +111,7 @@ class BatchInsertClient(BatchRetrieveClient):
             documents=documents,
             max_workers=max_workers,
             show_progress_bar=show_progress_bar,
-            batch_size=batch_size,
+            chunksize=chunksize,
             overwrite=overwrite,
             ingest_in_background=ingest_in_background,
         )
@@ -122,7 +122,7 @@ class BatchInsertClient(BatchRetrieveClient):
         documents: List[Dict[str, Any]],
         max_workers: Optional[int] = 2,
         show_progress_bar: bool = False,
-        batch_size: Optional[int] = None,
+        chunksize: Optional[int] = None,
         ingest_in_background: bool = True,
         verbose: Optional[bool] = False,
     ):
@@ -176,7 +176,7 @@ class BatchInsertClient(BatchRetrieveClient):
             bulk_func=self.datasets.documents.bulk_update,
             max_workers=max_workers,
             show_progress_bar=show_progress_bar,
-            batch_size=batch_size,
+            chunksize=chunksize,
             ingest_in_background=ingest_in_background,
         )
 
@@ -746,7 +746,7 @@ class BatchInsertClient(BatchRetrieveClient):
         bulk_func: Callable,
         documents: List[Dict[str, Any]],
         max_workers: Optional[int] = 2,
-        batch_size: Optional[int] = None,
+        chunksize: Optional[int] = None,
         **kwargs,
     ):
 
@@ -767,17 +767,17 @@ class BatchInsertClient(BatchRetrieveClient):
         doc_mb = sum(doc_mbs) / len(doc_mbs)
         doc_mb /= ONE_MB
 
-        if batch_size is None:
+        if chunksize is None:
             target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
             max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
 
-            batch_size = math.ceil(target_chunk_mb / doc_mb)
-            batch_size = min(batch_size, len(documents), max_chunk_size)
+            chunksize = math.ceil(target_chunk_mb / doc_mb)
+            chunksize = min(chunksize, len(documents), max_chunk_size)
 
-            payload_size = doc_mb * batch_size
+            payload_size = doc_mb * chunksize
 
             tqdm.write(
-                f"Size (MB) / Document: {doc_mb:.3f}\nInsert Batch Size: {batch_size:,}\nPayload Size (MB): ~{payload_size:.2f}"
+                f"Size (MB) / Document: {doc_mb:.3f}\nInsert Batch Size: {chunksize:,}\nPayload Size (MB): ~{payload_size:.2f}"
             )
 
         # handles if the client calls _insert_documents
@@ -792,7 +792,7 @@ class BatchInsertClient(BatchRetrieveClient):
             func=bulk_func,
             func_kwargs=kwargs,
             documents=documents,
-            batch_size=batch_size,
+            chunksize=chunksize,
             max_workers=max_workers,
         )
         inserted, failed_ids = push.run()

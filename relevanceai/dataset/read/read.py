@@ -604,7 +604,7 @@ class Read(ClusterRead):
         number_of_documents: int = 20,
         filters: Optional[list] = None,
         cursor: str = None,
-        batch_size: int = 1000,
+        chunksize: int = 1000,
         sort: Optional[list] = None,
         select_fields: Optional[list] = None,
         include_vector: bool = True,
@@ -625,7 +625,7 @@ class Read(ClusterRead):
             Fields to include in the search results, empty array/list means all fields.
         cursor: string
             Cursor to paginate the document retrieval
-        batch_size: int
+        chunksize: int
             Number of documents to retrieve per iteration
         include_vector: bool
             Include vectors in the search results
@@ -643,7 +643,7 @@ class Read(ClusterRead):
             number_of_documents=number_of_documents,
             filters=filters,
             cursor=cursor,
-            batch_size=batch_size,
+            chunksize=chunksize,
             sort=sort,
             select_fields=select_fields,
             include_vector=include_vector,

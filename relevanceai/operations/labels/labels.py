@@ -585,7 +585,7 @@ class LabelOps(BaseOps, Write):
     def generate_text_list(
         self,
         filters: Optional[list] = None,
-        batch_size: int = 20,
+        chunksize: int = 20,
         text_fields: Optional[list] = None,
         cursor: str = None,
     ):
@@ -603,7 +603,7 @@ class LabelOps(BaseOps, Write):
         ]
         documents = self._get_documents(
             dataset_id=self.dataset_id,
-            batch_size=batch_size,
+            chunksize=chunksize,
             select_fields=text_fields,
             filters=filters,
             cursor=cursor,
@@ -700,7 +700,7 @@ class LabelOps(BaseOps, Write):
         filters: Optional[list] = None,
         additional_stopwords: Optional[list] = None,
         min_word_length: int = 2,
-        batch_size: int = 1000,
+        chunksize: int = 1000,
         document_limit: int = None,
         preprocess_hooks: Optional[List[callable]] = None,
         verbose: bool = True,
@@ -740,7 +740,7 @@ class LabelOps(BaseOps, Write):
         min_word_length: int
             The minimum word length to apply to clean. This can be helpful if there are common
             acronyms that you want to exclude.
-        batch_size: int
+        chunksize: int
             Batch size is the number of documents to retrieve in a chunk
         document_limit: int
             The maximum number of documents in a dataset
@@ -797,7 +797,7 @@ class LabelOps(BaseOps, Write):
                 dataset_id=self.dataset_id,
                 filters=filters,
                 after_id=documents["after_id"],
-                batch_size=batch_size,
+                chunksize=chunksize,
                 select_fields=text_fields,
                 include_after_id=True,
             )

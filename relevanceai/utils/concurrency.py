@@ -126,7 +126,7 @@ class Push:
         func: Callable,
         documents: List[Dict[str, Any]],
         func_kwargs: Dict[str, Any],
-        batch_size: Optional[int] = None,
+        chunksize: Optional[int] = None,
         max_workers: Optional[int] = None,
         background_execution: bool = False,
     ):
@@ -143,7 +143,7 @@ class Push:
         for document in documents:
             self.push_queue.put(document)
 
-        self.batch_size = batch_size
+        self.chunksize = chunksize
         self.max_workers = 2 if max_workers is None else max_workers
 
         self.func_kwargs["return_documents"] = True
@@ -167,7 +167,7 @@ class Push:
     def _get_batch(self):
         batch = []
         while True:
-            if len(batch) >= self.batch_size:
+            if len(batch) >= self.chunksize:
                 break
             # if self.push_queue.empty():
             #     break
