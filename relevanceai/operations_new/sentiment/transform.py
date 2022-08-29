@@ -21,6 +21,7 @@ class SentimentTransform(TransformBase):
         min_abs_score: float = 0.1,
         output_fields: list = None,
         sensitivity: float = 0,
+        device: int = -1,
         **kwargs,
     ):
         """
@@ -44,6 +45,13 @@ class SentimentTransform(TransformBase):
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
         self.sensitivity = sensitivity
+        import torch
+
+        if torch.cuda.is_available() and device is None:
+            self.device = 0
+        else:
+            self.device = device
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -60,9 +68,9 @@ class SentimentTransform(TransformBase):
         if not hasattr(self, "_classifier"):
             import transformers
 
+            # Tries to set it to set it on GPU
             self._classifier = transformers.pipeline(
-                return_all_scores=True,
-                model=self.model_name,
+                return_all_scores=True, model=self.model_name, device=self.device
             )
         return self._classifier
 
