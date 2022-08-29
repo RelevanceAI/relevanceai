@@ -135,7 +135,7 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             for text, label in zip(text_data, labels)
         ]
         dataset = SentencesDataset(data, self.model)
-        return DataLoader(dataset, shuffle=True, chunksize=self.chunksize)
+        return DataLoader(dataset, shuffle=True, batch_size=self.chunksize)
 
     def fine_tune(
         self,

@@ -123,7 +123,7 @@ class GPLOps(APIClient, BaseOps):
         gpl.train(
             path_to_generated_data=path_to_generated_data,
             base_ckpt=self.base_model,
-            chunksize_gpl=self.chunksize_gpl,
+            batch_size_gpl=self.chunksize_gpl,
             gpl_steps=gpl_steps,
             output_dir=output_dir,
             generator=self.t5_generator,
