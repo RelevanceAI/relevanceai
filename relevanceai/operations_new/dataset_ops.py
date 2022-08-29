@@ -626,7 +626,7 @@ class Operations(Write):
         sensitivity: float = 0,
         filters: Optional[list] = None,
         output_fields: list = None,
-        chunksize: int = 100,
+        chunksize: int = 128,
         batched: bool = True,
         **kwargs,
     ):

@@ -41,8 +41,8 @@ class IvisModel(DimReductionModelBase):
         if isinstance(vectors, list):
             vectors = np.array(vectors)
 
-        if self.model.batch_size > vectors.shape[0]:
-            self.model.batch_size = vectors.shape[0]
+        if self.model.chunksize > vectors.shape[0]:
+            self.model.chunksize = vectors.shape[0]
 
         self.model.fit(vectors)
 

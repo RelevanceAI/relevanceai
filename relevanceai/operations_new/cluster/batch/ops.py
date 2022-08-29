@@ -75,8 +75,8 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         pup = PullTransformPush(
             dataset=dataset,
             func=self.fit,
-            pull_batch_size=chunksize,
-            push_batch_size=chunksize,
+            pull_chunksize=chunksize,
+            push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
@@ -87,8 +87,8 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         pup = PullTransformPush(
             dataset=dataset,
             func=self.transform,
-            pull_batch_size=chunksize,
-            push_batch_size=chunksize,
+            pull_chunksize=chunksize,
+            push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,

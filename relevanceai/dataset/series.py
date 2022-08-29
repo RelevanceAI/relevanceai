@@ -9,15 +9,13 @@ from typing import Any, Dict, List, Union, Callable, Optional
 
 from tqdm import tqdm
 
-from relevanceai.client.helpers import Credentials
 from relevanceai.constants import MAX_CACHESIZE
 from relevanceai.utils.cache import lru_cache
 from relevanceai.utils.decorators.analytics import track
-from relevanceai._api import APIClient
 from relevanceai.utils.filters import Filter
 
 
-class Series(APIClient):
+class Series:
     """
     Dataset Series Object
     -----------------------------
@@ -63,16 +61,17 @@ class Series(APIClient):
 
     def __init__(
         self,
-        credentials: Credentials,
-        dataset_id: str,
+        dataset,
         field: str,
         image_fields: Optional[List[str]] = None,
         audio_fields: Optional[List[str]] = None,
         highlight_fields: Optional[Dict[str, List]] = None,
         text_fields: Optional[List[str]] = None,
     ):
-        super().__init__(credentials)
-        self.dataset_id = dataset_id
+        from relevanceai.dataset import Dataset
+
+        self.dataset: Dataset = dataset
+        self.dataset_id: str = dataset.dataset_id
         self.field = field
         self.image_fields = [] if image_fields is None else image_fields
         self.audio_fields = [] if audio_fields is None else audio_fields
@@ -85,7 +84,7 @@ class Series(APIClient):
         else:
             include_vector = False
 
-        documents = self._get_documents(
+        documents = self.dataset._get_documents(
             dataset_id=self.dataset_id,
             select_fields=[self.field],
             include_vector=include_vector,
@@ -107,11 +106,7 @@ class Series(APIClient):
         return pd.DataFrame(fields, columns=["_cluster_"])._repr_html_()
 
     def _format_select_fields(self):
-        fields = [
-            field
-            for field in self.datasets.schema(self.dataset_id)
-            if "_cluster_" in field
-        ]
+        fields = [field for field in self.dataset.schema if "_cluster_" in field]
         return fields
 
     def _show_json(self, documents, **kw):
@@ -178,10 +173,11 @@ class Series(APIClient):
             if frac > 1 or frac < 0:
                 raise ValueError("Fraction must be between 0 and 1")
             n = math.ceil(
-                self.get_number_of_documents(self.dataset_id, filters=filters) * frac
+                self.dataset.get_number_of_documents(self.dataset_id, filters=filters)
+                * frac
             )
 
-        documents = self.datasets.documents.get_where(
+        documents = self.dataset.datasets.documents.get_where(
             dataset_id=self.dataset_id,
             filters=filters,
             page_size=n,
@@ -214,7 +210,7 @@ class Series(APIClient):
         sort = [] if sort is None else sort
 
         select_fields = [self.field] if isinstance(self.field, str) else self.field
-        return self._get_all_documents(
+        return self.dataset.get_all_documents(
             dataset_id=self.dataset_id,
             chunksize=chunksize,
             filters=filters,
@@ -276,79 +272,20 @@ class Series(APIClient):
         def bulk_fn(documents):
             for d in tqdm(documents):
                 try:
-                    if self.is_field(self.field, d):
-                        self.set_field(
-                            output_field, d, func(self.get_field(self.field, d))
+                    if self.dataset.is_field(self.field, d):
+                        self.dataset.set_field(
+                            output_field, d, func(self.dataset.get_field(self.field, d))
                         )
                 except Exception as e:
                     continue
             return documents
 
-        return self.pull_update_push_async(
+        return self.dataset.bulk_apply(
             self.dataset_id,
             bulk_fn,
             select_fields=[self.field],
             filters=filters,
             **kwargs,
-        )
-
-    @track
-    def bulk_apply(
-        self,
-        bulk_func: Callable,
-        retrieve_chunksize: int = 100,
-        filters: Optional[list] = None,
-        select_fields: Optional[list] = None,
-        show_progress_bar: bool = True,
-        use_json_encoder: bool = True,
-    ):
-        """
-        Apply a bulk function along an axis of the DataFrame.
-
-        Parameters
-        ------------
-        bulk_func: function
-            Function to apply to a bunch of documents at a time
-        retrieve_chunksize: int
-            The number of documents that are received from the original collection with each loop iteration.
-        max_workers: int
-            The number of processors you want to parallelize with
-        max_error: int
-            How many failed uploads before the function breaks
-        json_encoder : bool
-            Whether to automatically convert documents to json encodable format
-        axis: int
-            Axis along which the function is applied.
-            - 9 or 'index': apply function to each column
-            - 1 or 'columns': apply function to each row
-
-        Example
-        ---------
-        .. code-block::
-
-            from relevanceai import Client
-            client = Client()
-
-            df = client.Dataset("sample_dataset_id")
-
-            def update_documents(documents):
-                for d in documents:
-                    d["value"] = 10
-                return documents
-
-            df.bulk_apply(update_documents)
-        """
-        filters = [] if filters is None else filters
-        select_fields = [self.field] if select_fields is None else select_fields
-
-        return self.pull_update_push_async(
-            self.dataset_id,
-            bulk_func,
-            retrieve_chunk_size=retrieve_chunksize,
-            filters=filters,
-            select_fields=select_fields,
-            show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
         )
 
     @track
@@ -379,8 +316,10 @@ class Series(APIClient):
             field = "sample_field"
             arr = df[field].numpy()
         """
-        documents = self._get_all_documents(self.dataset_id, select_fields=[self.field])
-        vectors = self.get_field_across_documents(self.field, documents)
+        documents = self.dataset.get_all_documents(
+            self.dataset_id, select_fields=[self.field]
+        )
+        vectors = self.dataset.get_field_across_documents(self.field, documents)
         vectors = np.array(vectors)
         return vectors
 
@@ -422,7 +361,7 @@ class Series(APIClient):
             field = "sample_field"
             value_counts_df = df[field].value_counts()
         """
-        schema = self.datasets.schema(self.dataset_id)
+        schema = self.dataset.schema
         dtype = schema[self.field]
 
         if dtype == "numeric":
@@ -431,14 +370,14 @@ class Series(APIClient):
             agg_type = "category"
 
         groupby_query = [{"name": self.field, "field": self.field, "agg": agg_type}]
-        aggregation = self.datasets.aggregate(
+        aggregation = self.dataset.datasets.aggregate(
             dataset_id=self.dataset_id,
             groupby=groupby_query,
             page_size=10000,
             asc=ascending,
         )["results"]
 
-        total = self.get_number_of_documents(dataset_id=self.dataset_id)
+        total = self.dataset.get_number_of_documents(dataset_id=self.dataset_id)
         aggregation = pd.DataFrame(aggregation)
 
         if normalize:
@@ -503,17 +442,16 @@ class Series(APIClient):
         """
         if isinstance(loc, int):
             warnings.warn(Warning.INDEX_STRING)
-            return self.get_documents(loc + 1, select_fields=[self.field])[loc][
+            return self.dataset.get_documents(loc + 1, select_fields=[self.field])[loc][
                 self.field
             ]
         elif isinstance(loc, str):
-            return self.datasets.documents.get(self.dataset_id, loc)[self.field]
+            return self.dataset.datasets.documents.get(self.dataset_id, loc)[self.field]
         raise TypeError("Incorrect data type! Must be a string or an integer")
 
     @lru_cache(maxsize=MAX_CACHESIZE)
     def _get_pandas_series(self):
-        documents = self._get_all_documents(
-            dataset_id=self.dataset_id,
+        documents = self.dataset.get_all_documents(
             select_fields=[self.field],
             include_vector=False,
             show_progress_bar=True,
@@ -526,17 +464,8 @@ class Series(APIClient):
         except KeyError:
             raise Exception("No documents found")
 
-    def __getattr__(self, attr):
-        if hasattr(pd.Series, attr):
-            series = self._get_pandas_series()
-            try:
-                return getattr(series, attr)
-            except SyntaxError:
-                raise AttributeError(f"'{attr}' is an invalid attribute")
-        raise AttributeError(f"'{attr}' is an invalid attribute")
-
-    def __add__(self, other):
-        schema = self.datasets.schema(self.dataset_id)
+    def __add__(self, other: "Series") -> "Series":
+        schema = self.dataset.schema
         if schema[self.field] != "numeric":
             raise ValueError(f"{self.field} is not a numeric type")
         if schema[other.field] != "numeric":
@@ -554,7 +483,7 @@ class Series(APIClient):
                 filter_type="ids",
                 condition="==",
                 condition_value=other,
-                credentials=self.credentials,
+                credentials=self.dataset.credentials,
             )
         else:
             filter = Filter(
@@ -562,7 +491,7 @@ class Series(APIClient):
                 dataset_id=self.dataset_id,
                 condition="==",
                 condition_value=other,
-                credentials=self.credentials,
+                credentials=self.dataset.credentials,
             )
         return filter.get()
 
@@ -572,7 +501,7 @@ class Series(APIClient):
             dataset_id=self.dataset_id,
             condition="!=",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -582,7 +511,7 @@ class Series(APIClient):
             dataset_id=self.dataset_id,
             condition="<",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -592,7 +521,7 @@ class Series(APIClient):
             dataset_id=self.dataset_id,
             condition=">",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -602,7 +531,7 @@ class Series(APIClient):
             dataset_id=self.dataset_id,
             condition="<=",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -612,7 +541,7 @@ class Series(APIClient):
             dataset_id=self.dataset_id,
             condition=">=",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -623,7 +552,7 @@ class Series(APIClient):
             filter_type="contains",
             condition="==",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -634,7 +563,7 @@ class Series(APIClient):
             filter_type="exists",
             condition="==",
             condition_value=" ",
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -645,7 +574,7 @@ class Series(APIClient):
             filter_type="exists",
             condition="!=",
             condition_value=" ",
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -656,7 +585,7 @@ class Series(APIClient):
             filter_type="date",
             condition="==",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
         return filter.get()
 
@@ -667,16 +596,20 @@ class Series(APIClient):
             filter_type="categories",
             condition="==",
             condition_value=other,
-            credentials=self.credentials,
+            credentials=self.dataset.credentials,
         )
 
     def filter(self, **kwargs):
         return [kwargs]
 
     def set_dtype(self, dtype):
-        metadata = self.datasets.metadata(self.dataset_id)["results"]
+        metadata = self.dataset.datasets.metadata(self.dataset_id)["results"]
         metadata[self.field] = dtype
-        self.datasets.post_metadata(
+        self.dataset.datasets.post_metadata(
             self.dataset_id,
             metadata=metadata,
         )
+
+    @property
+    def values(self):
+        return self._get_pandas_series()

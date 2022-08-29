@@ -1,5 +1,7 @@
-from relevanceai.utils.decorators.analytics import track
+import pandas as pd
+
 from relevanceai.dataset.read import Read
+from relevanceai.utils.decorators.analytics import track
 
 
 class DictExport(Read):
@@ -29,7 +31,10 @@ class DictExport(Read):
 
             dict = df.to_dict(orient="records")
         """
+        documents = self.get_all_documents(**kwargs)
+
         if orient == "records":
-            return self.get_all_documents(**kwargs)
+            return documents
         else:
             raise NotImplementedError
+            dataframe = pd.DataFrame(documents)

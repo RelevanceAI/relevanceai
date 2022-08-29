@@ -56,8 +56,7 @@ class Statistics(APIClient):
 
         """
         return Series(
-            credentials=self.credentials,
-            dataset_id=self.dataset_id,
+            dataset=self,
             field=field,
         ).value_counts()
 
@@ -154,8 +153,7 @@ class Statistics(APIClient):
             categories = ["cluster"]
         else:
             series = Series(
-                credentials=self.credentials,
-                dataset_id=self.dataset_id,
+                dataset=self,
                 field=groupby,
             ).all(show_progress_bar=False)
 

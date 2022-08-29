@@ -24,7 +24,7 @@ class Ivis(DimReductionBase):
             )
         self.logger.debug(f"{dr_args}")
         ivis = Ivis(embedding_dims=dims, **dr_args)
-        if ivis.batch_size > vectors.shape[0]:
-            ivis.batch_size = vectors.shape[0]
+        if ivis.chunksize > vectors.shape[0]:
+            ivis.chunksize = vectors.shape[0]
         vectors_dr = ivis.fit(vectors).transform(vectors)
         return vectors_dr

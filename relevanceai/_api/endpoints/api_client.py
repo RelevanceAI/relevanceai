@@ -1,5 +1,7 @@
 """API Client
 """
+from typing import Any, Dict, List, Optional
+import uuid
 from relevanceai.client.helpers import Credentials
 from relevanceai.utils.base import _Base
 
@@ -76,20 +78,23 @@ class APIEndpointsClient(_Base, DocUtils):
         self._workflows_client = WorkflowsClient(self.credentials)
         return self._workflows_client
 
-    def _convert_id_to_string(self, documents, create_id: bool = False):
-        try:
-            self.set_field_across_documents(
-                "_id", [str(i["_id"]) for i in documents], documents
-            )
-        except KeyError:
-            if create_id:
-                pass
-            else:
-                raise FieldNotFoundError(
-                    "Missing _id field. Set `create_id=True` to automatically generate IDs."
-                )
+    def _validate_ids(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Not inplace anymore
+        """
+        return [
+            {"_id": str(uuid.uuid4()), **document}
+            if "_id" not in document
+            else document
+            for document in documents
+        ]
 
-    def _are_fields_in_schema(self, fields, dataset_id, schema=None):
+    def _are_fields_in_schema(
+        self,
+        fields: List[str],
+        dataset_id: str,
+        schema: Optional[Dict[str, str]] = None,
+    ) -> None:
         """
         Check fields are in schema
         """

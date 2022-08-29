@@ -36,10 +36,10 @@ class PullTransformPush:
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = True,
-        pull_batch_size: Optional[int] = 128,
-        warmup_batch_size: Optional[int] = None,
-        transform_batch_size: Optional[int] = 128,
-        push_batch_size: Optional[int] = None,
+        pull_chunksize: Optional[int] = 128,
+        warmup_chunksize: Optional[int] = None,
+        transform_chunksize: Optional[int] = 128,
+        push_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
         transform_workers: int = 1,
@@ -76,18 +76,16 @@ class PullTransformPush:
         else:
             self.ndocs = pull_limit
 
-        self.pull_batch_size = pull_batch_size
-        self.transform_batch_size = min(transform_batch_size, ndocs)
-        self.warmup_batch_size = warmup_batch_size
-        self.push_batch_size = push_batch_size
+        self.pull_chunksize = pull_chunksize
+        self.transform_chunksize = min(transform_chunksize, ndocs)
+        self.warmup_chunksize = warmup_chunksize
+        self.push_chunksize = push_chunksize
 
         self.update_all_at_once = update_all_at_once
         if update_all_at_once:
-            self.transform_batch_size = ndocs
+            self.transform_chunksize = ndocs
 
-        tqdm.write(
-            f"Transform chunksize is set to {self.transform_batch_size:,} documents"
-        )
+        tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
@@ -129,9 +127,7 @@ class PullTransformPush:
 
             self.single_queue_size = int(total_queue_size / 2)
 
-        tqdm.write(
-            f"Setting max number of documents in queue to be: {self.single_queue_size:,}"
-        )
+        tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
         self.tq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
@@ -154,7 +150,7 @@ class PullTransformPush:
         ]
         return sum(document_sizes) / len(sample_documents)
 
-    def _get_optimal_batch_size(
+    def _get_optimal_chunksize(
         self, sample_documents: List[Dict[str, Any]], method: str
     ) -> int:
         """
@@ -166,7 +162,7 @@ class PullTransformPush:
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
-        tqdm.write(f"Setting {method} chunksize to {chunksize} documents")
+        tqdm.write(f"{method.capitalize()} Chunksize: {chunksize}")
         return chunksize
 
     def _pull(self):
@@ -179,7 +175,7 @@ class PullTransformPush:
         while documents:
             res = self.dataset.datasets.documents.get_where(
                 dataset_id=self.dataset_id,
-                page_size=20 if self.pull_batch_size is None else self.pull_batch_size,
+                page_size=20 if self.pull_chunksize is None else self.pull_chunksize,
                 filters=self.filters,
                 select_fields=self.select_fields,
                 sort=[],
@@ -189,8 +185,8 @@ class PullTransformPush:
             documents = res["documents"]
             after_id = res["after_id"]
 
-            if self.pull_batch_size is None:
-                self.pull_batch_size = self._get_optimal_batch_size(
+            if self.pull_chunksize is None:
+                self.pull_chunksize = self._get_optimal_chunksize(
                     documents[:10], "pull"
                 )
 
@@ -206,20 +202,20 @@ class PullTransformPush:
 
     def _get_update_batch(self) -> List[Dict[str, Any]]:
         """
-        Collects a batches of of size `transform_batch_size` from the transform queue
+        Collects a batches of of size `transform_chunksize` from the transform queue
         """
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
         timeout = 1
 
-        if self.transform_bar.n == 0 and self.warmup_batch_size is not None:
-            batch_size = self.warmup_batch_size
+        if self.transform_bar.n == 0 and self.warmup_chunksize is not None:
+            chunksize = self.warmup_chunksize
             tqdm.write("Processing Warmup Batch")
         else:
-            batch_size = self.transform_batch_size
+            chunksize = self.transform_chunksize
 
-        while self.update_all_at_once or len(batch) < batch_size:
+        while self.update_all_at_once or len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
                 batch.append(document)
@@ -231,7 +227,7 @@ class PullTransformPush:
 
     def _get_push_batch(self) -> List[Dict[str, Any]]:
         """
-        Collects a batches of of size `push_batch_size` from the transform queue
+        Collects a batches of of size `push_chunksize` from the transform queue
         """
         batch: List[Dict[str, Any]] = []
 
@@ -239,15 +235,13 @@ class PullTransformPush:
         timeout = 1
 
         # Calculate optimal batch size
-        if self.push_batch_size is None:
+        if self.push_chunksize is None:
             sample_documents = [queue.get(timeout=timeout) for _ in range(10)]
-            self.push_batch_size = self._get_optimal_batch_size(
-                sample_documents, "push"
-            )
+            self.push_chunksize = self._get_optimal_chunksize(sample_documents, "push")
             batch = sample_documents
 
-        batch_size = self.push_batch_size
-        while len(batch) < batch_size:
+        chunksize = self.push_chunksize
+        while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
             except:
@@ -485,7 +479,8 @@ class OperationRun(TransformBase):
         if hasattr(dataset, "dataset_id"):
             self.dataset_id = dataset.dataset_id
 
-        self._check_fields_in_schema(select_fields)
+        schema = dataset.schema
+        self._check_fields_in_schema(schema=schema, fields=select_fields)
 
         filters += [
             {
@@ -528,6 +523,7 @@ class OperationRun(TransformBase):
                 update_all_at_once=(not batched),
                 **kwargs,
             )
+
         return
 
     def batch_transform_upsert(
@@ -543,8 +539,8 @@ class OperationRun(TransformBase):
         timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        warmup_batch_size: int = None,
-        transform_batch_size: int = 32,
+        warmup_chunksize: int = None,
+        transform_chunksize: int = 32,
         multithreaded_update: bool = False,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
@@ -560,10 +556,10 @@ class OperationRun(TransformBase):
             func_args=func_args,
             func_kwargs=func_kwargs,
             multithreaded_update=multithreaded_update,
-            pull_batch_size=chunksize,
-            warmup_batch_size=warmup_batch_size,
-            transform_batch_size=transform_batch_size,
-            push_batch_size=chunksize,
+            pull_chunksize=chunksize,
+            warmup_chunksize=warmup_chunksize,
+            transform_chunksize=transform_chunksize,
+            push_chunksize=chunksize,
             filters=filters,
             select_fields=select_fields,
             transform_workers=transform_workers,

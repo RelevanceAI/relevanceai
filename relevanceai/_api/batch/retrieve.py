@@ -27,7 +27,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
         number_of_documents: int = 20,
         filters: Optional[list] = None,
         cursor: str = None,
-        batch_size: int = 1000,
+        chunksize: int = 1000,
         sort: Optional[list] = None,
         select_fields: Optional[list] = None,
         include_vector: bool = True,
@@ -48,7 +48,7 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
             Fields to include in the search results, empty array/list means all fields.
         cursor: string
             Cursor to paginate the document retrieval
-        batch_size: int
+        chunksize: int
             Number of documents to retrieve per iteration
         include_vector: bool
             Include vectors in the search results
@@ -61,14 +61,14 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
         sort = [] if sort is None else sort
         select_fields = [] if select_fields is None else select_fields
 
-        if batch_size > number_of_documents:
-            batch_size = number_of_documents
+        if chunksize > number_of_documents:
+            chunksize = number_of_documents
 
         resp = self.datasets.documents.get_where(
             dataset_id=dataset_id,
             select_fields=select_fields,
             include_vector=include_vector,
-            page_size=batch_size,
+            page_size=chunksize,
             sort=sort,
             is_random=False,
             random_state=0,
@@ -78,16 +78,16 @@ class BatchRetrieveClient(APIEndpointsClient, Chunker):
         )
         data = resp["documents"]
 
-        if number_of_documents > batch_size:
+        if number_of_documents > chunksize:
             after_id = resp["after_id"]
             _page = 0
             while resp:
-                self.logger.debug(f"Paginating {_page} batch size {batch_size} ...")
+                self.logger.debug(f"Paginating {_page} batch size {chunksize} ...")
                 resp = self.datasets.documents.get_where(
                     dataset_id=dataset_id,
                     select_fields=select_fields,
                     include_vector=include_vector,
-                    page_size=batch_size,
+                    page_size=chunksize,
                     sort=sort,
                     is_random=False,
                     random_state=0,
