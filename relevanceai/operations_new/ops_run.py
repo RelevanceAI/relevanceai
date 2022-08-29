@@ -22,7 +22,7 @@ from relevanceai.utils.helpers.helpers import getsizeof
 class PullTransformPush:
 
     pull_bar: tqdm
-    update_bar: tqdm
+    transform_bar: tqdm
     push_bar: tqdm
 
     pull_thread: threading.Thread
@@ -84,7 +84,7 @@ class PullTransformPush:
             self.transform_batch_size = ndocs
 
         tqdm.write(
-            f"Transform chunksize is set to {self.transform_batch_size} documents"
+            f"Transform chunksize is set to {self.transform_batch_size:,} documents"
         )
 
         self.timeout = 30 if timeout is None else timeout
@@ -94,7 +94,7 @@ class PullTransformPush:
         self.select_fields = [] if select_fields is None else select_fields
 
         self.general_lock = threading.Lock()
-        self.update_batch_lock = threading.Lock()
+        self.transform_batch_lock = threading.Lock()
         self.push_batch_lock = threading.Lock()
         self.func_lock: Union[threading.Lock, None]
 
@@ -249,15 +249,15 @@ class PullTransformPush:
 
         return batch
 
-    def _update(self):
+    def _transform(self):
         """
         Updates a batch of documents given an update function.
         After updating, remove all fields that are present in both old and new batches.
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.update_bar.n < self.ndocs:
-            with self.update_batch_lock:
+        while self.transform_bar.n < self.ndocs:
+            with self.transform_batch_lock:
                 batch = self._get_update_batch()
 
             old_keys = [set(document.keys()) for document in batch]
@@ -274,7 +274,7 @@ class PullTransformPush:
                 self.pq.put(document)
 
             with self.general_lock:
-                self.update_bar.update(len(batch))
+                self.transform_bar.update(len(batch))
 
     def _handle_failed_documents(
         self,
@@ -364,9 +364,9 @@ class PullTransformPush:
             total=self.ndocs,
             **self.tqdm_kwargs,
         )
-        self.update_bar = tqdm(
+        self.transform_bar = tqdm(
             range(self.ndocs),
-            desc="update",
+            desc="transform",
             position=1,
             **self.tqdm_kwargs,
         )
@@ -383,7 +383,8 @@ class PullTransformPush:
         """
         self.pull_thread = threading.Thread(target=self._pull)
         self.update_threads = [
-            threading.Thread(target=self._update) for _ in range(self.transform_workers)
+            threading.Thread(target=self._transform)
+            for _ in range(self.transform_workers)
         ]
         self.push_threads = [
             threading.Thread(target=self._push) for _ in range(self.push_workers)

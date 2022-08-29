@@ -224,7 +224,6 @@ class Operations(Write):
             output_fields=output_fields,
             **kwargs,
         )
-
         return ops
 
     @track
@@ -472,7 +471,7 @@ class Operations(Write):
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
-        chunksize: Optional[int] = 100,
+        chunksize: Optional[int] = 128,
         filters: Optional[list] = None,
         batched: Optional[bool] = False,
         include_cluster_report: bool = False,
@@ -597,9 +596,8 @@ class Operations(Write):
         model: Any = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        include_cluster_report: bool = True,
         model_kwargs: dict = None,
-        chunksize: int = 100,
+        chunksize: int = 128,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
