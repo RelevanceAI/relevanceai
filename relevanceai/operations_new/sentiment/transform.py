@@ -21,6 +21,7 @@ class SentimentTransform(TransformBase):
         min_abs_score: float = 0.1,
         output_fields: list = None,
         sensitivity: float = 0,
+        device: int = None,
         **kwargs,
     ):
         """
@@ -44,6 +45,15 @@ class SentimentTransform(TransformBase):
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
         self.sensitivity = sensitivity
+        self.device = self.get_transformers_device(device)
+
+        import transformers
+
+        # Tries to set it to set it on GPU
+        self._classifier = transformers.pipeline(
+            return_all_scores=True, model=self.model_name, device=self.device
+        )
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -57,13 +67,6 @@ class SentimentTransform(TransformBase):
 
     @property
     def classifier(self):
-        if not hasattr(self, "_classifier"):
-            import transformers
-
-            self._classifier = transformers.pipeline(
-                return_all_scores=True,
-                model=self.model_name,
-            )
         return self._classifier
 
     # def _get_model(self):

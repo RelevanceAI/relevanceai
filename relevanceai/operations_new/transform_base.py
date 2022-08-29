@@ -146,3 +146,16 @@ class TransformBase(OperationsCheck):
 
     def _generate_output_field(self, field):
         return f"_{self.name}_.{field.lower().replace(' ', '_')}"
+
+    def get_transformers_device(self, device: int = None):
+        """
+        Automatically returns a GPU device if there is one. Otherwise,
+        returns a CPU device for transformers
+        """
+        if device is not None:
+            return device
+        import torch
+
+        if torch.cuda.is_available():
+            return 0
+        return -1
