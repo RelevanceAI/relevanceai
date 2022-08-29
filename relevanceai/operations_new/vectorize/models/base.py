@@ -1,8 +1,8 @@
 from abc import abstractmethod
-from pydoc import doc
 from typing import Any, Dict, List
 
 from relevanceai.utils import DocUtils
+from tqdm.auto import tqdm
 
 
 class VectorizeModelBase(DocUtils):
@@ -29,7 +29,7 @@ class VectorizeModelBase(DocUtils):
     def print_vector_field_name(self, field: str, output_field: str = None):
         # Store a simple dictionary to test vectorizing
         if field not in self.has_printed_vector_field_name:
-            print(
+            tqdm.write(
                 f"Vector field is `{self.vector_name(field, output_field=output_field)}`"
             )
             self.has_printed_vector_field_name[field] = True

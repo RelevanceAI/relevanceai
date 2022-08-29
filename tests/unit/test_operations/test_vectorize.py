@@ -34,10 +34,9 @@ class TestVectorizeOps:
     @pytest.mark.xfail(reason="vectorhub is not required")
     def test_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_ecom")
-        dataset.insert_documents(
-            documents=get_online_ecommerce_dataset(),
-            create_id=True,
-        )
+
+        documents = get_online_ecommerce_dataset()
+        dataset.insert_documents(documents=documents)
 
         dataset.vectorize(create_feature_vector=True)
 
@@ -45,10 +44,9 @@ class TestVectorizeOps:
 
     def test_numeric_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_iris")
-        dataset.insert_documents(
-            documents=get_iris_dataset(),
-            create_id=True,
-        )
+
+        documents = get_iris_dataset()
+        dataset.insert_documents(documents=documents)
 
         dataset.vectorize(create_feature_vector=True)
 
@@ -58,12 +56,12 @@ class TestVectorizeOps:
 
         assert "_dim4_feature_vector_" in dataset.schema
 
+    @pytest.mark.xfail(reason="deprecated")
     def test_custom_vectorize(self, test_client: Client):
         dataset = test_client.Dataset(SAMPLE_DATASET_DATASET_PREFIX + "_penguins")
-        dataset.insert_documents(
-            documents=get_palmer_penguins_dataset(),
-            create_id=True,
-        )
+
+        documents = get_palmer_penguins_dataset()
+        dataset.insert_documents(documents=documents)
 
         from relevanceai.operations.vector import Base2Vec
 

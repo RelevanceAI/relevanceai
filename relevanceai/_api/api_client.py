@@ -4,10 +4,9 @@
 from typing import Callable
 
 from relevanceai._api.batch.insert import BatchInsertClient
-from relevanceai._api.batch.insert_async import BatchInsertAsyncClient
 
 
-class APIClient(BatchInsertClient, BatchInsertAsyncClient):
+class APIClient(BatchInsertClient):
     """Batch API client"""
 
     def __init__(self, *args, **kwargs):

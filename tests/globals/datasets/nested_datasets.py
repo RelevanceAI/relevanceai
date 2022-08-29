@@ -13,7 +13,8 @@ def assorted_nested_dataset_id(
 ):
     test_dataset_id = generate_dataset_id()
 
-    test_client._insert_documents(test_dataset_id, assorted_nested_documents)
+    test_dataset = test_client.Dataset(test_dataset_id)
+    test_dataset.insert_documents(assorted_nested_documents)
 
     yield test_dataset_id
 

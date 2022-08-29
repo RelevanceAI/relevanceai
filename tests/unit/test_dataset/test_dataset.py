@@ -4,12 +4,11 @@
 
 import os
 import uuid
+import time
+import pytest
 
 import numpy as np
 import pandas as pd
-
-import time
-import pytest
 
 from relevanceai import Client
 
@@ -20,7 +19,7 @@ from tests.globals.constants import NOT_IMPLEMENTED, generate_dataset_id
 
 class TestDatasetExport:
     def test_to_csv(self, test_dataset: Dataset):
-        fname = f"{uuid.uuid4().__str__()}.csv"
+        fname = f"{str(uuid.uuid4())}.csv"
         test_dataset.to_csv(fname)
         df = pd.read_csv(fname)
 

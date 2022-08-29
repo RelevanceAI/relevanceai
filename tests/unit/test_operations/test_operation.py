@@ -1,3 +1,4 @@
+import time
 from relevanceai.dataset import Dataset
 
 from sklearn.cluster import KMeans
@@ -15,10 +16,11 @@ class TestOperation:
             alias=alias,
             include_cluster_report=False,
         )
+        time.sleep(1)
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
 
         parent_field = f"_cluster_.{vector_field}.{alias}"
-        vector_field = "sample_2_vector_"
+        # vector_field = "sample_2_vector_"
         alias = "subcluster_test_1"
         test_dataset.subcluster(
             model=model,
@@ -35,4 +37,5 @@ class TestOperation:
             ],
             min_parent_cluster_size=4,
         )
+        time.sleep(1)
         assert f"_cluster_.{vector_field}.{alias}" in test_dataset.schema
