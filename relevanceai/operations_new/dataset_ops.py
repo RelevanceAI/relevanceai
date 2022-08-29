@@ -25,6 +25,88 @@ from relevanceai.constants import EXPLORER_APP_LINK
 
 
 class Operations(Write):
+    @staticmethod
+    def _get_filters(input_fields: List[str], output_fields: List[str]):
+        """
+        Creates the filters necessary to search all documents
+        within a dataset that contain fields specified in "input_fields"
+        but do not contain the fields specified in "output_fields"
+
+        e.g.
+        fields = ["text", "title"]
+        vector_fields = ["text_use_vector_", "title_use_vector_"]
+
+        we want to search the dataset where:
+        ("text" * ! "text_use_vector_") + ("title" * ! "title_use_vector_")
+
+        Since the current implementation of filtering only accounts for CNF and not DNF boolean logic,
+        We must use boolean algebra here to obtain the CNF from a DNF expression.
+
+        CNF = Conjunctive Normal Form (Sum of Products)
+        DNF = Disjunctive Normal Form (Product of Sums)
+
+        This means converting the above to:
+        ("text" + "title") * ("text" + ! "title_use_vector_") *
+        (! "text_use_vector_" + "title") * (! "text_use_vector_" + ! "title_use_vector_")
+
+        Arguments:
+            input_fields: List[str]
+                A list of fields within the dataset
+
+            output_fields: List[str]
+                A list of output_fields, created from the operation.
+                These would be present in processed documents
+
+        Returns:
+            filters: List[Dict[str, Any]]
+                A list of filters.
+        """
+
+        if len(input_fields) > 1:
+            iters = len(input_fields) ** 2
+
+            filters: list = []
+            for i in range(iters):
+                binary_array = [character for character in str(bin(i))][2:]
+                mixed_mask = ["0"] * (
+                    len(input_fields) - len(binary_array)
+                ) + binary_array
+                mask = [int(value) for value in mixed_mask]
+                # Creates a binary mask the length of fields provided
+                # for two fields, we need 4 iters, going over [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+                condition_value = [
+                    {
+                        "field": field if mask[index] else vector_field,
+                        "filter_type": "exists",
+                        "condition": "==" if mask[index] else "!=",
+                        "condition_value": "",
+                    }
+                    for index, (field, vector_field) in enumerate(
+                        zip(input_fields, output_fields)
+                    )
+                ]
+                filters += [{"filter_type": "or", "condition_value": condition_value}]
+
+        else:  # Special Case when only 1 field is provided
+            condition_value = [
+                {
+                    "field": input_fields[0],
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                },
+                {
+                    "field": output_fields[0],
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": " ",
+                },
+            ]
+            filters = condition_value
+
+        return filters
+
     @track
     def reduce_dims(
         self,
@@ -69,6 +151,12 @@ class Operations(Write):
             model_kwargs=model_kwargs,
             alias=alias,
             output_field=output_field,
+        )
+
+        filters = [] if filters is None else filters
+        filters += Operations._get_filters(
+            input_fields=vector_fields,
+            output_fields=[ops.model.vector_name(vector_fields, output_field)],
         )
 
         res = ops.run(
@@ -123,7 +211,10 @@ class Operations(Write):
         )
 
         filters = [] if filters is None else filters
-        filters += ops._get_base_filters()
+        filters += Operations._get_filters(
+            input_fields=fields, output_fields=ops.vector_fields
+        )
+
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -175,7 +266,9 @@ class Operations(Write):
         )
 
         filters = [] if filters is None else filters
-        filters += ops._get_base_filters()
+        filters += Operations._get_filters(
+            input_fields=fields, output_fields=ops.vector_fields
+        )
 
         res = ops.run(
             dataset=self,
@@ -359,6 +452,8 @@ class Operations(Write):
             inplace=inplace,
             output_field=output_field,
         )
+
+        filters = [] if filters is None else filters
 
         res = ops.run(
             dataset=self,

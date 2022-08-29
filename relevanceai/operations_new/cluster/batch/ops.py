@@ -8,6 +8,8 @@ from relevanceai.operations_new.cluster.batch.models.base import BatchClusterMod
 from relevanceai.dataset import Dataset
 from typing import Any
 
+from relevanceai.operations_new.ops_run import PullTransformPush
+
 
 class BatchClusterOps(BatchClusterTransform, ClusterOps):
     """Batch Clustering related Operations"""
@@ -55,27 +57,37 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         self.alias = self._get_alias(alias)
 
+    def fit(self, chunk):
+        vectors = self.get_field_across_documents(
+            self.vector_fields[0], chunk, missing_treatment="skip"
+        )
+        self.model.partial_fit(vectors)
+        return chunk
+
     def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
         """
         Run batch clustering
         """
-        # TODO:
-        # Avoid looping through dataset twice
-        print("Fitting...")
-        for chunk in dataset.chunk_dataset(
-            select_fields=self.vector_fields, filters=filters, chunksize=chunksize
-        ):
-            vectors = self.get_field_across_documents(
-                self.vector_fields[0], chunk, missing_treatment="skip"
-            )
-            self.model.partial_fit(vectors)
+        pup = PullTransformPush(
+            dataset=dataset,
+            func=self.fit,
+            pull_batch_size=chunksize,
+            push_batch_size=chunksize,
+            filters=filters,
+            select_fields=self.vector_fields,
+            show_progress_bar=True,
+        )
+        pup.run()
 
-        print("Predicting...")
-        for chunk in dataset.chunk_dataset(
-            select_fields=self.vector_fields, chunksize=chunksize, filters=filters
-        ):
-            # Provide a chunk
-            chunk = self.transform(chunk)
-            results = dataset.upsert_documents(chunk)
+        pup = PullTransformPush(
+            dataset=dataset,
+            func=self.transform,
+            pull_batch_size=chunksize,
+            push_batch_size=chunksize,
+            filters=filters,
+            select_fields=self.vector_fields,
+            show_progress_bar=True,
+        )
+        pup.run()
 
         return
