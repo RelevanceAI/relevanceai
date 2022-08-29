@@ -52,6 +52,13 @@ class SentimentTransform(TransformBase):
         else:
             self.device = device
 
+        import transformers
+
+        # Tries to set it to set it on GPU
+        self._classifier = transformers.pipeline(
+            return_all_scores=True, model=self.model_name, device=self.device
+        )
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -65,13 +72,6 @@ class SentimentTransform(TransformBase):
 
     @property
     def classifier(self):
-        if not hasattr(self, "_classifier"):
-            import transformers
-
-            # Tries to set it to set it on GPU
-            self._classifier = transformers.pipeline(
-                return_all_scores=True, model=self.model_name, device=self.device
-            )
         return self._classifier
 
     # def _get_model(self):
