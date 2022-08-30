@@ -62,6 +62,9 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         vectors = self.get_field_across_documents(
             self.vector_fields[0], chunk, missing_treatment="skip"
         )
+        if hasattr(self.model, "n_clusters"):
+            if len(vectors) < self.model.n_clusters:
+                return chunk
         self.model.partial_fit(vectors)
         return chunk
 
@@ -80,6 +83,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
+            background_execution=False,
         )
         pup.run()
 
