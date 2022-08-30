@@ -96,6 +96,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
+            background_execution=False,
         )
         pup.run()
 
