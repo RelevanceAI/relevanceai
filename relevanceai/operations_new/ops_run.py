@@ -569,6 +569,7 @@ class OperationRun(TransformBase):
             timeout=timeout,
             update_all_at_once=update_all_at_once,
             ingest_in_background=ingest_in_background,
+            **kwargs,
         )
         pup.run()
 
