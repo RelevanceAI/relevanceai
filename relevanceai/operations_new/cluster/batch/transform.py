@@ -90,7 +90,6 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
             return self.model.predict_documents(
                 documents=documents,
                 vector_fields=self.vector_fields,
-                warm_start=warm_start,
             )
         elif hasattr(self.model, "predict"):
             if len(self.vector_fields) == 1:
@@ -98,10 +97,7 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
                     self.vector_fields[0],
                     documents,
                 )
-                cluster_labels = self.model.predict(
-                    vectors,
-                    # warm_start=warm_start,
-                )
+                cluster_labels = self.model.predict(vectors)
 
                 return self.format_cluster_labels(cluster_labels)
         raise AttributeError("Model is missing a `fit_predict` method.")
