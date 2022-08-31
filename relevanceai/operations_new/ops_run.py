@@ -207,7 +207,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 1
+        timeout = 5
 
         if self.transform_bar.n == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
@@ -232,7 +232,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
-        timeout = 1
+        timeout = 5
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
