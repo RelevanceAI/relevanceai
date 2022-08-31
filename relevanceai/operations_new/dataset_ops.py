@@ -25,7 +25,7 @@ from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
 
 
-def get_pup_args() -> List[str]:
+def get_ptp_args() -> List[str]:
     """
     Returns all arguments in the PullTransformPush.__init__ func
     """
@@ -629,7 +629,7 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_pup_args()}
+        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_ptp_args()}
         cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
@@ -875,7 +875,7 @@ class Operations(Write):
             }
         ]
 
-        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_pup_args()}
+        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_ptp_args()}
         ops.run(
             self,
             filters=filters,

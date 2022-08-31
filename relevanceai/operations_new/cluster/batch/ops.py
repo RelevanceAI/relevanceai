@@ -77,7 +77,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         from tqdm.auto import tqdm
 
         tqdm.write("\nFitting Model...")
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.fit,
             pull_chunksize=chunksize,
@@ -87,10 +87,10 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             show_progress_bar=True,
             **kwargs
         )
-        pup.run()
+        ptp.run()
 
         tqdm.write("\nPredicting Documents...")
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             pull_chunksize=chunksize,
@@ -100,7 +100,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             show_progress_bar=True,
             **kwargs
         )
-        pup.run()
+        ptp.run()
 
         tqdm.write("\nConfigure your new explore app below:")
         tqdm.write(EXPLORER_APP_LINK.format(dataset.dataset_id))

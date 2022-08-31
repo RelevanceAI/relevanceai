@@ -556,7 +556,7 @@ class OperationRun(TransformBase):
             warnings.warn(
                 "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
             )
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             func_args=func_args,
@@ -577,7 +577,7 @@ class OperationRun(TransformBase):
             ingest_in_background=ingest_in_background,
             **kwargs,
         )
-        pup.run()
+        ptp.run()
 
     def store_operation_metadata(
         self,
