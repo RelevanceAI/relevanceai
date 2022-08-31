@@ -613,11 +613,15 @@ class Operations(Write):
         model: Any = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        model_kwargs: dict = None,
+        model_kwargs: Dict = None,
         chunksize: int = 128,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        n_clusters = ({} if model_kwargs is None else model_kwargs).get("n_clusters", 8)
+        if kwargs.get("transform_chunksize") is None:
+            kwargs["transform_chunksize"] = max(n_clusters * 5, 128)
 
         run_kwargs = {}
         for key in get_ptp_args():
