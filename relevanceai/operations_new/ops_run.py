@@ -8,7 +8,7 @@ import multiprocessing as mp
 import warnings
 
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union, Optional, Callable
+from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
 from relevanceai.constants.constants import CONFIG
 
 from relevanceai.dataset import Dataset
@@ -29,39 +29,13 @@ class PullTransformPush:
     update_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
-    arguments = [
-        "dataset",
-        "func",
-        "func_args",
-        "func_kwargs",
-        "multithreaded_update",
-        "pull_chunksize",
-        "warmup_chunksize",
-        "transform_chunksize",
-        "push_chunksize",
-        "filters",
-        "select_fields",
-        "transform_workers",
-        "push_workers",
-        "buffer_size",
-        "show_progress_bar",
-        "timeout",
-        "ingest_in_background",
-        "background_execution",
-        "ram_ratio",
-        "update_all_at_once",
-        "retry_count",
-        "after_id",
-        "pull_limit",
-    ]
-
     def __init__(
         self,
         dataset: Dataset,
         func: Callable,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
-        multithreaded_update: bool = True,
+        multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = 128,
         warmup_chunksize: Optional[int] = None,
         transform_chunksize: Optional[int] = 128,
@@ -74,7 +48,7 @@ class PullTransformPush:
         show_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
-        background_execution: bool = True,
+        background_execution: bool = False,
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
         retry_count: int = 3,
@@ -433,7 +407,7 @@ class PullTransformPush:
                     thread.start()
                 break
 
-        if self.background_execution:
+        if not self.background_execution:
             for thread in self.push_threads:
                 thread.join()
             for thread in self.update_threads:
@@ -453,6 +427,13 @@ class PullTransformPush:
             self._run_worker_threads()
 
         return list(self.failed_frontier.keys())
+
+
+def arguments(cls: Type[PullTransformPush]):
+    import inspect
+
+    sig = inspect.signature(cls.__init__)
+    return list(sig.parameters)
 
 
 class OperationRun(TransformBase):

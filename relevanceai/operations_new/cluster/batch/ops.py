@@ -68,7 +68,9 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         self.model.partial_fit(vectors)
         return chunk
 
-    def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
+    def run(
+        self, dataset: Dataset, filters: list = None, chunksize: int = 500, **kwargs
+    ):
         """
         Run batch clustering
         """
@@ -83,7 +85,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
-            background_execution=False,
+            **kwargs
         )
         pup.run()
 
@@ -96,7 +98,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
-            background_execution=False,
+            **kwargs
         )
         pup.run()
 

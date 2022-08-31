@@ -20,9 +20,19 @@ from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from relevanceai.dataset.write import Write
-from relevanceai.operations_new.ops_run import PullTransformPush
+
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
+
+
+def get_pup_args() -> List[str]:
+    """
+    Returns all arguments in the PullTransformPush.__init__ func
+    """
+
+    from relevanceai.operations_new.ops_run import PullTransformPush, arguments
+
+    return arguments(PullTransformPush)
 
 
 class Operations(Write):
@@ -120,6 +130,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -166,6 +177,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             batched=batched,
+            **kwargs,
         )
 
         return ops
@@ -235,6 +247,7 @@ class Operations(Write):
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -276,6 +289,7 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -426,6 +440,7 @@ class Operations(Write):
         batched: bool = False,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        **kwargs,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -461,6 +476,7 @@ class Operations(Write):
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -613,9 +629,7 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        run_kwargs = {
-            key: kwargs.pop(key) for key in kwargs if key in PullTransformPush.arguments
-        }
+        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_pup_args()}
         cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
@@ -861,9 +875,7 @@ class Operations(Write):
             }
         ]
 
-        run_kwargs = {
-            key: kwargs.pop(key) for key in kwargs if key in PullTransformPush.arguments
-        }
+        run_kwargs = {key: kwargs.pop(key) for key in kwargs if key in get_pup_args()}
         ops.run(
             self,
             filters=filters,
