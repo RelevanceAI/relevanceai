@@ -29,6 +29,32 @@ class PullTransformPush:
     update_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
+    arguments = [
+        "dataset",
+        "func",
+        "func_args",
+        "func_kwargs",
+        "multithreaded_update",
+        "pull_chunksize",
+        "warmup_chunksize",
+        "transform_chunksize",
+        "push_chunksize",
+        "filters",
+        "select_fields",
+        "transform_workers",
+        "push_workers",
+        "buffer_size",
+        "show_progress_bar",
+        "timeout",
+        "ingest_in_background",
+        "background_execution",
+        "ram_ratio",
+        "update_all_at_once",
+        "retry_count",
+        "after_id",
+        "pull_limit",
+    ]
+
     def __init__(
         self,
         dataset: Dataset,
@@ -450,7 +476,6 @@ class OperationRun(TransformBase):
         select_fields: Optional[list] = None,
         output_fields: Optional[list] = None,
         refresh: bool = False,
-        *args,
         **kwargs,
     ):
         """It takes a dataset, and then it gets all the documents from that dataset. Then it transforms the

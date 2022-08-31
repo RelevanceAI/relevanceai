@@ -20,6 +20,7 @@ from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from relevanceai.dataset.write import Write
+from relevanceai.operations_new.ops_run import PullTransformPush
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
 
@@ -612,7 +613,10 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        cluster_ops.run(self, filters=filters, chunksize=chunksize)
+        run_kwargs = {
+            key: kwargs.pop(key) for key in kwargs if key in PullTransformPush.arguments
+        }
+        cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
 
@@ -671,6 +675,7 @@ class Operations(Write):
         min_score: float = 0.3,
         batched: bool = True,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Extract an emotion.
@@ -712,6 +717,7 @@ class Operations(Write):
             batched=batched,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -722,6 +728,7 @@ class Operations(Write):
         output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Apply a transformers pipeline generically.
@@ -751,6 +758,7 @@ class Operations(Write):
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -763,6 +771,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         batched: Optional[bool] = None,
         chunksize: Optional[int] = None,
+        **kwargs,
     ):
 
         from relevanceai.operations_new.scaling.ops import ScaleOps
@@ -784,6 +793,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             select_fields=vector_fields,
+            **kwargs,
         )
         return ops
 
@@ -851,10 +861,14 @@ class Operations(Write):
             }
         ]
 
+        run_kwargs = {
+            key: kwargs.pop(key) for key in kwargs if key in PullTransformPush.arguments
+        }
         ops.run(
             self,
             filters=filters,
             select_fields=select_fields,
+            **run_kwargs,
         )
         print(
             f"""You can now utilise the ClusterOps object based on subclustering.
@@ -941,6 +955,7 @@ class Operations(Write):
         lemmatize: bool = False,
         filters: list = None,
         replace_words: dict = None,
+        **kwargs,
     ):
         """
         Cleans text for you!
@@ -962,6 +977,7 @@ class Operations(Write):
             remove_stopword=remove_stopwords,
             lemmatize=lemmatize,
             replace_words=replace_words,
+            **kwargs,
         )
 
         print("🥸 A clean house is a sign of no Internet connection.")
@@ -984,6 +1000,7 @@ class Operations(Write):
         filters: list = None,
         chunksize: int = 1000,
         refresh: bool = False,
+        **kwargs,
     ):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
@@ -1001,6 +1018,7 @@ class Operations(Write):
             filters=filters,
             batched=True,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -1178,6 +1196,7 @@ class Operations(Write):
             filters=filters,
             select_fields=fields,
             output_fields=output_fields,
+            **kwargs,
         )
         return ops
 
@@ -1362,6 +1381,7 @@ class Operations(Write):
         maximum_number_of_labels: int = 5,
         filters: list = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Tag Text
@@ -1386,6 +1406,7 @@ class Operations(Write):
             select_fields=fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
 
         return ops
