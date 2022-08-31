@@ -48,7 +48,7 @@ class PullTransformPush:
         show_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
-        background_execution: bool = False,
+        run_in_background: bool = False,
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
         retry_count: int = 3,
@@ -134,7 +134,7 @@ class PullTransformPush:
         self.func = func
 
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
-        self.background_execution = background_execution
+        self.run_in_background = run_in_background
 
         self.failed_frontier: Dict[str, int] = {}
         self.retry_count = retry_count
@@ -407,7 +407,7 @@ class PullTransformPush:
                     thread.start()
                 break
 
-        if not self.background_execution:
+        if not self.run_in_background:
             for thread in self.push_threads:
                 thread.join()
             for thread in self.update_threads:

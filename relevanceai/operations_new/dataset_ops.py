@@ -619,6 +619,11 @@ class Operations(Write):
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
 
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
+
         cluster_ops = BatchClusterOps(
             model=model,
             alias=alias,
@@ -629,7 +634,6 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        run_kwargs = {key: kwargs.get(key) for key in kwargs if key in get_ptp_args()}
         cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
@@ -840,6 +844,11 @@ class Operations(Write):
             **kwargs,
         )
 
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
+
         # Building an infinitely hackable SDK
 
         # Add filters and select fields
@@ -875,7 +884,6 @@ class Operations(Write):
             }
         ]
 
-        run_kwargs = {key: kwargs.get(key) for key in kwargs if key in get_ptp_args()}
         ops.run(
             self,
             filters=filters,
