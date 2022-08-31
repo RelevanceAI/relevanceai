@@ -89,11 +89,14 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         )
         ptp.run()
 
+        kwargs.pop("transform_chunksize")
+
         tqdm.write("\nPredicting Documents...")
         ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             pull_chunksize=chunksize,
+            transform_chunksize=chunksize,
             push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,

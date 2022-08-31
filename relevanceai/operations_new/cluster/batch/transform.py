@@ -64,7 +64,7 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
         """
 
         # TODO: add support for sklearn kmeans
-        labels = self.fit_predict_documents(
+        labels = self.predict_documents(
             documents=documents,
         )
         # Get the cluster field name

@@ -287,7 +287,7 @@ class PullTransformPush:
         Does so by collecting by `_id` from the batch, and reinserting them in the push queue.
         """
         # check if there is any failed documents...
-        failed_documents = res["response_json"]["failed_documents"]
+        failed_documents = res["response_json"].get("failed_documents", [])
 
         if failed_documents:
             with self.general_lock:
@@ -333,6 +333,16 @@ class PullTransformPush:
         ]
         return batch
 
+    @staticmethod
+    def _get_updates(batch) -> bool:
+        updates = sum(
+            [
+                len([key for key in document.keys() if key != "_id"])
+                for document in batch
+            ]
+        )
+        return True if updates > 0 else False
+
     def _push(self) -> None:
         """
         Iteratively gather a batch of processed documents and push these to cloud
@@ -342,13 +352,21 @@ class PullTransformPush:
                 batch = self._get_push_batch()
 
             batch = self.dataset.json_encoder(batch)
+            update = PullTransformPush._get_updates(batch)
 
-            res = self.dataset.datasets.documents.bulk_update(
-                self.dataset_id,
-                batch,
-                return_documents=True,
-                ingest_in_background=self.ingest_in_background,
-            )
+            if update:
+                res = self.dataset.datasets.documents.bulk_update(
+                    self.dataset_id,
+                    batch,
+                    return_documents=True,
+                    ingest_in_background=self.ingest_in_background,
+                )
+            else:
+                res = {
+                    "response_json": {},
+                    "documents": batch,
+                    "status_code": 200,
+                }
 
             failed_documents = self._handle_failed_documents(res, batch)
 
