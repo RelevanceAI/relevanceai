@@ -20,8 +20,19 @@ from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from relevanceai.dataset.write import Write
+
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
+
+
+def get_ptp_args() -> List[str]:
+    """
+    Returns all arguments in the PullTransformPush.__init__ func
+    """
+
+    from relevanceai.operations_new.ops_run import PullTransformPush, arguments
+
+    return arguments(PullTransformPush)
 
 
 class Operations(Write):
@@ -119,6 +130,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -165,6 +177,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             batched=batched,
+            **kwargs,
         )
 
         return ops
@@ -234,6 +247,7 @@ class Operations(Write):
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -275,6 +289,7 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -425,6 +440,7 @@ class Operations(Write):
         batched: bool = False,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        **kwargs,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -460,6 +476,7 @@ class Operations(Write):
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -596,11 +613,20 @@ class Operations(Write):
         model: Any = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        model_kwargs: dict = None,
+        model_kwargs: Dict = None,
         chunksize: int = 128,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        n_clusters = ({} if model_kwargs is None else model_kwargs).get("n_clusters", 8)
+        if kwargs.get("transform_chunksize") is None:
+            kwargs["transform_chunksize"] = max(n_clusters * 5, 128)
+
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
 
         cluster_ops = BatchClusterOps(
             model=model,
@@ -612,7 +638,7 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        cluster_ops.run(self, filters=filters, chunksize=chunksize)
+        cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
 
@@ -671,6 +697,7 @@ class Operations(Write):
         min_score: float = 0.3,
         batched: bool = True,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Extract an emotion.
@@ -712,6 +739,7 @@ class Operations(Write):
             batched=batched,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -722,6 +750,7 @@ class Operations(Write):
         output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Apply a transformers pipeline generically.
@@ -751,6 +780,7 @@ class Operations(Write):
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -763,6 +793,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         batched: Optional[bool] = None,
         chunksize: Optional[int] = None,
+        **kwargs,
     ):
 
         from relevanceai.operations_new.scaling.ops import ScaleOps
@@ -784,6 +815,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             select_fields=vector_fields,
+            **kwargs,
         )
         return ops
 
@@ -815,6 +847,11 @@ class Operations(Write):
             min_parent_cluster_size=min_parent_cluster_size,
             **kwargs,
         )
+
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
 
         # Building an infinitely hackable SDK
 
@@ -855,6 +892,7 @@ class Operations(Write):
             self,
             filters=filters,
             select_fields=select_fields,
+            **run_kwargs,
         )
         print(
             f"""You can now utilise the ClusterOps object based on subclustering.
@@ -941,6 +979,7 @@ class Operations(Write):
         lemmatize: bool = False,
         filters: list = None,
         replace_words: dict = None,
+        **kwargs,
     ):
         """
         Cleans text for you!
@@ -962,6 +1001,7 @@ class Operations(Write):
             remove_stopword=remove_stopwords,
             lemmatize=lemmatize,
             replace_words=replace_words,
+            **kwargs,
         )
 
         print("🥸 A clean house is a sign of no Internet connection.")
@@ -984,6 +1024,7 @@ class Operations(Write):
         filters: list = None,
         chunksize: int = 1000,
         refresh: bool = False,
+        **kwargs,
     ):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
@@ -1001,6 +1042,7 @@ class Operations(Write):
             filters=filters,
             batched=True,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -1178,6 +1220,7 @@ class Operations(Write):
             filters=filters,
             select_fields=fields,
             output_fields=output_fields,
+            **kwargs,
         )
         return ops
 
@@ -1362,6 +1405,7 @@ class Operations(Write):
         maximum_number_of_labels: int = 5,
         filters: list = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Tag Text
@@ -1386,6 +1430,7 @@ class Operations(Write):
             select_fields=fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
 
         return ops

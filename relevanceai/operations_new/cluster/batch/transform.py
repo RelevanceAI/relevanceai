@@ -64,7 +64,7 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
         """
 
         # TODO: add support for sklearn kmeans
-        labels = self.fit_predict_documents(
+        labels = self.predict_documents(
             documents=documents,
         )
         # Get the cluster field name
@@ -78,6 +78,29 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
             documents_to_upsert,
         )
         return documents_to_upsert
+
+    def predict_documents(self, documents, warm_start=False):
+        """
+        If warm_start=True, copies the values from the previous fit.
+        Only works for cluster models that use centroids. You should
+        not have to use this parameter.
+        """
+        # run fit predict on documetns
+        if hasattr(self.model, "predict_documents"):
+            return self.model.predict_documents(
+                documents=documents,
+                vector_fields=self.vector_fields,
+            )
+        elif hasattr(self.model, "predict"):
+            if len(self.vector_fields) == 1:
+                vectors = self.get_field_across_documents(
+                    self.vector_fields[0],
+                    documents,
+                )
+                cluster_labels = self.model.predict(vectors)
+
+                return self.format_cluster_labels(cluster_labels)
+        raise AttributeError("Model is missing a `fit_predict` method.")
 
     def _get_model(self, model: Any, model_kwargs: dict) -> Any:
         if isinstance(model, str):

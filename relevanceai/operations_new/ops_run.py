@@ -8,7 +8,7 @@ import multiprocessing as mp
 import warnings
 
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union, Optional, Callable
+from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
 from relevanceai.constants.constants import CONFIG
 
 from relevanceai.dataset import Dataset
@@ -35,7 +35,7 @@ class PullTransformPush:
         func: Callable,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
-        multithreaded_update: bool = True,
+        multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = 128,
         warmup_chunksize: Optional[int] = None,
         transform_chunksize: Optional[int] = 128,
@@ -48,7 +48,7 @@ class PullTransformPush:
         show_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
-        background_execution: bool = True,
+        run_in_background: bool = False,
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
         retry_count: int = 3,
@@ -134,7 +134,7 @@ class PullTransformPush:
         self.func = func
 
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
-        self.background_execution = background_execution
+        self.run_in_background = run_in_background
 
         self.failed_frontier: Dict[str, int] = {}
         self.retry_count = retry_count
@@ -207,7 +207,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 1
+        timeout = 5
 
         if self.transform_bar.n == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
@@ -232,7 +232,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
-        timeout = 1
+        timeout = 5
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
@@ -287,7 +287,7 @@ class PullTransformPush:
         Does so by collecting by `_id` from the batch, and reinserting them in the push queue.
         """
         # check if there is any failed documents...
-        failed_documents = res["response_json"]["failed_documents"]
+        failed_documents = res["response_json"].get("failed_documents", [])
 
         if failed_documents:
             with self.general_lock:
@@ -333,6 +333,16 @@ class PullTransformPush:
         ]
         return batch
 
+    @staticmethod
+    def _get_updates(batch) -> bool:
+        updates = sum(
+            [
+                len([key for key in document.keys() if key != "_id"])
+                for document in batch
+            ]
+        )
+        return True if updates > 0 else False
+
     def _push(self) -> None:
         """
         Iteratively gather a batch of processed documents and push these to cloud
@@ -342,13 +352,21 @@ class PullTransformPush:
                 batch = self._get_push_batch()
 
             batch = self.dataset.json_encoder(batch)
+            update = PullTransformPush._get_updates(batch)
 
-            res = self.dataset.datasets.documents.bulk_update(
-                self.dataset_id,
-                batch,
-                return_documents=True,
-                ingest_in_background=self.ingest_in_background,
-            )
+            if update:
+                res = self.dataset.datasets.documents.bulk_update(
+                    self.dataset_id,
+                    batch,
+                    return_documents=True,
+                    ingest_in_background=self.ingest_in_background,
+                )
+            else:
+                res = {
+                    "response_json": {},
+                    "documents": batch,
+                    "status_code": 200,
+                }
 
             failed_documents = self._handle_failed_documents(res, batch)
 
@@ -407,7 +425,7 @@ class PullTransformPush:
                     thread.start()
                 break
 
-        if self.background_execution:
+        if not self.run_in_background:
             for thread in self.push_threads:
                 thread.join()
             for thread in self.update_threads:
@@ -427,6 +445,13 @@ class PullTransformPush:
             self._run_worker_threads()
 
         return list(self.failed_frontier.keys())
+
+
+def arguments(cls: Type[PullTransformPush]):
+    import inspect
+
+    sig = inspect.signature(cls.__init__)
+    return list(sig.parameters)
 
 
 class OperationRun(TransformBase):
@@ -450,7 +475,6 @@ class OperationRun(TransformBase):
         select_fields: Optional[list] = None,
         output_fields: Optional[list] = None,
         refresh: bool = False,
-        *args,
         **kwargs,
     ):
         """It takes a dataset, and then it gets all the documents from that dataset. Then it transforms the
@@ -550,7 +574,7 @@ class OperationRun(TransformBase):
             warnings.warn(
                 "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
             )
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             func_args=func_args,
@@ -571,7 +595,7 @@ class OperationRun(TransformBase):
             ingest_in_background=ingest_in_background,
             **kwargs,
         )
-        pup.run()
+        ptp.run()
 
     def store_operation_metadata(
         self,
