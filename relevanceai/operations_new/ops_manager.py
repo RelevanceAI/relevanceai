@@ -73,20 +73,6 @@ class OperationManager:
         if "centroid_documents" in locals():
             tqdm.write("Inserting centroids...")
             res = self.operation.insert_centroids(centroid_documents)
-
-            with open("log.json", "w") as f:
-                json.dump(
-                    {
-                        "url": f"/datasets/{self.dataset.dataset_id}/cluster/centroids/insert",
-                        "methdod": "POST",
-                        "dataset_id": self.dataset.dataset_id,
-                        "cluster_centers": centroid_documents,
-                        "vector_fields": self.operation.vector_fields,
-                        "alias": self.operation.alias,
-                    },
-                    f,
-                )
-
             tqdm.write("Centroids Intserted!")
 
         for h in self.post_hooks:
