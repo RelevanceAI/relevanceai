@@ -138,12 +138,13 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
             )
 
         """
-        return self.datasets.cluster.centroids.insert(
+        res = self.datasets.cluster.centroids.insert(
             dataset_id=self.dataset_id,
             cluster_centers=self.json_encoder(centroid_documents),
             vector_fields=self.vector_fields,
             alias=self.alias,
         )
+        return res
 
     def calculate_centroids(self, method="mean"):
         """
@@ -206,7 +207,7 @@ class ClusterOps(ClusterTransform, OperationAPIBase):
         centroid_vectors = {}
         if hasattr(self.model, "_centroids") and self.model._centroids is not None:
             # TODO: fix this so that it creates the proper labels
-            centroid_vectors = self.model._centroids
+            centroid_vectors = self.model._centroids.tolist()
             # get the cluster label function
             labels = range(len(centroid_vectors))
             cluster_ids = self.format_cluster_labels(labels)
