@@ -12,7 +12,7 @@ import uuid
 import concurrent.futures
 
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from tqdm.auto import tqdm
 
 from relevanceai.dataset.read import Read
@@ -34,18 +34,13 @@ class Write(Read):
     def insert_documents(
         self,
         documents: list,
-        bulk_fn: Callable = None,
         max_workers: Optional[int] = 2,
         media_workers: Optional[int] = None,
-        retry_chunk_mult: float = 0.5,
-        show_progress_bar: bool = False,
-        chunksize: int = 0,
-        use_json_encoder: bool = True,
-        create_id: bool = False,
+        show_progress_bar: bool = True,
+        chunksize: Optional[int] = None,
         overwrite: bool = True,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
         media_fields: Optional[List[str]] = None,
-        **kwargs,
     ) -> Dict:
 
         """
@@ -110,16 +105,11 @@ class Write(Read):
         results = self._insert_documents(
             dataset_id=self.dataset_id,
             documents=documents,
-            bulk_fn=bulk_fn,
             max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-            create_id=create_id,
             overwrite=overwrite,
             ingest_in_background=ingest_in_background,
-            **kwargs,
         )
         return self._process_insert_results(results)
 
@@ -327,15 +317,12 @@ class Write(Read):
     def upsert_documents(
         self,
         documents: list,
-        bulk_fn: Callable = None,
-        max_workers: int = 2,
-        retry_chunk_mult: float = 0.5,
-        chunksize: int = 0,
-        show_progress_bar=False,
-        use_json_encoder: bool = True,
-        return_json: bool = False,
-        create_id: bool = False,
-        ingest_in_background: bool = False,
+        max_workers: Optional[int] = 2,
+        media_workers: Optional[int] = None,
+        show_progress_bar: bool = False,
+        chunksize: Optional[int] = None,
+        ingest_in_background: bool = True,
+        media_fields: Optional[List[str]] = None,
     ) -> Dict:
 
         """
@@ -384,19 +371,22 @@ class Write(Read):
             ds.upsert_documents(documents)
 
         """
+        if media_fields is not None:
+            documents = self.prepare_media_documents(
+                documents,
+                media_fields,
+                max_workers=media_workers,
+            )
+
         results = self._update_documents(
-            self.dataset_id,
+            dataset_id=self.dataset_id,
             documents=documents,
-            bulk_fn=bulk_fn,
             max_workers=max_workers,
-            retry_chunk_mult=retry_chunk_mult,
             show_progress_bar=show_progress_bar,
             chunksize=chunksize,
-            use_json_encoder=use_json_encoder,
-            create_id=create_id,
             ingest_in_background=ingest_in_background,
         )
-        return self._process_insert_results(results, return_json=return_json)
+        return self._process_insert_results(results)
 
     @track
     def apply(
@@ -473,16 +463,12 @@ class Write(Read):
                 new_documents.append(new_d)
             return documents
 
-        results = self.pull_update_push_async(
-            self.dataset_id,
-            bulk_fn,
-            retrieve_chunk_size=retrieve_chunksize,
+        results = self.bulk_apply(
+            bulk_func=bulk_fn,
+            retrieve_chunksize=retrieve_chunksize,
             filters=filters,
             select_fields=select_fields,
             show_progress_bar=show_progress_bar,
-            use_json_encoder=use_json_encoder,
-            log_to_file=log_to_file,
-            log_file=log_file,
         )
         if results is None:
             print("✅ Successfully ran!")
@@ -497,10 +483,20 @@ class Write(Read):
     def bulk_apply(
         self,
         bulk_func: Callable,
-        retrieve_chunksize: int = 100,
+        bulk_func_args: Optional[Tuple[Any]] = None,
+        bulk_func_kwargs: Optional[Dict[str, Any]] = None,
+        chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        max_active_threads: int = 2,
+        transform_workers: int = 2,
+        push_workers: int = 2,
+        timeout: Optional[int] = None,
+        buffer_size: int = 0,
+        show_progress_bar: bool = True,
+        transform_chunksize: int = 32,
+        multithreaded_update: bool = True,
+        ingest_in_background: bool = True,
+        **kwargs,
     ):
         """
         Apply a bulk function along an axis of the DataFrame.
@@ -539,32 +535,28 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        thread_count = 0
-        filters = [] if filters is None else filters
-        select_fields = [] if select_fields is None else select_fields
+        from relevanceai.operations_new.ops_run import PullTransformPush
 
-        for chunk in self.chunk_dataset(
-            select_fields=select_fields,
+        ptp = PullTransformPush(
+            dataset=self,
+            func=bulk_func,
+            func_args=bulk_func_args,
+            func_kwargs=bulk_func_kwargs,
+            multithreaded_update=multithreaded_update,
+            pull_chunksize=chunksize,
+            transform_chunksize=transform_chunksize,
+            push_chunksize=chunksize,
             filters=filters,
-            chunksize=retrieve_chunksize,
-        ):
-            updated_chunk = bulk_func(
-                chunk,
-            )
-
-            @fire_and_forget
-            def fire_upsert_docs():
-                self.upsert_documents(updated_chunk)
-
-            thread_count += 1
-            if thread_count >= max_active_threads:
-                # Check if thread count decreases
-                curr_thread_count = threading.active_count()
-                while threading.active_count() >= curr_thread_count:
-                    time.sleep(1)
-                thread_count -= 1
-
-            fire_upsert_docs()
+            select_fields=select_fields,
+            transform_workers=transform_workers,
+            push_workers=push_workers,
+            buffer_size=buffer_size,
+            show_progress_bar=show_progress_bar,
+            timeout=timeout,
+            ingest_in_background=ingest_in_background,
+            **kwargs,
+        )
+        ptp.run()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
@@ -612,8 +604,10 @@ class Write(Read):
             ]
             return cat_vector_documents
 
-        self.pull_update_push_async(
-            self.dataset_id, cat_fields, updating_args={"field_name": vector_name}
+        self.bulk_apply(
+            self.dataset_id,
+            bulk_func=cat_fields,
+            bulk_func_kwargs=dict(field_name=vector_name),
         )
 
     concat = cat
@@ -640,7 +634,7 @@ class Write(Read):
             )
             return documents
 
-        self.pull_update_push(self.dataset_id, add_cluster_labels)
+        self.bulk_apply(add_cluster_labels)
 
     @track
     def create(self, schema: Optional[dict] = None) -> Dict:
@@ -731,7 +725,6 @@ class Write(Read):
 
         """
         return self.datasets.delete(self.dataset_id)
-
 
     def _upload_media(
         self, presigned_url: str, media_content: bytes, verbose: bool = True

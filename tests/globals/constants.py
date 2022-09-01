@@ -22,7 +22,7 @@ TEST_TOKEN = ":".join(TEST_TOKEN)
 
 
 VECTOR_LENGTH = 8
-NUMBER_OF_DOCUMENTS = int(os.getenv("TEST_NUMBER_OF_DOCUMENTS", 20))
+NUMBER_OF_DOCUMENTS = int(os.getenv("TEST_NUMBER_OF_DOCUMENTS", 100))
 
 
 def generate_random_string(string_length: int = 5) -> str:

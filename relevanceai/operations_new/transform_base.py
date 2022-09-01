@@ -4,7 +4,7 @@ Checks fields, contains key abstract methods, etc
 """
 from abc import ABC, abstractmethod
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from relevanceai.utils import DocUtils
 from relevanceai.client import Credentials
@@ -63,11 +63,15 @@ class OperationsCheck(ABC, DocUtils):
     def normalize_string(string: str):
         return string.lower().replace("-", "").replace("_", "")
 
-    def _check_fields_in_schema(self, fields):
+    def _check_fields_in_schema(
+        self,
+        schema: Dict[str, str],
+        fields: List[Union[str, None]],
+    ) -> None:
         # Check fields in schema
         if fields is not None:
             for field in fields:
-                if field not in self.datasets.schema(self.dataset_id):
+                if field not in schema:
                     raise ValueError(f"{field} not in Dataset schema")
 
 
@@ -146,3 +150,16 @@ class TransformBase(OperationsCheck):
 
     def _generate_output_field(self, field):
         return f"_{self.name}_.{field.lower().replace(' ', '_')}"
+
+    def get_transformers_device(self, device: int = None):
+        """
+        Automatically returns a GPU device if there is one. Otherwise,
+        returns a CPU device for transformers
+        """
+        if device is not None:
+            return device
+        import torch
+
+        if torch.cuda.is_available():
+            return 0
+        return -1

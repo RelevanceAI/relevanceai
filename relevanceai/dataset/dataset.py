@@ -90,8 +90,7 @@ class Dataset(OperationsNew, Operations, LaunchApps):
         """
         if isinstance(field, str):
             return Series(
-                credentials=self.credentials,
-                dataset_id=self.dataset_id,
+                dataset=self,
                 field=field,
                 image_fields=self.image_fields,
                 audio_fields=self.audio_fields,

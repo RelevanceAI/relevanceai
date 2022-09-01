@@ -24,6 +24,11 @@ def test_token():
 
 
 @pytest.fixture(scope="session")
+def ingest_in_background():
+    return False
+
+
+@pytest.fixture(scope="session")
 def test_client(test_token):
     client = Client(token=test_token)
     client.config["mixpanel.is_tracking_enabled"] = False

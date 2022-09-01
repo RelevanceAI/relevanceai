@@ -27,7 +27,7 @@ DATASETS = [
     "toy_image_caption_coco_image_encoded",
 ]
 
-MB_TO_BYTE = 1024 * 1024
+ONE_MB = 2**20
 LIST_SIZE_MULTIPLIER = 3
 
 SUCCESS_CODES = [200]

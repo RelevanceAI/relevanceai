@@ -20,11 +20,104 @@ from tqdm.auto import tqdm
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 from relevanceai.dataset.write import Write
+
 from relevanceai.utils.decorators.analytics import track
 from relevanceai.constants import EXPLORER_APP_LINK
 
 
+def get_ptp_args() -> List[str]:
+    """
+    Returns all arguments in the PullTransformPush.__init__ func
+    """
+
+    from relevanceai.operations_new.ops_run import PullTransformPush, arguments
+
+    return arguments(PullTransformPush)
+
+
 class Operations(Write):
+    @staticmethod
+    def _get_filters(input_fields: List[str], output_fields: List[str]):
+        """
+        Creates the filters necessary to search all documents
+        within a dataset that contain fields specified in "input_fields"
+        but do not contain the fields specified in "output_fields"
+
+        e.g.
+        fields = ["text", "title"]
+        vector_fields = ["text_use_vector_", "title_use_vector_"]
+
+        we want to search the dataset where:
+        ("text" * ! "text_use_vector_") + ("title" * ! "title_use_vector_")
+
+        Since the current implementation of filtering only accounts for CNF and not DNF boolean logic,
+        We must use boolean algebra here to obtain the CNF from a DNF expression.
+
+        CNF = Conjunctive Normal Form (Sum of Products)
+        DNF = Disjunctive Normal Form (Product of Sums)
+
+        This means converting the above to:
+        ("text" + "title") * ("text" + ! "title_use_vector_") *
+        (! "text_use_vector_" + "title") * (! "text_use_vector_" + ! "title_use_vector_")
+
+        Arguments:
+            input_fields: List[str]
+                A list of fields within the dataset
+
+            output_fields: List[str]
+                A list of output_fields, created from the operation.
+                These would be present in processed documents
+
+        Returns:
+            filters: List[Dict[str, Any]]
+                A list of filters.
+        """
+
+        if len(input_fields) > 1:
+            iters = len(input_fields) ** 2
+
+            filters: list = []
+            for i in range(iters):
+                binary_array = [character for character in str(bin(i))][2:]
+                mixed_mask = ["0"] * (
+                    len(input_fields) - len(binary_array)
+                ) + binary_array
+                mask = [int(value) for value in mixed_mask]
+                # Creates a binary mask the length of fields provided
+                # for two fields, we need 4 iters, going over [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+                condition_value = [
+                    {
+                        "field": field if mask[index] else vector_field,
+                        "filter_type": "exists",
+                        "condition": "==" if mask[index] else "!=",
+                        "condition_value": "",
+                    }
+                    for index, (field, vector_field) in enumerate(
+                        zip(input_fields, output_fields)
+                    )
+                ]
+                filters += [{"filter_type": "or", "condition_value": condition_value}]
+
+        else:  # Special Case when only 1 field is provided
+            condition_value = [
+                {
+                    "field": input_fields[0],
+                    "filter_type": "exists",
+                    "condition": "==",
+                    "condition_value": " ",
+                },
+                {
+                    "field": output_fields[0],
+                    "filter_type": "exists",
+                    "condition": "!=",
+                    "condition_value": " ",
+                },
+            ]
+            filters = condition_value
+
+        return filters
+
     @track
     def reduce_dims(
         self,
@@ -37,6 +130,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
         output_field: str = None,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then runs
         the DimReductionOps class on the documents in the dataset
@@ -71,12 +165,19 @@ class Operations(Write):
             output_field=output_field,
         )
 
+        filters = [] if filters is None else filters
+        filters += Operations._get_filters(
+            input_fields=vector_fields,
+            output_fields=[ops.model.vector_name(vector_fields, output_field)],
+        )
+
         res = ops.run(
             dataset=self,
             select_fields=vector_fields,
             chunksize=chunksize,
             filters=filters,
             batched=batched,
+            **kwargs,
         )
 
         return ops
@@ -88,8 +189,9 @@ class Operations(Write):
         batched: bool = True,
         models: Optional[List[Any]] = None,
         filters: Optional[list] = None,
-        chunksize: Optional[int] = 20,
+        chunksize: Optional[int] = None,
         output_fields: list = None,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -122,7 +224,10 @@ class Operations(Write):
         )
 
         filters = [] if filters is None else filters
-        filters += ops._get_base_filters()
+        filters += Operations._get_filters(
+            input_fields=fields, output_fields=ops.vector_fields
+        )
+
         res = ops.run(
             dataset=self,
             select_fields=fields,
@@ -130,8 +235,8 @@ class Operations(Write):
             batched=batched,
             chunksize=chunksize,
             output_fields=output_fields,
+            **kwargs,
         )
-
         return ops
 
     @track
@@ -142,6 +247,7 @@ class Operations(Write):
         batched: Optional[bool] = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
+        **kwargs,
     ):
         """It takes a list of fields, a list of models, a list of filters, and a chunksize, and then it runs
         the VectorizeOps function on the documents in the database
@@ -173,7 +279,9 @@ class Operations(Write):
         )
 
         filters = [] if filters is None else filters
-        filters += ops._get_base_filters()
+        filters += Operations._get_filters(
+            input_fields=fields, output_fields=ops.vector_fields
+        )
 
         res = ops.run(
             dataset=self,
@@ -181,6 +289,7 @@ class Operations(Write):
             filters=filters,
             batched=batched,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -331,6 +440,7 @@ class Operations(Write):
         batched: bool = False,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 100,
+        **kwargs,
     ):
         """
         This function splits the text in the `text_field` into sentences and stores the sentences in
@@ -358,12 +468,15 @@ class Operations(Write):
             output_field=output_field,
         )
 
+        filters = [] if filters is None else filters
+
         res = ops.run(
             dataset=self,
             select_fields=text_fields,
             batched=batched,
             filters=filters,
             chunksize=chunksize,
+            **kwargs,
         )
 
         return ops
@@ -375,7 +488,7 @@ class Operations(Write):
         model: Optional[Any] = None,
         alias: Optional[str] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
-        chunksize: Optional[int] = 100,
+        chunksize: Optional[int] = 128,
         filters: Optional[list] = None,
         batched: Optional[bool] = False,
         include_cluster_report: bool = False,
@@ -463,7 +576,7 @@ class Operations(Write):
     )"""
         )
         print()
-        print("Configure your new cluster app below:")
+        print("Configure your new explore app below:")
         print(EXPLORER_APP_LINK.format(self.dataset_id))
         return ops
 
@@ -500,12 +613,20 @@ class Operations(Write):
         model: Any = None,
         alias: Optional[str] = None,
         filters: Optional[list] = None,
-        include_cluster_report: bool = True,
-        model_kwargs: dict = None,
-        chunksize: int = 100,
+        model_kwargs: Dict = None,
+        chunksize: int = 128,
         **kwargs,
     ):
         from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
+
+        n_clusters = ({} if model_kwargs is None else model_kwargs).get("n_clusters", 8)
+        if kwargs.get("transform_chunksize") is None:
+            kwargs["transform_chunksize"] = max(n_clusters * 5, 128)
+
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
 
         cluster_ops = BatchClusterOps(
             model=model,
@@ -517,7 +638,7 @@ class Operations(Write):
 
         filters = cluster_ops._get_filters(filters, vector_fields)  # type: ignore
 
-        cluster_ops.run(self, filters=filters, chunksize=chunksize)
+        cluster_ops.run(self, filters=filters, chunksize=chunksize, **run_kwargs)
 
         return cluster_ops
 
@@ -531,8 +652,9 @@ class Operations(Write):
         sensitivity: float = 0,
         filters: Optional[list] = None,
         output_fields: list = None,
-        chunksize: int = 100,
+        chunksize: int = 128,
         batched: bool = True,
+        **kwargs,
     ):
         """
         Extract sentiment from the dataset
@@ -553,12 +675,15 @@ class Operations(Write):
             output_fields=output_fields,
             sensitivity=sensitivity,
         )
+        filters = [] if filters is None else filters
+        filters += SentimentOps._get_filters(text_fields, model_name)
         ops.run(
             self,
             filters=filters,
             select_fields=text_fields,
             chunksize=chunksize,
             batched=batched,
+            **kwargs,
         )
         return ops
 
@@ -572,6 +697,7 @@ class Operations(Write):
         min_score: float = 0.3,
         batched: bool = True,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Extract an emotion.
@@ -613,6 +739,7 @@ class Operations(Write):
             batched=batched,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -623,6 +750,7 @@ class Operations(Write):
         output_fields: Optional[List[str]] = None,
         filters: Optional[list] = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Apply a transformers pipeline generically.
@@ -652,6 +780,7 @@ class Operations(Write):
             select_fields=text_fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -664,6 +793,7 @@ class Operations(Write):
         filters: Optional[list] = None,
         batched: Optional[bool] = None,
         chunksize: Optional[int] = None,
+        **kwargs,
     ):
 
         from relevanceai.operations_new.scaling.ops import ScaleOps
@@ -685,6 +815,7 @@ class Operations(Write):
             chunksize=chunksize,
             filters=filters,
             select_fields=vector_fields,
+            **kwargs,
         )
         return ops
 
@@ -716,6 +847,11 @@ class Operations(Write):
             min_parent_cluster_size=min_parent_cluster_size,
             **kwargs,
         )
+
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
 
         # Building an infinitely hackable SDK
 
@@ -756,6 +892,7 @@ class Operations(Write):
             self,
             filters=filters,
             select_fields=select_fields,
+            **run_kwargs,
         )
         print(
             f"""You can now utilise the ClusterOps object based on subclustering.
@@ -842,6 +979,7 @@ class Operations(Write):
         lemmatize: bool = False,
         filters: list = None,
         replace_words: dict = None,
+        **kwargs,
     ):
         """
         Cleans text for you!
@@ -863,6 +1001,7 @@ class Operations(Write):
             remove_stopword=remove_stopwords,
             lemmatize=lemmatize,
             replace_words=replace_words,
+            **kwargs,
         )
 
         print("🥸 A clean house is a sign of no Internet connection.")
@@ -885,6 +1024,7 @@ class Operations(Write):
         filters: list = None,
         chunksize: int = 1000,
         refresh: bool = False,
+        **kwargs,
     ):
         from relevanceai.operations_new.processing.text.count.ops import CountTextOps
 
@@ -902,6 +1042,7 @@ class Operations(Write):
             filters=filters,
             batched=True,
             refresh=refresh,
+            **kwargs,
         )
         return ops
 
@@ -1079,6 +1220,7 @@ class Operations(Write):
             filters=filters,
             select_fields=fields,
             output_fields=output_fields,
+            **kwargs,
         )
         return ops
 
@@ -1263,6 +1405,7 @@ class Operations(Write):
         maximum_number_of_labels: int = 5,
         filters: list = None,
         refresh: bool = False,
+        **kwargs,
     ):
         """
         Tag Text
@@ -1287,6 +1430,7 @@ class Operations(Write):
             select_fields=fields,
             output_fields=output_fields,
             refresh=refresh,
+            **kwargs,
         )
 
         return ops

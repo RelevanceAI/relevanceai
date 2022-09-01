@@ -18,7 +18,7 @@ You can find out more about different types of TripletLoss on https://www.sbert.
     ops = SupervisedTripleLossFinetuneOps.from_dataset(
         dataset=ds,
         base_model="distilbert-base-uncased",
-        batch_size=16,
+        chunksize=16,
         triple_loss_type:str='BatchHardSoftMarginTripletLoss'
     )
     ops.run(text_field="detail_desc", label_field="_cluster_.desc_use_vector_.kmeans-10", output_dir)
@@ -61,14 +61,14 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
         dataset,
         base_model: str = "sentence-transformers/all-mpnet-base-v2",
         triple_loss_type: str = "BatchHardSoftMarginTripletLoss",
-        batch_size: int = 32,
+        chunksize: int = 32,
         save_best_model: bool = True,
         credentials: Optional[Credentials] = None,
     ):
         self.dataset = dataset
         self.base_model = base_model
         self.model = SentenceTransformer(base_model)
-        self.batch_size = batch_size
+        self.chunksize = chunksize
         self.save_best_model = save_best_model
         self.loss_type = triple_loss_type
         self.evaluator = None
@@ -135,7 +135,7 @@ class SupervisedTripleLossFinetuneOps(APIClient, BaseOps):
             for text, label in zip(text_data, labels)
         ]
         dataset = SentencesDataset(data, self.model)
-        return DataLoader(dataset, shuffle=True, batch_size=self.batch_size)
+        return DataLoader(dataset, shuffle=True, batch_size=self.chunksize)
 
     def fine_tune(
         self,

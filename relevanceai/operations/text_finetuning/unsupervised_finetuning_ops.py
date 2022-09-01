@@ -21,7 +21,7 @@ You can find out more about GPL from: https://github.com/UKPLab/gpl
         t5_generator="BeIR/query-gen-msmarco-t5-base-v1",
         retrievers=["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
         cross_encoder="cross-encoder/ms-marco-MiniLM-L-6-v2",
-        batch_size_gpl=16,
+        chunksize_gpl=16,
         output_path="trained_model",
     )
     ops.run(dataset=ds, text_field="detail_desc")
@@ -56,7 +56,7 @@ class GPLOps(APIClient, BaseOps):
         t5_generator: str = "BeIR/query-gen-msmarco-t5-base-v1",
         retrievers: List[str] = ["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
         cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
-        batch_size_gpl: int = 16,
+        chunksize_gpl: int = 16,
         output_path: str = "trained_model",
         credentials: Optional[Credentials] = None,
     ):
@@ -64,7 +64,7 @@ class GPLOps(APIClient, BaseOps):
         self.t5_generator = t5_generator
         self.retrievers = retrievers
         self.cross_encoder = cross_encoder
-        self.batch_size_gpl = batch_size_gpl
+        self.chunksize_gpl = chunksize_gpl
         self.output_path = output_path
         if credentials is not None:
             super().__init__(credentials)
@@ -123,7 +123,7 @@ class GPLOps(APIClient, BaseOps):
         gpl.train(
             path_to_generated_data=path_to_generated_data,
             base_ckpt=self.base_model,
-            batch_size_gpl=self.batch_size_gpl,
+            batch_size_gpl=self.chunksize_gpl,
             gpl_steps=gpl_steps,
             output_dir=output_dir,
             generator=self.t5_generator,
@@ -227,7 +227,7 @@ class GPLOps(APIClient, BaseOps):
         t5_generator: str = "BeIR/query-gen-msmarco-t5-base-v1",
         retrievers: List[str] = ["msmarco-distilbert-base-v3", "msmarco-MiniLM-L-6-v3"],
         cross_encoder: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
-        batch_size_gpl: int = 16,
+        chunksize_gpl: int = 16,
         output_path: str = "trained_model",
         **kwargs,
     ):
@@ -237,7 +237,7 @@ class GPLOps(APIClient, BaseOps):
             t5_generator=t5_generator,
             retrievers=retrievers,
             cross_encoder=cross_encoder,
-            batch_size_gpl=batch_size_gpl,
+            chunksize_gpl=chunksize_gpl,
             output_path=output_path,
             **kwargs,
         )

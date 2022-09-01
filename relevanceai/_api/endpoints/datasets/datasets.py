@@ -304,9 +304,9 @@ class DatasetsClient(_Base):
         insert_date: bool = True,
         overwrite: bool = True,
         update_schema: bool = True,
-        field_transformers: Optional[list] = None,
+        field_transformers: Optional[List] = None,
         return_documents: bool = False,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
     ):
         """
         Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
