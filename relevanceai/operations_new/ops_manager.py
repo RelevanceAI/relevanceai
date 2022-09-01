@@ -3,6 +3,8 @@ from typing import List, Dict, Any, Optional
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.ops_run import OperationRun
 
+from tqdm.auto import tqdm
+
 
 class OperationManager:
     """
@@ -12,8 +14,6 @@ class OperationManager:
     In future, it will also handle:
     - logging
     - timing
-    - Faster asynchronous processing
-    - Have post-operation hooks (such as centroid insertion)
     """
 
     def __init__(
@@ -34,6 +34,7 @@ class OperationManager:
     def __exit__(self, *args, **kwargs):
         from relevanceai.operations_new.cluster.ops import ClusterOps
         from relevanceai.operations_new.cluster.sub.ops import SubClusterOps
+        from relevanceai.operations_new.cluster.batch.ops import BatchClusterOps
 
         if isinstance(self.operation, SubClusterOps):
             # Get the centroids if there are any
@@ -60,7 +61,17 @@ class OperationManager:
                 {"_id": k, self.operation.vector_fields[0]: v}
                 for k, v in centroid_documents.items()
             ]
-            results = self.operation.insert_centroids(centroid_documents)
+
+        elif isinstance(self.operation, ClusterOps):
+            centroid_documents = self.operation.get_centroid_documents()
+
+        elif isinstance(self.operation, BatchClusterOps):
+            centroid_documents = self.operation.get_centroid_documents()
+
+        if "centroid_documents" in locals():
+            tqdm.write("Inserting centroids...")
+            res = self.operation.insert_centroids(centroid_documents)
+            tqdm.write("Centroids Intserted!")
 
         for h in self.post_hooks:
             h()

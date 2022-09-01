@@ -68,14 +68,16 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         self.model.partial_fit(vectors)
         return chunk
 
-    def run(self, dataset: Dataset, filters: list = None, chunksize: int = 500):
+    def run(
+        self, dataset: Dataset, filters: list = None, chunksize: int = 500, **kwargs
+    ):
         """
         Run batch clustering
         """
         from tqdm.auto import tqdm
 
         tqdm.write("\nFitting Model...")
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.fit,
             pull_chunksize=chunksize,
@@ -83,22 +85,25 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
-            background_execution=False,
+            **kwargs
         )
-        pup.run()
+        ptp.run()
+
+        kwargs.pop("transform_chunksize")
 
         tqdm.write("\nPredicting Documents...")
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             pull_chunksize=chunksize,
+            transform_chunksize=chunksize,
             push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,
             show_progress_bar=True,
-            background_execution=False,
+            **kwargs
         )
-        pup.run()
+        ptp.run()
 
         tqdm.write("\nConfigure your new explore app below:")
         tqdm.write(EXPLORER_APP_LINK.format(dataset.dataset_id))

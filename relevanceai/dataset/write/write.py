@@ -537,7 +537,7 @@ class Write(Read):
         """
         from relevanceai.operations_new.ops_run import PullTransformPush
 
-        pup = PullTransformPush(
+        ptp = PullTransformPush(
             dataset=self,
             func=bulk_func,
             func_args=bulk_func_args,
@@ -556,7 +556,7 @@ class Write(Read):
             ingest_in_background=ingest_in_background,
             **kwargs,
         )
-        pup.run()
+        ptp.run()
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
