@@ -31,8 +31,9 @@ class PullTransformPush:
 
     def __init__(
         self,
-        dataset: Dataset,
-        func: Callable,
+        pull_dataset: Dataset,
+        func: Optional[Callable] = lambda x: x,
+        push_dataset: Optional[Dataset] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = False,
@@ -46,6 +47,9 @@ class PullTransformPush:
         push_workers: int = 1,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
+        show_pull_progress_bar: bool = True,
+        show_transform_progress_bar: bool = True,
+        show_push_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         run_in_background: bool = False,
@@ -62,13 +66,20 @@ class PullTransformPush:
         """
         super().__init__()
 
-        self.dataset = dataset
-        self.dataset_id = dataset.dataset_id
+        self.pull_dataset = pull_dataset
+        if push_dataset is None:
+            self.push_dataset = pull_dataset
+        else:
+            self.push_dataset = push_dataset
+
+        self.pull_dataset_id = pull_dataset.dataset_id
+        self.push_dataset_id = push_dataset.dataset_id  # type: ignore
+
         self.config = CONFIG
 
         self.pull_limit = pull_limit
-        ndocs = self.dataset.get_number_of_documents(
-            dataset_id=self.dataset_id,
+        ndocs = self.pull_dataset.get_number_of_documents(
+            dataset_id=self.pull_dataset_id,
             filters=filters,
         )
         if pull_limit is None:
@@ -133,7 +144,33 @@ class PullTransformPush:
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.func = func
 
-        self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
+        self.pull_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_pull_progress_bar and show_progress_bar)),
+        )
+        if not self.pull_tqdm_kwargs["disable"]:
+            self.pull_tqdm_kwargs["position"] = 0  # type: ignore
+
+        self.transform_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_transform_progress_bar and show_progress_bar)),
+        )
+        if not self.transform_tqdm_kwargs["disable"]:
+            self.transform_tqdm_kwargs["position"] = (
+                self.pull_tqdm_kwargs.get("position", 0) + 1  # type: ignore
+            )
+
+        self.push_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_push_progress_bar and show_progress_bar)),
+        )
+        if not self.push_tqdm_kwargs["disable"]:
+            self.push_tqdm_kwargs["position"] = (
+                self.pull_tqdm_kwargs.get("position", 0)  # type: ignore
+                + self.transform_tqdm_kwargs.get("position", 0)
+                + 1
+            )
+
         self.run_in_background = run_in_background
 
         self.failed_frontier: Dict[str, int] = {}
@@ -173,8 +210,8 @@ class PullTransformPush:
         after_id: Union[List[str], None] = self.after_id
 
         while documents:
-            res = self.dataset.datasets.documents.get_where(
-                dataset_id=self.dataset_id,
+            res = self.pull_dataset.datasets.documents.get_where(
+                dataset_id=self.pull_dataset_id,
                 page_size=20 if self.pull_chunksize is None else self.pull_chunksize,
                 filters=self.filters,
                 select_fields=self.select_fields,
@@ -207,7 +244,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 5
+        timeout = 5 if not self.update_all_at_once else None
 
         if self.transform_bar.n == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
@@ -215,7 +252,7 @@ class PullTransformPush:
         else:
             chunksize = self.transform_chunksize
 
-        while self.update_all_at_once or len(batch) < chunksize:
+        while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
                 batch.append(document)
@@ -351,12 +388,12 @@ class PullTransformPush:
             with self.push_batch_lock:
                 batch = self._get_push_batch()
 
-            batch = self.dataset.json_encoder(batch)
+            batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
 
             if update:
-                res = self.dataset.datasets.documents.bulk_update(
-                    self.dataset_id,
+                res = self.push_dataset.datasets.documents.bulk_update(
+                    self.push_dataset_id,
                     batch,
                     return_documents=True,
                     ingest_in_background=self.ingest_in_background,
@@ -379,21 +416,18 @@ class PullTransformPush:
         """
         self.pull_bar = tqdm(
             desc="pull",
-            position=0,
             total=self.ndocs,
-            **self.tqdm_kwargs,
+            **self.pull_tqdm_kwargs,
         )
         self.transform_bar = tqdm(
             range(self.ndocs),
             desc="transform",
-            position=1,
-            **self.tqdm_kwargs,
+            **self.transform_tqdm_kwargs,
         )
         self.push_bar = tqdm(
             range(self.ndocs),
             desc="push",
-            position=2,
-            **self.tqdm_kwargs,
+            **self.push_tqdm_kwargs,
         )
 
     def _init_worker_threads(self) -> None:
@@ -575,7 +609,7 @@ class OperationRun(TransformBase):
                 "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
             )
         ptp = PullTransformPush(
-            dataset=dataset,
+            pull_dataset=dataset,
             func=self.transform,
             func_args=func_args,
             func_kwargs=func_kwargs,

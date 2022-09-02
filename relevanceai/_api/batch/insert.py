@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
 """Batch Insert"""
 import os
-import sys
-import json
 import math
-import uuid
 import time
 
 import warnings
 import traceback
 
-import numpy as np
 import pandas as pd
 
 from ast import literal_eval
 
 from datetime import datetime
 
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional
 
 from tqdm.auto import tqdm
 
@@ -27,19 +23,16 @@ from relevanceai._api.batch.local_logger import PullTransformPushLocalLogger
 from tqdm.auto import tqdm
 
 from relevanceai.utils import make_id
+from relevanceai.utils.concurrency import Push
 from relevanceai.utils.helpers.helpers import getsizeof
 from relevanceai.utils.logger import FileLogger
 from relevanceai.utils.progress_bar import progress_bar
 from relevanceai.utils.decorators.version import beta
 from relevanceai.utils.decorators.analytics import track
-from relevanceai.utils.concurrency import Push, multiprocess, multithread
 
 from relevanceai.constants.errors import FieldNotFoundError
 from relevanceai.constants.warning import Warning
-from relevanceai.constants import (
-    ONE_MB,
-    LIST_SIZE_MULTIPLIER,
-)
+from relevanceai.constants import ONE_MB
 
 
 class BatchInsertClient(BatchRetrieveClient):
@@ -882,19 +875,31 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if "failed_documents" in results:
             if len(results["failed_documents"]) == 0:
-                tqdm.write("✅ All documents inserted/edited successfully.")
+                tqdm.write(
+                    ("✅ All documents inserted/edited successfully.")
+                    .encode("utf-8")
+                    .decode("utf8")
+                )
             else:
                 tqdm.write(
-                    "❗Few errors with inserting/editing documents. Please check logs."
+                    ("❗Few errors with inserting/editing documents. Please check logs.")
+                    .encode("utf-8")
+                    .decode("utf8")
                 )
                 return results
 
         elif "failed_document_ids" in results:
             if len(results["failed_document_ids"]) == 0:
-                tqdm.write("✅ All documents inserted/edited successfully.")
+                tqdm.write(
+                    ("✅ All documents inserted/edited successfully.")
+                    .encode("utf-8")
+                    .decode("utf8")
+                )
             else:
                 tqdm.write(
-                    "❗Few errors with inserting/editing documents. Please check logs."
+                    ("❗Few errors with inserting/editing documents. Please check logs.")
+                    .encode("utf-8")
+                    .decode("utf8")
                 )
                 return results
 

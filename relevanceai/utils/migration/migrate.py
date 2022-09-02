@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional
 
 from tqdm.auto import tqdm
 
+from relevanceai.operations_new.ops_run import PullTransformPush
+
 
 def migrate_dataset(
     old_token: str,
@@ -54,55 +56,32 @@ def migrate_dataset(
     old_dataset = old_client.Dataset(dataset_id)
     new_dataset = new_client.Dataset(dataset_id)
 
-    after_id = None
-
-    number_of_documents = old_client.get_number_of_documents(
-        dataset_id=dataset_id, filters=filters
+    ptp = PullTransformPush(
+        pull_dataset=old_dataset,
+        push_dataset=new_dataset,
+        show_transform_progress_bar=False,
     )
-    iterations_required = math.ceil(number_of_documents / chunksize)
-    bar = tqdm(range(iterations_required), disable=(not show_progress_bar))
-    overflow: List[Dict[str, Any]] = []
+    ptp.run()
 
-    with FileLogger():
-        while True:
-            res = old_dataset.get_documents(
-                number_of_documents=chunksize,
-                filters=filters,
-                after_id=after_id,
-            )
-            documents = res["documents"]
-            after_id = res["after_id"]
+    cluster_fields = [field for field in old_dataset.schema if "_cluster_" in field]
+    tqdm.write(f"Found {len(cluster_fields)} cluster_fields")
 
-            if not documents:
-                break
+    for cluster_field in cluster_fields:
+        _, vector_field, alias = cluster_field.split(".")
 
-            for document in documents:
-                # backwards compatibility for clusters
-                if "_clusters_" in document:
-                    document["_cluster_"] = document.pop("_clusters_")
+        tqdm.write(f"Inserting Centroids for `{cluster_field}`...")
+        old_cluster_ops = old_client.ClusterOps(
+            alias=alias,
+            vector_fields=[vector_field],
+            dataset_id=old_dataset.dataset_id,
+        )
+        centroid_documents = old_cluster_ops.centroids
+        new_dataset.datasets.cluster.centroids.insert(
+            dataset_id=new_dataset.dataset_id,
+            cluster_centers=new_dataset.json_encoder(centroid_documents),
+            vector_fields=[vector_field],
+            alias=alias,
+        )
 
-            pool = documents + overflow
-            n_batches = int(len(pool) / chunksize)
-
-            for i in range(n_batches):
-                batch_start = i * chunksize
-                batch_end = (i + 1) * chunksize
-
-                batch = pool[batch_start:batch_end]
-                res = new_dataset.insert_documents(batch)
-
-                failed_documents = res["failed_documents"]
-
-                failed_ids = set(map(lambda x: x["_id"], failed_documents))
-                failed_documents = [
-                    document for document in documents if document["_id"] in failed_ids
-                ]
-                overflow += failed_documents
-
-            bar.update(1)
-
-        if overflow:
-            new_dataset.upsert_documents(overflow)
-            bar.update(1)
-
+    tqdm.write("Centroids inserted!")
     tqdm.write("Finished migrating.")
