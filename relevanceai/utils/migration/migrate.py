@@ -14,9 +14,10 @@ def migrate_dataset(
     new_token: str,
     dataset_id: str,
     new_dataset_id: Optional[str] = None,
-    chunksize: int = 100,
+    chunksize: Optional[int] = None,
     filters: list = None,
     show_progress_bar: bool = True,
+    max_workers: int = 2,
 ):
     """
     Migrate dataset
@@ -59,7 +60,11 @@ def migrate_dataset(
     ptp = PullTransformPush(
         pull_dataset=old_dataset,
         push_dataset=new_dataset,
+        show_progress_bar=show_progress_bar,
         show_transform_progress_bar=False,
+        pull_chunksize=chunksize,
+        push_chunksize=chunksize,
+        push_workers=max_workers,
     )
     ptp.run()
 
