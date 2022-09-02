@@ -87,10 +87,11 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
         """
         # run fit predict on documetns
         if hasattr(self.model, "predict_documents"):
-            return self.model.predict_documents(
+            cluster_labels = self.model.predict_documents(
                 documents=documents,
                 vector_fields=self.vector_fields,
             )
+            return self.format_cluster_labels(cluster_labels)
         elif hasattr(self.model, "predict"):
             if len(self.vector_fields) == 1:
                 vectors = self.get_field_across_documents(
