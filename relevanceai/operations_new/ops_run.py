@@ -43,6 +43,7 @@ class PullTransformPush:
         multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = None,
         warmup_chunksize: Optional[int] = None,
+        is_identity: bool = False,
         transform_chunksize: Optional[int] = 128,
         push_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
@@ -101,7 +102,8 @@ class PullTransformPush:
         if update_all_at_once:
             self.transform_chunksize = ndocs
 
-        tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
+        if not is_identity:
+            tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
@@ -110,6 +112,10 @@ class PullTransformPush:
         self.select_fields = [] if select_fields is None else select_fields
 
         self.general_lock = threading.Lock()
+
+        self.transform_batch_lock = threading.Lock()
+        self.push_batch_lock = threading.Lock()
+
         self.func_lock: Union[threading.Lock, None]
 
         if not multithreaded_update:
@@ -298,7 +304,7 @@ class PullTransformPush:
         Then, repeatedly put each document from the processed batch in the push queue
         """
         while self.transform_count < self.ndocs:
-            with self.general_lock:
+            with self.transform_batch_lock:
                 batch = self._get_transform_batch()
 
             old_keys = [set(document.keys()) for document in batch]
@@ -392,7 +398,7 @@ class PullTransformPush:
         Iteratively gather a batch of processed documents and push these to cloud
         """
         while self.push_count < self.ndocs:
-            with self.general_lock:
+            with self.push_batch_lock:
                 batch = self._get_push_batch()
 
             batch = self.pull_dataset.json_encoder(batch)

@@ -44,7 +44,6 @@ def migrate_dataset(
 
     """
     from relevanceai import Client
-    from relevanceai.utils.logger import FileLogger
 
     filters = filters if filters is not None else []
 
@@ -60,6 +59,7 @@ def migrate_dataset(
     ptp = PullTransformPush(
         pull_dataset=old_dataset,
         push_dataset=new_dataset,
+        is_identity=True,
         show_progress_bar=show_progress_bar,
         show_transform_progress_bar=False,
         pull_chunksize=chunksize,
@@ -68,8 +68,13 @@ def migrate_dataset(
     )
     ptp.run()
 
-    cluster_fields = [field for field in old_dataset.schema if "_cluster_" in field]
-    tqdm.write(f"Found {len(cluster_fields)} cluster_fields")
+    cluster_fields = [
+        field
+        for field in old_dataset.schema
+        if "_cluster_" in field and len(field.split(".")) == 3
+    ]
+    if cluster_fields:
+        tqdm.write(f"Found {len(cluster_fields)} cluster_fields")
 
     for cluster_field in cluster_fields:
         _, vector_field, alias = cluster_field.split(".")
