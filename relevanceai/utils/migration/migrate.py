@@ -17,7 +17,7 @@ def migrate_dataset(
     chunksize: Optional[int] = None,
     filters: list = None,
     show_progress_bar: bool = True,
-    max_workers: int = 2,
+    max_workers: int = 1,
 ):
     """
     Migrate dataset

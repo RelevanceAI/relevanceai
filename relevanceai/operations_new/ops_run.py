@@ -76,8 +76,8 @@ class PullTransformPush:
         else:
             self.push_dataset = push_dataset
 
-        self.pull_dataset_id = pull_dataset.dataset_id
-        self.push_dataset_id = push_dataset.dataset_id  # type: ignore
+        self.pull_dataset_id = self.pull_dataset.dataset_id
+        self.push_dataset_id = self.push_dataset.dataset_id
 
         self.config = CONFIG
 
