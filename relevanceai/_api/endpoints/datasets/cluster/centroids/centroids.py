@@ -331,10 +331,8 @@ class CentroidsClient(_Base):
         cluster_ids: Optional[List] = None,
         alias: str = "default",
         page_size: int = 5,
-        cursor: str = None,
         page: int = 1,
         include_vector: bool = False,
-        similarity_metric: str = "cosine",
     ):
         """
         Retrieve the cluster centroids by IDs
@@ -342,8 +340,6 @@ class CentroidsClient(_Base):
         Parameters
         -------------
 
-        dataset_id : string
-            Unique name of dataset
         cluster_ids : list
             List of cluster IDs
         vector_fields: list
@@ -358,8 +354,6 @@ class CentroidsClient(_Base):
             Page of the results
         include_vector: bool
             Include vectors in the search results
-        similarity_metric: string
-            Similarity Metric, choose from ['cosine', 'l1', 'l2', 'dp']
         """
         cluster_ids = [] if cluster_ids is None else cluster_ids
 
@@ -367,16 +361,12 @@ class CentroidsClient(_Base):
             f"/datasets/{dataset_id}/cluster/centroids/documents",
             method="POST",
             parameters={
-                # "dataset_id": dataset_id,
                 "cluster_ids": cluster_ids,
                 "vector_fields": vector_fields,
                 "alias": alias,
                 "page_size": page_size,
-                "cursor": cursor,
                 "page": page,
                 "include_vector": include_vector,
-                "similarity_metric": similarity_metric,
-                "vector_field": "",
             },
         )
 

@@ -100,7 +100,10 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 content = response.content
 
             response = {"send": log, "recv": content}
-            pprint(response, sort_dicts=False)
+            try:
+                print(str(response))  # , sort_dicts=False)
+            except:
+                pass
             print()
             print()
 
@@ -294,6 +297,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
                 with requests.Session() as s:
                     response = s.send(req)
+
                 if hasattr(self, "request_logger"):
                     self.log_response_to_file(response)
                 # Successful response
