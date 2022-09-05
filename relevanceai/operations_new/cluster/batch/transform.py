@@ -101,7 +101,10 @@ class BatchClusterTransform(ClusterTransform, ClusterAlias):
                 cluster_labels = self.model.predict(vectors)
 
                 return self.format_cluster_labels(cluster_labels)
-        raise AttributeError("Model is missing a `fit_predict` method.")
+
+        raise AttributeError(
+            "Model is missing a `predict` or `predict_documents` method."
+        )
 
     def _get_model(self, model: Any, model_kwargs: dict) -> Any:
         if isinstance(model, str):
