@@ -6,6 +6,7 @@ import re
 import math
 import warnings
 import os
+from numpy import number
 import pandas as pd
 from relevanceai.utils.decorators.thread import fire_and_forget
 
@@ -858,3 +859,26 @@ class Read(ClusterRead):
 
     def list_cluster_fields(self):
         return [x for x in self.schema if "_cluster_" in x and x.count(".") >= 2]
+
+    def get_after_ids_for_workflows(self, num_of_workers: int = 3):
+        """Get multiple after IDs to run workflows in parallel
+
+        Params
+        -------
+
+        num_of_workers: int = 3
+            The number of workers that we need to separate out the After IDs
+
+        """
+        after_ids = [None]
+        docs = {"after_id": None}
+        size = int(self.shape[0] / num_of_workers)
+        while len(after_ids) < num_of_workers:
+            docs = self.get_documents(
+                number_of_documents=size,
+                include_after_id=True,
+                select_fields=["_id"],
+                after_id=docs["after_id"],
+            )
+            after_ids += docs["after_id"]
+        return after_ids
