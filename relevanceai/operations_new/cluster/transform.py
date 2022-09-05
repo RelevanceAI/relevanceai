@@ -60,7 +60,7 @@ class ClusterTransform(TransformBase, ClusterAlias):
                     self.vector_fields[0],
                     documents,
                 )
-                cluster_labels = self.model.predict(
+                cluster_labels = self.model.fit_predict(
                     vectors,
                     # warm_start=warm_start,
                 )
