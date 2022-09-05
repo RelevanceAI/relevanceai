@@ -6,7 +6,6 @@ import re
 import math
 import warnings
 import os
-from numpy import number
 import pandas as pd
 from relevanceai.utils.decorators.thread import fire_and_forget
 
