@@ -18,10 +18,10 @@ class PlotlyReportBlock(ReportBlocks):
         add: bool = True,
         width_percentage: int = 100,
         options=None,
-        **kwargs
+        **kwargs,
     ):
         if options is None:
-            options = {"displayLogo":False}
+            options = {"displayLogo": False}
         try:
             import plotly
         except ImportError:
@@ -42,34 +42,35 @@ class PlotlyReportBlock(ReportBlocks):
         else:
             layout = fig._layout
             if width:
-                layout['width'] = width
+                layout["width"] = width
             else:
-                if "width" in layout and layout['width'] == np.inf:
-                    layout['width'] = "auto"
+                if "width" in layout and layout["width"] == np.inf:
+                    layout["width"] = "auto"
             if height:
-                layout['height'] = height
+                layout["height"] = height
             else:
-                if "height" in layout and layout['height'] == np.inf:
-                    layout['height'] = "auto"
+                if "height" in layout and layout["height"] == np.inf:
+                    layout["height"] = "auto"
             block = {
                 "type": "appBlock",
                 # "attrs" : {"id": str(uuid.uuid4())},
-                "content": [{
-                    'attrs': {
-                        'height': 'auto',
-                        'data': fig._data,
-                        'layout': layout,
-                        'options': options,
-                        'title': title,
-                        'width': f'{width_percentage}%'
-                    },
-                    'type': 'plotlyChart'
-                }]
+                "content": [
+                    {
+                        "attrs": {
+                            "height": "auto",
+                            "data": fig._data,
+                            "layout": layout,
+                            "options": options,
+                            "title": title,
+                            "width": f"{width_percentage}%",
+                        },
+                        "type": "plotlyChart",
+                    }
+                ],
             }
         if add:
             self.contents.append(block)
         return block
-
 
     def plotly_dendrogram(
         self,
@@ -79,7 +80,7 @@ class PlotlyReportBlock(ReportBlocks):
         metric="euclidean",
         orientation="right",
         color_threshold=0.75,
-        **kwargs
+        **kwargs,
     ):
         """
         Convenience function to plot a dendrogram.

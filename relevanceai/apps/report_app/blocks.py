@@ -372,3 +372,7 @@ class ReportBlocks(ReportMarks):
         if add:
             self.contents.append(block)
         return block
+
+    def title(self, title: str):
+        self.config['title'] = title
+        return self.config

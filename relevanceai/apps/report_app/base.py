@@ -2,12 +2,14 @@ from typing import Any, Dict, List, Tuple, Union
 
 
 class ReportBase:
-    def __init__(self, name: str, dataset, deployable_id: str = None):
+    def __init__(self, name: str, dataset, deployable_id: str = None,
+        tab_id: str = None):
         self.name = name
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
         self.deployable_id = deployable_id
         self.base_url = "https://cloud.relevance.ai"
+        self.tab_id = tab_id
         app_config = None
         self.reloaded = False
         if deployable_id:
@@ -19,21 +21,29 @@ class ReportBase:
                     f"{deployable_id} does not exist in the dataset, the given id will be used for creating a new app."
                 )
             self.deployable_id = deployable_id
-        if app_config:
-            self.config = app_config["configuration"]
+        if app_config and tab_id in app_config['configuration']['tabs']:
+            self.config = app_config['configuration']['tabs'][tab_id]['configuration']
         else:
-            self.config = {
-                "dataset_name": self.dataset_id,
-                "deployable_name": self.name,
-                "type": "page",
-                "page-content": {"type": "doc", "content": []},
-            }
+            if tab_id not in app_config['configuration']['tabs']:
+                app_config['configuration']['tabOrder'] += [tab_id]
+                print(app_config['configuration']['tabOrder'])
+                app_config['configuration']['tabs'][tab_id] = {
+                    "type": "page",
+                    "content": {"type": "doc", "content": []}
+                }
+                self.config = app_config['configuration']['tabs'][tab_id]
+            # self.config = {
+            #     "dataset_name": self.dataset_id,
+            #     "deployable_name": self.name,
+            #     "type": "page",
+            #     "content": {"type": "doc", "content": []},
+            # }
         if self.deployable_id:
             self.config["deployable_id"] = self.deployable_id
 
     @property
     def contents(self) -> List:
-        return self.config["page-content"]["content"]
+        return self.config["content"]["content"]
 
     def refresh(self, verbose=True, prompt_update: bool = False):
         try:
@@ -56,7 +66,7 @@ class ReportBase:
             "dataset_name": self.dataset_id,
             "deployable_name": self.name,
             "type": "page",
-            "page-content": {"type": "doc", "content": []},
+            "content": {"type": "doc", "content": []},
         }
 
     def deploy(self, overwrite: bool = False, new: bool = False):

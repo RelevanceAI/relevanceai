@@ -7,22 +7,29 @@ from collections import defaultdict
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 from relevanceai.operations_new.transform_base import TransformBase
-from relevanceai.operations_new.processing.text.clean.transform import CleanTextTransform
+from relevanceai.operations_new.processing.text.clean.transform import (
+    CleanTextTransform,
+)
 from relevanceai.constants.stopwords import STOPWORDS
 
 
 def preprocess(data, stopwords_list=[]):
     # stopwords_list = STOPWORDS # stopwords is a list of strings.
     # stopwords_list += stopwords
-    cleaner = CleanTextTransform(text_fields=[], output_fields=[], lower=True,
-                                 lemmatize=True, remove_stopwords=STOPWORDS + stopwords_list)
+    cleaner = CleanTextTransform(
+        text_fields=[],
+        output_fields=[],
+        lower=True,
+        lemmatize=True,
+        remove_stopwords=STOPWORDS + stopwords_list,
+    )
     res = []
     for doc in data:
-        res.append(cleaner.clean_text(doc).split(' '))
+        res.append(cleaner.clean_text(doc).split(" "))
     return res
 
 
-class WordDictionary():
+class WordDictionary:
     def __init__(self, docs):
         self.id2word = []
         self.word2id = dict()
@@ -37,7 +44,9 @@ class WordDictionary():
                     self.id2word.append(word)
                     self.id2dfs[self.word2id[word]] = 1
                 else:
-                    self.id2dfs[self.word2id[word]] = self.id2dfs.get(self.word2id[word]) + 1
+                    self.id2dfs[self.word2id[word]] = (
+                        self.id2dfs.get(self.word2id[word]) + 1
+                    )
                 self.doc2ids[doc_id].append(self.word2id[word])
                 self.id2docs[self.word2id[word]].append(doc_id)
 
@@ -70,11 +79,11 @@ class WordDictionary():
 
 class CoOccurNetTransform(TransformBase):
     def __init__(
-            self,
-            max_number_of_clusters=15,
-            min_number_of_clusters=3,
-            number_of_concepts=100,
-            **kwargs,
+        self,
+        max_number_of_clusters=15,
+        min_number_of_clusters=3,
+        number_of_concepts=100,
+        **kwargs,
     ):
         """
         Parameters
@@ -189,7 +198,12 @@ class CoOccurNetTransform(TransformBase):
         for i in range(self.number_of_concepts):
             labels[i, 0] = i
         for i, merged in enumerate(
-                AgglomerativeClustering(affinity='precomputed', n_clusters=i, linkage='complete').fit(mat).children_):
+            AgglomerativeClustering(
+                affinity="precomputed", n_clusters=i, linkage="complete"
+            )
+            .fit(mat)
+            .children_
+        ):
             new_id = i + self.number_of_concepts
             for j in range(self.number_of_concepts):
                 if labels[j, i] in merged:
@@ -205,7 +219,9 @@ class CoOccurNetTransform(TransformBase):
 
         return labels
 
-    def transform(self, documents, text_field='content', stopwords_list=[], center_word=None):
+    def transform(
+        self, documents, text_field="content", stopwords_list=[], center_word=None
+    ):
         # For each document, update the field
         docs = [d[text_field] for d in documents]
         cleaned_texts = preprocess(docs, stopwords_list)
@@ -222,23 +238,29 @@ class CoOccurNetTransform(TransformBase):
             texts = [cleaned_texts[i] for i in doc_id_list]
             df_table = word_dict.update_df_table(center_word)
 
-        top_ids = sorted(df_table, key=df_table.get, reverse=True)[:self.number_of_concepts]
+        top_ids = sorted(df_table, key=df_table.get, reverse=True)[
+            : self.number_of_concepts
+        ]
         co_occur_mat = self.concurrence_matrix(top_ids, texts, word_dict)
         mst = self.maximum_spanning_tree(co_occur_mat)
 
         vertexes = []
         for i, id in enumerate(top_ids):
-            v = {'word': word_dict.id2word[id], 'rank': i, 'count': df_table.get(id)}
+            v = {"word": word_dict.id2word[id], "rank": i, "count": df_table.get(id)}
             vertexes.append(v)
 
         labels = self.get_clusters_labels(co_occur_mat[0][0] - co_occur_mat)
         for i in range(self.min_number_of_clusters, self.max_number_of_clusters + 1):
             for j in range(self.number_of_concepts):
-                vertexes[j]['label_{}'.format(i)] = labels[j, self.number_of_concepts - i]
+                vertexes[j]["label_{}".format(i)] = labels[
+                    j, self.number_of_concepts - i
+                ]
 
         edges = []
         for sour, dest in enumerate(mst[1:]):
-            edges.append((word_dict.id2word[top_ids[dest]], word_dict.id2word[top_ids[sour+1]]))
+            edges.append(
+                (word_dict.id2word[top_ids[dest]], word_dict.id2word[top_ids[sour + 1]])
+            )
 
         return vertexes, edges
 
