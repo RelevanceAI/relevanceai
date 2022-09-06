@@ -192,10 +192,10 @@ class PullTransformPush:
 
             # Consider all scenarios
             # let 3333 = pull_limit, current_count = 3000
-            #           min(20,            sys.maxsize)             = 20
-            #           min(20,            (3333 - 3000 = 333))     = 20
-            #           min(~512,          sys.maxsize)             = 512
-            #           min(~512,          (3333 - 3000 = 333))     = 333
+            #         = min(20,            sys.maxsize)             = 20
+            #         = min(20,            (3333 - 3000 = 333))     = 20
+            #         = min(~512,          sys.maxsize)             = 512
+            #         = min(~512,          (3333 - 3000 = 333))     = 333
             page_size = min(pull_chunksize, pull_limit)
 
             res = self.dataset.datasets.documents.get_where(
