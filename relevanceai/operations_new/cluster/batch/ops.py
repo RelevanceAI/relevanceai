@@ -81,6 +81,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             dataset=dataset,
             func=self.fit,
             pull_chunksize=chunksize,
+            transform_chunksize=chunksize,
             push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,
