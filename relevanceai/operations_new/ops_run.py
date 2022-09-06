@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+import sys
 import psutil
 import threading
 import multiprocessing as mp
@@ -174,11 +175,29 @@ class PullTransformPush:
 
         while True:
             current_count = self.pull_bar.n
-            page_size = min(
-                20 if self.pull_chunksize is None else self.pull_chunksize,
-                (int(1e8) if self.pull_limit is None else self.pull_limit)
-                - current_count,
-            )
+
+            if self.pull_chunksize is None:
+                # this is the first batch
+                pull_chunksize = 20
+            else:
+                # optimized pull batch size (every other pull)
+                pull_chunksize = self.pull_chunksize
+
+            if self.pull_limit is None:
+                # Very large number if no limits
+                pull_limit = sys.maxsize
+            else:
+                # if there is a limit, get the ndocs left
+                pull_limit = self.pull_limit - current_count
+
+            # Consider all scenarios
+            # let 3333 = pull_limit, current_count = 3000
+            # pull_chunksize, pull_limit = min(20, sys.maxsize) = 20
+            # pull_chunksize, pull_limit = min(20, (3333 - 3000 = 333)) = 20
+            # pull_chunksize, pull_limit = min(~512, sys.maxsize) = 512
+            # pull_chunksize, pull_limit = min(~512, (3333 - 3000 = 333)) = 333
+            page_size = min(pull_chunksize, pull_limit)
+
             res = self.dataset.datasets.documents.get_where(
                 dataset_id=self.dataset_id,
                 page_size=page_size,
