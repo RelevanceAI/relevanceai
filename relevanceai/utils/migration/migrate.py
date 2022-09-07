@@ -59,7 +59,7 @@ def migrate_dataset(
     ptp = PullTransformPush(
         pull_dataset=old_dataset,
         push_dataset=new_dataset,
-        is_identity=True,
+        func=None,
         show_progress_bar=show_progress_bar,
         show_transform_progress_bar=False,
         pull_chunksize=chunksize,

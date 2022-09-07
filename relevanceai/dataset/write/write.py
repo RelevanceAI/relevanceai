@@ -538,7 +538,7 @@ class Write(Read):
         from relevanceai.operations_new.ops_run import PullTransformPush
 
         ptp = PullTransformPush(
-            pull_dataset=self,
+            dataset=self,
             func=bulk_func,
             func_args=bulk_func_args,
             func_kwargs=bulk_func_kwargs,

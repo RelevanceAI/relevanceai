@@ -82,7 +82,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         tqdm.write("\nFitting Model...")
         ptp = PullTransformPush(
-            pull_dataset=dataset,
+            dataset=dataset,
             func=self.fit,
             pull_chunksize=chunksize,
             push_chunksize=chunksize,
@@ -97,7 +97,7 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
 
         tqdm.write("\nPredicting Documents...")
         ptp = PullTransformPush(
-            pull_dataset=dataset,
+            dataset=dataset,
             func=self.transform,
             pull_chunksize=chunksize,
             push_chunksize=chunksize,

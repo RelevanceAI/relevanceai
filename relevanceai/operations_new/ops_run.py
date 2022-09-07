@@ -34,9 +34,13 @@ class PullTransformPush:
     update_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
+    pull_dataset: Dataset
+    push_dataset: Dataset
+
     def __init__(
         self,
-        pull_dataset: Dataset,
+        dataset: Optional[Dataset] = None,
+        pull_dataset: Optional[Dataset] = None,
         func: Optional[Callable] = None,
         push_dataset: Optional[Dataset] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
@@ -44,7 +48,6 @@ class PullTransformPush:
         multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = None,
         warmup_chunksize: Optional[int] = None,
-        is_identity: bool = False,
         transform_chunksize: Optional[int] = 128,
         push_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
@@ -72,11 +75,18 @@ class PullTransformPush:
         """
         super().__init__()
 
-        self.pull_dataset = pull_dataset
-        if push_dataset is None:
-            self.push_dataset = pull_dataset
+        if dataset is None:
+            self.push_dataset = push_dataset  # type: ignore
+            self.pull_dataset = pull_dataset  # type: ignore
+
         else:
-            self.push_dataset = push_dataset
+            self.push_dataset = dataset
+            self.pull_dataset = dataset
+
+        if dataset is None and pull_dataset is None and push_dataset is None:
+            raise ValueError(
+                "Please set `dataset=` or `push_dataset=` and `pull_dataset=`"
+            )
 
         self.pull_dataset_id = self.pull_dataset.dataset_id
         self.push_dataset_id = self.push_dataset.dataset_id
@@ -105,7 +115,7 @@ class PullTransformPush:
         if update_all_at_once:
             self.transform_chunksize = self.ndocs
 
-        if not is_identity:
+        if func is None:
             tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.timeout = 30 if timeout is None else timeout
@@ -332,9 +342,8 @@ class PullTransformPush:
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
 
-            old_keys = [set(document.keys()) for document in batch]
-
             if self.func is not None:
+                old_keys = [set(document.keys()) for document in batch]
                 if self.func_lock is not None:
                     with self.func_lock:
                         new_batch = self.func(
@@ -651,7 +660,7 @@ class OperationRun(TransformBase):
                 "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
             )
         ptp = PullTransformPush(
-            pull_dataset=dataset,
+            dataset=dataset,
             func=self.transform,
             func_args=func_args,
             func_kwargs=func_kwargs,
