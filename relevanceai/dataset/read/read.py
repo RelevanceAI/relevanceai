@@ -10,7 +10,7 @@ import pandas as pd
 from relevanceai.utils.decorators.thread import fire_and_forget
 
 from tqdm.auto import tqdm
-from typing import Optional, Union, Dict, List, Mapping
+from typing import Any, Optional, Tuple, Union, Dict, List, Mapping
 from relevanceai.client.helpers import Credentials
 from relevanceai.dataset.series import Series
 
@@ -858,3 +858,34 @@ class Read(ClusterRead):
 
     def list_cluster_fields(self):
         return [x for x in self.schema if "_cluster_" in x and x.count(".") >= 2]
+
+    def get_after_ids_for_workflows(
+        self, num_of_workers: int = 3
+    ) -> List[Tuple[int, List[Optional[str]]]]:
+        """
+        Get multiple after IDs to run workflows in parallel
+
+        Params
+        -------
+        num_of_workers: int = 3
+            The number of workers that we need to separate out the After IDs
+        """
+        documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
+        docs = {"after_id": None}
+        after_ids: List[Tuple[int, List[Optional[str]]]] = []
+        after_id: List[Optional[str]] = []
+        pull_limit = math.ceil(self.shape[0] / num_of_workers)
+
+        while documents:
+            docs = self.datasets.documents.get_where(
+                dataset_id=self.dataset_id,
+                page_size=pull_limit,
+                select_fields=["_id"],
+                after_id=after_id,
+            )
+            documents = docs["documents"]  # type: ignore
+            pull_limit = len(documents)
+            after_ids += [(pull_limit, after_id)]
+            after_id = docs["after_id"]  # type: ignore
+
+        return after_ids

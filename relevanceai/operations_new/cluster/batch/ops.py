@@ -1,14 +1,14 @@
 """
 Batch Cluster Operations
 """
-from relevanceai.constants.links import EXPLORER_APP_LINK
-from relevanceai.operations_new.cluster.batch.transform import BatchClusterTransform
-from relevanceai.operations_new.ops_base import OperationAPIBase
-from relevanceai.operations_new.cluster.ops import ClusterOps
-from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
-from relevanceai.dataset import Dataset
-from typing import Any
+from typing import Optional
 
+from relevanceai.dataset import Dataset
+from relevanceai.operations_new.cluster.ops import ClusterOps
+from relevanceai.operations_new.cluster.batch.transform import BatchClusterTransform
+from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
+
+from relevanceai.constants.links import EXPLORER_APP_LINK
 from relevanceai.operations_new.ops_run import PullTransformPush
 
 
@@ -69,7 +69,11 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         return chunk
 
     def run(
-        self, dataset: Dataset, filters: list = None, chunksize: int = 500, **kwargs
+        self,
+        dataset: Dataset,
+        filters: list = None,
+        chunksize: Optional[int] = None,
+        **kwargs
     ):
         """
         Run batch clustering
@@ -96,7 +100,6 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
             dataset=dataset,
             func=self.transform,
             pull_chunksize=chunksize,
-            transform_chunksize=chunksize,
             push_chunksize=chunksize,
             filters=filters,
             select_fields=self.vector_fields,
