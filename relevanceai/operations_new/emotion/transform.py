@@ -1,5 +1,5 @@
 """
-    
+
     Add emotion.
 
 """
@@ -36,20 +36,22 @@ class EmotionTransform(TransformBase):
         self.output_fields = output_fields
         self.min_score = min_score
 
-        import transformers
-
-        self.device = self.get_transformers_device(device)
-        self._classifier = transformers.pipeline(
-            "sentiment-analysis",
-            return_all_scores=False,
-            model=self.model_name,
-            device=self.device,
-        )
         for k, v in kwargs.items():
             setattr(self, k, v)
 
     @property
     def classifier(self):
+        if not hasattr(self, "device"):
+            self.device = self.get_transformers_device(None)
+        if not hasattr(self, "_classifier"):
+            import transformers
+
+            self._classifier = transformers.pipeline(
+                "sentiment-analysis",
+                return_all_scores=False,
+                model=self.model_name,
+                device=self.device,
+            )
         return self._classifier
 
     def analyze_emotion(
