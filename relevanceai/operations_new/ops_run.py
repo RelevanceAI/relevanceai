@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+import sys
 import psutil
 import threading
 import multiprocessing as mp
@@ -67,23 +68,23 @@ class PullTransformPush:
         self.config = CONFIG
 
         self.pull_limit = pull_limit
-        ndocs = self.dataset.get_number_of_documents(
-            dataset_id=self.dataset_id,
-            filters=filters,
-        )
         if pull_limit is None:
+            ndocs = self.dataset.get_number_of_documents(
+                dataset_id=self.dataset_id,
+                filters=filters,
+            )
             self.ndocs = ndocs
         else:
             self.ndocs = pull_limit
 
         self.pull_chunksize = pull_chunksize
-        self.transform_chunksize = min(transform_chunksize, ndocs)
+        self.transform_chunksize = min(transform_chunksize, self.ndocs)
         self.warmup_chunksize = warmup_chunksize
         self.push_chunksize = push_chunksize
 
         self.update_all_at_once = update_all_at_once
         if update_all_at_once:
-            self.transform_chunksize = ndocs
+            self.transform_chunksize = self.ndocs
 
         tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
@@ -111,7 +112,7 @@ class PullTransformPush:
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
         if update_all_at_once:
-            self.single_queue_size = ndocs
+            self.single_queue_size = self.ndocs
 
         else:
             if buffer_size == 0:
@@ -172,10 +173,34 @@ class PullTransformPush:
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[List[str], None] = self.after_id
 
-        while documents:
+        while True:
+            current_count = self.pull_bar.n
+
+            if self.pull_chunksize is None:
+                # this is the first batch
+                pull_chunksize = 20
+            else:
+                # optimized pull batch size (every other pull)
+                pull_chunksize = self.pull_chunksize
+
+            if self.pull_limit is None:
+                # Very large number if no limits
+                pull_limit = sys.maxsize
+            else:
+                # if there is a limit, get the ndocs left
+                pull_limit = self.pull_limit - current_count
+
+            # Consider all scenarios
+            # let 3333 = pull_limit, current_count = 3000
+            #         = min(20,            sys.maxsize)             = 20
+            #         = min(20,            (3333 - 3000 = 333))     = 20
+            #         = min(~512,          sys.maxsize)             = 512
+            #         = min(~512,          (3333 - 3000 = 333))     = 333
+            page_size = min(pull_chunksize, pull_limit)
+
             res = self.dataset.datasets.documents.get_where(
                 dataset_id=self.dataset_id,
-                page_size=20 if self.pull_chunksize is None else self.pull_chunksize,
+                page_size=page_size,
                 filters=self.filters,
                 select_fields=self.select_fields,
                 sort=[],
@@ -183,6 +208,8 @@ class PullTransformPush:
             )
 
             documents = res["documents"]
+            if not documents:
+                break
             after_id = res["after_id"]
 
             if self.pull_chunksize is None:
@@ -195,10 +222,6 @@ class PullTransformPush:
 
             with self.general_lock:
                 self.pull_bar.update(len(documents))
-
-            if self.pull_limit is not None:
-                if self.pull_bar.n > self.pull_limit:
-                    break
 
     def _get_update_batch(self) -> List[Dict[str, Any]]:
         """
