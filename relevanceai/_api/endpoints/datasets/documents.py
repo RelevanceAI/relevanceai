@@ -244,7 +244,7 @@ class DocumentsClient(_Base):
                 "filters": filters,
                 "random_state": random_state,
                 "is_random": is_random,
-                "after_id": after_id,
+                "after_id": [] if after_id is None else after_id,
             },
         )
 

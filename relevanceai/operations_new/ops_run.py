@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+import sys
 import psutil
 import threading
 import multiprocessing as mp
@@ -21,6 +22,10 @@ from relevanceai.utils.helpers.helpers import getsizeof
 
 class PullTransformPush:
 
+    pull_count: int
+    transform_count: int
+    push_count: int
+
     pull_bar: tqdm
     transform_bar: tqdm
     push_bar: tqdm
@@ -29,14 +34,19 @@ class PullTransformPush:
     update_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
+    pull_dataset: Dataset
+    push_dataset: Dataset
+
     def __init__(
         self,
-        dataset: Dataset,
-        func: Callable,
+        dataset: Optional[Dataset] = None,
+        pull_dataset: Optional[Dataset] = None,
+        func: Optional[Callable] = None,
+        push_dataset: Optional[Dataset] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = False,
-        pull_chunksize: Optional[int] = 128,
+        pull_chunksize: Optional[int] = None,
         warmup_chunksize: Optional[int] = None,
         transform_chunksize: Optional[int] = 128,
         push_chunksize: Optional[int] = None,
@@ -46,6 +56,9 @@ class PullTransformPush:
         push_workers: int = 1,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
+        show_pull_progress_bar: bool = True,
+        show_transform_progress_bar: bool = True,
+        show_push_progress_bar: bool = True,
         timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         run_in_background: bool = False,
@@ -62,30 +75,48 @@ class PullTransformPush:
         """
         super().__init__()
 
-        self.dataset = dataset
-        self.dataset_id = dataset.dataset_id
+        if dataset is None:
+            self.push_dataset = push_dataset  # type: ignore
+            self.pull_dataset = pull_dataset  # type: ignore
+
+        else:
+            self.push_dataset = dataset
+            self.pull_dataset = dataset
+
+        if dataset is None and pull_dataset is None and push_dataset is None:
+            raise ValueError(
+                "Please set `dataset=` or `push_dataset=` and `pull_dataset=`"
+            )
+
+        self.pull_dataset_id = self.pull_dataset.dataset_id
+        self.push_dataset_id = self.push_dataset.dataset_id
+
         self.config = CONFIG
 
         self.pull_limit = pull_limit
-        ndocs = self.dataset.get_number_of_documents(
-            dataset_id=self.dataset_id,
-            filters=filters,
-        )
+
+        self.failed_documents_count = 0
+
         if pull_limit is None:
+            ndocs = self.pull_dataset.get_number_of_documents(
+                dataset_id=self.pull_dataset_id,
+                filters=filters,
+            )
             self.ndocs = ndocs
         else:
             self.ndocs = pull_limit
 
         self.pull_chunksize = pull_chunksize
-        self.transform_chunksize = min(transform_chunksize, ndocs)
+        self.transform_chunksize = min(transform_chunksize, self.ndocs)
         self.warmup_chunksize = warmup_chunksize
         self.push_chunksize = push_chunksize
 
         self.update_all_at_once = update_all_at_once
         if update_all_at_once:
-            self.transform_chunksize = ndocs
+            self.transform_chunksize = self.ndocs
 
-        tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
+        if func is None:
+            tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
@@ -94,8 +125,10 @@ class PullTransformPush:
         self.select_fields = [] if select_fields is None else select_fields
 
         self.general_lock = threading.Lock()
+
         self.transform_batch_lock = threading.Lock()
         self.push_batch_lock = threading.Lock()
+
         self.func_lock: Union[threading.Lock, None]
 
         if not multithreaded_update:
@@ -111,7 +144,7 @@ class PullTransformPush:
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
         if update_all_at_once:
-            self.single_queue_size = ndocs
+            self.single_queue_size = self.ndocs
 
         else:
             if buffer_size == 0:
@@ -133,7 +166,33 @@ class PullTransformPush:
         self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
         self.func = func
 
-        self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
+        self.pull_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_pull_progress_bar and show_progress_bar)),
+        )
+        if not self.pull_tqdm_kwargs["disable"]:
+            self.pull_tqdm_kwargs["position"] = 0  # type: ignore
+
+        self.transform_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_transform_progress_bar and show_progress_bar)),
+        )
+        if not self.transform_tqdm_kwargs["disable"]:
+            self.transform_tqdm_kwargs["position"] = (
+                self.pull_tqdm_kwargs.get("position", 0) + 1  # type: ignore
+            )
+
+        self.push_tqdm_kwargs = dict(
+            leave=True,
+            disable=(not (show_push_progress_bar and show_progress_bar)),
+        )
+        if not self.push_tqdm_kwargs["disable"]:
+            self.push_tqdm_kwargs["position"] = (
+                self.pull_tqdm_kwargs.get("position", 0)  # type: ignore
+                + self.transform_tqdm_kwargs.get("position", 0)
+                + 1
+            )
+
         self.run_in_background = run_in_background
 
         self.failed_frontier: Dict[str, int] = {}
@@ -172,10 +231,34 @@ class PullTransformPush:
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[List[str], None] = self.after_id
 
-        while documents:
-            res = self.dataset.datasets.documents.get_where(
-                dataset_id=self.dataset_id,
-                page_size=20 if self.pull_chunksize is None else self.pull_chunksize,
+        while True:
+            current_count = self.pull_bar.n
+
+            if self.pull_chunksize is None:
+                # this is the first batch
+                pull_chunksize = 20
+            else:
+                # optimized pull batch size (every other pull)
+                pull_chunksize = self.pull_chunksize
+
+            if self.pull_limit is None:
+                # Very large number if no limits
+                pull_limit = sys.maxsize
+            else:
+                # if there is a limit, get the ndocs left
+                pull_limit = self.pull_limit - current_count
+
+            # Consider all scenarios
+            # let 3333 = pull_limit, current_count = 3000
+            #         = min(20,            sys.maxsize)             = 20
+            #         = min(20,            (3333 - 3000 = 333))     = 20
+            #         = min(~512,          sys.maxsize)             = 512
+            #         = min(~512,          (3333 - 3000 = 333))     = 333
+            page_size = min(pull_chunksize, pull_limit)
+
+            res = self.pull_dataset.datasets.documents.get_where(
+                dataset_id=self.pull_dataset_id,
+                page_size=page_size,
                 filters=self.filters,
                 select_fields=self.select_fields,
                 sort=[],
@@ -183,6 +266,8 @@ class PullTransformPush:
             )
 
             documents = res["documents"]
+            if not documents:
+                break
             after_id = res["after_id"]
 
             if self.pull_chunksize is None:
@@ -195,33 +280,29 @@ class PullTransformPush:
 
             with self.general_lock:
                 self.pull_bar.update(len(documents))
+                self.pull_count += len(documents)
 
-            if self.pull_limit is not None:
-                if self.pull_bar.n > self.pull_limit:
-                    break
-
-    def _get_update_batch(self) -> List[Dict[str, Any]]:
+    def _get_transform_batch(self) -> List[Dict[str, Any]]:
         """
         Collects a batches of of size `transform_chunksize` from the transform queue
         """
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 5
+        timeout = 5 if not self.update_all_at_once else None
 
-        if self.transform_bar.n == 0 and self.warmup_chunksize is not None:
+        if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
             tqdm.write("Processing Warmup Batch")
         else:
             chunksize = self.transform_chunksize
 
-        while self.update_all_at_once or len(batch) < chunksize:
+        while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
                 batch.append(document)
             except:
-                if len(batch) > 0:
-                    break
+                break
 
         return batch
 
@@ -244,9 +325,9 @@ class PullTransformPush:
         while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
+                batch.append(document)
             except:
                 break
-            batch.append(document)
 
         return batch
 
@@ -257,25 +338,28 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.transform_bar.n < self.ndocs:
+        while self.transform_count < self.ndocs:
             with self.transform_batch_lock:
-                batch = self._get_update_batch()
+                batch = self._get_transform_batch()
 
-            old_keys = [set(document.keys()) for document in batch]
+            if self.func is not None:
+                old_keys = [set(document.keys()) for document in batch]
+                if self.func_lock is not None:
+                    with self.func_lock:
+                        new_batch = self.func(
+                            batch, *self.func_args, **self.func_kwargs
+                        )
+                else:
+                    new_batch = self.func(batch, **self.func_kwargs)
 
-            if self.func_lock is not None:
-                with self.func_lock:
-                    new_batch = self.func(batch, *self.func_args, **self.func_kwargs)
-            else:
-                new_batch = self.func(batch, **self.func_kwargs)
-
-            batch = PullTransformPush._postprocess(new_batch, old_keys)
+                batch = PullTransformPush._postprocess(new_batch, old_keys)
 
             for document in batch:
                 self.pq.put(document)
 
             with self.general_lock:
                 self.transform_bar.update(len(batch))
+                self.transform_count += len(batch)
 
     def _handle_failed_documents(
         self,
@@ -291,8 +375,8 @@ class PullTransformPush:
 
         if failed_documents:
             with self.general_lock:
-                self.ndocs += len(failed_documents)
-                desc = f"push - failed_documents = {self.ndocs - self.ndocs}"
+                self.failed_documents_count += len(failed_documents)
+                desc = f"push - failed_documents = {self.failed_documents_count}"
                 self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
@@ -347,16 +431,16 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        while self.push_bar.n < self.ndocs:
+        while self.push_count < self.ndocs:
             with self.push_batch_lock:
                 batch = self._get_push_batch()
 
-            batch = self.dataset.json_encoder(batch)
+            batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
 
             if update:
-                res = self.dataset.datasets.documents.bulk_update(
-                    self.dataset_id,
+                res = self.push_dataset.datasets.documents.bulk_update(
+                    self.push_dataset_id,
                     batch,
                     return_documents=True,
                     ingest_in_background=self.ingest_in_background,
@@ -372,28 +456,29 @@ class PullTransformPush:
 
             with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
+                self.push_count += len(batch) - len(failed_documents)
 
     def _init_progress_bars(self) -> None:
         """
         Initialise the progress bars for dispay progress on pulling updating and pushing.
         """
+        self.pull_count = 0
         self.pull_bar = tqdm(
             desc="pull",
-            position=0,
             total=self.ndocs,
-            **self.tqdm_kwargs,
+            **self.pull_tqdm_kwargs,
         )
+        self.transform_count = 0
         self.transform_bar = tqdm(
             range(self.ndocs),
             desc="transform",
-            position=1,
-            **self.tqdm_kwargs,
+            **self.transform_tqdm_kwargs,
         )
+        self.push_count = 0
         self.push_bar = tqdm(
             range(self.ndocs),
             desc="push",
-            position=2,
-            **self.tqdm_kwargs,
+            **self.push_tqdm_kwargs,
         )
 
     def _init_worker_threads(self) -> None:
