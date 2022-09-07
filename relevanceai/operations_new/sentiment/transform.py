@@ -4,7 +4,7 @@
 # Running a function across each subcluster
 import numpy as np
 import csv
-from typing import Optional
+from typing import List, Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations_new.transform_base import TransformBase
@@ -98,60 +98,53 @@ class SentimentTransform(TransformBase):
 
     def analyze_sentiment(
         self,
-        text,
+        texts: List[str],
         highlight: bool = False,
         positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
+        eps: float = 1e-9,
     ):
-        if text is None:
-            return None
-        labels = self.classifier([str(text)], truncation=True, max_length=512)
-        ind_max = np.argmax([l["score"] for l in labels[0]])
-        sentiment = labels[0][ind_max]["label"]
-        max_score = labels[0][ind_max]["score"]
-        sentiment = self.label_mapping.get(sentiment, sentiment)
-        if sentiment.lower() == "neutral" and max_score > self.sensitivity:
-            overall_sentiment = 1e-5
-        elif sentiment.lower() == "neutral":
-            # get the next highest score
-            new_labels = labels[0][:ind_max] + labels[0][(ind_max + 1) :]
-            new_ind_max = np.argmax([l["score"] for l in new_labels])
-            new_max_score = new_labels[new_ind_max]["score"]
-            new_sentiment = new_labels[new_ind_max]["label"]
-            new_sentiment = self.label_mapping.get(new_sentiment, new_sentiment)
-            overall_sentiment = self._calculate_overall_sentiment(
-                new_max_score, new_sentiment
-            )
-
-        else:
-            overall_sentiment = self._calculate_overall_sentiment(max_score, sentiment)
-        # Adjust to avoid bug
-        if overall_sentiment == 0:
-            overall_sentiment = 1e-5
-        if not highlight:
-            return {
-                "sentiment": sentiment,
-                "overall_sentiment_score": overall_sentiment,
-            }
-        shap_documents = self.get_shap_values(
-            text,
-            sentiment_ind=ind_max,
-            max_number_of_shap_documents=max_number_of_shap_documents,
-            min_abs_score=min_abs_score,
+        labels = self.classifier(texts, truncation=True, max_length=512)
+        scores = np.array([[l["score"] for l in output] for output in labels])
+        e_x = scores[:, 0] * -1 + scores[:, 1] * 0 + scores[:, 2] * 1
+        argmax = np.argmax(scores, axis=-1)
+        argmax = list(
+            map(lambda index: self.label_mapping[f"LABEL_{index}"], argmax.tolist())
         )
-        return {
-            "sentiment": sentiment,
-            "score": max_score,
-            "overall_sentiment": overall_sentiment,
-            "highlight_chunk_": shap_documents,
-        }
+        e_x[e_x == 0] += eps
 
-    def _calculate_overall_sentiment(self, score: float, sentiment: str):
-        if sentiment.lower().strip() == self.positive_sentiment_name:
-            return score
-        else:
-            return -score
+        if not highlight:
+            updates = [
+                {
+                    "sentiment": argmax[index],
+                    "overall_sentiment_score": e_x[index],
+                }
+                for index in range(len(texts))
+            ]
+            return updates
+
+        shap_documents = [
+            self.get_shap_values(
+                texts[index],
+                sentiment_ind=argmax[index],
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
+            )
+            for index in range(len(texts))
+        ]
+
+        max_score = scores[np.argmax(scores, axis=-1)]
+        updates = [
+            {
+                "sentiment": argmax[index],
+                "score": max_score[index],
+                "overall_sentiment": e_x[index],
+                "highlight_chunk_": shap_documents[index],
+            }
+            for index in range(len(texts))
+        ]
+        return updates
 
     @property
     def explainer(self):
@@ -210,15 +203,15 @@ class SentimentTransform(TransformBase):
                 output_field = self.output_fields[i]
             else:
                 output_field = self._get_output_field(t)
-            sentiments = [
-                self.analyze_sentiment(
-                    self.get_field(t, doc, missing_treatment="return_empty_string"),
-                    highlight=self.highlight,
-                    max_number_of_shap_documents=self.max_number_of_shap_documents,
-                    min_abs_score=self.min_abs_score,
-                )
-                for doc in documents
-            ]
+            sentiments = self.analyze_sentiment(
+                [
+                    self.get_field(t, doc, missing_treatment="return_empty_string")
+                    for doc in documents
+                ],
+                highlight=self.highlight,
+                max_number_of_shap_documents=self.max_number_of_shap_documents,
+                min_abs_score=self.min_abs_score,
+            )
             self.set_field_across_documents(output_field, sentiments, sentiment_docs)
         return sentiment_docs
 
