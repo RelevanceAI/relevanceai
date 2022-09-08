@@ -346,11 +346,19 @@ class PullTransformPush:
                 old_keys = [set(document.keys()) for document in batch]
                 if self.func_lock is not None:
                     with self.func_lock:
-                        new_batch = self.func(
-                            batch, *self.func_args, **self.func_kwargs
-                        )
+                        try:
+                            new_batch = self.func(
+                                batch, *self.func_args, **self.func_kwargs
+                            )
+                        except Exception as e:
+                            print(e)
+                            new_batch = batch
                 else:
-                    new_batch = self.func(batch, **self.func_kwargs)
+                    try:
+                        new_batch = self.func(batch, **self.func_kwargs)
+                    except Exception as e:
+                        print(e)
+                        new_batch = batch
 
                 batch = PullTransformPush._postprocess(new_batch, old_keys)
 
