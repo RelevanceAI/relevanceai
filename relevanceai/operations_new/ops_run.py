@@ -317,7 +317,14 @@ class PullTransformPush:
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
-            sample_documents = [queue.get(timeout=timeout) for _ in range(10)]
+            sample_documents = []
+            for _ in range(10):
+                try:
+                    sample_document = queue.get(timeout=timeout)
+                except:
+                    break
+                sample_documents.append(sample_document)
+
             self.push_chunksize = self._get_optimal_chunksize(sample_documents, "push")
             batch = sample_documents
 
