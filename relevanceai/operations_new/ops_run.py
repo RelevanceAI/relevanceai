@@ -506,18 +506,15 @@ class PullTransformPush:
         """
         Start the worker threads and then join them in reversed order.
         """
-        self.pull_thread.start()
-        while True:
-            if not self.tq.empty():
-                for thread in self.update_threads:
-                    thread.start()
-                break
-        while True:
-            if not self.pq.empty():
-                for thread in self.push_threads:
-                    thread.start()
-                break
 
+        # Start threads
+        self.pull_thread.start()
+        for thread in self.update_threads:
+            thread.start()
+        for thread in self.push_threads:
+            thread.start()
+
+        # Try to join if not running in background
         if not self.run_in_background:
             for thread in self.push_threads:
                 thread.join()
