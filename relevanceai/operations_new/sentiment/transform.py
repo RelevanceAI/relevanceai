@@ -2,9 +2,10 @@
 """
 
 # Running a function across each subcluster
+import pandas as pd
 import numpy as np
 import csv
-from typing import List, Optional
+from typing import Dict, List, Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations_new.transform_base import TransformBase
@@ -96,6 +97,14 @@ class SentimentTransform(TransformBase):
     def label_mapping(self):
         return {"LABEL_0": "negative", "LABEL_1": "neutral", "LABEL_2": "positive"}
 
+    def _get_scores(
+        self, cls: str, logits: List[List[Dict[str, float]]]
+    ) -> List[float]:
+        return [
+            list(filter(lambda label: label["label"] == cls, logit))[0]["score"]
+            for logit in logits
+        ]
+
     def analyze_sentiment(
         self,
         texts: List[str],
@@ -105,19 +114,26 @@ class SentimentTransform(TransformBase):
         min_abs_score: float = 0.1,
         eps: float = 1e-9,
     ):
-        labels = self.classifier(texts, truncation=True, max_length=512)
-        scores = np.array([[l["score"] for l in output] for output in labels])
-        e_x = scores[:, 0] * -1 + scores[:, 1] * 0 + scores[:, 2] * 1
-        argmax = np.argmax(scores, axis=-1)
-        argmax = list(
-            map(lambda index: self.label_mapping[f"LABEL_{index}"], argmax.tolist())
+        logits = self.classifier(texts, truncation=True, max_length=512)
+        scores = pd.DataFrame(
+            {
+                "negative": self._get_scores(cls="negative", logits=logits),
+                "neutral": self._get_scores(cls="neutral", logits=logits),
+                "positive": self._get_scores(cls="positive", logits=logits),
+            }
         )
+        # this is the expected value
+        e_x = scores["negative"].values * -1
+        e_x += scores["neutral"].values * 0
+        e_x += scores["positive"].values * 1
+
+        idxmax = [scores.iloc[index].idxmax(-1) for index in range(len(texts))]
         e_x[e_x == 0] += eps
 
         if not highlight:
             updates = [
                 {
-                    "sentiment": argmax[index],
+                    "sentiment": idxmax[index],
                     "overall_sentiment_score": e_x[index],
                 }
                 for index in range(len(texts))
@@ -127,18 +143,18 @@ class SentimentTransform(TransformBase):
         shap_documents = [
             self.get_shap_values(
                 texts[index],
-                sentiment_ind=argmax[index],
+                sentiment_ind=idxmax[index],
                 max_number_of_shap_documents=max_number_of_shap_documents,
                 min_abs_score=min_abs_score,
             )
             for index in range(len(texts))
         ]
 
-        max_score = scores[np.argmax(scores, axis=-1)]
+        max_scores = scores.values[np.argmax(scores.values, axis=-1)]
         updates = [
             {
-                "sentiment": argmax[index],
-                "score": max_score[index],
+                "sentiment": idxmax[index],
+                "score": max_scores[index],
                 "overall_sentiment": e_x[index],
                 "highlight_chunk_": shap_documents[index],
             }
