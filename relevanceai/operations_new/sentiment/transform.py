@@ -124,8 +124,7 @@ class SentimentTransform(TransformBase):
         )
         # this is the expected value
         e_x = scores["negative"].values * -1
-        e_x += scores["neutral"].values * 0
-        e_x += scores["positive"].values * 1
+        e_x += scores["positive"].values
 
         idxmax = [scores.iloc[index].idxmax(-1) for index in range(len(texts))]
         e_x[e_x == 0] += eps
