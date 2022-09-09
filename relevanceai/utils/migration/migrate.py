@@ -68,6 +68,9 @@ def migrate_dataset(
     )
     ptp.run()
 
+    metadata = old_dataset.metadata.to_dict()
+    new_dataset.upsert_metadata(metadata)
+
     cluster_fields = [
         field
         for field in old_dataset.schema
