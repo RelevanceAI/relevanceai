@@ -927,3 +927,16 @@ class Read(ClusterRead):
         return self.datasets.field_children.delete(
             dataset_id=self.dataset_id, fieldchildren_id=fieldchildren_id
         )
+        
+    def upsert_field_child(
+        fieldchildren_id: str,
+        field: str,
+        field_children: list,
+        metadata: dict = None,
+    ):
+        """
+        Upsert field child metadata
+        """
+        # Note that the metada
+        # yeah idk - lets talk to Josh
+        raise NotImplementedError
