@@ -902,6 +902,9 @@ class Read(ClusterRead):
         Update the field children.
         """
         # Update field children
+        if metadata is None:
+            metadata = {}
+
         if "category" not in metadata:
             metadata["category"] = category
         return self.datasets.field_children.update(
