@@ -685,6 +685,14 @@ class Operations(Write):
             batched=batched,
             **kwargs,
         )
+
+        for i, field in enumerate(text_fields):
+            self.update_field_children(
+                field=field,
+                field_children=[ops.output_fields[i]],
+                category="sentiment",
+                metadata={"model_name": model_name},
+            )
         return ops
 
     def extract_emotion(
