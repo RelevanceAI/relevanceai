@@ -7,6 +7,7 @@ import math
 import warnings
 import os
 import pandas as pd
+import uuid
 from relevanceai.utils.decorators.thread import fire_and_forget
 
 from tqdm.auto import tqdm
@@ -892,18 +893,20 @@ class Read(ClusterRead):
 
     def update_field_children(
         self,
-        fieldchildren_id: str,
         field: str,
         field_children: list,
+        category: str,
         metadata: dict = None,
     ):
         """
         Update the field children.
         """
         # Update field children
+        if "category" not in metadata:
+            metadata["category"] = category
         return self.datasets.field_children.update(
             dataset_id=self.dataset_id,
-            fieldchildren_id=fieldchildren_id,
+            fieldchildren_id=uuid.uuid4().__str__(),
             field=field,
             field_children=field_children,
             metadata=metadata,
@@ -927,16 +930,3 @@ class Read(ClusterRead):
         return self.datasets.field_children.delete(
             dataset_id=self.dataset_id, fieldchildren_id=fieldchildren_id
         )
-        
-    def upsert_field_child(
-        fieldchildren_id: str,
-        field: str,
-        field_children: list,
-        metadata: dict = None,
-    ):
-        """
-        Upsert field child metadata
-        """
-        # Note that the metada
-        # yeah idk - lets talk to Josh
-        raise NotImplementedError
