@@ -889,3 +889,41 @@ class Read(ClusterRead):
             after_id = docs["after_id"]  # type: ignore
 
         return after_ids
+
+    def update_field_children(
+        self,
+        fieldchildren_id: str,
+        field: str,
+        field_children: list,
+        metadata: dict = None,
+    ):
+        """
+        Update the field children.
+        """
+        # Update field children
+        return self.datasets.field_children.update(
+            dataset_id=self.dataset_id,
+            fieldchildren_id=fieldchildren_id,
+            field=field,
+            field_children=field_children,
+            metadata=metadata,
+        )
+
+    def list_field_children(
+        self,
+    ):
+        """
+        List field children
+        """
+        return self.datasets.field_children.list(dataset_id=self.dataset_id)
+
+    def delete_field_children(
+        self,
+        fieldchildren_id: str,
+    ):
+        """
+        Delete field children
+        """
+        return self.datasets.field_children.delete(
+            dataset_id=self.dataset_id, fieldchildren_id=fieldchildren_id
+        )
