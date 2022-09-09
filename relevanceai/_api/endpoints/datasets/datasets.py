@@ -19,7 +19,7 @@ class DatasetsClient(_Base):
         self.documents = DocumentsClient(credentials)
         self.monitor = MonitorClient(credentials)
         self.cluster = ClusterClient(credentials)
-        self.field_children_client = FieldChildrenClient(credentials)
+        self.field_children = FieldChildrenClient(credentials)
 
         super().__init__(credentials)
 
