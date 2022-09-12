@@ -76,10 +76,44 @@ class OperationManager:
         for h in self.post_hooks:
             h()
 
+        self._store_default_parent_child()
+
         self.operation.store_operation_metadata(
             dataset=self.dataset,
             values=self.metadata,
         )
+
+    def _store_default_parent_child(self):
+        """We temporarily store the default parent child relationship
+        where possible
+        """
+        if hasattr(self.operation, "select_fields"):
+            # Based on the
+            for i, field in enumerate(self.operation.select_fields):
+                self.update_field_children(
+                    field=field,
+                    field_children=[self.operation.output_fields[i]],
+                    category=self.operation.name,  # Should this be the workflow ID
+                    metadata={},
+                )
+        elif hasattr(self.operation, "fields"):
+            # Based on the
+            for i, field in enumerate(self.operation.fields):
+                self.update_field_children(
+                    field=field,
+                    field_children=[self.operation.output_fields[i]],
+                    category=self.operation.name,  # Should this be the workflow ID
+                    metadata={},
+                )
+        elif hasattr(self.operation, "text_fields"):
+            # Based on the
+            for i, field in enumerate(self.operation.text_fields):
+                self.update_field_children(
+                    field=field,
+                    field_children=[self.operation.output_fields[i]],
+                    category=self.operation.name,  # Should this be the workflow ID
+                    metadata={},
+                )
 
     @staticmethod
     def clean(
