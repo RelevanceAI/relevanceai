@@ -53,3 +53,26 @@ class WorkflowsClient(_Base):
             method="POST",
             parameters={"metadata": metadata},
         )
+
+    def status(
+        self,
+        workflow_id: str,
+        metadata: dict,
+        workflow_name: str,
+        additional_information: str = "",
+        status: str = "complete",
+    ):
+        """
+        If status is complete, it triggers an email.
+        """
+        return self.make_http_request(
+            f"/workflows/{workflow_id}/status",
+            method="POST",
+            parameters={
+                "metadata": {},
+                "status": status,
+                "workflow_name": workflow_name,
+                "additional_information": additional_information,
+                "metadata": metadata,
+            },
+        )

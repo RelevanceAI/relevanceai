@@ -237,6 +237,7 @@ class Operations(Write):
             output_fields=output_fields,
             **kwargs,
         )
+
         return ops
 
     @track
@@ -741,6 +742,7 @@ class Operations(Write):
             refresh=refresh,
             **kwargs,
         )
+
         return ops
 
     def apply_transformers_pipeline(
@@ -1044,6 +1046,7 @@ class Operations(Write):
             refresh=refresh,
             **kwargs,
         )
+
         return ops
 
     def analyze_text(

@@ -46,7 +46,11 @@ class SentimentTransform(TransformBase):
         self.positive_sentiment_name = positive_sentiment_name
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
-        self.output_fields = output_fields
+        self.output_fields = (
+            output_fields
+            if output_fields is not None
+            else [self._get_output_field(t) for t in text_fields]
+        )
         self.sensitivity = sensitivity
         self.strategy = strategy
         self.eps = eps
@@ -73,19 +77,6 @@ class SentimentTransform(TransformBase):
     @property
     def classifier(self):
         return self._classifier
-
-    # def _get_model(self):
-    #     try:
-    #         import transformers
-    #     except ModuleNotFoundError:
-    #         print(
-    #             "Need to install transformers by running `pip install -q transformers`."
-    #         )
-    #     self.classifier = transformers.pipeline(
-    #         "sentiment-analysis",
-    #         return_all_scores=True,
-    #         model="cardiffnlp/twitter-roberta-base-sentiment",
-    #     )
 
     def _get_label_mapping(self, task: str):
         # Note: this is specific to the current model
@@ -286,10 +277,6 @@ class SentimentTransform(TransformBase):
         # For each document, update the field
         sentiment_docs = [{"_id": d["_id"]} for d in documents]
         for i, t in enumerate(self.text_fields):
-            if self.output_fields is not None:
-                output_field = self.output_fields[i]
-            else:
-                output_field = self._get_output_field(t)
             sentiments = self.analyze_sentiment(
                 [
                     self.get_field(t, doc, missing_treatment="return_empty_string")
@@ -298,27 +285,6 @@ class SentimentTransform(TransformBase):
                 max_number_of_shap_documents=self.max_number_of_shap_documents,
                 min_abs_score=self.min_abs_score,
             )
+            output_field = self.output_fields[i]
             self.set_field_across_documents(output_field, sentiments, sentiment_docs)
         return sentiment_docs
-
-    # def analyze_sentiment(self, text, highlight:bool= True):
-    #     try:
-    #         from scipy.special import softmax
-    #     except ModuleNotFoundError:
-    #         print("Need to install scipy")
-    #     if not hasattr(self, "model"):
-    #         self._get_model()
-    #     text = self.preprocess(text)
-    #     encoded_input = self.tokenizer(text, return_tensors="pt")
-    #     output = self.model(**encoded_input)
-    #     scores = output[0][0].detach().numpy()
-    #     scores = softmax(scores)
-    #     ranking = np.argsort(scores)
-    #     ranking = ranking[::-1]
-    #     sentiment = self.label_mapping[ranking[0]]
-    #     score = np.round(float(scores[ranking[0]]), 4)
-    #     return {
-    #         "sentiment": sentiment,
-    #         "score": np.round(float(scores[ranking[0]]), 4),
-    #         "overall_sentiment_score": score if sentiment == "positive" else -score,
-    #     }
