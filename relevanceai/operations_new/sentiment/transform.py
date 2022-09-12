@@ -23,6 +23,8 @@ class SentimentTransform(TransformBase):
         output_fields: list = None,
         sensitivity: float = 0,
         device: int = None,
+        strategy: str = "value_max",
+        eps: float = 1e-9,
         **kwargs,
     ):
         """
@@ -46,6 +48,8 @@ class SentimentTransform(TransformBase):
         self.min_abs_score = min_abs_score
         self.output_fields = output_fields
         self.sensitivity = sensitivity
+        self.strategy = strategy
+        self.eps = eps
         self.device = self.get_transformers_device(device)
 
         import transformers
@@ -108,37 +112,97 @@ class SentimentTransform(TransformBase):
     def analyze_sentiment(
         self,
         texts: List[str],
-        highlight: bool = False,
-        positive_sentiment_name: str = "positive",
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
-        eps: float = 1e-9,
     ):
         logits = self.classifier(texts, truncation=True, max_length=512)
         scores = pd.DataFrame(
             {
-                "negative": self._get_scores(cls="negative", logits=logits),
-                "neutral": self._get_scores(cls="neutral", logits=logits),
-                "positive": self._get_scores(cls="positive", logits=logits),
+                "negative": self._get_scores(cls="LABEL_0", logits=logits),
+                "neutral": self._get_scores(cls="LABEL_1", logits=logits),
+                "positive": self._get_scores(cls="LABEL_2", logits=logits),
             }
         )
-        # this is the expected value
-        e_x = scores["negative"].values * -1
-        e_x += scores["positive"].values
 
-        idxmax = [scores.iloc[index].idxmax(-1) for index in range(len(texts))]
-        e_x[e_x == 0] += eps
+        if not self.highlight:
+            if self.strategy == "expected_value":
+                scores, labels = self._expected_value_scoring(
+                    scores=scores,
+                    texts=texts,
+                )
 
-        if not highlight:
+            elif self.strategy == "value_max":
+                scores, labels = self._value_max_scoring(
+                    scores=scores,
+                    texts=texts,
+                )
+
+            else:
+                raise ValueError
+
             updates = [
                 {
-                    "sentiment": idxmax[index],
-                    "overall_sentiment_score": e_x[index],
+                    "sentiment": scores[index],
+                    "overall_sentiment_score": labels[index],
                 }
                 for index in range(len(texts))
             ]
             return updates
 
+        else:
+            return self._shap_documents(
+                scores=scores,
+                texts=texts,
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
+            )
+
+    def _get_idxmax(self, scores: pd.DataFrame, texts: List[str]):
+        return [scores.iloc[index].idxmax(-1) for index in range(len(texts))]
+
+    def _get_value_max_scores(self, scores: pd.DataFrame):
+        negative_mask = scores["negative"].values > scores["positive"].values
+        positive_mask = scores["negative"].values <= scores["positive"].values
+        a_max = (
+            -scores["negative"].values * negative_mask
+            + scores["positive"].values * positive_mask
+        )
+        a_max[a_max == 0] += self.eps
+        return a_max
+
+    def _value_max_scoring(
+        self,
+        scores: pd.DataFrame,
+        texts: List[str],
+    ):
+        a_max = self._get_value_max_scores(scores=scores)
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
+        return a_max, idxmax
+
+    def _get_expected_value_score(self, scores: pd.DataFrame):
+        # this is the expected value
+        e_x = scores["negative"].values * -1
+        e_x += scores["positive"].values
+        e_x[e_x == 0] += self.eps
+        return e_x
+
+    def _expected_value_scoring(
+        self,
+        scores: pd.DataFrame,
+        texts: List[str],
+    ):
+        e_x = self._get_expected_value_score(scores=scores)
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
+        return e_x, idxmax
+
+    def _shap_documents(
+        self,
+        scores: pd.DataFrame,
+        texts,
+        max_number_of_shap_documents: int = None,
+        min_abs_score: float = 0.1,
+    ):
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
         shap_documents = [
             self.get_shap_values(
                 texts[index],
@@ -150,6 +214,8 @@ class SentimentTransform(TransformBase):
         ]
 
         max_scores = scores.values[np.argmax(scores.values, axis=-1)]
+        e_x = self._get_expected_value_score(scores=scores)
+
         updates = [
             {
                 "sentiment": idxmax[index],
@@ -172,6 +238,12 @@ class SentimentTransform(TransformBase):
                 raise MissingPackageError("shap")
             self._explainer = shap.Explainer(self.classifier)
             return self._explainer
+
+    def _calculate_overall_sentiment(self, score: float, label: str) -> float:
+        if label.lower().strip() == "positive":
+            return score
+        else:
+            return -score
 
     def get_shap_values(
         self,
@@ -223,7 +295,6 @@ class SentimentTransform(TransformBase):
                     self.get_field(t, doc, missing_treatment="return_empty_string")
                     for doc in documents
                 ],
-                highlight=self.highlight,
                 max_number_of_shap_documents=self.max_number_of_shap_documents,
                 min_abs_score=self.min_abs_score,
             )
