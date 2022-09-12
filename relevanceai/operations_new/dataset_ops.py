@@ -238,13 +238,6 @@ class Operations(Write):
             **kwargs,
         )
 
-        for i, field in enumerate(fields):
-            self.update_field_children(
-                field=field,
-                field_children=[ops.output_fields[i]],
-                category="vectorize-text",  # Should this be the workflow ID
-                metadata={},
-            )
         return ops
 
     @track
@@ -300,13 +293,6 @@ class Operations(Write):
             **kwargs,
         )
 
-        for i, field in enumerate(fields):
-            self.update_field_children(
-                field=field,
-                field_children=[ops.output_fields[i]],
-                category="vectorize_image",  # Should this be the workflow ID
-                metadata={},
-            )
         return ops
 
     @track
@@ -700,14 +686,6 @@ class Operations(Write):
             batched=batched,
             **kwargs,
         )
-
-        for i, field in enumerate(text_fields):
-            self.update_field_children(
-                field=field,
-                field_children=[ops.output_fields[i]],
-                category="sentiment",
-                metadata={"model_name": model_name},
-            )
         return ops
 
     def extract_emotion(
@@ -764,14 +742,6 @@ class Operations(Write):
             refresh=refresh,
             **kwargs,
         )
-
-        for i, field in enumerate(text_fields):
-            self.update_field_children(
-                field=field,
-                field_children=[ops.output_fields[i]],
-                category="emotion",
-                metadata={"model_name": model_name},
-            )
 
         return ops
 
@@ -1076,14 +1046,6 @@ class Operations(Write):
             refresh=refresh,
             **kwargs,
         )
-
-        for i, field in enumerate(text_fields):
-            self.update_field_children(
-                field=field,
-                field_children=[ops.output_fields[i]],
-                category="count_text",  # Should this be the workflow ID
-                metadata={},
-            )
 
         return ops
 
