@@ -8,6 +8,7 @@ from relevanceai._api.endpoints.datasets.documents import DocumentsClient
 from relevanceai._api.endpoints.datasets.monitor import MonitorClient
 from relevanceai._api.endpoints.datasets.tasks import TasksClient
 from relevanceai._api.endpoints.datasets.cluster import ClusterClient
+from relevanceai._api.endpoints.datasets.field_children import FieldChildrenClient
 
 
 class DatasetsClient(_Base):
@@ -18,6 +19,7 @@ class DatasetsClient(_Base):
         self.documents = DocumentsClient(credentials)
         self.monitor = MonitorClient(credentials)
         self.cluster = ClusterClient(credentials)
+        self.field_children = FieldChildrenClient(credentials)
 
         super().__init__(credentials)
 

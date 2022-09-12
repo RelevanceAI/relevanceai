@@ -43,7 +43,11 @@ class SentimentTransform(TransformBase):
         self.positive_sentiment_name = positive_sentiment_name
         self.max_number_of_shap_documents = max_number_of_shap_documents
         self.min_abs_score = min_abs_score
-        self.output_fields = output_fields
+        self.output_fields = (
+            output_fields
+            if output_fields is not None
+            else [self._get_output_field(t) for t in text_fields]
+        )
         self.sensitivity = sensitivity
         self.device = self.get_transformers_device(device)
 
@@ -206,10 +210,7 @@ class SentimentTransform(TransformBase):
         # For each document, update the field
         sentiment_docs = [{"_id": d["_id"]} for d in documents]
         for i, t in enumerate(self.text_fields):
-            if self.output_fields is not None:
-                output_field = self.output_fields[i]
-            else:
-                output_field = self._get_output_field(t)
+            output_field = self.output_fields[i]
             sentiments = [
                 self.analyze_sentiment(
                     self.get_field(t, doc, missing_treatment="return_empty_string"),
