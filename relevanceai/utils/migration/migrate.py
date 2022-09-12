@@ -97,4 +97,10 @@ def migrate_dataset(
         )
 
     tqdm.write("Centroids inserted!")
+
+    tqdm.write("Migrating Operations Metadata...")
+    metadata = old_dataset.metadata.to_dict()
+    new_dataset.insert_metadata(metadata)
+    tqdm.write("Operations Metadata Migrated!")
+
     tqdm.write("Finished migrating.")
