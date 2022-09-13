@@ -56,3 +56,6 @@ class FieldChildrenClient(_Base):
                 "metadata": metadata,
             },
         )
+
+    # make compatible with endpoint
+    update = update_field_children
