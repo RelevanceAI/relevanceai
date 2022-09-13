@@ -3,11 +3,7 @@ Labelling performs a vector search on the labels and fetches the closest
 max_number_of_labels.
 
 """
-from copy import deepcopy
-from tkinter import N
 from typing import Any, Dict, List
-
-from numpy import maximum
 
 from relevanceai.operations_new.transform_base import TransformBase
 

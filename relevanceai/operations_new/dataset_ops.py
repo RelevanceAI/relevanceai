@@ -1437,3 +1437,39 @@ class Operations(Write):
         )
 
         return ops
+
+    def survey_tagging(
+        self,
+        text_field: str,
+        labels: List[str],
+        output_field: str,
+        chunksize: int = 20,
+        refresh: bool = False,
+        filters: Optional[List[Dict[str, Any]]] = None,
+        minimum_score: float = 0.25,
+        maximum_number_of_labels: int = 5,
+        **kwargs,
+    ):
+
+        from relevanceai.operations_new.survey_tagging.ops import SurveyTagOps
+
+        ops = SurveyTagOps(
+            credentials=self.credentials,
+            labels=labels,
+            text_field=text_field,
+            minimum_score=minimum_score,
+            maximum_number_of_labels=maximum_number_of_labels,
+        )
+
+        ops.run(
+            self,
+            batched=True,
+            chunksize=chunksize,
+            filters=filters,
+            select_fields=[text_field],
+            output_fields=[output_field],
+            refresh=refresh,
+            **kwargs,
+        )
+
+        return ops
