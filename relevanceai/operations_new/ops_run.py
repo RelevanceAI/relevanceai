@@ -350,7 +350,13 @@ class PullTransformPush:
                 batch = self._get_transform_batch()
 
             if self.func is not None:
-                old_keys = [set(document.keys()) for document in batch]
+
+                # faster than deepcopy
+                old_batch = [
+                    {key: value for key, value in document.items()}
+                    for document in batch
+                ]
+
                 if self.func_lock is not None:
                     with self.func_lock:
                         try:
@@ -367,7 +373,7 @@ class PullTransformPush:
                         print(e)
                         new_batch = batch
 
-                batch = PullTransformPush._postprocess(new_batch, old_keys)
+                batch = PullTransformPush._postprocess(new_batch, old_batch)
 
             for document in batch:
                 self.pq.put(document)
@@ -416,7 +422,7 @@ class PullTransformPush:
     @staticmethod
     def _postprocess(
         new_batch: List[Dict[str, Any]],
-        old_keys: List[str],
+        old_batch: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         """
         Removes fields from `new_batch` that are present in the `old_keys` list.
@@ -425,10 +431,12 @@ class PullTransformPush:
         batch = [
             {
                 key: value
-                for key, value in new_batch[idx].items()
-                if key not in old_keys[idx] or key == "_id"
+                for key, value in new_document.items()
+                if key not in old_document.keys()
+                or value != old_document[key]
+                or key == "_id"
             }
-            for idx in range(len(new_batch))
+            for old_document, new_document in zip(old_batch, new_batch)
         ]
         return batch
 
