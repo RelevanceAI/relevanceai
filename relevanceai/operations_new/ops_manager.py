@@ -115,11 +115,11 @@ class OperationManager:
                         category=self.operation.name,  # Should this be the workflow ID
                         metadata={},
                     )
-        except:
+        except Exception as e:
             # TODO: rigorously test this with different operations
             # reason: `output_fields` are all calculated differently in
             # different spots for different operations
-            print("Error updating field children")
+            print(e)
 
     @staticmethod
     def clean(
