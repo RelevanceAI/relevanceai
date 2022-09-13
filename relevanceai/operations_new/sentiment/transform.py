@@ -2,9 +2,10 @@
 """
 
 # Running a function across each subcluster
+import pandas as pd
 import numpy as np
 import csv
-from typing import Optional
+from typing import Dict, List, Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
 from relevanceai.operations_new.transform_base import TransformBase
@@ -22,6 +23,8 @@ class SentimentTransform(TransformBase):
         output_fields: list = None,
         sensitivity: float = 0,
         device: int = None,
+        strategy: str = "value_max",
+        eps: float = 1e-9,
         **kwargs,
     ):
         """
@@ -49,6 +52,8 @@ class SentimentTransform(TransformBase):
             else [self._get_output_field(t) for t in text_fields]
         )
         self.sensitivity = sensitivity
+        self.strategy = strategy
+        self.eps = eps
         self.device = self.get_transformers_device(device)
 
         import transformers
@@ -73,19 +78,6 @@ class SentimentTransform(TransformBase):
     def classifier(self):
         return self._classifier
 
-    # def _get_model(self):
-    #     try:
-    #         import transformers
-    #     except ModuleNotFoundError:
-    #         print(
-    #             "Need to install transformers by running `pip install -q transformers`."
-    #         )
-    #     self.classifier = transformers.pipeline(
-    #         "sentiment-analysis",
-    #         return_all_scores=True,
-    #         model="cardiffnlp/twitter-roberta-base-sentiment",
-    #     )
-
     def _get_label_mapping(self, task: str):
         # Note: this is specific to the current model
         labels = []
@@ -100,62 +92,131 @@ class SentimentTransform(TransformBase):
     def label_mapping(self):
         return {"LABEL_0": "negative", "LABEL_1": "neutral", "LABEL_2": "positive"}
 
+    def _get_scores(
+        self, cls: str, logits: List[List[Dict[str, float]]]
+    ) -> List[float]:
+        return [
+            list(filter(lambda label: label["label"] == cls, logit))[0]["score"]
+            for logit in logits
+        ]
+
     def analyze_sentiment(
         self,
-        text,
-        highlight: bool = False,
-        positive_sentiment_name: str = "positive",
+        texts: List[str],
         max_number_of_shap_documents: Optional[int] = None,
         min_abs_score: float = 0.1,
     ):
-        if text is None:
-            return None
-        labels = self.classifier([str(text)], truncation=True, max_length=512)
-        ind_max = np.argmax([l["score"] for l in labels[0]])
-        sentiment = labels[0][ind_max]["label"]
-        max_score = labels[0][ind_max]["score"]
-        sentiment = self.label_mapping.get(sentiment, sentiment)
-        if sentiment.lower() == "neutral" and max_score > self.sensitivity:
-            overall_sentiment = 1e-5
-        elif sentiment.lower() == "neutral":
-            # get the next highest score
-            new_labels = labels[0][:ind_max] + labels[0][(ind_max + 1) :]
-            new_ind_max = np.argmax([l["score"] for l in new_labels])
-            new_max_score = new_labels[new_ind_max]["score"]
-            new_sentiment = new_labels[new_ind_max]["label"]
-            new_sentiment = self.label_mapping.get(new_sentiment, new_sentiment)
-            overall_sentiment = self._calculate_overall_sentiment(
-                new_max_score, new_sentiment
+        logits = self.classifier(texts, truncation=True, max_length=512)
+        scores = pd.DataFrame(
+            {
+                "negative": self._get_scores(cls="LABEL_0", logits=logits),
+                "neutral": self._get_scores(cls="LABEL_1", logits=logits),
+                "positive": self._get_scores(cls="LABEL_2", logits=logits),
+            }
+        )
+
+        if not self.highlight:
+            if self.strategy == "expected_value":
+                scores, labels = self._expected_value_scoring(
+                    scores=scores,
+                    texts=texts,
+                )
+
+            elif self.strategy == "value_max":
+                scores, labels = self._value_max_scoring(
+                    scores=scores,
+                    texts=texts,
+                )
+
+            else:
+                raise ValueError
+
+            updates = [
+                {
+                    "sentiment": scores[index],
+                    "overall_sentiment_score": labels[index],
+                }
+                for index in range(len(texts))
+            ]
+            return updates
+
+        else:
+            return self._shap_documents(
+                scores=scores,
+                texts=texts,
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
             )
 
-        else:
-            overall_sentiment = self._calculate_overall_sentiment(max_score, sentiment)
-        # Adjust to avoid bug
-        if overall_sentiment == 0:
-            overall_sentiment = 1e-5
-        if not highlight:
-            return {
-                "sentiment": sentiment,
-                "overall_sentiment_score": overall_sentiment,
-            }
-        shap_documents = self.get_shap_values(
-            text,
-            sentiment_ind=ind_max,
-            max_number_of_shap_documents=max_number_of_shap_documents,
-            min_abs_score=min_abs_score,
-        )
-        return {
-            "sentiment": sentiment,
-            "score": max_score,
-            "overall_sentiment": overall_sentiment,
-            "highlight_chunk_": shap_documents,
-        }
+    def _get_idxmax(self, scores: pd.DataFrame, texts: List[str]):
+        return [scores.iloc[index].idxmax(-1) for index in range(len(texts))]
 
-    def _calculate_overall_sentiment(self, score: float, sentiment: str):
-        if sentiment.lower().strip() == self.positive_sentiment_name:
-            return score
-        else:
-            return -score
+    def _get_value_max_scores(self, scores: pd.DataFrame):
+        negative_mask = scores["negative"].values > scores["positive"].values
+        positive_mask = scores["negative"].values <= scores["positive"].values
+        a_max = (
+            -scores["negative"].values * negative_mask
+            + scores["positive"].values * positive_mask
+        )
+        a_max[a_max == 0] += self.eps
+        return a_max
+
+    def _value_max_scoring(
+        self,
+        scores: pd.DataFrame,
+        texts: List[str],
+    ):
+        a_max = self._get_value_max_scores(scores=scores)
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
+        return a_max, idxmax
+
+    def _get_expected_value_score(self, scores: pd.DataFrame):
+        # this is the expected value
+        e_x = scores["negative"].values * -1
+        e_x += scores["positive"].values
+        e_x[e_x == 0] += self.eps
+        return e_x
+
+    def _expected_value_scoring(
+        self,
+        scores: pd.DataFrame,
+        texts: List[str],
+    ):
+        e_x = self._get_expected_value_score(scores=scores)
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
+        return e_x, idxmax
+
+    def _shap_documents(
+        self,
+        scores: pd.DataFrame,
+        texts,
+        max_number_of_shap_documents: int = None,
+        min_abs_score: float = 0.1,
+    ):
+        idxmax = self._get_idxmax(scores=scores, texts=texts)
+        shap_documents = [
+            self.get_shap_values(
+                texts[index],
+                sentiment_ind=idxmax[index],
+                max_number_of_shap_documents=max_number_of_shap_documents,
+                min_abs_score=min_abs_score,
+            )
+            for index in range(len(texts))
+        ]
+
+        max_scores = scores.values[np.argmax(scores.values, axis=-1)]
+        e_x = self._get_expected_value_score(scores=scores)
+
+        updates = [
+            {
+                "sentiment": idxmax[index],
+                "score": max_scores[index],
+                "overall_sentiment": e_x[index],
+                "highlight_chunk_": shap_documents[index],
+            }
+            for index in range(len(texts))
+        ]
+        return updates
 
     @property
     def explainer(self):
@@ -168,6 +229,12 @@ class SentimentTransform(TransformBase):
                 raise MissingPackageError("shap")
             self._explainer = shap.Explainer(self.classifier)
             return self._explainer
+
+    def _calculate_overall_sentiment(self, score: float, label: str) -> float:
+        if label.lower().strip() == "positive":
+            return score
+        else:
+            return -score
 
     def get_shap_values(
         self,
@@ -210,37 +277,14 @@ class SentimentTransform(TransformBase):
         # For each document, update the field
         sentiment_docs = [{"_id": d["_id"]} for d in documents]
         for i, t in enumerate(self.text_fields):
+            sentiments = self.analyze_sentiment(
+                [
+                    self.get_field(t, doc, missing_treatment="return_empty_string")
+                    for doc in documents
+                ],
+                max_number_of_shap_documents=self.max_number_of_shap_documents,
+                min_abs_score=self.min_abs_score,
+            )
             output_field = self.output_fields[i]
-            sentiments = [
-                self.analyze_sentiment(
-                    self.get_field(t, doc, missing_treatment="return_empty_string"),
-                    highlight=self.highlight,
-                    max_number_of_shap_documents=self.max_number_of_shap_documents,
-                    min_abs_score=self.min_abs_score,
-                )
-                for doc in documents
-            ]
             self.set_field_across_documents(output_field, sentiments, sentiment_docs)
         return sentiment_docs
-
-    # def analyze_sentiment(self, text, highlight:bool= True):
-    #     try:
-    #         from scipy.special import softmax
-    #     except ModuleNotFoundError:
-    #         print("Need to install scipy")
-    #     if not hasattr(self, "model"):
-    #         self._get_model()
-    #     text = self.preprocess(text)
-    #     encoded_input = self.tokenizer(text, return_tensors="pt")
-    #     output = self.model(**encoded_input)
-    #     scores = output[0][0].detach().numpy()
-    #     scores = softmax(scores)
-    #     ranking = np.argsort(scores)
-    #     ranking = ranking[::-1]
-    #     sentiment = self.label_mapping[ranking[0]]
-    #     score = np.round(float(scores[ranking[0]]), 4)
-    #     return {
-    #         "sentiment": sentiment,
-    #         "score": np.round(float(scores[ranking[0]]), 4),
-    #         "overall_sentiment_score": score if sentiment == "positive" else -score,
-    #     }

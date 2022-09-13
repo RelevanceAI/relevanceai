@@ -1,8 +1,5 @@
 ![Github Banner](assets/github_banner.png)
 
-
-[Join our slack channel!](https://join.slack.com/t/relevance-ai/shared_invite/zt-11fo8oush-dHPd57wamhoQ7J5arNv1mg)
-
 ## Relevance AI - The ML Platform for Unstructured Data Analysis 
 [![Documentation Status](https://readthedocs.org/projects/relevanceai/badge/?version=latest)](https://relevanceai.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)

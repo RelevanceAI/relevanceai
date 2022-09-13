@@ -2,6 +2,15 @@
 Workflows Client
 """
 from relevanceai.utils.base import _Base
+from enum import Enum
+from typing import Union
+
+class WorkflowStatus(Enum):
+    IN_PROGRESS: str = "InProgress"
+    COMPLETED: str = "Completed"
+    FAILED: str = "Failed"
+    STOPPING: str = "Stopping"
+    STOPPED: str = "Stopped"
 
 
 class WorkflowsClient(_Base):
@@ -60,11 +69,13 @@ class WorkflowsClient(_Base):
         metadata: dict,
         workflow_name: str,
         additional_information: str = "",
-        status: str = "complete",
+        status: Union[WorkflowStatus, str] = WorkflowStatus.IN_PROGRESS,
     ):
         """
         If status is complete, it triggers an email.
         """
+        if isinstance(status, WorkflowStatus):
+            status = status.value
         return self.make_http_request(
             f"/workflows/{workflow_id}/status",
             method="POST",
