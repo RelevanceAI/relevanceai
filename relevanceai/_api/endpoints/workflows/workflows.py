@@ -69,11 +69,13 @@ class WorkflowsClient(_Base):
         metadata: dict,
         workflow_name: str,
         additional_information: str = "",
-        status: WorkflowStatus = WorkflowStatus.IN_PROGRESS,
+        status: WorkflowStatus = WorkflowStatus.IN_PROGRESS.value,
     ):
         """
         If status is complete, it triggers an email.
         """
+        if isinstance(status, WorkflowStatus):
+            status = status.value
         return self.make_http_request(
             f"/workflows/{workflow_id}/status",
             method="POST",
