@@ -317,7 +317,14 @@ class PullTransformPush:
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
-            sample_documents = [queue.get(timeout=timeout) for _ in range(10)]
+            sample_documents = []
+            for _ in range(10):
+                try:
+                    sample_document = queue.get(timeout=timeout)
+                except:
+                    break
+                sample_documents.append(sample_document)
+
             self.push_chunksize = self._get_optimal_chunksize(sample_documents, "push")
             batch = sample_documents
 
@@ -346,11 +353,19 @@ class PullTransformPush:
                 old_keys = [set(document.keys()) for document in batch]
                 if self.func_lock is not None:
                     with self.func_lock:
-                        new_batch = self.func(
-                            batch, *self.func_args, **self.func_kwargs
-                        )
+                        try:
+                            new_batch = self.func(
+                                batch, *self.func_args, **self.func_kwargs
+                            )
+                        except Exception as e:
+                            print(e)
+                            new_batch = batch
                 else:
-                    new_batch = self.func(batch, **self.func_kwargs)
+                    try:
+                        new_batch = self.func(batch, **self.func_kwargs)
+                    except Exception as e:
+                        print(e)
+                        new_batch = batch
 
                 batch = PullTransformPush._postprocess(new_batch, old_keys)
 
@@ -498,7 +513,8 @@ class PullTransformPush:
         """
         Start the worker threads and then join them in reversed order.
         """
-        self.pull_thread.start()
+
+        # Start threads
         while True:
             if not self.tq.empty():
                 for thread in self.update_threads:
@@ -510,6 +526,7 @@ class PullTransformPush:
                     thread.start()
                 break
 
+        # Try to join if not running in background
         if not self.run_in_background:
             for thread in self.push_threads:
                 thread.join()
