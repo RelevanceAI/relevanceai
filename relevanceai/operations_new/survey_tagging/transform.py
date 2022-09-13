@@ -7,7 +7,7 @@ import re
 import itertools
 import numpy as np
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from sentence_splitter import SentenceSplitter
 
@@ -40,23 +40,23 @@ class SurveyTagTransform(TransformBase):
         except:
             raise ValueError("Error Loading CrossEncoder Model")
 
-    def create_prediction(
-        premise, topic, question="Why is that your main company for equipment hire?"
-    ):
-        prediction = f"About {topic}."
-        return prediction
-
     @staticmethod
     def softmax(x):
         return np.exp(x) / sum(np.exp(x))
 
-    def create_prompt(self, question, sentence, topic, verbose=False):
-        prompt = (question + sentence.lower(), self.create_prediction(sentence, topic))
-        if verbose:
-            print(prompt)
+    @staticmethod
+    def create_prediction(topic: str) -> str:
+        prediction = f"About {topic}."
+        return prediction
+
+    def create_prompt(self, sentence: str, topic: str) -> Tuple[str, str]:
+        prompt = (
+            self.survey_question + sentence.lower(),
+            SurveyTagTransform.create_prediction(topic),
+        )
         return prompt
 
-    def split_text(self, text):
+    def split_text(self, text: str) -> List[str]:
         # Add an edge case for text splitting
         split_text = re.split("[?!]", text)
         all_text = itertools.chain.from_iterable(
@@ -82,7 +82,7 @@ class SurveyTagTransform(TransformBase):
                 break
             scores = self.model.predict(
                 [
-                    self.create_prompt(self.survey_question, sent, topic, verbose=False)
+                    self.create_prompt(sent, topic)
                     for i, topic in enumerate(labels)
                     if topic not in [t["label"] for t in tags]
                 ]
@@ -90,7 +90,7 @@ class SurveyTagTransform(TransformBase):
             entailments = [
                 {
                     "prediction": self.LABEL_MAPPING[score_max],
-                    "score": self.softmax(scores[i])[2],
+                    "score": SurveyTagTransform.softmax(scores[i])[2],
                 }
                 for i, score_max in enumerate(scores.argmax(axis=1))
             ]
@@ -104,9 +104,7 @@ class SurveyTagTransform(TransformBase):
                             "score": doc["score"],
                         }
                     )
-            if verbose:
-                for t in tags:
-                    print(t)
+
             new_tags = [
                 t
                 for t in tags
