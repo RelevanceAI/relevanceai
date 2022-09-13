@@ -90,7 +90,7 @@ class OperationManager:
         if hasattr(self.operation, "select_fields"):
             # Based on the
             for i, field in enumerate(self.operation.select_fields):
-                self.update_field_children(
+                self.dataset.update_field_children(
                     field=field,
                     field_children=[self.operation.output_fields[i]],
                     category=self.operation.name,  # Should this be the workflow ID
@@ -99,7 +99,7 @@ class OperationManager:
         elif hasattr(self.operation, "fields"):
             # Based on the
             for i, field in enumerate(self.operation.fields):
-                self.update_field_children(
+                self.dataset.update_field_children(
                     field=field,
                     field_children=[self.operation.output_fields[i]],
                     category=self.operation.name,  # Should this be the workflow ID
@@ -108,7 +108,7 @@ class OperationManager:
         elif hasattr(self.operation, "text_fields"):
             # Based on the
             for i, field in enumerate(self.operation.text_fields):
-                self.update_field_children(
+                self.dataset.update_field_children(
                     field=field,
                     field_children=[self.operation.output_fields[i]],
                     category=self.operation.name,  # Should this be the workflow ID
