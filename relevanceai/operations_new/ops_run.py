@@ -2,6 +2,7 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
+from copy import deepcopy
 import sys
 import psutil
 import threading
@@ -350,7 +351,7 @@ class PullTransformPush:
                 batch = self._get_transform_batch()
 
             if self.func is not None:
-                old_batch = batch
+                old_batch = deepcopy(batch)
                 if self.func_lock is not None:
                     with self.func_lock:
                         try:
@@ -426,7 +427,9 @@ class PullTransformPush:
             {
                 key: value
                 for key, value in new_document.items()
-                if key not in old_document.keys() or value != new_document[key]
+                if key not in old_document.keys()
+                or value != old_document[key]
+                or key == "_id"
             }
             for old_document, new_document in zip(old_batch, new_batch)
         ]
