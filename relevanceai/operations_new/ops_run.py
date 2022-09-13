@@ -2,7 +2,6 @@
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
-from copy import deepcopy
 import sys
 import psutil
 import threading
@@ -351,7 +350,13 @@ class PullTransformPush:
                 batch = self._get_transform_batch()
 
             if self.func is not None:
-                old_batch = deepcopy(batch)
+
+                # faster than deepcopy
+                old_batch = [
+                    {key: value for key, value in document.items()}
+                    for document in batch
+                ]
+
                 if self.func_lock is not None:
                     with self.func_lock:
                         try:
