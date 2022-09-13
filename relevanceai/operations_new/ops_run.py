@@ -350,7 +350,13 @@ class PullTransformPush:
                 batch = self._get_transform_batch()
 
             if self.func is not None:
-                old_keys = [set(document.keys()) for document in batch]
+
+                # faster than deepcopy
+                old_batch = [
+                    {key: value for key, value in document.items()}
+                    for document in batch
+                ]
+
                 if self.func_lock is not None:
                     with self.func_lock:
                         try:
@@ -367,7 +373,7 @@ class PullTransformPush:
                         print(e)
                         new_batch = batch
 
-                batch = PullTransformPush._postprocess(new_batch, old_keys)
+                batch = PullTransformPush._postprocess(new_batch, old_batch)
 
             for document in batch:
                 self.pq.put(document)
@@ -416,20 +422,29 @@ class PullTransformPush:
     @staticmethod
     def _postprocess(
         new_batch: List[Dict[str, Any]],
-        old_keys: List[str],
+        old_batch: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
         """
         Removes fields from `new_batch` that are present in the `old_keys` list.
         Necessary to avoid bloating the upload payload with unnecesary information.
         """
-        batch = [
-            {
-                key: value
-                for key, value in new_batch[idx].items()
-                if key not in old_keys[idx] or key == "_id"
-            }
-            for idx in range(len(new_batch))
-        ]
+        batch = []
+        for old_document, new_document in zip(old_batch, new_batch):
+            document: Dict[str, Any] = {}
+            new_fields = Dataset.list_doc_fields(new_document)
+            old_fields = Dataset.list_doc_fields(old_document)
+            for field in new_fields:
+                if (
+                    field not in old_fields
+                    or (
+                        Dataset.get_field(field, new_document)
+                        != Dataset.get_field(field, old_document)
+                    )
+                    or field == "_id"
+                ):
+                    Dataset.set_field(field, document, new_document[field])
+            batch.append(document)
+
         return batch
 
     @staticmethod
