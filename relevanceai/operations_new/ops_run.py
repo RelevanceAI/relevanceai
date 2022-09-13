@@ -8,6 +8,7 @@ import threading
 import multiprocessing as mp
 import warnings
 
+from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
 from relevanceai.constants.constants import CONFIG
@@ -350,12 +351,7 @@ class PullTransformPush:
                 batch = self._get_transform_batch()
 
             if self.func is not None:
-
-                # faster than deepcopy
-                old_batch = [
-                    {key: value for key, value in document.items()}
-                    for document in batch
-                ]
+                old_batch = deepcopy(batch)
 
                 if self.func_lock is not None:
                     with self.func_lock:
@@ -428,16 +424,19 @@ class PullTransformPush:
         Removes fields from `new_batch` that are present in the `old_keys` list.
         Necessary to avoid bloating the upload payload with unnecesary information.
         """
-        batch = [
-            {
-                key: value
-                for key, value in new_document.items()
-                if key not in old_document.keys()
-                or value != old_document[key]
-                or key == "_id"
-            }
-            for old_document, new_document in zip(old_batch, new_batch)
-        ]
+        batch = []
+        for old_document, new_document in zip(old_batch, new_batch):
+            document: Dict[str, Any] = {}
+            new_fields = Dataset.list_doc_fields(new_document)
+            old_fields = Dataset.list_doc_fields(old_document)
+            for field in new_fields:
+                old_field = Dataset.get_field(field, old_document)
+                new_field = Dataset.get_field(field, new_document)
+                field_diff = old_field != new_field
+                if field not in old_fields or field_diff or field == "_id":
+                    Dataset.set_field(field, document, new_field)
+            batch.append(document)
+
         return batch
 
     @staticmethod
