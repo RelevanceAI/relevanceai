@@ -515,6 +515,7 @@ class PullTransformPush:
         """
 
         # Start threads
+        self.pull_thread.start()
         while True:
             if not self.tq.empty():
                 for thread in self.update_threads:
