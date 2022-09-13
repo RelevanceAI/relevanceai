@@ -7,7 +7,7 @@ import re
 import itertools
 import numpy as np
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from sentence_splitter import SentenceSplitter
 
@@ -23,12 +23,18 @@ class SurveyTagTransform(TransformBase):
         alias: str,
         survey_question: str,
         taxonomy_labels: List[str],
+        output_field: Optional[str] = None,
         maximum_tags: int = 5,
     ):
 
         self.splitter = SentenceSplitter(language="en")
         self.text_field = text_field
         self.survey_question = survey_question
+        self.output_field = (
+            output_field
+            if output_field is not None
+            else f"_surveytag_.{text_field}.{alias}"
+        )
         self.taxonomy_labels = taxonomy_labels
         self.output_field = f"_surveytag_.{text_field}.{alias}"
         self.maximum_tags = maximum_tags
@@ -64,12 +70,7 @@ class SurveyTagTransform(TransformBase):
         )
         return list(all_text)
 
-    def _get_tags(
-        self,
-        sentence: str,
-        minimum_score: float = 0.1,
-        verbose: bool = False,
-    ):
+    def _get_tags(self, sentence: str, minimum_score: float = 0.1):
         sentences = self.split_text(text=sentence)
 
         entailments = []
@@ -125,7 +126,7 @@ class SurveyTagTransform(TransformBase):
     def _relabel(self, documents: List[Dict[str, Any]]):
         for document in documents:
             text = str(self.get_field(self.text_field, document))
-            tags = self._get_tags(text, verbose=False)
+            tags = self._get_tags(text)
             self.set_field(self.output_field, document, tags)
         return documents
 

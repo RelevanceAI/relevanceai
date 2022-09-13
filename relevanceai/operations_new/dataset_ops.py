@@ -1442,7 +1442,7 @@ class Operations(Write):
         self,
         text_field: str,
         labels: List[str],
-        output_field: str,
+        output_field: Optional[str] = None,
         chunksize: int = 20,
         refresh: bool = False,
         filters: Optional[List[Dict[str, Any]]] = None,
@@ -1458,6 +1458,7 @@ class Operations(Write):
             labels=labels,
             text_field=text_field,
             minimum_score=minimum_score,
+            output_field=output_field,
             maximum_number_of_labels=maximum_number_of_labels,
         )
 
