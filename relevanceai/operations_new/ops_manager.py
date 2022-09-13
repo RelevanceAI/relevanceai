@@ -87,33 +87,39 @@ class OperationManager:
         """We temporarily store the default parent child relationship
         where possible
         """
-        if hasattr(self.operation, "select_fields"):
-            # Based on the
-            for i, field in enumerate(self.operation.select_fields):
-                self.dataset.update_field_children(
-                    field=field,
-                    field_children=[self.operation.output_fields[i]],
-                    category=self.operation.name,  # Should this be the workflow ID
-                    metadata={},
-                )
-        elif hasattr(self.operation, "fields"):
-            # Based on the
-            for i, field in enumerate(self.operation.fields):
-                self.dataset.update_field_children(
-                    field=field,
-                    field_children=[self.operation.output_fields[i]],
-                    category=self.operation.name,  # Should this be the workflow ID
-                    metadata={},
-                )
-        elif hasattr(self.operation, "text_fields"):
-            # Based on the
-            for i, field in enumerate(self.operation.text_fields):
-                self.dataset.update_field_children(
-                    field=field,
-                    field_children=[self.operation.output_fields[i]],
-                    category=self.operation.name,  # Should this be the workflow ID
-                    metadata={},
-                )
+        try:
+            if hasattr(self.operation, "select_fields"):
+                # Based on the
+                for i, field in enumerate(self.operation.select_fields):
+                    self.dataset.update_field_children(
+                        field=field,
+                        field_children=[self.operation.output_fields[i]],
+                        category=self.operation.name,  # Should this be the workflow ID
+                        metadata={},
+                    )
+            elif hasattr(self.operation, "fields"):
+                # Based on the
+                for i, field in enumerate(self.operation.fields):
+                    self.dataset.update_field_children(
+                        field=field,
+                        field_children=[self.operation.output_fields[i]],
+                        category=self.operation.name,  # Should this be the workflow ID
+                        metadata={},
+                    )
+            elif hasattr(self.operation, "text_fields"):
+                # Based on the
+                for i, field in enumerate(self.operation.text_fields):
+                    self.dataset.update_field_children(
+                        field=field,
+                        field_children=[self.operation.output_fields[i]],
+                        category=self.operation.name,  # Should this be the workflow ID
+                        metadata={},
+                    )
+        except:
+            # TODO: rigorously test this with different operations
+            # reason: `output_fields` are all calculated differently in
+            # different spots for different operations
+            print("Error updating field children")
 
     @staticmethod
     def clean(
