@@ -428,16 +428,23 @@ class PullTransformPush:
         Removes fields from `new_batch` that are present in the `old_keys` list.
         Necessary to avoid bloating the upload payload with unnecesary information.
         """
-        batch = [
-            {
-                key: value
-                for key, value in new_document.items()
-                if key not in old_document.keys()
-                or value != old_document[key]
-                or key == "_id"
-            }
-            for old_document, new_document in zip(old_batch, new_batch)
-        ]
+        batch = []
+        for old_document, new_document in zip(old_batch, new_batch):
+            document: Dict[str, Any] = {}
+            new_fields = Dataset.list_doc_fields(new_document)
+            old_fields = Dataset.list_doc_fields(old_document)
+            for field in new_fields:
+                if (
+                    field not in old_fields
+                    or (
+                        Dataset.get_field(field, new_document)
+                        != Dataset.get_field(field, old_document)
+                    )
+                    or field == "_id"
+                ):
+                    Dataset.set_field(field, document, new_document[field])
+            batch.append(document)
+
         return batch
 
     @staticmethod
