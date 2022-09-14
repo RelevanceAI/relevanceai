@@ -550,6 +550,12 @@ class PullTransformPush:
                 thread.join()
             self.pull_thread.join()
 
+    def _init_timer_thread(self):
+        return
+
+    def _run_timer_thread(self):
+        return
+
     def run(self) -> List[str]:
         """
         (Main Method)
@@ -558,8 +564,10 @@ class PullTransformPush:
         return the _ids of any failed documents
         """
         if self.ndocs > 0:
+            self._init_timer_thread()
             self._init_progress_bars()
             self._init_worker_threads()
+            self._run_timer_thread()
             self._run_worker_threads()
 
         return list(self.failed_frontier.keys())
