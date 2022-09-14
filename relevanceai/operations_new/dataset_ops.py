@@ -629,9 +629,13 @@ class Operations(Write):
             if key in kwargs:
                 run_kwargs[key] = kwargs.pop(key)
 
+        if "credentials" not in kwargs:
+            kwargs["credentials"] = self.credentials
+
         cluster_ops = BatchClusterOps(
             model=model,
             alias=alias,
+            dataset_id=self.dataset_id,
             vector_fields=vector_fields,
             model_kwargs=model_kwargs,
             **kwargs,

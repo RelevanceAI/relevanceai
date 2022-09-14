@@ -427,14 +427,22 @@ class PullTransformPush:
         batch = []
         for old_document, new_document in zip(old_batch, new_batch):
             document: Dict[str, Any] = {}
-            new_fields = Dataset.list_doc_fields(new_document)
-            old_fields = Dataset.list_doc_fields(old_document)
+            new_fields = Dataset.list_doc_fields(doc=new_document)
+            old_fields = Dataset.list_doc_fields(doc=old_document)
             for field in new_fields:
-                old_field = Dataset.get_field(field, old_document)
-                new_field = Dataset.get_field(field, new_document)
-                field_diff = old_field != new_field
-                if field not in old_fields or field_diff or field == "_id":
-                    Dataset.set_field(field, document, new_field)
+                old_value = Dataset.get_field(
+                    field=field,
+                    doc=old_document,
+                    missing_treatment="return_none",
+                )
+                new_value = Dataset.get_field(
+                    field=field,
+                    doc=new_document,
+                    missing_treatment="return_none",
+                )
+                value_diff = old_value != new_value
+                if field not in old_fields or value_diff or field == "_id":
+                    Dataset.set_field(field=field, doc=document, value=new_value)
             batch.append(document)
 
         return batch
