@@ -9,6 +9,7 @@ from relevanceai.operations_new.cluster.batch.transform import BatchClusterTrans
 from relevanceai.operations_new.cluster.batch.models.base import BatchClusterModelBase
 
 from relevanceai.constants.links import EXPLORER_APP_LINK
+from relevanceai.operations_new.ops_manager import OperationManager
 from relevanceai.operations_new.ops_run import PullTransformPush
 
 
@@ -80,33 +81,34 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         """
         from tqdm.auto import tqdm
 
-        tqdm.write("\nFitting Model...")
-        ptp = PullTransformPush(
-            dataset=dataset,
-            func=self.fit,
-            pull_chunksize=chunksize,
-            push_chunksize=chunksize,
-            filters=filters,
-            select_fields=self.vector_fields,
-            show_progress_bar=True,
-            **kwargs
-        )
-        ptp.run()
+        with OperationManager(dataset=dataset, operation=self) as dataset:
+            tqdm.write("\nFitting Model...")
+            ptp = PullTransformPush(
+                dataset=dataset,
+                func=self.fit,
+                pull_chunksize=chunksize,
+                push_chunksize=chunksize,
+                filters=filters,
+                select_fields=self.vector_fields,
+                show_progress_bar=True,
+                **kwargs
+            )
+            ptp.run()
 
-        kwargs.pop("transform_chunksize")
+            kwargs.pop("transform_chunksize")
 
-        tqdm.write("\nPredicting Documents...")
-        ptp = PullTransformPush(
-            dataset=dataset,
-            func=self.transform,
-            pull_chunksize=chunksize,
-            push_chunksize=chunksize,
-            filters=filters,
-            select_fields=self.vector_fields,
-            show_progress_bar=True,
-            **kwargs
-        )
-        ptp.run()
+            tqdm.write("\nPredicting Documents...")
+            ptp = PullTransformPush(
+                dataset=dataset,
+                func=self.transform,
+                pull_chunksize=chunksize,
+                push_chunksize=chunksize,
+                filters=filters,
+                select_fields=self.vector_fields,
+                show_progress_bar=True,
+                **kwargs
+            )
+            ptp.run()
 
         tqdm.write("\nConfigure your new explore app below:")
         tqdm.write(EXPLORER_APP_LINK.format(dataset.dataset_id))
