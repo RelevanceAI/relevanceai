@@ -430,8 +430,8 @@ class PullTransformPush:
             new_fields = Dataset.list_doc_fields(new_document)
             old_fields = Dataset.list_doc_fields(old_document)
             for field in new_fields:
-                old_field = Dataset.get_field(field, old_document)
-                new_field = Dataset.get_field(field, new_document)
+                old_field = Dataset.get_field(field, old_document, "return_none")
+                new_field = Dataset.get_field(field, new_document, "return_none")
                 field_diff = old_field != new_field
                 if field not in old_fields or field_diff or field == "_id":
                     Dataset.set_field(field, document, new_field)
