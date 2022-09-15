@@ -17,7 +17,7 @@ class VectorizeTransform(TransformBase):
         fields: List[str],
         models: List[VectorizeModelBase],
         output_fields: list = None,
-        **kwargs
+        **kwargs,
     ):
         self.fields = fields
         self.models = [self._get_model(model) for model in models]
@@ -30,10 +30,19 @@ class VectorizeTransform(TransformBase):
                 raise NotImplementedError(
                     "Output fields only supported for 1 model for now."
                 )
-        self.output_fields = output_fields
+
+        self.output_fields = (
+            output_fields
+            if output_fields is not None
+            else [self._get_output_field(t) for t in fields]
+        )
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    @staticmethod
+    def _get_output_field(t):
+        return f"{t}_vector_"
 
     @property
     def name(self):
