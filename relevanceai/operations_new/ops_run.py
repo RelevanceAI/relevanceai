@@ -617,7 +617,7 @@ class PullTransformPush:
         self.tq.join_thread()
         self.pq.join_thread()
 
-    def run(self) -> List[str]:
+    def run(self) -> Dict[str, Any]:
         """
         (Main Method)
         Do the pulling, the updating, and of course, the pushing.
@@ -638,7 +638,10 @@ class PullTransformPush:
                 self._join_worker_threads()
                 self._flush_queues()
 
-        return list(self.failed_frontier.keys())
+        return {
+            "timed_out": self.timeout_event.is_set(),
+            "failed_documents": list(self.failed_frontier.keys()),
+        }
 
 
 def arguments(cls: Type[PullTransformPush]):
