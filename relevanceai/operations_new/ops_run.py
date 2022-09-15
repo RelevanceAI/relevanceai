@@ -3,6 +3,7 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
 import sys
+import time
 import psutil
 import threading
 import multiprocessing as mp
@@ -32,7 +33,7 @@ class PullTransformPush:
     push_bar: tqdm
 
     pull_thread: threading.Thread
-    update_threads: List[threading.Thread]
+    transform_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
     pull_dataset: Dataset
@@ -68,6 +69,7 @@ class PullTransformPush:
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
+        time_limit: Optional[int] = 60 * 110,
     ):
         """
         Buffer size:
@@ -200,6 +202,11 @@ class PullTransformPush:
         self.retry_count = retry_count
         self.after_id = after_id
 
+        # time limit is 1hr 50mins if not set, this is to leave 10mins at the end
+        # of sagemaker job to send workflow status email
+        self.time_limit = time_limit
+        self.time_limit_event = threading.Event()
+
     def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
         """
         Get average size of a document in memory.
@@ -232,7 +239,7 @@ class PullTransformPush:
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[List[str], None] = self.after_id
 
-        while True:
+        while not self.time_limit_event.is_set():
             current_count = self.pull_bar.n
 
             if self.pull_chunksize is None:
@@ -346,7 +353,7 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.transform_count < self.ndocs:
+        while self.transform_count < self.ndocs and not self.time_limit_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
 
@@ -461,7 +468,7 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        while self.push_count < self.ndocs:
+        while self.push_count < self.ndocs and not self.time_limit_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
 
@@ -516,7 +523,7 @@ class PullTransformPush:
         Initialise the worker threads for each process
         """
         self.pull_thread = threading.Thread(target=self._pull)
-        self.update_threads = [
+        self.transform_threads = [
             threading.Thread(target=self._transform)
             for _ in range(self.transform_workers)
         ]
@@ -526,14 +533,14 @@ class PullTransformPush:
 
     def _run_worker_threads(self):
         """
-        Start the worker threads and then join them in reversed order.
+        Start the worker threads
         """
 
         # Start threads
         self.pull_thread.start()
         while True:
             if not self.tq.empty():
-                for thread in self.update_threads:
+                for thread in self.transform_threads:
                     thread.start()
                 break
         while True:
@@ -542,19 +549,72 @@ class PullTransformPush:
                     thread.start()
                 break
 
+    def _join_worker_threads(self, timeout: Optional[int] = None):
+        """
+        ...and then join them in reversed order.
+        """
+
         # Try to join if not running in background
         if not self.run_in_background:
             for thread in self.push_threads:
-                thread.join()
-            for thread in self.update_threads:
-                thread.join()
-            self.pull_thread.join()
+                thread.join(timeout=timeout)
+            for thread in self.transform_threads:
+                thread.join(timeout=timeout)
+            self.pull_thread.join(timeout=timeout)
 
-    def _init_timer_thread(self):
-        return
+    def _threads_are_alive(self) -> True:
+        """
+        Poll all active trheads to check if they are alive
+        """
+        if self.pull_thread.is_alive():
+            return True
+        for thread in self.transform_threads:
+            if thread.is_alive():
+                return True
+        for thread in self.push_threads:
+            if thread.is_alive():
+                return True
+        return False
 
-    def _run_timer_thread(self):
-        return
+    def _run_timer(self):
+        start_time = time.time()
+        while True:
+            current_time = time.time()
+            if (current_time - start_time) >= self.time_limit:
+                tqdm.write("Time Limit Exceeded")
+                tqdm.write("Exiting Operation...")
+                break
+
+            if not self._threads_are_alive():
+                break
+
+            time.sleep(5)
+
+        with self.general_lock:
+            self.time_limit_event.set()
+
+    def _flush_queues(self):
+        """
+        Gets all items in both queues to avoid
+        BrokenPipeError when calling queue.close()
+        """
+        while True:
+            try:
+                self.tq.get(timeout=0.01)
+            except:
+                break
+
+        while True:
+            try:
+                self.pq.get(timeout=0.01)
+            except:
+                break
+
+        self.tq.close()
+        self.pq.close()
+
+        self.tq.join_thread()
+        self.pq.join_thread()
 
     def run(self) -> List[str]:
         """
@@ -563,12 +623,19 @@ class PullTransformPush:
 
         return the _ids of any failed documents
         """
+
         if self.ndocs > 0:
-            self._init_timer_thread()
             self._init_progress_bars()
             self._init_worker_threads()
-            self._run_timer_thread()
             self._run_worker_threads()
+
+            if self.time_limit is None:
+                self._join_worker_threads()
+
+            else:
+                self._run_timer()  # Starts the timer
+                self._join_worker_threads()
+                self._flush_queues()
 
         return list(self.failed_frontier.keys())
 
