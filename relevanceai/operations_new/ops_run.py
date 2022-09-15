@@ -61,7 +61,6 @@ class PullTransformPush:
         show_pull_progress_bar: bool = True,
         show_transform_progress_bar: bool = True,
         show_push_progress_bar: bool = True,
-        timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
@@ -69,7 +68,7 @@ class PullTransformPush:
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
-        time_limit: Optional[int] = 60 * 110,
+        timeout: Optional[int] = 60 * 110,
     ):
         """
         Buffer size:
@@ -121,7 +120,6 @@ class PullTransformPush:
         if func is None:
             tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
-        self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
 
         self.filters = [] if filters is None else filters
@@ -204,8 +202,8 @@ class PullTransformPush:
 
         # time limit is 1hr 50mins if not set, this is to leave 10mins at the end
         # of sagemaker job to send workflow status email
-        self.time_limit = time_limit
-        self.time_limit_event = threading.Event()
+        self.timeout = timeout
+        self.timeout_event = threading.Event()
 
     def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
         """
@@ -239,7 +237,7 @@ class PullTransformPush:
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[List[str], None] = self.after_id
 
-        while not self.time_limit_event.is_set():
+        while not self.timeout_event.is_set():
             current_count = self.pull_bar.n
 
             if self.pull_chunksize is None:
@@ -353,7 +351,7 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.transform_count < self.ndocs and not self.time_limit_event.is_set():
+        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
 
@@ -468,7 +466,7 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        while self.push_count < self.ndocs and not self.time_limit_event.is_set():
+        while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
 
@@ -582,10 +580,10 @@ class PullTransformPush:
             current_time = time.time()
 
             # check if time limit was exceeded
-            if (current_time - start_time) >= self.time_limit:
+            if (current_time - start_time) >= self.timeout:
                 tqdm.write("Time Limit Exceeded")
                 with self.general_lock:
-                    self.time_limit_event.set()
+                    self.timeout_event.set()
                 tqdm.write("Exiting Operation...")
                 break
 
@@ -632,7 +630,7 @@ class PullTransformPush:
             self._init_worker_threads()
             self._start_worker_threads()
 
-            if self.time_limit is None:
+            if self.timeout is None:
                 self._join_worker_threads()
 
             else:
