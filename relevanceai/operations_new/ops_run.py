@@ -68,7 +68,7 @@ class PullTransformPush:
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
-        timeout: Optional[int] = 60 * 110,
+        timeout: Optional[int] = None,
     ):
         """
         Buffer size:
