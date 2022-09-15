@@ -531,7 +531,7 @@ class PullTransformPush:
             threading.Thread(target=self._push) for _ in range(self.push_workers)
         ]
 
-    def _run_worker_threads(self):
+    def _start_worker_threads(self):
         """
         Start the worker threads
         """
@@ -630,7 +630,7 @@ class PullTransformPush:
         if self.ndocs > 0:
             self._init_progress_bars()
             self._init_worker_threads()
-            self._run_worker_threads()
+            self._start_worker_threads()
 
             if self.time_limit is None:
                 self._join_worker_threads()
