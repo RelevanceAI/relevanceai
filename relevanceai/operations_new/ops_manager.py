@@ -1,3 +1,4 @@
+import traceback
 from typing import List, Dict, Any, Optional
 
 from relevanceai.dataset import Dataset
@@ -117,7 +118,6 @@ class OperationManager:
             # TODO: rigorously test this with different operations
             # reason: `output_fields` are all calculated differently in
             # different spots for different operations
-            import traceback
 
             traceback.print_exc()
 
