@@ -5,6 +5,7 @@ from relevanceai.utils.base import _Base
 from enum import Enum
 from typing import Union
 
+
 class WorkflowStatus(Enum):
     IN_PROGRESS: str = "InProgress"
     COMPLETED: str = "Completed"

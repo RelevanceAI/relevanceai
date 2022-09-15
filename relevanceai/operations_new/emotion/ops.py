@@ -17,7 +17,10 @@ class EmotionOps(OperationAPIBase, EmotionTransform):
     ):
         self.model_name = model_name
         self.text_fields = text_fields
-        self.output_fields = output_fields
+        if output_fields is not None:
+            self.output_fields = output_fields
+        else:
+            self.output_fields = [self._generate_output_field(t) for t in text_fields]
         self.min_score = min_score
         super().__init__(**kwargs)
 

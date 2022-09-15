@@ -88,38 +88,38 @@ class OperationManager:
         where possible
         """
         try:
-            if hasattr(self.operation, "select_fields"):
-                # Based on the
-                for i, field in enumerate(self.operation.select_fields):
-                    self.dataset.update_field_children(
-                        field=field,
-                        field_children=[self.operation.output_fields[i]],
-                        category=self.operation.name,  # Should this be the workflow ID
-                        metadata={},
-                    )
-            elif hasattr(self.operation, "fields"):
-                # Based on the
-                for i, field in enumerate(self.operation.fields):
-                    self.dataset.update_field_children(
-                        field=field,
-                        field_children=[self.operation.output_fields[i]],
-                        category=self.operation.name,  # Should this be the workflow ID
-                        metadata={},
-                    )
-            elif hasattr(self.operation, "text_fields"):
-                # Based on the
-                for i, field in enumerate(self.operation.text_fields):
-                    self.dataset.update_field_children(
-                        field=field,
-                        field_children=[self.operation.output_fields[i]],
-                        category=self.operation.name,  # Should this be the workflow ID
-                        metadata={},
-                    )
+            if hasattr(self.operation, "output_fields"):
+                if hasattr(self.operation, "select_fields"):
+                    for i, field in enumerate(self.operation.select_fields):
+                        self.dataset.update_field_children(
+                            field=field,
+                            field_children=[self.operation.output_fields[i]],
+                            category=self.operation.name,  # Should this be the workflow ID
+                            metadata={},
+                        )
+                elif hasattr(self.operation, "fields"):
+                    for i, field in enumerate(self.operation.fields):
+                        self.dataset.update_field_children(
+                            field=field,
+                            field_children=[self.operation.output_fields[i]],
+                            category=self.operation.name,  # Should this be the workflow ID
+                            metadata={},
+                        )
+                elif hasattr(self.operation, "text_fields"):
+                    for i, field in enumerate(self.operation.text_fields):
+                        self.dataset.update_field_children(
+                            field=field,
+                            field_children=[self.operation.output_fields[i]],
+                            category=self.operation.name,  # Should this be the workflow ID
+                            metadata={},
+                        )
         except Exception as e:
             # TODO: rigorously test this with different operations
             # reason: `output_fields` are all calculated differently in
             # different spots for different operations
-            print(e)
+            import traceback
+
+            traceback.print_exc()
 
     @staticmethod
     def clean(

@@ -36,8 +36,8 @@ class FieldChildrenClient(_Base):
             endpoint=f"/datasets/{dataset_id}/field_children/{fieldchildren_id}/delete",
             method="POST",
         )
-    
-    delete = delete_field_children 
+
+    delete = delete_field_children
 
     def update_field_children(
         self,
