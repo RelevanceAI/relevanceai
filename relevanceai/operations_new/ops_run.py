@@ -554,11 +554,11 @@ class PullTransformPush:
 
         # Try to join if not running in background
         if not self.run_in_background:
-            for thread in self.push_threads:
-                thread.join(timeout=timeout)
+            self.pull_thread.join(timeout=timeout)
             for thread in self.transform_threads:
                 thread.join(timeout=timeout)
-            self.pull_thread.join(timeout=timeout)
+            for thread in self.push_threads:
+                thread.join(timeout=timeout)
 
     def _threads_are_alive(self) -> True:
         """
@@ -612,9 +612,9 @@ class PullTransformPush:
             except:
                 break
 
-        tqdm.write("Queues Flushed")
         self.tq.close()
         self.pq.close()
+        tqdm.write("Queues Flushed")
 
     def run(self) -> Dict[str, Any]:
         """
