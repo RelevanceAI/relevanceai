@@ -580,33 +580,36 @@ class PullTransformPush:
         start_time = time.time()
         while True:
             current_time = time.time()
+
+            # check if time limit was exceeded
             if (current_time - start_time) >= self.time_limit:
                 tqdm.write("Time Limit Exceeded")
+                with self.general_lock:
+                    self.time_limit_event.set()
                 tqdm.write("Exiting Operation...")
                 break
 
+            # or if all the threads have finished
             if not self._threads_are_alive():
                 break
 
-            time.sleep(5)
+            # poll these checks every 1 sec
+            time.sleep(1.0)
 
-        with self.general_lock:
-            self.time_limit_event.set()
-
-    def _flush_queues(self):
+    def _flush_queues(self, timeout: float = 1e-2):
         """
         Gets all items in both queues to avoid
         BrokenPipeError when calling queue.close()
         """
         while True:
             try:
-                self.tq.get(timeout=0.01)
+                self.tq.get(timeout=timeout)
             except:
                 break
 
         while True:
             try:
-                self.pq.get(timeout=0.01)
+                self.pq.get(timeout=timeout)
             except:
                 break
 
