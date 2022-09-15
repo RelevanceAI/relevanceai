@@ -520,13 +520,15 @@ class PullTransformPush:
         """
         Initialise the worker threads for each process
         """
-        self.pull_thread = threading.Thread(target=self._pull)
+        daemon = True if self.timeout is not None else False
+        self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
         self.transform_threads = [
-            threading.Thread(target=self._transform)
+            threading.Thread(target=self._transform, daemon=daemon)
             for _ in range(self.transform_workers)
         ]
         self.push_threads = [
-            threading.Thread(target=self._push) for _ in range(self.push_workers)
+            threading.Thread(target=self._push, daemon=daemon)
+            for _ in range(self.push_workers)
         ]
 
     def _start_worker_threads(self):
@@ -634,8 +636,9 @@ class PullTransformPush:
 
             else:
                 self._run_timer()  # Starts the timer
-                self._join_worker_threads()
                 self._flush_queues()
+                # no need to join threads as they are daemons
+                # if there is a timeout
 
         return {
             "timed_out": self.timeout_event.is_set(),
