@@ -599,6 +599,7 @@ class PullTransformPush:
         Gets all items in both queues to avoid
         BrokenPipeError when calling queue.close()
         """
+        tqdm.write("Flushing Queues...")
         while True:
             try:
                 self.tq.get(timeout=timeout)
@@ -611,11 +612,9 @@ class PullTransformPush:
             except:
                 break
 
+        tqdm.write("Queues Flushed")
         self.tq.close()
         self.pq.close()
-
-        self.tq.join_thread()
-        self.pq.join_thread()
 
     def run(self) -> Dict[str, Any]:
         """
