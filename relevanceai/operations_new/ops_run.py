@@ -736,7 +736,7 @@ class OperationRun(TransformBase):
             dataset=dataset,
             operation=self,
         ) as dataset:
-            self.batch_transform_upsert(
+            res = self.batch_transform_upsert(
                 dataset=dataset,
                 select_fields=select_fields,
                 filters=filters,
@@ -745,7 +745,7 @@ class OperationRun(TransformBase):
                 **kwargs,
             )
 
-        return
+        return res
 
     def batch_transform_upsert(
         self,
