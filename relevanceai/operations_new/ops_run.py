@@ -268,6 +268,8 @@ class PullTransformPush:
 
             documents = res["documents"]
             if not documents:
+                with self.general_lock:
+                    self.ndocs = self.pull_count
                 break
             after_id = res["after_id"]
 

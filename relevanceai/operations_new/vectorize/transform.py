@@ -34,15 +34,15 @@ class VectorizeTransform(TransformBase):
         self.output_fields = (
             output_fields
             if output_fields is not None
-            else [self._get_output_field(t) for t in fields]
+            else [self._get_output_field(t, m) for t in fields for m in models]
         )
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
     @staticmethod
-    def _get_output_field(t):
-        return f"{t}_vector_"
+    def _get_output_field(t, m):
+        return f"{t}_{m}_vector_"
 
     @property
     def name(self):
