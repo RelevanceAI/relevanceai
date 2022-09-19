@@ -27,8 +27,6 @@ from tqdm.auto import tqdm
 
 from relevanceai.utils.helpers.helpers import getsizeof
 
-KILL_SIGNAL = "_END_TRANSFORM_PUSH_"
-
 
 class PullTransformPush:
 
@@ -46,7 +44,6 @@ class PullTransformPush:
 
     pull_dataset: Dataset
     push_dataset: Dataset
-    should_kill: bool = False
 
     def __init__(
         self,
@@ -367,10 +364,6 @@ class PullTransformPush:
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        self.should_kill = True
-                        batch = batch[:-1]
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
@@ -489,11 +482,6 @@ class PullTransformPush:
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        # End it here
-                        batch = batch[:-1]
-                        self.should_kill = True
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
@@ -517,9 +505,6 @@ class PullTransformPush:
             with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
                 self.push_count += len(batch) - len(failed_documents)
-
-            if self.should_kill:
-                self.timeout_event.set()
 
     def _init_progress_bars(self) -> None:
         """
