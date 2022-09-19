@@ -26,7 +26,7 @@ requirements = [
     "document-utils>=1.7.1",
     "requests>=2.0.0",
     "numpy>=1.19.0",
-    "joblib>=1.1.0",
+    "joblib<1.2.0",
     "scikit-learn>=0.20.0",  # last version of support to Python3.4
     "typing-extensions>=3.0",
     "analytics-python~=1.4.0",
