@@ -277,7 +277,7 @@ class PullTransformPush:
             if not documents:
                 with self.general_lock:
                     self.ndocs = self.pull_count
-                self.tq.put(KILL_SIGNAL)
+                self.tq.task_done()
                 break
             after_id = res["after_id"]
 
@@ -388,7 +388,7 @@ class PullTransformPush:
                 self.pq.put(document)
 
             if self.should_kill:
-                self.pq.put(KILL_SIGNAL)
+                self.pq.task_done()
 
             with self.general_lock:
                 self.transform_bar.update(len(batch))
@@ -556,16 +556,10 @@ class PullTransformPush:
 
         # Start threads
         self.pull_thread.start()
-        while True:
-            if not self.tq.empty():
-                for thread in self.transform_threads:
-                    thread.start()
-                break
-        while True:
-            if not self.pq.empty():
-                for thread in self.push_threads:
-                    thread.start()
-                break
+        for thread in self.transform_threads:
+            thread.start()
+        for thread in self.push_threads:
+            thread.start()
 
     def _join_worker_threads(self, timeout: Optional[int] = None):
         """
