@@ -31,7 +31,7 @@ class CountTextTransform(TransformBase):
         except ModuleNotFoundError:
             raise MissingPackageError("sentence-splitter")
         sentences = split_text_into_sentences(
-            text='This is a paragraph. It contains several sentences. "But why," you ask?',
+            text=text,
             language="en",
         )
         return len(sentences)
