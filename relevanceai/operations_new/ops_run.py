@@ -379,6 +379,7 @@ class PullTransformPush:
                         HAS_KILL_SIGNAL = True
                         print("Killing transform queue.")
                         self.tq.task_done()
+                        batch = batch[:-1]
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
