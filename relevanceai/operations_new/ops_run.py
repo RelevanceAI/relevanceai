@@ -320,9 +320,6 @@ class PullTransformPush:
         while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
-                if document == KILL_SIGNAL:
-                    self.tq.task_done()
-                    self._has_kill_signal = True
                 batch.append(document)
             except:
                 break
@@ -376,6 +373,7 @@ class PullTransformPush:
                 if len(batch) > 0:
                     if batch[-1] == KILL_SIGNAL:
                         HAS_KILL_SIGNAL = True
+                        self.tq.task_done()
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
@@ -502,6 +500,7 @@ class PullTransformPush:
                     if batch[-1] == KILL_SIGNAL:
                         HAS_KILL_SIGNAl = True
                         batch = batch[:-1]
+                        self.pq.task_done()
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
