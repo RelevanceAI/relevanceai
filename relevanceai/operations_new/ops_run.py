@@ -165,8 +165,8 @@ class PullTransformPush:
 
         tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
-        self.tq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
-        self.pq: mp.Queue = mp.Queue(maxsize=self.single_queue_size)
+        self.tq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
+        self.pq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
         self.func = func
 
         self.pull_tqdm_kwargs = dict(
