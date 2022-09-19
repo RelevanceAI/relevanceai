@@ -46,7 +46,6 @@ class PullTransformPush:
 
     pull_dataset: Dataset
     push_dataset: Dataset
-    _is_task_done: bool = False
     _has_kill_signal: bool = True
 
     def __init__(
@@ -286,10 +285,8 @@ class PullTransformPush:
             if not documents:
                 with self.general_lock:
                     self.ndocs = self.pull_count
-                if not self._is_task_done:
-                    self.tq.put(KILL_SIGNAL)
-                    self._is_task_done = True
-                    self._has_kill_signal = True
+                self.tq.put(KILL_SIGNAL)
+                self._has_kill_signal = True
                 break
             after_id = res["after_id"]
 
