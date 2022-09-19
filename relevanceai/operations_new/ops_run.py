@@ -389,9 +389,6 @@ class PullTransformPush:
             for document in batch:
                 self.pq.put(document)
 
-            if self.should_kill:
-                self.pq.task_done()
-
             with self.general_lock:
                 self.transform_bar.update(len(batch))
                 self.transform_count += len(batch)
