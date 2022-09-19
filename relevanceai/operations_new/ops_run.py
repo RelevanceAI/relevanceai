@@ -1,6 +1,12 @@
 """
 Base class for base.py to inherit.
 All functions related to running operations on datasets.
+
+The Pull Transform Push library is designed to be able to consistently
+data from Relevance AI Database, transform and then constantly push data 
+to the Relevance AI Database. This ensures that resources are utilised 
+to their limits.
+
 """
 import sys
 import time
@@ -165,6 +171,7 @@ class PullTransformPush:
 
         tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
+        # mp queues are thread-safe while being able to be used across processes
         self.tq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
         self.pq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
         self.func = func
@@ -554,10 +561,16 @@ class PullTransformPush:
         Start the worker threads
         """
 
-        # Start threads
+        # Start fetching data from the server
         self.pull_thread.start()
+        # Once there is data in the queue, then we start the
+        # transform threads
+        while self.tq.empty():
+            time.sleep(1)
         for thread in self.transform_threads:
             thread.start()
+        while self.pq.empty():
+            time.sleep(1)
         for thread in self.push_threads:
             thread.start()
 
