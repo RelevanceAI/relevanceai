@@ -368,9 +368,14 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
+        # Check for early termination (such as no documents)
+        HAS_KILL_SIGNAL: bool = False
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
+                if len(batch) > 0:
+                    if batch[-1] == KILL_SIGNAL:
+                        HAS_KILL_SIGNAL = True
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
@@ -397,7 +402,7 @@ class PullTransformPush:
                 self.pq.put(document)
 
             # Send kill signal to push queue
-            if self._has_kill_signal:
+            if HAS_KILL_SIGNAL:
                 self.pq.put(KILL_SIGNAL)
 
             with self.general_lock:
@@ -493,9 +498,10 @@ class PullTransformPush:
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
-                if batch[-1] == KILL_SIGNAL:
-                    HAS_KILL_SIGNAl = True
-                    batch = batch[:-1]
+                if len(batch) > 0:
+                    if batch[-1] == KILL_SIGNAL:
+                        HAS_KILL_SIGNAl = True
+                        batch = batch[:-1]
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
