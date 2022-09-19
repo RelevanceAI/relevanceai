@@ -47,7 +47,7 @@ CLUSTER_DEFAULT_ARGS: Dict[str, Dict[str, Any]] = {
         "approx_min_span_tree": True,
         "gen_min_span_tree": False,
         "leaf_size": 40,
-        "memory": Memory(cachedir=None),
+        "memory": Memory(location=None),
         "metric": "euclidean",
         "min_samples": None,
         "p": None,
