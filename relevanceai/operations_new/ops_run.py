@@ -3,6 +3,7 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 """
 import sys
+import time
 import psutil
 import threading
 import multiprocessing as mp
@@ -34,7 +35,7 @@ class PullTransformPush:
     push_bar: tqdm
 
     pull_thread: threading.Thread
-    update_threads: List[threading.Thread]
+    transform_threads: List[threading.Thread]
     push_threads: List[threading.Thread]
 
     pull_dataset: Dataset
@@ -62,7 +63,6 @@ class PullTransformPush:
         show_pull_progress_bar: bool = True,
         show_transform_progress_bar: bool = True,
         show_push_progress_bar: bool = True,
-        timeout: Optional[int] = None,
         ingest_in_background: bool = False,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
@@ -70,6 +70,7 @@ class PullTransformPush:
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
+        timeout: Optional[int] = None,
     ):
         """
         Buffer size:
@@ -121,7 +122,6 @@ class PullTransformPush:
         if func is None:
             tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
 
-        self.timeout = 30 if timeout is None else timeout
         self.ingest_in_background = ingest_in_background
 
         self.filters = [] if filters is None else filters
@@ -202,6 +202,11 @@ class PullTransformPush:
         self.retry_count = retry_count
         self.after_id = after_id
 
+        # time limit is 1hr 50mins if not set, this is to leave 10mins at the end
+        # of sagemaker job to send workflow status email
+        self.timeout = timeout
+        self.timeout_event = threading.Event()
+
     def _get_average_document_size(self, sample_documents: List[Dict[str, Any]]):
         """
         Get average size of a document in memory.
@@ -234,7 +239,7 @@ class PullTransformPush:
         documents: List[Dict[str, Any]] = [{"placeholder": "placeholder"}]
         after_id: Union[List[str], None] = self.after_id
 
-        while True:
+        while not self.timeout_event.is_set():
             current_count = self.pull_bar.n
 
             if self.pull_chunksize is None:
@@ -351,8 +356,7 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        self.should_kill = False
-        while self.transform_count < self.ndocs:
+        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
                 if batch[-1] == KILL_SIGNAL:
@@ -473,8 +477,7 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        self.should_kill = False
-        while self.push_count < self.ndocs:
+        while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
                 if batch[-1] == KILL_SIGNAL:
@@ -506,11 +509,7 @@ class PullTransformPush:
                 self.push_count += len(batch) - len(failed_documents)
 
             if self.should_kill:
-                for thread in self.push_threads:
-                    thread.join()
-                for thread in self.update_threads:
-                    thread.join()
-                self.pull_thread.join()
+                self.timeout_event.set()
 
     def _init_progress_bars(self) -> None:
         """
@@ -539,25 +538,27 @@ class PullTransformPush:
         """
         Initialise the worker threads for each process
         """
-        self.pull_thread = threading.Thread(target=self._pull)
-        self.update_threads = [
-            threading.Thread(target=self._transform)
+        daemon = True if self.timeout is not None else False
+        self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
+        self.transform_threads = [
+            threading.Thread(target=self._transform, daemon=daemon)
             for _ in range(self.transform_workers)
         ]
         self.push_threads = [
-            threading.Thread(target=self._push) for _ in range(self.push_workers)
+            threading.Thread(target=self._push, daemon=daemon)
+            for _ in range(self.push_workers)
         ]
 
-    def _run_worker_threads(self):
+    def _start_worker_threads(self):
         """
-        Start the worker threads and then join them in reversed order.
+        Start the worker threads
         """
 
         # Start threads
         self.pull_thread.start()
         while True:
             if not self.tq.empty():
-                for thread in self.update_threads:
+                for thread in self.transform_threads:
                     thread.start()
                 break
         while True:
@@ -566,27 +567,99 @@ class PullTransformPush:
                     thread.start()
                 break
 
+    def _join_worker_threads(self, timeout: Optional[int] = None):
+        """
+        ...and then join them in reversed order.
+        """
+
         # Try to join if not running in background
         if not self.run_in_background:
+            self.pull_thread.join(timeout=timeout)
+            for thread in self.transform_threads:
+                thread.join(timeout=timeout)
             for thread in self.push_threads:
-                thread.join()
-            for thread in self.update_threads:
-                thread.join()
-            self.pull_thread.join()
+                thread.join(timeout=timeout)
 
-    def run(self) -> List[str]:
+    def _threads_are_alive(self) -> True:
+        """
+        Poll all active trheads to check if they are alive
+        """
+        if self.pull_thread.is_alive():
+            return True
+        for thread in self.transform_threads:
+            if thread.is_alive():
+                return True
+        for thread in self.push_threads:
+            if thread.is_alive():
+                return True
+        return False
+
+    def _run_timer(self):
+        start_time = time.time()
+        while True:
+            current_time = time.time()
+
+            # check if time limit was exceeded
+            if (current_time - start_time) >= self.timeout:
+                tqdm.write("Time Limit Exceeded")
+                with self.general_lock:
+                    self.timeout_event.set()
+                tqdm.write("Exiting Operation...")
+                break
+
+            # or if all the threads have finished
+            if not self._threads_are_alive():
+                break
+
+            # poll these checks every 1 sec
+            time.sleep(1.0)
+
+    def _flush_queues(self, timeout: float = 1e-2):
+        """
+        Gets all items in both queues to avoid
+        BrokenPipeError when calling queue.close()
+        """
+        while True:
+            try:
+                self.tq.get(timeout=timeout)
+            except:
+                break
+
+        while True:
+            try:
+                self.pq.get(timeout=timeout)
+            except:
+                break
+
+        self.tq.close()
+        self.pq.close()
+
+    def run(self) -> Dict[str, Any]:
         """
         (Main Method)
         Do the pulling, the updating, and of course, the pushing.
 
         return the _ids of any failed documents
         """
+
         if self.ndocs > 0:
             self._init_progress_bars()
             self._init_worker_threads()
-            self._run_worker_threads()
+            self._start_worker_threads()
 
-        return list(self.failed_frontier.keys())
+            if self.timeout is None:
+                self._join_worker_threads()
+
+            else:
+                self._run_timer()  # Starts the timer
+                self._flush_queues()
+                # no need to join threads as they are daemons
+                # if there is a timeout
+
+        return {
+            "timed_out": self.timeout_event.is_set(),
+            "failed_documents": list(self.failed_frontier.keys()),
+        }
 
 
 def arguments(cls: Type[PullTransformPush]):
@@ -681,7 +754,7 @@ class OperationRun(TransformBase):
             dataset=dataset,
             operation=self,
         ) as dataset:
-            self.batch_transform_upsert(
+            res = self.batch_transform_upsert(
                 dataset=dataset,
                 select_fields=select_fields,
                 filters=filters,
@@ -690,7 +763,7 @@ class OperationRun(TransformBase):
                 **kwargs,
             )
 
-        return
+        return res
 
     def batch_transform_upsert(
         self,
