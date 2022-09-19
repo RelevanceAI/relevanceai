@@ -20,6 +20,8 @@ from tqdm.auto import tqdm
 
 from relevanceai.utils.helpers.helpers import getsizeof
 
+KILL_SIGNAL = "_END_TRANSFORM_PUSH_"
+
 
 class PullTransformPush:
 
@@ -270,6 +272,7 @@ class PullTransformPush:
             if not documents:
                 with self.general_lock:
                     self.ndocs = self.pull_count
+                self.tq.put(KILL_SIGNAL)
                 break
             after_id = res["after_id"]
 
@@ -348,9 +351,13 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
+        self.should_kill = False
         while self.transform_count < self.ndocs:
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
+                if batch[-1] == KILL_SIGNAL:
+                    self.should_kill = True
+                    batch = batch[:-1]
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
@@ -375,6 +382,9 @@ class PullTransformPush:
 
             for document in batch:
                 self.pq.put(document)
+
+            if self.should_kill:
+                self.pq.put(KILL_SIGNAL)
 
             with self.general_lock:
                 self.transform_bar.update(len(batch))
@@ -463,9 +473,14 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
+        self.should_kill = False
         while self.push_count < self.ndocs:
             with self.push_batch_lock:
                 batch = self._get_push_batch()
+                if batch[-1] == KILL_SIGNAL:
+                    # End it here
+                    batch = batch[:-1]
+                    self.should_kill = True
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
@@ -489,6 +504,13 @@ class PullTransformPush:
             with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
                 self.push_count += len(batch) - len(failed_documents)
+
+            if self.should_kill:
+                for thread in self.push_threads:
+                    thread.join()
+                for thread in self.update_threads:
+                    thread.join()
+                self.pull_thread.join()
 
     def _init_progress_bars(self) -> None:
         """
