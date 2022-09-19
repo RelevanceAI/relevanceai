@@ -27,7 +27,7 @@ from tqdm.auto import tqdm
 
 from relevanceai.utils.helpers.helpers import getsizeof
 
-KILL_SIGNAL = "_END_TRANSFORM_PUSH_"
+KILL_SIGNAL = "_KILL_QUEUE_SIGNAL_"
 
 
 class PullTransformPush:
@@ -46,7 +46,7 @@ class PullTransformPush:
 
     pull_dataset: Dataset
     push_dataset: Dataset
-    should_kill: bool = False
+    _has_kill_signal: bool = True
 
     def __init__(
         self,
@@ -285,7 +285,8 @@ class PullTransformPush:
             if not documents:
                 with self.general_lock:
                     self.ndocs = self.pull_count
-                self.tq.task_done()
+                print("Killing transform queue.")
+                self.tq.put(KILL_SIGNAL)
                 break
             after_id = res["after_id"]
 
@@ -364,12 +365,18 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
+        # Check for early termination (such as no documents)
+        HAS_KILL_SIGNAL: bool = False
+        print("Begin transform.")
+        while self.transform_count <= self.ndocs and not self.timeout_event.is_set():
+            print("Inside transform loop.")
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
                 if len(batch) > 0:
                     if batch[-1] == KILL_SIGNAL:
-                        self.should_kill = True
+                        HAS_KILL_SIGNAL = True
+                        print("Killing transform queue.")
+                        self.tq.task_done()
                         batch = batch[:-1]
 
             if self.func is not None:
@@ -396,8 +403,10 @@ class PullTransformPush:
             for document in batch:
                 self.pq.put(document)
 
-            if self.should_kill:
-                self.pq.task_done()
+            # Send kill signal to push queue
+            if HAS_KILL_SIGNAL:
+                print("Killing Push queue")
+                self.pq.put(KILL_SIGNAL)
 
             with self.general_lock:
                 self.transform_bar.update(len(batch))
@@ -486,14 +495,17 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
+        # Ensure kill signal is only sent after the transformation
+        # is done and the push is added
+        HAS_KILL_SIGNAl = False
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
                 if len(batch) > 0:
                     if batch[-1] == KILL_SIGNAL:
-                        # End it here
+                        HAS_KILL_SIGNAl = True
                         batch = batch[:-1]
-                        self.should_kill = True
+                        self.pq.task_done()
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
@@ -518,8 +530,11 @@ class PullTransformPush:
                 self.push_bar.update(len(batch) - len(failed_documents))
                 self.push_count += len(batch) - len(failed_documents)
 
-            if self.should_kill:
-                self.timeout_event.set()
+            # tell push queue to also finish
+            if HAS_KILL_SIGNAl:
+                self.pq.task_done()
+                # Close threads
+                sys.exit()
 
     def _init_progress_bars(self) -> None:
         """
