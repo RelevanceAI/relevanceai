@@ -47,6 +47,7 @@ class PullTransformPush:
     pull_dataset: Dataset
     push_dataset: Dataset
     _is_task_done: bool = False
+    _has_kill_signal: bool = True
 
     def __init__(
         self,
@@ -288,6 +289,7 @@ class PullTransformPush:
                 if not self._is_task_done:
                     self.tq.put(KILL_SIGNAL)
                     self._is_task_done = True
+                    self._has_kill_signal = True
                 break
             after_id = res["after_id"]
 
@@ -323,6 +325,7 @@ class PullTransformPush:
                 document = queue.get(timeout=timeout)
                 if document == KILL_SIGNAL:
                     self.tq.task_done()
+                    self._has_kill_signal = True
                 batch.append(document)
             except:
                 break
@@ -395,6 +398,10 @@ class PullTransformPush:
 
             for document in batch:
                 self.pq.put(document)
+
+            # Send kill signal to push queue
+            if self._has_kill_signal:
+                self.pq.put(KILL_SIGNAL)
 
             with self.general_lock:
                 self.transform_bar.update(len(batch))
@@ -483,9 +490,15 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
+        # Ensure kill signal is only sent after the transformation
+        # is done and the push is added
+        HAS_KILL_SIGNAl = False
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
+                if batch[-1] == KILL_SIGNAL:
+                    HAS_KILL_SIGNAl = True
+                    batch = batch[:-1]
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
@@ -509,6 +522,10 @@ class PullTransformPush:
             with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
                 self.push_count += len(batch) - len(failed_documents)
+
+            # tell push queue to also finish
+            if HAS_KILL_SIGNAl:
+                self.pq.task_done()
 
     def _init_progress_bars(self) -> None:
         """
