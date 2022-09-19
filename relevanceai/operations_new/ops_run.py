@@ -46,6 +46,7 @@ class PullTransformPush:
 
     pull_dataset: Dataset
     push_dataset: Dataset
+    should_kill: bool = False
 
     def __init__(
         self,
@@ -366,9 +367,10 @@ class PullTransformPush:
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
-                if batch[-1] == KILL_SIGNAL:
-                    self.should_kill = True
-                    batch = batch[:-1]
+                if len(batch) > 0:
+                    if batch[-1] == KILL_SIGNAL:
+                        self.should_kill = True
+                        batch = batch[:-1]
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
@@ -487,10 +489,11 @@ class PullTransformPush:
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
-                if batch[-1] == KILL_SIGNAL:
-                    # End it here
-                    batch = batch[:-1]
-                    self.should_kill = True
+                if len(batch) > 0:
+                    if batch[-1] == KILL_SIGNAL:
+                        # End it here
+                        batch = batch[:-1]
+                        self.should_kill = True
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
