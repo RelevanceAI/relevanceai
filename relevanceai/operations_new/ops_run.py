@@ -27,6 +27,8 @@ from tqdm.auto import tqdm
 
 from relevanceai.utils.helpers.helpers import getsizeof
 
+KILL_SIGNAL = "_KILL_QUEUE_SIGNAL_"
+
 
 class PullTransformPush:
 
@@ -284,7 +286,7 @@ class PullTransformPush:
                 with self.general_lock:
                     self.ndocs = self.pull_count
                 if not self._is_task_done:
-                    self.tq.task_done()
+                    self.tq.put(KILL_SIGNAL)
                     self._is_task_done = True
                 break
             after_id = res["after_id"]
@@ -319,6 +321,8 @@ class PullTransformPush:
         while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=timeout)
+                if document == KILL_SIGNAL:
+                    self.tq.task_done()
                 batch.append(document)
             except:
                 break
