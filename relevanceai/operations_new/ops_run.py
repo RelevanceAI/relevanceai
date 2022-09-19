@@ -368,7 +368,9 @@ class PullTransformPush:
         # Check for early termination (such as no documents)
         HAS_KILL_SIGNAL: bool = False
         print("Begin transform.")
-        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
+        print(self.transform_count)
+        print(self.ndocs)
+        while self.transform_count <= self.ndocs and not self.timeout_event.is_set():
             print("Inside transform loop.")
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
