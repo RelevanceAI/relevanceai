@@ -286,7 +286,6 @@ class PullTransformPush:
                 with self.general_lock:
                     self.ndocs = self.pull_count
                 self.tq.put(KILL_SIGNAL)
-                self._has_kill_signal = True
                 break
             after_id = res["after_id"]
 
@@ -373,6 +372,7 @@ class PullTransformPush:
                 if len(batch) > 0:
                     if batch[-1] == KILL_SIGNAL:
                         HAS_KILL_SIGNAL = True
+                        print("Killing transform queue.")
                         self.tq.task_done()
 
             if self.func is not None:
@@ -401,6 +401,7 @@ class PullTransformPush:
 
             # Send kill signal to push queue
             if HAS_KILL_SIGNAL:
+                print("Killing Push queue")
                 self.pq.put(KILL_SIGNAL)
 
             with self.general_lock:
