@@ -411,6 +411,8 @@ class PullTransformPush:
             with self.general_lock:
                 self.transform_bar.update(len(batch))
                 self.transform_count += len(batch)
+            if HAS_KILL_SIGNAL:
+                sys.exit()
 
     def _handle_failed_documents(
         self,
