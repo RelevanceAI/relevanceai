@@ -802,7 +802,7 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         transform_workers: int = 2,
         push_workers: int = 2,
-        timeout: int = 30,
+        timeout: int = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
