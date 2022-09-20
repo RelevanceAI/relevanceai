@@ -282,8 +282,6 @@ class PullTransformPush:
             if not documents:
                 with self.general_lock:
                     self.ndocs = self.pull_count
-                print("Killing transform queue.")
-                self.tq.put(KILL_SIGNAL)
                 break
             after_id = res["after_id"]
 
@@ -763,7 +761,6 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         transform_workers: int = 2,
         push_workers: int = 2,
-        timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
@@ -793,7 +790,6 @@ class OperationRun(TransformBase):
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
-            timeout=timeout,
             update_all_at_once=update_all_at_once,
             ingest_in_background=ingest_in_background,
             **kwargs,
