@@ -29,17 +29,7 @@ def region_to_url(region: str) -> str:
     Returns:
         url: the appropriate base url for API calls
     """
-    if "dev" in region:
-        actual_region = region.replace("dev-", "")
-        url = DEV_URL.format(actual_region)
-
-    elif region == OLD_AUSTRALIA_EAST:
-        url = AUSTRALIA_URL
-
-    else:
-        url = WIDER_URL.format(region)
-
-    return url
+    return f"https://api-{region}.stack.relevance.ai/latest/"
 
 
 @dataclass
@@ -52,14 +42,14 @@ class Credentials:
         "auth_token",
         "project",
         "api_key",
-        "url",
+        "url_or_region",
         "refresh_token",
         "token",
     )
     auth_token: str
     project: str
     api_key: str
-    url: str
+    url_or_region: str
     refresh_token: str
     token: str
 
@@ -76,7 +66,7 @@ class Credentials:
         return {
             "project": self.project,
             "api_key": self.api_key,
-            "url": self.url,
+            "url_or_region": self.url_or_region,
             "auth_token": self.auth_token,
             "refresh_token": self.refresh_token,
             "token": self.token,
@@ -86,11 +76,11 @@ class Credentials:
 def process_token(token):
     # processes a new token
     # project:key:region:token:refresh_token
-    split_token = token.split(";")
+    split_token = token.split(":")
     data = {
         "project": split_token[0],
         "key": split_token[1],
-        "url": split_token[2],
+        "url_or_region": split_token[2],
         "token": split_token[3],
         "refresh_token": split_token[4],
     }
@@ -98,7 +88,7 @@ def process_token(token):
         auth_token=token,
         project=data["project"],
         api_key=data["api_key"],
-        url=data["url"],
+        url=data["url_or_region"],
         refresh_token=data["refresh_token"],
         token=data["token"],
     )
