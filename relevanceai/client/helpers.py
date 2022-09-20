@@ -71,7 +71,7 @@ def process_token(token):
         auth_token=token,
         project=data["project"],
         api_key=data["api_key"],
-        url=data["url_or_region"],
+        url_or_region=data["url_or_region"],
         token=data["token"],
         refresh_token=data["refresh_token"],
     )
