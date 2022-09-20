@@ -18,7 +18,7 @@ class _Base(Transport, LoguruLogger, CredentialsMixin):
     ):
         self.project = credentials.project
         self.api_key = credentials.api_key
-        self.firebase_uid = credentials.firebase_uid
+        self.session_token = credentials.session_token
         self.credentials = credentials
         self._set_variables()
         # Initialize logger

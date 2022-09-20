@@ -131,7 +131,7 @@ class BatchInsertClient(BatchRetrieveClient):
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
-        >>> client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
+        >>> client = Client(project=project, api_key=api_key, session_token=session_token)
         >>> documents = client.datasets.documents.get_where(collection, select_fields=['title'],
             after_id=True)
         >>> while len(documents['documents']) > 0:

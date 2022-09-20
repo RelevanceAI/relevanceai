@@ -41,12 +41,12 @@ def track(func: Callable):
                 @fire_and_forget
                 def send_analytics():
                     properties = {}
-                    if "firebase_uid" in kwargs:
-                        user_id = kwargs["firebase_uid"]
-                    elif hasattr(args[0], "firebase_uid"):
-                        user_id = args[0].firebase_uid
+                    if "session_token" in kwargs:
+                        user_id = kwargs["session_token"]
+                    elif hasattr(args[0], "session_token"):
+                        user_id = args[0].session_token
                     else:
-                        user_id = "firebase_uid_not_detected"
+                        user_id = "session_token_not_detected"
 
                     event_name = f"pysdk-{func.__name__}"
 
@@ -170,7 +170,7 @@ def identify(func: Callable):
 
         try:
             if is_tracking_enabled():
-                user_id = args[0].firebase_uid
+                user_id = args[0].session_token
                 region = args[0].region
                 traits = {
                     "region": region,

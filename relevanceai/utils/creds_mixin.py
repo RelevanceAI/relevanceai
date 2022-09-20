@@ -10,7 +10,7 @@ class CredentialsMixin:
             self.project,
             self.api_key,
             self.region,
-            self.firebase_uid,
+            self.session_token,
         ) = self.credentials.split_token()
 
         self.base_url = region_to_url(self.region)
