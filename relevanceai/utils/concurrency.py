@@ -3,8 +3,8 @@
 import math
 
 import threading
-import multiprocessing as mp
 
+from queue import Queue
 from tqdm.auto import tqdm
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -139,7 +139,7 @@ class Push:
         self.func_kwargs = func_kwargs
 
         self.frontier = {document["_id"]: 0 for document in documents}
-        self.push_queue: mp.Queue = mp.Queue(maxsize=len(documents))
+        self.push_queue: Queue = Queue(maxsize=len(documents))
         for document in documents:
             self.push_queue.put(document)
 

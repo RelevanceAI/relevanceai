@@ -10,6 +10,7 @@ to their limits.
 """
 import sys
 import time
+import traceback
 import psutil
 import threading
 import warnings
@@ -131,11 +132,6 @@ class PullTransformPush:
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
 
-        self.general_lock = threading.Lock()
-
-        self.transform_batch_lock = threading.Lock()
-        self.push_batch_lock = threading.Lock()
-
         self.func_lock: Union[threading.Lock, None]
 
         if not multithreaded_update:
@@ -207,8 +203,8 @@ class PullTransformPush:
         self.retry_count = retry_count
         self.after_id = after_id
 
-        # time limit is 1hr 50mins if not set, this is to leave 10mins at the end
-        # of sagemaker job to send workflow status email
+        # time limit is infinite if not set. For workflows, this should be ~1hr 50mins = 110mins
+        # this is to leave 10mins at the end of sagemaker job to send workflow status email
         self.timeout = timeout
         self.timeout_event = threading.Event()
 
@@ -280,8 +276,7 @@ class PullTransformPush:
 
             documents = res["documents"]
             if not documents:
-                with self.general_lock:
-                    self.ndocs = self.pull_count
+                self.ndocs = self.pull_count
                 break
             after_id = res["after_id"]
 
@@ -293,9 +288,8 @@ class PullTransformPush:
             for document in documents:
                 self.tq.put(document)
 
-            with self.general_lock:
-                self.pull_bar.update(len(documents))
-                self.pull_count += len(documents)
+            self.pull_bar.update(len(documents))
+            self.pull_count += len(documents)
 
     def _get_transform_batch(self) -> List[Dict[str, Any]]:
         """
@@ -360,35 +354,40 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        while self.transform_count <= self.ndocs and not self.timeout_event.is_set():
-            with self.transform_batch_lock:
-                batch = self._get_transform_batch()
+        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
+            batch = self._get_transform_batch()
+            if not batch:
+                continue
 
-            if self.func is not None:
-                old_batch = deepcopy(batch)
+            try:
+                if self.func is not None:
+                    old_batch = deepcopy(batch)
 
-                if self.func_lock is not None:
-                    with self.func_lock:
+                    if self.func_lock is not None:
+                        with self.func_lock:
+                            new_batch = self.func(
+                                batch,
+                                *self.func_args,
+                                **self.func_kwargs,
+                            )
+                    else:
                         new_batch = self.func(
                             batch,
                             *self.func_args,
                             **self.func_kwargs,
                         )
-                else:
-                    new_batch = self.func(
-                        batch,
-                        *self.func_args,
-                        **self.func_kwargs,
-                    )
 
-                batch = PullTransformPush._postprocess(new_batch, old_batch)
+                    batch = PullTransformPush._postprocess(new_batch, old_batch)
 
-            for document in batch:
-                self.pq.put(document)
+                for document in batch:
+                    self.pq.put(document)
 
-            with self.general_lock:
-                self.transform_bar.update(len(batch))
-                self.transform_count += len(batch)
+            except Exception as e:
+                traceback.print_exc()
+                print(e)
+
+            self.transform_bar.update(len(batch))
+            self.transform_count += len(batch)
 
     def _handle_failed_documents(
         self,
@@ -403,10 +402,9 @@ class PullTransformPush:
         failed_documents = res["response_json"].get("failed_documents", [])
 
         if failed_documents:
-            with self.general_lock:
-                self.failed_documents_count += len(failed_documents)
-                desc = f"push - failed_documents = {self.failed_documents_count}"
-                self.push_bar.set_description(desc)
+            self.failed_documents_count += len(failed_documents)
+            desc = f"push - failed_documents = {self.failed_documents_count}"
+            self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
             failed_ids = set(map(lambda x: x["_id"], failed_documents))
@@ -474,31 +472,36 @@ class PullTransformPush:
         Iteratively gather a batch of processed documents and push these to cloud
         """
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
-            with self.push_batch_lock:
-                batch = self._get_push_batch()
+            batch = self._get_push_batch()
+            if not batch:
+                continue
 
-            batch = self.pull_dataset.json_encoder(batch)
-            update = PullTransformPush._get_updates(batch)
+            try:
+                batch = self.pull_dataset.json_encoder(batch)
+                update = PullTransformPush._get_updates(batch)
 
-            if update:
-                res = self.push_dataset.datasets.documents.bulk_update(
-                    self.push_dataset_id,
-                    batch,
-                    return_documents=True,
-                    ingest_in_background=self.ingest_in_background,
-                )
-            else:
-                res = {
-                    "response_json": {},
-                    "documents": batch,
-                    "status_code": 200,
-                }
+                if update:
+                    res = self.push_dataset.datasets.documents.bulk_update(
+                        self.push_dataset_id,
+                        batch,
+                        return_documents=True,
+                        ingest_in_background=self.ingest_in_background,
+                    )
+                else:
+                    res = {
+                        "response_json": {},
+                        "documents": batch,
+                        "status_code": 200,
+                    }
+
+            except Exception as e:
+                traceback.print_exc()
+                print(e)
 
             failed_documents = self._handle_failed_documents(res, batch)
 
-            with self.general_lock:
-                self.push_bar.update(len(batch) - len(failed_documents))
-                self.push_count += len(batch) - len(failed_documents)
+            self.push_bar.update(len(batch) - len(failed_documents))
+            self.push_count += len(batch) - len(failed_documents)
 
     def _init_progress_bars(self) -> None:
         """
@@ -545,14 +548,18 @@ class PullTransformPush:
 
         # Start fetching data from the server
         self.pull_thread.start()
+
         # Once there is data in the queue, then we start the
         # transform threads
-        while self.tq.empty():
-            time.sleep(1)
+        while True:
+            if not self.tq.empty():
+                break
         for thread in self.transform_threads:
             thread.start()
+
         while self.pq.empty():
-            time.sleep(1)
+            if not self.pq.empty():
+                break
         for thread in self.push_threads:
             thread.start()
 
@@ -562,12 +569,13 @@ class PullTransformPush:
         """
 
         # Try to join if not running in background
-        if not self.run_in_background:
-            self.pull_thread.join(timeout=timeout)
-            for thread in self.transform_threads:
-                thread.join(timeout=timeout)
-            for thread in self.push_threads:
-                thread.join(timeout=timeout)
+        self.pull_thread.join(timeout=timeout)
+
+        for thread in self.transform_threads:
+            thread.join(timeout=timeout)
+
+        for thread in self.push_threads:
+            thread.join(timeout=timeout)
 
     def _threads_are_alive(self) -> True:
         """
@@ -591,8 +599,7 @@ class PullTransformPush:
             # check if time limit was exceeded
             if (current_time - start_time) >= self.timeout:
                 tqdm.write("Time Limit Exceeded")
-                with self.general_lock:
-                    self.timeout_event.set()
+                self.timeout_event.set()
                 tqdm.write("Exiting Operation...")
                 break
 
@@ -633,7 +640,7 @@ class PullTransformPush:
             self._init_worker_threads()
             self._start_worker_threads()
 
-            if self.timeout is None:
+            if self.timeout is None and not self.run_in_background:
                 self._join_worker_threads()
 
             else:
