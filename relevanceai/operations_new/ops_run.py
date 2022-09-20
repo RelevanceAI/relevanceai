@@ -365,54 +365,35 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        # Check for early termination (such as no documents)
-        HAS_KILL_SIGNAL: bool = False
-        print("Begin transform.")
         while self.transform_count <= self.ndocs and not self.timeout_event.is_set():
-            print("Inside transform loop.")
             with self.transform_batch_lock:
                 batch = self._get_transform_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        HAS_KILL_SIGNAL = True
-                        print("Killing transform queue.")
-                        self.tq.task_done()
-                        batch = batch[:-1]
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
 
                 if self.func_lock is not None:
                     with self.func_lock:
-                        try:
-                            new_batch = self.func(
-                                batch, *self.func_args, **self.func_kwargs
-                            )
-                        except Exception as e:
-                            print(e)
-                            new_batch = batch
+                        new_batch = self.func(
+                            batch,
+                            *self.func_args,
+                            **self.func_kwargs,
+                        )
                 else:
-                    try:
-                        new_batch = self.func(batch, **self.func_kwargs)
-                    except Exception as e:
-                        print(e)
-                        new_batch = batch
+                    new_batch = self.func(
+                        batch,
+                        *self.func_args,
+                        **self.func_kwargs,
+                    )
 
                 batch = PullTransformPush._postprocess(new_batch, old_batch)
 
             for document in batch:
                 self.pq.put(document)
 
-            # Send kill signal to push queue
-            if HAS_KILL_SIGNAL:
-                print("Killing Push queue")
-                self.pq.put(KILL_SIGNAL)
-
             with self.general_lock:
                 self.transform_bar.update(len(batch))
                 self.transform_count += len(batch)
-            if HAS_KILL_SIGNAL:
-                sys.exit()
 
     def _handle_failed_documents(
         self,
@@ -497,17 +478,9 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        # Ensure kill signal is only sent after the transformation
-        # is done and the push is added
-        HAS_KILL_SIGNAl = False
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             with self.push_batch_lock:
                 batch = self._get_push_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        HAS_KILL_SIGNAl = True
-                        batch = batch[:-1]
-                        self.pq.task_done()
 
             batch = self.pull_dataset.json_encoder(batch)
             update = PullTransformPush._get_updates(batch)
@@ -531,12 +504,6 @@ class PullTransformPush:
             with self.general_lock:
                 self.push_bar.update(len(batch) - len(failed_documents))
                 self.push_count += len(batch) - len(failed_documents)
-
-            # tell push queue to also finish
-            if HAS_KILL_SIGNAl:
-                self.pq.task_done()
-                # Close threads
-                sys.exit()
 
     def _init_progress_bars(self) -> None:
         """
@@ -802,6 +769,7 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         transform_workers: int = 2,
         push_workers: int = 2,
+        timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
@@ -831,6 +799,7 @@ class OperationRun(TransformBase):
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
+            timeout=timeout,
             update_all_at_once=update_all_at_once,
             ingest_in_background=ingest_in_background,
             **kwargs,
