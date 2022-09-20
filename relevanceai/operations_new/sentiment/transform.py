@@ -11,6 +11,7 @@ try:
     import warnings
     import transformers
 
+    # suppress warnings for not using torch dataset
     warnings.filterwarnings("ignore", category=UserWarning)
 except:
     raise ValueError
