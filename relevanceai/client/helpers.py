@@ -48,20 +48,28 @@ class Credentials:
             "url_or_region": self.url_or_region,
             "auth_token": self.auth_token,
             "refresh_token": self.refresh_token,
-            "token": self.token,
+            "session_token": self.token,
         }
 
 
 def process_token(token):
-    # processes a new token
-    # project:key:region:token:refresh_token
+    """
+    Tokens come in the form of:
+    project:api_key:url_or_region
+    """
     split_token = token.split(":")
+
     data = {
         "project": split_token[0],
         "api_key": split_token[1],
         "url_or_region": split_token[2],
-        "token": split_token[3],
     }
+
+    if len(split_token) > 3:
+        data["session_token"] = split_token[3]
+    else:
+        data["session_token"] = None
+
     if len(split_token) > 4:
         data["refresh_token"] = split_token[4]
     else:
@@ -72,7 +80,7 @@ def process_token(token):
         project=data["project"],
         api_key=data["api_key"],
         url_or_region=data["url_or_region"],
-        token=data["token"],
+        token=data["session_token"],
         refresh_token=data["refresh_token"],
     )
 

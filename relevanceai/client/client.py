@@ -7,7 +7,7 @@ log in this way:
     from relevanceai import Client
     project = ""
     api_key = ""
-    client = Client(project=project, api_key=api_key, firebase_uid=firebase_uid)
+    client = Client(project=project, api_key=api_key, session_token=session_token)
     client.list_datasets()
 
 If you need to change your token, simply run:
@@ -83,7 +83,7 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         self.project = data["project"]
         self.api_key = data["api_key"]
         self.region = data["region"]
-        self.firebase_uid = data["firebase_uid"]
+        self.session_token = data["session_token"]
         # Add the project
 
         # Add the firebase UID
