@@ -38,20 +38,12 @@ class Credentials:
     A convenience store of relevant credentials.
     """
 
-    __slots__ = (
-        "auth_token",
-        "project",
-        "api_key",
-        "url_or_region",
-        "refresh_token",
-        "token",
-    )
     auth_token: str
     project: str
     api_key: str
     url_or_region: str
-    refresh_token: str
     token: str
+    refresh_token: str = None
 
     def split_token(self) -> List[str]:
         """
@@ -82,15 +74,19 @@ def process_token(token):
         "key": split_token[1],
         "url_or_region": split_token[2],
         "token": split_token[3],
-        "refresh_token": split_token[4],
     }
+    if len(split_token) > 4:
+        data["refresh_token"] = split_token[4]
+    else:
+        data["refresh_token"] = None
+
     return Credentials(
         auth_token=token,
         project=data["project"],
         api_key=data["api_key"],
         url=data["url_or_region"],
-        refresh_token=data["refresh_token"],
         token=data["token"],
+        refresh_token=data["refresh_token"],
     )
 
 
