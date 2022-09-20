@@ -347,7 +347,6 @@ class PullTransformPush:
 
         return batch
 
-    @staticmethod
     def _transform(self):
         """
         Updates a batch of documents given an update function.
@@ -355,6 +354,7 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
+
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             batch = self._get_transform_batch()
             if not batch:
@@ -372,7 +372,6 @@ class PullTransformPush:
                                 **self.func_kwargs,
                             )
                     else:
-                        tqdm.write(str(id(self.func)))
                         new_batch = self.func(
                             batch,
                             *self.func_args,
@@ -535,7 +534,7 @@ class PullTransformPush:
         daemon = True if self.timeout is not None else False
         self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
         self.transform_threads = [
-            threading.Thread(target=self._transform, args=(self,), daemon=daemon)
+            threading.Thread(target=self._transform, daemon=daemon)
             for _ in range(self.transform_workers)
         ]
         self.push_threads = [
@@ -555,15 +554,17 @@ class PullTransformPush:
         # transform threads
         while True:
             if not self.tq.empty():
+                for thread in self.transform_threads:
+                    thread.start()
                 break
-        for thread in self.transform_threads:
-            thread.start()
+            time.sleep(1)
 
-        while self.pq.empty():
+        while True:
             if not self.pq.empty():
+                for thread in self.push_threads:
+                    thread.start()
                 break
-        for thread in self.push_threads:
-            thread.start()
+            time.sleep(1)
 
     def _join_worker_threads(self, timeout: Optional[int] = None):
         """
@@ -774,7 +775,7 @@ class OperationRun(TransformBase):
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
         transform_chunksize: int = 32,
-        multithreaded_update: bool = True,
+        multithreaded_update: bool = False,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
         **kwargs,
