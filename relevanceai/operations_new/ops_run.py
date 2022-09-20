@@ -12,22 +12,19 @@ import sys
 import time
 import psutil
 import threading
-import multiprocessing as mp
 import warnings
 
+from queue import Queue
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
-from relevanceai.constants.constants import CONFIG
 
+from relevanceai.constants.constants import CONFIG
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
-
-from tqdm.auto import tqdm
-
 from relevanceai.utils.helpers.helpers import getsizeof
 
-KILL_SIGNAL = "_KILL_QUEUE_SIGNAL_"
+from tqdm.auto import tqdm
 
 
 class PullTransformPush:
@@ -173,8 +170,8 @@ class PullTransformPush:
         tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
         # mp queues are thread-safe while being able to be used across processes
-        self.tq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
-        self.pq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
+        self.tq: Queue = Queue(maxsize=self.single_queue_size)
+        self.pq: Queue = Queue(maxsize=self.single_queue_size)
         self.func = func
 
         self.pull_tqdm_kwargs = dict(
@@ -624,9 +621,6 @@ class PullTransformPush:
                 self.pq.get(timeout=timeout)
             except:
                 break
-
-        self.tq.close()
-        self.pq.close()
 
     def run(self) -> Dict[str, Any]:
         """
