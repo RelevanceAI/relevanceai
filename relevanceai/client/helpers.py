@@ -58,7 +58,7 @@ def process_token(token):
     split_token = token.split(":")
     data = {
         "project": split_token[0],
-        "key": split_token[1],
+        "api_key": split_token[1],
         "url_or_region": split_token[2],
         "token": split_token[3],
     }
