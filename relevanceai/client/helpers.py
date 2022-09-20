@@ -49,17 +49,19 @@ class Credentials:
     """
 
     __slots__ = (
-        "token",
+        "auth_token",
         "project",
         "api_key",
-        "region",
-        "firebase_uid",
+        "url",
+        "refresh_token",
+        "token",
     )
-    token: str
+    auth_token: str
     project: str
     api_key: str
-    region: str
-    firebase_uid: str
+    url: str
+    refresh_token: str
+    token: str
 
     def split_token(self) -> List[str]:
         """
@@ -74,51 +76,32 @@ class Credentials:
         return {
             "project": self.project,
             "api_key": self.api_key,
-            "region": self.region,
-            "firebase_uid": self.firebase_uid,
+            "url": self.url,
+            "auth_token": self.auth_token,
+            "refresh_token": self.refresh_token,
             "token": self.token,
         }
 
 
-def process_token(token: str):
-    """Given a user token, checks to see if all necessary credentials are present in token.
-
-    Args:
-        token (str): a ":" delimited string of identifying information
-
-    Raises:
-        TokenNotFoundError: error if idenitifier is not found
-        ProjectNotFoundError: error if idenitifier is not found
-        APIKeyNotFoundError: error if idenitifier is not found
-        RegionNotFoundError: error if idenitifier is not found
-        FireBaseUIDNotFoundError: error if idenitifier is not found
-
-    Returns:
-        Credentials: a dataclass of all user identification
-    """
-    if not token:
-        raise TokenNotFoundError
-
-    # A token takes the format project:api_key:region:firebase_uid
-    project, api_key, *other_credentials = token.split(":")
-
-    if not project:
-        raise ProjectNotFoundError
-
-    if not api_key:
-        raise APIKeyNotFoundError
-
-    if len(other_credentials) == 0:
-        # Assume that region is missing as that is the next credential
-        raise RegionNotFoundError
-    elif len(other_credentials) == 1:
-        # Assume region exists but firebase_uid, the next credential, does not
-        raise FireBaseUIDNotFoundError
-    else:
-        # Two or more other credentials is correct
-        region, firebase_uid, *additional_credentials = other_credentials
-
-    return Credentials(token, project, api_key, region, firebase_uid)
+def process_token(token):
+    # processes a new token
+    # project:key:region:token:refresh_token
+    split_token = token.split(";")
+    data = {
+        "project": split_token[0],
+        "key": split_token[1],
+        "url": split_token[2],
+        "token": split_token[3],
+        "refresh_token": split_token[4],
+    }
+    return Credentials(
+        auth_token=token,
+        project=data["project"],
+        api_key=data["api_key"],
+        url=data["url"],
+        refresh_token=data["refresh_token"],
+        token=data["token"],
+    )
 
 
 def auth() -> str:

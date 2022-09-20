@@ -79,13 +79,19 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
 
         # Eventually the following should be accessed directly from
         # self.credentials, but keep for now.
-        (
-            self.project,
-            self.api_key,
-            self.region,
-            self.firebase_uid,
-        ) = self.credentials.split_token()
+        data = self.credentials.dict()
+        self.project = data["project"]
+        self.api_key = data["api_key"]
+        self.region = data["region"]
+        self.firebase_uid = data["firebase_uid"]
+        # Add the project
 
+        # Add the firebase UID
+
+        # Use the URL of the keys
+
+        # Use the new URL
+        self.base_url = data["url"]
         self.base_url = region_to_url(self.region)
         self.base_ingest_url = region_to_url(self.region)
 
