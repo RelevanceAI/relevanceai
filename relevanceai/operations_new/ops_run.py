@@ -8,6 +8,8 @@ to the Relevance AI Database. This ensures that resources are utilised
 to their limits.
 
 """
+import math
+import os
 import sys
 import time
 import psutil
@@ -59,15 +61,14 @@ class PullTransformPush:
         func: Optional[Callable] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
-        multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = None,
-        warmup_chunksize: Optional[int] = None,
-        transform_chunksize: Optional[int] = 128,
         push_chunksize: Optional[int] = None,
+        transform_chunksize: Optional[int] = 128,
+        warmup_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        transform_workers: int = 1,
-        push_workers: int = 1,
+        transform_workers: Optional[int] = None,
+        push_workers: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         show_pull_progress_bar: bool = True,
@@ -139,14 +140,19 @@ class PullTransformPush:
 
         self.func_lock: Union[threading.Lock, None]
 
-        if not multithreaded_update:
-            self.func_lock = threading.Lock()
-            self.transform_workers = 1
-        else:
-            self.func_lock = None
-            self.transform_workers = transform_workers
-
-        self.push_workers = push_workers
+        cpu_count = os.cpu_count() or 1
+        self.transform_workers = (
+            math.ceil(cpu_count / 4) if transform_workers is None else transform_workers
+        )
+        msg = f"Using {self.transform_workers} transform workers"
+        tqdm.write(f"Using {self.transform_workers} transform workers")
+        logger.debug(msg)
+        self.push_workers = (
+            math.ceil(cpu_count / 4) if push_workers is None else push_workers
+        )
+        msg = f"Using {self.push_workers} push workers"
+        tqdm.write(f"Using {self.push_workers} push workers")
+        logger.debug(msg)
 
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
@@ -309,7 +315,6 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 5 if not self.update_all_at_once else None
 
         if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
@@ -319,7 +324,7 @@ class PullTransformPush:
 
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=timeout)
+                document = queue.get_nowait()
                 batch.append(document)
             except:
                 break
@@ -333,14 +338,13 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
-        timeout = 5
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
             sample_documents = []
             for _ in range(10):
                 try:
-                    sample_document = queue.get(timeout=timeout)
+                    sample_document = queue.get_nowait()
                 except:
                     break
                 sample_documents.append(sample_document)
@@ -351,7 +355,7 @@ class PullTransformPush:
         chunksize = self.push_chunksize
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=timeout)
+                document = queue.get_nowait()
                 batch.append(document)
             except:
                 break
@@ -375,19 +379,11 @@ class PullTransformPush:
                 if self.func is not None:
                     old_batch = deepcopy(batch)
 
-                    if self.func_lock is not None:
-                        with self.func_lock:
-                            new_batch = self.func(
-                                batch,
-                                *self.func_args,
-                                **self.func_kwargs,
-                            )
-                    else:
-                        new_batch = self.func(
-                            batch,
-                            *self.func_args,
-                            **self.func_kwargs,
-                        )
+                    new_batch = self.func(
+                        batch,
+                        *self.func_args,
+                        **self.func_kwargs,
+                    )
                     logger.debug("transformed batch")
 
                     batch = PullTransformPush._postprocess(new_batch, old_batch)
@@ -637,24 +633,6 @@ class PullTransformPush:
             # poll these checks every 1 sec
             time.sleep(1.0)
 
-    def _flush_queues(self, timeout: float = 1e-2):
-        """
-        Gets all items in both queues to avoid
-        BrokenPipeError when calling queue.close()
-        """
-        logger.debug("flushins queues")
-        while True:
-            try:
-                self.tq.get(timeout=timeout)
-            except:
-                break
-
-        while True:
-            try:
-                self.pq.get(timeout=timeout)
-            except:
-                break
-
     def run(self) -> Dict[str, Any]:
         """
         (Main Method)
@@ -673,7 +651,6 @@ class PullTransformPush:
 
             else:
                 self._run_timer()  # Starts the timer
-                self._flush_queues()
                 # no need to join threads as they are daemons
                 # if there is a timeout
 
@@ -794,27 +771,21 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        transform_workers: int = 2,
-        push_workers: int = 2,
+        transform_workers: Optional[int] = None,
+        push_workers: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
-        transform_chunksize: int = 32,
-        multithreaded_update: bool = True,
+        transform_chunksize: int = 128,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
         **kwargs,
     ):
-        if multithreaded_update:
-            warnings.warn(
-                "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
-            )
         ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             func_args=func_args,
             func_kwargs=func_kwargs,
-            multithreaded_update=multithreaded_update,
             pull_chunksize=chunksize,
             warmup_chunksize=warmup_chunksize,
             transform_chunksize=transform_chunksize,

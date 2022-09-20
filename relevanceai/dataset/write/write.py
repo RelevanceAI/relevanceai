@@ -34,7 +34,7 @@ class Write(Read):
     def insert_documents(
         self,
         documents: list,
-        max_workers: Optional[int] = 2,
+        max_workers: Optional[int] = None,
         media_workers: Optional[int] = None,
         show_progress_bar: bool = True,
         chunksize: Optional[int] = None,
@@ -542,7 +542,6 @@ class Write(Read):
             func=bulk_func,
             func_args=bulk_func_args,
             func_kwargs=bulk_func_kwargs,
-            multithreaded_update=multithreaded_update,
             pull_chunksize=chunksize,
             transform_chunksize=transform_chunksize,
             push_chunksize=chunksize,

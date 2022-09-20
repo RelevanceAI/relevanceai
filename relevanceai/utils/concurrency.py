@@ -1,6 +1,7 @@
 """Multithreading Module
 """
 import math
+import os
 
 import threading
 
@@ -144,7 +145,13 @@ class Push:
             self.push_queue.put(document)
 
         self.chunksize = chunksize
-        self.max_workers = 2 if max_workers is None else max_workers
+
+        cpu_count = os.cpu_count() or 1
+        self.max_workers = (
+            math.ceil(cpu_count / 4) if max_workers is None else max_workers
+        )
+        msg = f"Using {self.max_workers} push workers"
+        tqdm.write(msg)
 
         self.func_kwargs["return_documents"] = True
         show_progress_bar = self.func_kwargs.pop("show_progress_bar", True)
