@@ -8,10 +8,10 @@ import numpy as np
 import pandas as pd
 
 try:
+    import warnings
     import transformers
 
-    os.environ["TRANSFORMERS_NO_ADVISORY_WARNINGS"] = "1"
-    transformers.logging.set_verbosity_error()
+    warnings.filterwarnings("ignore", category=UserWarning)
 except:
     raise ValueError
 

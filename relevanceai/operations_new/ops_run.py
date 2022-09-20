@@ -10,10 +10,11 @@ to their limits.
 """
 import sys
 import time
-import traceback
 import psutil
-import threading
 import warnings
+import threading
+import traceback
+import logging
 
 from queue import Queue
 from copy import deepcopy
@@ -26,6 +27,10 @@ from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.utils.helpers.helpers import getsizeof
 
 from tqdm.auto import tqdm
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.CRITICAL)
 
 
 class PullTransformPush:
@@ -230,7 +235,11 @@ class PullTransformPush:
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
-        tqdm.write(f"{method.capitalize()} Chunksize: {chunksize}")
+
+        msg = f"{method.capitalize()} Chunksize: {chunksize}"
+        logger.debug(msg)
+        tqdm.write(msg)
+
         return chunksize
 
     def _pull(self):
@@ -241,6 +250,8 @@ class PullTransformPush:
         after_id: Union[List[str], None] = self.after_id
 
         while not self.timeout_event.is_set():
+            logger.debug("pull")
+
             current_count = self.pull_bar.n
 
             if self.pull_chunksize is None:
@@ -377,8 +388,10 @@ class PullTransformPush:
                             *self.func_args,
                             **self.func_kwargs,
                         )
+                    logger.debug("transformed batch")
 
                     batch = PullTransformPush._postprocess(new_batch, old_batch)
+                    logger.debug("postprocessed batch")
 
                 for document in batch:
                     self.pq.put(document)
@@ -494,6 +507,7 @@ class PullTransformPush:
                         "documents": batch,
                         "status_code": 200,
                     }
+                    logger.debug("pushed batch")
 
             except Exception as e:
                 traceback.print_exc()
@@ -549,6 +563,7 @@ class PullTransformPush:
 
         # Start fetching data from the server
         self.pull_thread.start()
+        logger.debug("started pull thread")
 
         # Once there is data in the queue, then we start the
         # transform threads
@@ -556,6 +571,8 @@ class PullTransformPush:
             if not self.tq.empty():
                 for thread in self.transform_threads:
                     thread.start()
+                    logger.debug("started transform thread")
+
                 break
             time.sleep(1)
 
@@ -563,22 +580,27 @@ class PullTransformPush:
             if not self.pq.empty():
                 for thread in self.push_threads:
                     thread.start()
+                    logger.debug("started push thread")
+
                 break
             time.sleep(1)
 
     def _join_worker_threads(self, timeout: Optional[int] = None):
         """
-        ...and then join them in reversed order.
+        ...and then join them in order.
         """
 
         # Try to join if not running in background
         self.pull_thread.join(timeout=timeout)
+        logger.debug("joined pull thread")
 
         for thread in self.transform_threads:
             thread.join(timeout=timeout)
+            logger.debug("joined transform thread")
 
         for thread in self.push_threads:
             thread.join(timeout=timeout)
+            logger.debug("joined push thread")
 
     def _threads_are_alive(self) -> True:
         """
@@ -601,9 +623,11 @@ class PullTransformPush:
 
             # check if time limit was exceeded
             if (current_time - start_time) >= self.timeout:
-                tqdm.write("Time Limit Exceeded")
                 self.timeout_event.set()
-                tqdm.write("Exiting Operation...")
+
+                msg = "Time Limit Exceeded\nExiting Operation..."
+                tqdm.write(msg)
+                logger.debug(msg)
                 break
 
             # or if all the threads have finished
@@ -618,6 +642,7 @@ class PullTransformPush:
         Gets all items in both queues to avoid
         BrokenPipeError when calling queue.close()
         """
+        logger.debug("flushins queues")
         while True:
             try:
                 self.tq.get(timeout=timeout)
@@ -769,13 +794,13 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        transform_workers: int = 1,
+        transform_workers: int = 2,
         push_workers: int = 2,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
         transform_chunksize: int = 32,
-        multithreaded_update: bool = False,
+        multithreaded_update: bool = True,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
         **kwargs,
