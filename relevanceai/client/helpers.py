@@ -4,13 +4,7 @@ from dataclasses import dataclass
 from typing import List
 
 from relevanceai.constants.messages import Messages
-from relevanceai.constants import (
-    SIGNUP_URL,
-    AUSTRALIA_URL,
-    WIDER_URL,
-    OLD_AUSTRALIA_EAST,
-    DEV_URL,
-)
+from relevanceai.constants import SIGNUP_URL
 from relevanceai.constants.errors import (
     APIKeyNotFoundError,
     FireBaseUIDNotFoundError,
@@ -29,17 +23,7 @@ def region_to_url(region: str) -> str:
     Returns:
         url: the appropriate base url for API calls
     """
-    if "dev" in region:
-        actual_region = region.replace("dev-", "")
-        url = DEV_URL.format(actual_region)
-
-    elif region == OLD_AUSTRALIA_EAST:
-        url = AUSTRALIA_URL
-
-    else:
-        url = WIDER_URL.format(region)
-
-    return url
+    return f"https://api-{region}.stack.relevance.ai/latest/"
 
 
 @dataclass
