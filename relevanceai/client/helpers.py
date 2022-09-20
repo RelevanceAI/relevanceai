@@ -56,13 +56,15 @@ def process_token(token):
     """
     Tokens come in the form of:
     project:api_key:url_or_region
+    If there is a fourth one - that's for mixpanel to identify the firebase user
+    We are going to replace the api key call with the session_token
     """
     split_token = token.split(":")
 
     data = {
         "project": split_token[0],
-        "api_key": split_token[1],
-        "url_or_region": split_token[2],
+        "seession_token": split_token[1],
+        "url_or_region": split_token[2]
     }
 
     if len(split_token) > 3:
