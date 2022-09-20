@@ -4,20 +4,7 @@ from dataclasses import dataclass
 from typing import List
 
 from relevanceai.constants.messages import Messages
-from relevanceai.constants import (
-    SIGNUP_URL,
-    AUSTRALIA_URL,
-    WIDER_URL,
-    OLD_AUSTRALIA_EAST,
-    DEV_URL,
-)
-from relevanceai.constants.errors import (
-    APIKeyNotFoundError,
-    FireBaseUIDNotFoundError,
-    ProjectNotFoundError,
-    RegionNotFoundError,
-    TokenNotFoundError,
-)
+from relevanceai.constants import SIGNUP_URL
 
 
 def region_to_url(region: str) -> str:
