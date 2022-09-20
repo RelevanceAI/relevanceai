@@ -55,9 +55,8 @@ class Credentials:
 def process_token(token):
     """
     Tokens come in the form of:
-    project:api_key:url_or_region
-    If there is a fourth one - that's for mixpanel to identify the firebase user
-    We are going to replace the api key call with the session_token
+    project:session_token_or_api_key:url_or_region:firebase_uid
+    This means that the only thing that will change 
     """
     split_token = token.split(":")
 
@@ -80,9 +79,9 @@ def process_token(token):
     return Credentials(
         auth_token=token,
         project=data["project"],
-        api_key=data["api_key"],
+        api_key=data["session_token"],
         url_or_region=data["url_or_region"],
-        token=data["session_token"],
+        token=token,
         refresh_token=data["refresh_token"],
     )
 
