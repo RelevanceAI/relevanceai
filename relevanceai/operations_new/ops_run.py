@@ -50,8 +50,8 @@ class PullTransformPush:
         self,
         dataset: Optional[Dataset] = None,
         pull_dataset: Optional[Dataset] = None,
-        func: Optional[Callable] = None,
         push_dataset: Optional[Dataset] = None,
+        func: Optional[Callable] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
         multithreaded_update: bool = False,
@@ -347,6 +347,7 @@ class PullTransformPush:
 
         return batch
 
+    @staticmethod
     def _transform(self):
         """
         Updates a batch of documents given an update function.
@@ -371,6 +372,7 @@ class PullTransformPush:
                                 **self.func_kwargs,
                             )
                     else:
+                        tqdm.write(str(id(self.func)))
                         new_batch = self.func(
                             batch,
                             *self.func_args,
@@ -533,7 +535,7 @@ class PullTransformPush:
         daemon = True if self.timeout is not None else False
         self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
         self.transform_threads = [
-            threading.Thread(target=self._transform, daemon=daemon)
+            threading.Thread(target=self._transform, args=(self,), daemon=daemon)
             for _ in range(self.transform_workers)
         ]
         self.push_threads = [
