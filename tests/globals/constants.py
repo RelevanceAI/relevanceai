@@ -16,8 +16,8 @@ if TEST_TOKEN is None:
         TEST_TOKEN = f"{PROJECT}:{API_KEY}:us-east-1:{None}"
 
 TEST_TOKEN = TEST_TOKEN.split(":")
-TEST_FIREBASE_UID = "relevanceai-sdk-test-user"
-TEST_TOKEN[-1] = TEST_FIREBASE_UID
+TEST_session_token = "relevanceai-sdk-test-user"
+TEST_TOKEN[-1] = TEST_session_token
 TEST_TOKEN = ":".join(TEST_TOKEN)
 
 
