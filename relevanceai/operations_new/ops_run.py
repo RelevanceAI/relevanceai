@@ -3,8 +3,8 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 
 The Pull Transform Push library is designed to be able to consistently
-data from Relevance AI Database, transform and then constantly push data 
-to the Relevance AI Database. This ensures that resources are utilised 
+data from Relevance AI Database, transform and then constantly push data
+to the Relevance AI Database. This ensures that resources are utilised
 to their limits.
 
 """
@@ -802,7 +802,6 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         transform_workers: int = 2,
         push_workers: int = 2,
-        timeout: int = 30,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
@@ -832,7 +831,6 @@ class OperationRun(TransformBase):
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
-            timeout=timeout,
             update_all_at_once=update_all_at_once,
             ingest_in_background=ingest_in_background,
             **kwargs,
