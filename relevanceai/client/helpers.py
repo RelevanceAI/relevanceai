@@ -23,7 +23,7 @@ def region_to_url(region: str) -> str:
     Returns:
         url: the appropriate base url for API calls
     """
-    return f"https://api-{region}.stack.relevance.ai/latest/"
+    return f"https://api-{region}.stack.relevance.ai/latest"
 
 
 @dataclass
