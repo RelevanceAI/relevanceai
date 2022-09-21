@@ -74,7 +74,7 @@ class PullTransformPush:
         show_pull_progress_bar: bool = True,
         show_transform_progress_bar: bool = True,
         show_push_progress_bar: bool = True,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
@@ -227,7 +227,10 @@ class PullTransformPush:
         document_sizes = [
             getsizeof(sample_document) for sample_document in sample_documents
         ]
-        return sum(document_sizes) / len(sample_documents)
+        try:
+            return sum(document_sizes) / len(sample_documents)
+        except:
+            return None
 
     def _get_optimal_chunksize(
         self, sample_documents: List[Dict[str, Any]], method: str
@@ -236,11 +239,13 @@ class PullTransformPush:
         Calculates the optimal batch size given a list of sampled documents and constraints in config
         """
         document_size = self._get_average_document_size(sample_documents)
-        document_size = document_size / 2**20
-        target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
-        max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
-        chunksize = int(target_chunk_mb / document_size)
-        chunksize = min(chunksize, max_chunk_size)
+        if document_size is not None:
+            document_size = document_size / 2**20
+            target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
+            max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
+            chunksize = int(target_chunk_mb / document_size)
+            chunksize = min(chunksize, max_chunk_size)
+            return chunksize
 
         msg = f"{method.capitalize()} Chunksize: {chunksize}"
         logger.debug(msg)
