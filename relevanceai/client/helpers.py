@@ -29,17 +29,19 @@ def region_to_url(region: str) -> str:
     Returns:
         url: the appropriate base url for API calls
     """
-    if "dev" in region:
-        actual_region = region.replace("dev-", "")
-        url = DEV_URL.format(actual_region)
+    if region == "ap-southeast-2" or region == "us-east-1":
+        if "dev" in region:
+            actual_region = region.replace("dev-", "")
+            url = DEV_URL.format(actual_region)
 
-    elif region == OLD_AUSTRALIA_EAST:
-        url = AUSTRALIA_URL
+        elif region == OLD_AUSTRALIA_EAST:
+            url = AUSTRALIA_URL
 
+        else:
+            url = WIDER_URL.format(region)
+        return url
     else:
-        url = WIDER_URL.format(region)
-
-    return url
+        return f"https://api-{region}.stack.relevance.ai/latest"
 
 
 @dataclass
