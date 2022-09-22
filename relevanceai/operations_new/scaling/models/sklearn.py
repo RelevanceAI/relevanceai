@@ -71,3 +71,9 @@ class SKLearnScaler(ScalerModelBase):
         vectors = np.array(vectors)
         reduced_vectors = self.model.fit_transform(vectors)
         return reduced_vectors.tolist()
+
+    def stats(self):
+        if self.model_name == "standardscaler":
+            return f"mean: {repr(self.model.mean_)} stdev: {repr(np.sqrt(self.model.var_))}"
+        else:
+            return ""

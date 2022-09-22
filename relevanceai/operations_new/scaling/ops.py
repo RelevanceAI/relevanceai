@@ -1,6 +1,6 @@
 from typing import Optional
 
-from relevanceai.operations_new.apibase import OperationAPIBase
+from relevanceai.operations_new.ops_base import OperationAPIBase
 from relevanceai.operations_new.scaling.base import ScalerBase
 
 

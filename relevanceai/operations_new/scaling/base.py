@@ -1,6 +1,8 @@
+from tqdm import tqdm
+
 from typing import List, Dict, Any, Optional, Union
 
-from relevanceai.operations_new.run import OperationRun
+from relevanceai.operations_new.ops_run import OperationRun
 from relevanceai.operations_new.scaling.models.base import ScalerModelBase
 
 
@@ -68,6 +70,7 @@ class ScalerBase(OperationRun):
             )
 
             reduced_vectors = self.model.fit_transform(vectors)
+            tqdm.write(self.model.stats())
             scaled_vector_name = self.model.vector_name(vector_field)
 
             if scaled_vector_name in self.vector_fields:
