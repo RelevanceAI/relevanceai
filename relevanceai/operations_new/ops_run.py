@@ -242,7 +242,8 @@ class PullTransformPush:
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
 
-        msg = f"{method.capitalize()} Chunksize: {chunksize}"
+        thread_name = threading.current_thread().name
+        msg = f"{thread_name}\tchunksize: {chunksize}".expandtabs(5)
         logger.debug(msg)
         tqdm.write(msg)
 
@@ -542,14 +543,26 @@ class PullTransformPush:
         Initialise the worker threads for each process
         """
         daemon = True if self.timeout is not None else False
-        self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
+        self.pull_thread = threading.Thread(
+            target=self._pull,
+            name="Pull_Worker",
+            daemon=daemon,
+        )
         self.transform_threads = [
-            threading.Thread(target=self._transform, daemon=daemon)
-            for _ in range(self.transform_workers)
+            threading.Thread(
+                target=self._transform,
+                name=f"Transform_Worker_{index}",
+                daemon=daemon,
+            )
+            for index in range(self.transform_workers)
         ]
         self.push_threads = [
-            threading.Thread(target=self._push, daemon=daemon)
-            for _ in range(self.push_workers)
+            threading.Thread(
+                target=self._push,
+                name=f"Push_Worker_{index}",
+                daemon=daemon,
+            )
+            for index in range(self.push_workers)
         ]
 
     def _start_worker_threads(self):
