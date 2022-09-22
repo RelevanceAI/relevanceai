@@ -604,7 +604,6 @@ class Write(Read):
             return cat_vector_documents
 
         self.bulk_apply(
-            self.dataset_id,
             bulk_func=cat_fields,
             bulk_func_kwargs=dict(field_name=vector_name),
         )
