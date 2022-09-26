@@ -77,7 +77,7 @@ class PullTransformPush:
         ingest_in_background: bool = True,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
-        update_all_at_once: bool = False,
+        batched: bool = False,
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
@@ -126,8 +126,8 @@ class PullTransformPush:
         self.warmup_chunksize = warmup_chunksize
         self.push_chunksize = push_chunksize
 
-        self.transform_all_at_once = update_all_at_once
-        if update_all_at_once:
+        self.batched = batched
+        if batched:
             self.transform_chunksize = self.ndocs
 
         if func is None:
@@ -142,7 +142,7 @@ class PullTransformPush:
 
         cpu_count = os.cpu_count() or 1
 
-        if not update_all_at_once:
+        if batched:
             self.transform_workers = (
                 math.ceil(cpu_count / 4)
                 if transform_workers is None
@@ -165,7 +165,7 @@ class PullTransformPush:
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
-        if update_all_at_once:
+        if batched:
             self.single_queue_size = self.ndocs
 
         else:
@@ -333,10 +333,10 @@ class PullTransformPush:
 
         while len(batch) < chunksize:
             try:
-                if self.transform_all_at_once:
-                    document = queue.get()
-                else:
+                if self.batched:
                     document = queue.get_nowait()
+                else:
+                    document = queue.get()
                 batch.append(document)
             except:
                 break
@@ -706,7 +706,7 @@ class OperationRun(TransformBase):
     def run(
         self,
         dataset: Dataset,
-        batched: Optional[bool] = False,
+        batched: bool = False,
         chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
@@ -781,7 +781,7 @@ class OperationRun(TransformBase):
                 select_fields=select_fields,
                 filters=filters,
                 chunksize=chunksize,
-                update_all_at_once=(not batched),
+                batched=batched,
                 **kwargs,
             )
 
@@ -801,7 +801,7 @@ class OperationRun(TransformBase):
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
         transform_chunksize: int = 128,
-        update_all_at_once: bool = False,
+        batched: bool = False,
         ingest_in_background: bool = True,
         **kwargs,
     ):
@@ -820,7 +820,7 @@ class OperationRun(TransformBase):
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
-            update_all_at_once=update_all_at_once,
+            batched=batched,
             ingest_in_background=ingest_in_background,
             **kwargs,
         )
