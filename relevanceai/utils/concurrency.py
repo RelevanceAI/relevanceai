@@ -1,10 +1,11 @@
 """Multithreading Module
 """
 import math
+import os
 
 import threading
-import multiprocessing as mp
 
+from queue import Queue
 from tqdm.auto import tqdm
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -139,17 +140,22 @@ class Push:
         self.func_kwargs = func_kwargs
 
         self.frontier = {document["_id"]: 0 for document in documents}
-        self.push_queue: mp.Queue = mp.Queue(maxsize=len(documents))
+        self.push_queue: Queue = Queue(maxsize=len(documents))
         for document in documents:
             self.push_queue.put(document)
 
         self.chunksize = chunksize
-        self.max_workers = 2 if max_workers is None else max_workers
+
+        cpu_count = os.cpu_count() or 1
+        self.max_workers = (
+            math.ceil(cpu_count / 4) if max_workers is None else max_workers
+        )
+        msg = f"Using {self.max_workers} push workers"
+        tqdm.write(msg)
 
         self.func_kwargs["return_documents"] = True
         show_progress_bar = self.func_kwargs.pop("show_progress_bar", True)
 
-        self.lock = threading.Lock()
         self.tqdm_kwargs = dict(leave=True, disable=(not show_progress_bar))
         self.insert_count = 0
         self.background_execution = background_execution
@@ -169,8 +175,6 @@ class Push:
         while True:
             if len(batch) >= self.chunksize:
                 break
-            # if self.push_queue.empty():
-            #     break
             try:
                 document = self.push_queue.get(timeout=1)
             except:
@@ -188,9 +192,8 @@ class Push:
         readded_documents = []
 
         if failed_documents:
-            with self.lock:
-                desc = f"push - failed_documents = {len(self.failed_ids)}"
-                self.push_bar.set_description(desc)
+            desc = f"push - failed_documents = {len(self.failed_ids)}"
+            self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
             failed_ids = set(map(lambda x: x["_id"], failed_documents))
@@ -211,8 +214,7 @@ class Push:
     def _push(self) -> None:
 
         while True:
-            with self.lock:
-                batch = self._get_batch()
+            batch = self._get_batch()
 
             if not batch:
                 break
@@ -226,9 +228,8 @@ class Push:
 
             inserted = len(batch) - len(failed_documents)
 
-            with self.lock:
-                self.insert_count += inserted
-                self.push_bar.update(inserted)
+            self.insert_count += inserted
+            self.push_bar.update(inserted)
 
     def run(self) -> Tuple[int, List[str]]:
         push_threads = [

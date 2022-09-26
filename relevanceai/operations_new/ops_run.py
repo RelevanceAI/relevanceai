@@ -3,31 +3,36 @@ Base class for base.py to inherit.
 All functions related to running operations on datasets.
 
 The Pull Transform Push library is designed to be able to consistently
-data from Relevance AI Database, transform and then constantly push data 
-to the Relevance AI Database. This ensures that resources are utilised 
+data from Relevance AI Database, transform and then constantly push data
+to the Relevance AI Database. This ensures that resources are utilised
 to their limits.
 
 """
+import math
+import os
 import sys
 import time
 import psutil
-import threading
-import multiprocessing as mp
 import warnings
+import threading
+import traceback
+import logging
 
+from queue import Queue
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
-from relevanceai.constants.constants import CONFIG
 
+from relevanceai.constants.constants import CONFIG
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
+from relevanceai.utils.helpers.helpers import getsizeof
 
 from tqdm.auto import tqdm
 
-from relevanceai.utils.helpers.helpers import getsizeof
 
-KILL_SIGNAL = "_KILL_QUEUE_SIGNAL_"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.CRITICAL)
 
 
 class PullTransformPush:
@@ -52,25 +57,24 @@ class PullTransformPush:
         self,
         dataset: Optional[Dataset] = None,
         pull_dataset: Optional[Dataset] = None,
-        func: Optional[Callable] = None,
         push_dataset: Optional[Dataset] = None,
+        func: Optional[Callable] = None,
         func_args: Optional[Tuple[Any, ...]] = None,
         func_kwargs: Optional[Dict[str, Any]] = None,
-        multithreaded_update: bool = False,
         pull_chunksize: Optional[int] = None,
-        warmup_chunksize: Optional[int] = None,
-        transform_chunksize: Optional[int] = 128,
         push_chunksize: Optional[int] = None,
+        transform_chunksize: Optional[int] = 128,
+        warmup_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
-        transform_workers: int = 1,
-        push_workers: int = 1,
+        transform_workers: Optional[int] = None,
+        push_workers: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         show_pull_progress_bar: bool = True,
         show_transform_progress_bar: bool = True,
         show_push_progress_bar: bool = True,
-        ingest_in_background: bool = False,
+        ingest_in_background: bool = True,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
         update_all_at_once: bool = False,
@@ -134,21 +138,21 @@ class PullTransformPush:
         self.filters = [] if filters is None else filters
         self.select_fields = [] if select_fields is None else select_fields
 
-        self.general_lock = threading.Lock()
-
-        self.transform_batch_lock = threading.Lock()
-        self.push_batch_lock = threading.Lock()
-
         self.func_lock: Union[threading.Lock, None]
 
-        if not multithreaded_update:
-            self.func_lock = threading.Lock()
-            self.transform_workers = 1
-        else:
-            self.func_lock = None
-            self.transform_workers = transform_workers
-
-        self.push_workers = push_workers
+        cpu_count = os.cpu_count() or 1
+        self.transform_workers = (
+            math.ceil(cpu_count / 4) if transform_workers is None else transform_workers
+        )
+        msg = f"Using {self.transform_workers} transform workers"
+        tqdm.write(f"Using {self.transform_workers} transform workers")
+        logger.debug(msg)
+        self.push_workers = (
+            math.ceil(cpu_count / 4) if push_workers is None else push_workers
+        )
+        msg = f"Using {self.push_workers} push workers"
+        tqdm.write(f"Using {self.push_workers} push workers")
+        logger.debug(msg)
 
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
@@ -173,8 +177,8 @@ class PullTransformPush:
         tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
 
         # mp queues are thread-safe while being able to be used across processes
-        self.tq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
-        self.pq: mp.JoinableQueue = mp.JoinableQueue(maxsize=self.single_queue_size)
+        self.tq: Queue = Queue(maxsize=self.single_queue_size)
+        self.pq: Queue = Queue(maxsize=self.single_queue_size)
         self.func = func
 
         self.pull_tqdm_kwargs = dict(
@@ -210,8 +214,8 @@ class PullTransformPush:
         self.retry_count = retry_count
         self.after_id = after_id
 
-        # time limit is 1hr 50mins if not set, this is to leave 10mins at the end
-        # of sagemaker job to send workflow status email
+        # time limit is infinite if not set. For workflows, this should be ~1hr 50mins = 110mins
+        # this is to leave 10mins at the end of sagemaker job to send workflow status email
         self.timeout = timeout
         self.timeout_event = threading.Event()
 
@@ -223,7 +227,7 @@ class PullTransformPush:
         document_sizes = [
             getsizeof(sample_document) for sample_document in sample_documents
         ]
-        return sum(document_sizes) / len(sample_documents)
+        return max(1, sum(document_sizes) / len(sample_documents))
 
     def _get_optimal_chunksize(
         self, sample_documents: List[Dict[str, Any]], method: str
@@ -237,7 +241,12 @@ class PullTransformPush:
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
         chunksize = min(chunksize, max_chunk_size)
-        tqdm.write(f"{method.capitalize()} Chunksize: {chunksize}")
+
+        thread_name = threading.current_thread().name
+        msg = f"{thread_name}\tchunksize: {chunksize}".expandtabs(5)
+        logger.debug(msg)
+        tqdm.write(msg)
+
         return chunksize
 
     def _pull(self):
@@ -248,6 +257,8 @@ class PullTransformPush:
         after_id: Union[List[str], None] = self.after_id
 
         while not self.timeout_event.is_set():
+            logger.debug("pull")
+
             current_count = self.pull_bar.n
 
             if self.pull_chunksize is None:
@@ -283,10 +294,7 @@ class PullTransformPush:
 
             documents = res["documents"]
             if not documents:
-                with self.general_lock:
-                    self.ndocs = self.pull_count
-                print("Killing transform queue.")
-                self.tq.put(KILL_SIGNAL)
+                self.ndocs = self.pull_count
                 break
             after_id = res["after_id"]
 
@@ -298,9 +306,8 @@ class PullTransformPush:
             for document in documents:
                 self.tq.put(document)
 
-            with self.general_lock:
-                self.pull_bar.update(len(documents))
-                self.pull_count += len(documents)
+            self.pull_bar.update(len(documents))
+            self.pull_count += len(documents)
 
     def _get_transform_batch(self) -> List[Dict[str, Any]]:
         """
@@ -309,7 +316,6 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.tq
-        timeout = 5 if not self.update_all_at_once else None
 
         if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
@@ -319,7 +325,7 @@ class PullTransformPush:
 
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=timeout)
+                document = queue.get_nowait()
                 batch.append(document)
             except:
                 break
@@ -333,14 +339,13 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
-        timeout = 5
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
             sample_documents = []
             for _ in range(10):
                 try:
-                    sample_document = queue.get(timeout=timeout)
+                    sample_document = queue.get(timeout=1)
                 except:
                     break
                 sample_documents.append(sample_document)
@@ -351,7 +356,7 @@ class PullTransformPush:
         chunksize = self.push_chunksize
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=timeout)
+                document = queue.get_nowait()
                 batch.append(document)
             except:
                 break
@@ -365,54 +370,35 @@ class PullTransformPush:
         ^ necessary to avoid reinserting stuff that is already in the cloud.
         Then, repeatedly put each document from the processed batch in the push queue
         """
-        # Check for early termination (such as no documents)
-        HAS_KILL_SIGNAL: bool = False
-        print("Begin transform.")
-        while self.transform_count <= self.ndocs and not self.timeout_event.is_set():
-            print("Inside transform loop.")
-            with self.transform_batch_lock:
-                batch = self._get_transform_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        HAS_KILL_SIGNAL = True
-                        print("Killing transform queue.")
-                        self.tq.task_done()
-                        batch = batch[:-1]
 
-            if self.func is not None:
-                old_batch = deepcopy(batch)
+        while self.transform_count < self.ndocs and not self.timeout_event.is_set():
+            batch = self._get_transform_batch()
+            if not batch:
+                continue
 
-                if self.func_lock is not None:
-                    with self.func_lock:
-                        try:
-                            new_batch = self.func(
-                                batch, *self.func_args, **self.func_kwargs
-                            )
-                        except Exception as e:
-                            print(e)
-                            new_batch = batch
-                else:
-                    try:
-                        new_batch = self.func(batch, **self.func_kwargs)
-                    except Exception as e:
-                        print(e)
-                        new_batch = batch
+            try:
+                if self.func is not None:
+                    old_batch = deepcopy(batch)
 
-                batch = PullTransformPush._postprocess(new_batch, old_batch)
+                    new_batch = self.func(
+                        batch,
+                        *self.func_args,
+                        **self.func_kwargs,
+                    )
+                    logger.debug("transformed batch")
 
-            for document in batch:
-                self.pq.put(document)
+                    batch = PullTransformPush._postprocess(new_batch, old_batch)
+                    logger.debug("postprocessed batch")
 
-            # Send kill signal to push queue
-            if HAS_KILL_SIGNAL:
-                print("Killing Push queue")
-                self.pq.put(KILL_SIGNAL)
+                for document in batch:
+                    self.pq.put(document)
 
-            with self.general_lock:
-                self.transform_bar.update(len(batch))
-                self.transform_count += len(batch)
-            if HAS_KILL_SIGNAL:
-                sys.exit()
+            except Exception as e:
+                traceback.print_exc()
+                print(e)
+
+            self.transform_bar.update(len(batch))
+            self.transform_count += len(batch)
 
     def _handle_failed_documents(
         self,
@@ -427,10 +413,9 @@ class PullTransformPush:
         failed_documents = res["response_json"].get("failed_documents", [])
 
         if failed_documents:
-            with self.general_lock:
-                self.failed_documents_count += len(failed_documents)
-                desc = f"push - failed_documents = {self.failed_documents_count}"
-                self.push_bar.set_description(desc)
+            self.failed_documents_count += len(failed_documents)
+            desc = f"push - failed_documents = {self.failed_documents_count}"
+            self.push_bar.set_description(desc)
 
             # ...find these failed documents within the batch...
             failed_ids = set(map(lambda x: x["_id"], failed_documents))
@@ -497,46 +482,38 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
-        # Ensure kill signal is only sent after the transformation
-        # is done and the push is added
-        HAS_KILL_SIGNAl = False
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
-            with self.push_batch_lock:
-                batch = self._get_push_batch()
-                if len(batch) > 0:
-                    if batch[-1] == KILL_SIGNAL:
-                        HAS_KILL_SIGNAl = True
-                        batch = batch[:-1]
-                        self.pq.task_done()
+            batch = self._get_push_batch()
+            if not batch:
+                continue
 
-            batch = self.pull_dataset.json_encoder(batch)
-            update = PullTransformPush._get_updates(batch)
+            try:
+                batch = self.pull_dataset.json_encoder(batch)
+                update = PullTransformPush._get_updates(batch)
 
-            if update:
-                res = self.push_dataset.datasets.documents.bulk_update(
-                    self.push_dataset_id,
-                    batch,
-                    return_documents=True,
-                    ingest_in_background=self.ingest_in_background,
-                )
-            else:
-                res = {
-                    "response_json": {},
-                    "documents": batch,
-                    "status_code": 200,
-                }
+                if update:
+                    res = self.push_dataset.datasets.documents.bulk_update(
+                        self.push_dataset_id,
+                        batch,
+                        return_documents=True,
+                        ingest_in_background=self.ingest_in_background,
+                    )
+                else:
+                    res = {
+                        "response_json": {},
+                        "documents": batch,
+                        "status_code": 200,
+                    }
+                    logger.debug("pushed batch")
+
+            except Exception as e:
+                traceback.print_exc()
+                print(e)
 
             failed_documents = self._handle_failed_documents(res, batch)
 
-            with self.general_lock:
-                self.push_bar.update(len(batch) - len(failed_documents))
-                self.push_count += len(batch) - len(failed_documents)
-
-            # tell push queue to also finish
-            if HAS_KILL_SIGNAl:
-                self.pq.task_done()
-                # Close threads
-                sys.exit()
+            self.push_bar.update(len(batch) - len(failed_documents))
+            self.push_count += len(batch) - len(failed_documents)
 
     def _init_progress_bars(self) -> None:
         """
@@ -566,14 +543,26 @@ class PullTransformPush:
         Initialise the worker threads for each process
         """
         daemon = True if self.timeout is not None else False
-        self.pull_thread = threading.Thread(target=self._pull, daemon=daemon)
+        self.pull_thread = threading.Thread(
+            target=self._pull,
+            name="Pull_Worker",
+            daemon=daemon,
+        )
         self.transform_threads = [
-            threading.Thread(target=self._transform, daemon=daemon)
-            for _ in range(self.transform_workers)
+            threading.Thread(
+                target=self._transform,
+                name=f"Transform_Worker_{index}",
+                daemon=daemon,
+            )
+            for index in range(self.transform_workers)
         ]
         self.push_threads = [
-            threading.Thread(target=self._push, daemon=daemon)
-            for _ in range(self.push_workers)
+            threading.Thread(
+                target=self._push,
+                name=f"Push_Worker_{index}",
+                daemon=daemon,
+            )
+            for index in range(self.push_workers)
         ]
 
     def _start_worker_threads(self):
@@ -583,29 +572,44 @@ class PullTransformPush:
 
         # Start fetching data from the server
         self.pull_thread.start()
+        logger.debug("started pull thread")
+
         # Once there is data in the queue, then we start the
         # transform threads
-        while self.tq.empty():
+        while True:
+            if not self.tq.empty():
+                for thread in self.transform_threads:
+                    thread.start()
+                    logger.debug("started transform thread")
+
+                break
             time.sleep(1)
-        for thread in self.transform_threads:
-            thread.start()
-        while self.pq.empty():
+
+        while True:
+            if not self.pq.empty():
+                for thread in self.push_threads:
+                    thread.start()
+                    logger.debug("started push thread")
+
+                break
             time.sleep(1)
-        for thread in self.push_threads:
-            thread.start()
 
     def _join_worker_threads(self, timeout: Optional[int] = None):
         """
-        ...and then join them in reversed order.
+        ...and then join them in order.
         """
 
         # Try to join if not running in background
-        if not self.run_in_background:
-            self.pull_thread.join(timeout=timeout)
-            for thread in self.transform_threads:
-                thread.join(timeout=timeout)
-            for thread in self.push_threads:
-                thread.join(timeout=timeout)
+        self.pull_thread.join(timeout=timeout)
+        logger.debug("joined pull thread")
+
+        for thread in self.transform_threads:
+            thread.join(timeout=timeout)
+            logger.debug("joined transform thread")
+
+        for thread in self.push_threads:
+            thread.join(timeout=timeout)
+            logger.debug("joined push thread")
 
     def _threads_are_alive(self) -> True:
         """
@@ -628,10 +632,11 @@ class PullTransformPush:
 
             # check if time limit was exceeded
             if (current_time - start_time) >= self.timeout:
-                tqdm.write("Time Limit Exceeded")
-                with self.general_lock:
-                    self.timeout_event.set()
-                tqdm.write("Exiting Operation...")
+                self.timeout_event.set()
+
+                msg = "Time Limit Exceeded\nExiting Operation..."
+                tqdm.write(msg)
+                logger.debug(msg)
                 break
 
             # or if all the threads have finished
@@ -640,26 +645,6 @@ class PullTransformPush:
 
             # poll these checks every 1 sec
             time.sleep(1.0)
-
-    def _flush_queues(self, timeout: float = 1e-2):
-        """
-        Gets all items in both queues to avoid
-        BrokenPipeError when calling queue.close()
-        """
-        while True:
-            try:
-                self.tq.get(timeout=timeout)
-            except:
-                break
-
-        while True:
-            try:
-                self.pq.get(timeout=timeout)
-            except:
-                break
-
-        self.tq.close()
-        self.pq.close()
 
     def run(self) -> Dict[str, Any]:
         """
@@ -674,12 +659,11 @@ class PullTransformPush:
             self._init_worker_threads()
             self._start_worker_threads()
 
-            if self.timeout is None:
+            if self.timeout is None and not self.run_in_background:
                 self._join_worker_threads()
 
             else:
                 self._run_timer()  # Starts the timer
-                self._flush_queues()
                 # no need to join threads as they are daemons
                 # if there is a timeout
 
@@ -800,28 +784,21 @@ class OperationRun(TransformBase):
         select_fields: list = None,
         filters: list = None,
         chunksize: int = None,
-        transform_workers: int = 2,
-        push_workers: int = 2,
-        timeout: int = None,
+        transform_workers: Optional[int] = None,
+        push_workers: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
-        transform_chunksize: int = 32,
-        multithreaded_update: bool = False,
+        transform_chunksize: int = 128,
         update_all_at_once: bool = False,
         ingest_in_background: bool = True,
         **kwargs,
     ):
-        if multithreaded_update:
-            warnings.warn(
-                "Multithreaded-update should be False for vectorizing with 1 GPU only. Could hang if True. Works fine on CPU."
-            )
         ptp = PullTransformPush(
             dataset=dataset,
             func=self.transform,
             func_args=func_args,
             func_kwargs=func_kwargs,
-            multithreaded_update=multithreaded_update,
             pull_chunksize=chunksize,
             warmup_chunksize=warmup_chunksize,
             transform_chunksize=transform_chunksize,
@@ -832,7 +809,6 @@ class OperationRun(TransformBase):
             push_workers=push_workers,
             buffer_size=buffer_size,
             show_progress_bar=show_progress_bar,
-            timeout=timeout,
             update_all_at_once=update_all_at_once,
             ingest_in_background=ingest_in_background,
             **kwargs,

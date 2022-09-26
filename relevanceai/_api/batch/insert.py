@@ -738,7 +738,7 @@ class BatchInsertClient(BatchRetrieveClient):
         dataset_id: str,
         bulk_func: Callable,
         documents: List[Dict[str, Any]],
-        max_workers: Optional[int] = 2,
+        max_workers: Optional[int] = None,
         chunksize: Optional[int] = None,
         **kwargs,
     ):

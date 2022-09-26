@@ -2,9 +2,20 @@
 """
 
 # Running a function across each subcluster
-import pandas as pd
-import numpy as np
+import os
 import csv
+import numpy as np
+import pandas as pd
+
+try:
+    import warnings
+    import transformers
+
+    # suppress warnings for not using torch dataset
+    warnings.filterwarnings("ignore", category=UserWarning)
+except:
+    raise ValueError
+
 from typing import Dict, List, Optional
 from urllib.request import urlopen
 from relevanceai.constants.errors import MissingPackageError
@@ -55,8 +66,6 @@ class SentimentTransform(TransformBase):
         self.strategy = strategy
         self.eps = eps
         self.device = self.get_transformers_device(device)
-
-        import transformers
 
         # Tries to set it to set it on GPU
         self._classifier = transformers.pipeline(
