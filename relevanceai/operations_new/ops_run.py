@@ -51,7 +51,6 @@ class PullTransformPush:
 
     pull_dataset: Dataset
     push_dataset: Dataset
-    _has_kill_signal: bool = True
 
     def __init__(
         self,
@@ -127,7 +126,7 @@ class PullTransformPush:
         self.push_chunksize = push_chunksize
 
         self.batched = batched
-        if batched:
+        if not batched:
             self.transform_chunksize = self.ndocs
 
         if func is None:
@@ -158,8 +157,8 @@ class PullTransformPush:
         self.push_workers = (
             math.ceil(cpu_count / 4) if push_workers is None else push_workers
         )
-        msg = f"Using {self.push_workers} push workers"
-        tqdm.write(f"Using {self.push_workers} push workers")
+        msg = f"Using {self.push_workers} push worker(s)"
+        tqdm.write(f"Using {self.push_workers} push worker(s)")
         logger.debug(msg)
 
         self.func_args = () if func_args is None else func_args
