@@ -150,7 +150,7 @@ class Push:
         self.max_workers = (
             math.ceil(cpu_count / 4) if max_workers is None else max_workers
         )
-        msg = f"Using {self.max_workers} push workers"
+        msg = f"Using {self.max_workers} push worker(s)"
         tqdm.write(msg)
 
         self.func_kwargs["return_documents"] = True
