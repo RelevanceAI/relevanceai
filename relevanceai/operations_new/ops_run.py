@@ -164,7 +164,7 @@ class PullTransformPush:
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
 
-        if batched:
+        if not batched:
             self.single_queue_size = self.ndocs
 
         else:
