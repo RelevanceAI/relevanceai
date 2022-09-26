@@ -126,7 +126,7 @@ class PullTransformPush:
         self.warmup_chunksize = warmup_chunksize
         self.push_chunksize = push_chunksize
 
-        self.update_all_at_once = update_all_at_once
+        self.transform_all_at_once = update_all_at_once
         if update_all_at_once:
             self.transform_chunksize = self.ndocs
 
@@ -141,12 +141,20 @@ class PullTransformPush:
         self.func_lock: Union[threading.Lock, None]
 
         cpu_count = os.cpu_count() or 1
-        self.transform_workers = (
-            math.ceil(cpu_count / 4) if transform_workers is None else transform_workers
-        )
-        msg = f"Using {self.transform_workers} transform workers"
-        tqdm.write(f"Using {self.transform_workers} transform workers")
+
+        if not update_all_at_once:
+            self.transform_workers = (
+                math.ceil(cpu_count / 4)
+                if transform_workers is None
+                else transform_workers
+            )
+        else:
+            self.transform_workers = 1
+
+        msg = f"Using {self.transform_workers} transform worker(s)"
+        tqdm.write(f"Using {self.transform_workers} transform worker(s)")
         logger.debug(msg)
+
         self.push_workers = (
             math.ceil(cpu_count / 4) if push_workers is None else push_workers
         )
@@ -325,7 +333,10 @@ class PullTransformPush:
 
         while len(batch) < chunksize:
             try:
-                document = queue.get_nowait()
+                if self.transform_all_at_once:
+                    document = queue.get()
+                else:
+                    document = queue.get_nowait()
                 batch.append(document)
             except:
                 break
