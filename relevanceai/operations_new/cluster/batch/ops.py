@@ -81,6 +81,8 @@ class BatchClusterOps(BatchClusterTransform, ClusterOps):
         """
         from tqdm.auto import tqdm
 
+        kwargs["batched"] = True
+
         with OperationManager(dataset=dataset, operation=self) as dataset:
             tqdm.write("\nFitting Model...")
             ptp = PullTransformPush(

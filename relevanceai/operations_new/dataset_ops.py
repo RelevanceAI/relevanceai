@@ -245,7 +245,7 @@ class Operations(Write):
         self,
         fields: List[str],
         models: Optional[List[Any]] = None,
-        batched: Optional[bool] = True,
+        batched: bool = True,
         filters: Optional[list] = None,
         chunksize: Optional[int] = 20,
         **kwargs,
@@ -491,7 +491,7 @@ class Operations(Write):
         model_kwargs: Optional[Dict[str, Any]] = None,
         chunksize: Optional[int] = 128,
         filters: Optional[list] = None,
-        batched: Optional[bool] = False,
+        batched: bool = False,
         include_cluster_report: bool = False,
         **kwargs,
     ):
