@@ -30,9 +30,9 @@ from relevanceai.utils.helpers.helpers import getsizeof
 
 from tqdm.auto import tqdm
 
-
+logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.INFO)
 
 
 class PullTransformPush:
@@ -152,14 +152,14 @@ class PullTransformPush:
 
         msg = f"Using {self.transform_workers} transform worker(s)"
         tqdm.write(f"Using {self.transform_workers} transform worker(s)")
-        logger.debug(msg)
+        logger.info(msg)
 
         self.push_workers = (
             math.ceil(cpu_count / 4) if push_workers is None else push_workers
         )
         msg = f"Using {self.push_workers} push worker(s)"
         tqdm.write(f"Using {self.push_workers} push worker(s)")
-        logger.debug(msg)
+        logger.info(msg)
 
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
@@ -254,7 +254,7 @@ class PullTransformPush:
 
         thread_name = threading.current_thread().name
         msg = f"{thread_name}\tchunksize: {chunksize}".expandtabs(5)
-        logger.debug(msg)
+        logger.info(msg)
         tqdm.write(msg)
 
         return chunksize
@@ -267,7 +267,7 @@ class PullTransformPush:
         after_id: Union[List[str], None] = self.after_id
 
         while not self.timeout_event.is_set():
-            logger.debug("pull")
+            logger.info("pull")
 
             current_count = self.pull_bar.n
 
@@ -309,6 +309,9 @@ class PullTransformPush:
             after_id = res["after_id"]
 
             if self.pull_chunksize is None:
+                logger.info(
+                    f"configuring optimal pull chunksize with {len(documents[:10])} sampled documents"
+                )
                 self.pull_chunksize = self._get_optimal_chunksize(
                     documents[:10], "pull"
                 )
@@ -329,7 +332,9 @@ class PullTransformPush:
 
         if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
-            tqdm.write("Processing Warmup Batch")
+            msg = "Processing Warmup Batch"
+            tqdm.write(msg)
+            logger.info(msg)
         else:
             chunksize = self.transform_chunksize
 
@@ -389,28 +394,33 @@ class PullTransformPush:
         Then, repeatedly put each document from the processed batch in the push queue
         """
 
+        thread_id = threading.get_ident()
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             batch = self._get_transform_batch()
             if not batch:
                 continue
+            logger.info(f"Thread:{thread_id} - got transform batch (bs: {len(batch)}")
+
+            if self.func is not None:
+                old_batch = deepcopy(batch)
 
             try:
-                if self.func is not None:
-                    old_batch = deepcopy(batch)
-
-                    new_batch = self.func(
-                        batch,
-                        *self.func_args,
-                        **self.func_kwargs,
-                    )
-                    logger.debug("transformed batch")
-
-                    batch = PullTransformPush._postprocess(new_batch, old_batch)
-                    logger.debug("postprocessed batch")
+                logger.info(f"Thread:{thread_id} - started transforming...")
+                new_batch = self.func(
+                    batch,
+                    *self.func_args,
+                    **self.func_kwargs,
+                )
+                logger.info(f"Thread:{thread_id} - finished transforming")
 
             except Exception as e:
                 traceback.print_exc()
                 print(e)
+
+            else:
+                logger.info(f"Thread:{thread_id} - started postprocessing...")
+                batch = PullTransformPush._postprocess(new_batch, old_batch)
+                logger.info(f"Thread:{thread_id} - finished postprocessing")
 
             finally:
                 for document in batch:
@@ -523,7 +533,7 @@ class PullTransformPush:
                         "documents": batch,
                         "status_code": 200,
                     }
-                    logger.debug("pushed batch")
+                    logger.info("pushed batch")
 
             except Exception as e:
                 traceback.print_exc()
@@ -592,7 +602,7 @@ class PullTransformPush:
 
         # Start fetching data from the server
         self.pull_thread.start()
-        logger.debug("started pull thread")
+        logger.info("started pull thread")
 
         # Once there is data in the queue, then we start the
         # transform threads
@@ -600,7 +610,7 @@ class PullTransformPush:
             if not self.tq.empty():
                 for thread in self.transform_threads:
                     thread.start()
-                    logger.debug("started transform thread")
+                    logger.info("started transform thread")
 
                 break
             time.sleep(1)
@@ -609,7 +619,7 @@ class PullTransformPush:
             if not self.pq.empty():
                 for thread in self.push_threads:
                     thread.start()
-                    logger.debug("started push thread")
+                    logger.info("started push thread")
 
                 break
             time.sleep(1)
@@ -621,15 +631,15 @@ class PullTransformPush:
 
         # Try to join if not running in background
         self.pull_thread.join(timeout=timeout)
-        logger.debug("joined pull thread")
+        logger.info("joined pull thread")
 
         for thread in self.transform_threads:
             thread.join(timeout=timeout)
-            logger.debug("joined transform thread")
+            logger.info("joined transform thread")
 
         for thread in self.push_threads:
             thread.join(timeout=timeout)
-            logger.debug("joined push thread")
+            logger.info("joined push thread")
 
     def _threads_are_alive(self) -> True:
         """
@@ -656,7 +666,7 @@ class PullTransformPush:
 
                 msg = "Time Limit Exceeded\nExiting Operation..."
                 tqdm.write(msg)
-                logger.debug(msg)
+                logger.info(msg)
                 break
 
             # or if all the threads have finished
