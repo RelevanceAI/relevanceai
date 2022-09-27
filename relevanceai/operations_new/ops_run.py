@@ -802,7 +802,7 @@ class OperationRun(TransformBase):
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         warmup_chunksize: int = None,
-        transform_chunksize: int = 128,
+        transform_chunksize: int = 8,
         batched: bool = False,
         ingest_in_background: bool = True,
         **kwargs,

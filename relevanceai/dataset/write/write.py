@@ -493,7 +493,7 @@ class Write(Read):
         timeout: Optional[int] = None,
         buffer_size: int = 0,
         show_progress_bar: bool = True,
-        transform_chunksize: int = 32,
+        transform_chunksize: int = 8,
         multithreaded_update: bool = True,
         ingest_in_background: bool = True,
         **kwargs,
