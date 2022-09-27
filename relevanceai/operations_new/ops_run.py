@@ -339,9 +339,10 @@ class PullTransformPush:
                     document = queue.get_nowait()
                 else:
                     document = queue.get()
-                batch.append(document)
             except:
                 break
+            else:
+                batch.append(document)
 
         return batch
 
@@ -361,7 +362,8 @@ class PullTransformPush:
                     sample_document = queue.get(timeout=1)
                 except:
                     break
-                sample_documents.append(sample_document)
+                else:
+                    sample_documents.append(sample_document)
 
             self.push_chunksize = self._get_optimal_chunksize(sample_documents, "push")
             batch = sample_documents
@@ -370,9 +372,10 @@ class PullTransformPush:
         while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=1)
-                batch.append(document)
             except:
                 break
+            else:
+                batch.append(document)
 
         return batch
 
