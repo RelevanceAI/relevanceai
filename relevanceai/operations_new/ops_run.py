@@ -408,15 +408,16 @@ class PullTransformPush:
                     batch = PullTransformPush._postprocess(new_batch, old_batch)
                     logger.debug("postprocessed batch")
 
-                for document in batch:
-                    self.pq.put(document)
-
             except Exception as e:
                 traceback.print_exc()
                 print(e)
 
-            self.transform_bar.update(len(batch))
-            self.transform_count += len(batch)
+            finally:
+                for document in batch:
+                    self.pq.put(document)
+
+                self.transform_bar.update(len(batch))
+                self.transform_count += len(batch)
 
     def _handle_failed_documents(
         self,
@@ -528,10 +529,11 @@ class PullTransformPush:
                 traceback.print_exc()
                 print(e)
 
-            failed_documents = self._handle_failed_documents(res, batch)
+            finally:
+                failed_documents = self._handle_failed_documents(res, batch)
 
-            self.push_bar.update(len(batch) - len(failed_documents))
-            self.push_count += len(batch) - len(failed_documents)
+                self.push_bar.update(len(batch) - len(failed_documents))
+                self.push_count += len(batch) - len(failed_documents)
 
     def _init_progress_bars(self) -> None:
         """
