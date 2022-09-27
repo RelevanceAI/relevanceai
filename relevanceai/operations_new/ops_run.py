@@ -768,6 +768,8 @@ class OperationRun(TransformBase):
                 }
             ]
 
+        engine = kwargs.pop("engine", "joseph")
+
         # needs to be here due to circular imports
         from relevanceai.operations_new.ops_manager import OperationManager
 
@@ -775,18 +777,28 @@ class OperationRun(TransformBase):
             dataset=dataset,
             operation=self,
         ) as dataset:
-            res = self.batch_transform_upsert(
-                dataset=dataset,
-                select_fields=select_fields,
-                filters=filters,
-                chunksize=chunksize,
-                batched=batched,
-                **kwargs,
-            )
+            if engine == "joseph":
+                res = self.joseph_engine(
+                    dataset=dataset,
+                    select_fields=select_fields,
+                    filters=filters,
+                    chunksize=chunksize,
+                    batched=batched,
+                    **kwargs,
+                )
+            elif engine == "jacky":
+                res = self.jacky_engine(
+                    dataset=dataset,
+                    select_fields=select_fields,
+                    filters=filters,
+                    chunksize=chunksize,
+                    batched=batched,
+                    **kwargs,
+                )
 
         return res
 
-    def batch_transform_upsert(
+    def joseph_engine(
         self,
         dataset: Dataset,
         func_args: Optional[Tuple[Any]] = None,
@@ -824,6 +836,24 @@ class OperationRun(TransformBase):
             **kwargs,
         )
         ptp.run()
+
+    def jacky_engine(
+        self,
+        dataset: Dataset,
+        select_fields: list = None,
+        filters: list = None,
+        chunksize: int = None,
+        **kwargs,
+    ):
+        after_id = kwargs.pop("after_id")
+        for chunk in dataset.chunk_dataset(
+            select_fields=select_fields,
+            chunksize=chunksize,
+            filters=filters,
+            after_id=after_id,
+        ):
+            new_chunk = self.transform(chunk)
+            dataset.upsert_documents(documents=new_chunk)
 
     def store_operation_metadata(
         self,
