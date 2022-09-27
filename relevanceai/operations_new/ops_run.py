@@ -23,7 +23,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
 
-from relevanceai.constants.constants import CONFIG
+from relevanceai.constants.constants import CONFIG, ONE_MB
 from relevanceai.dataset import Dataset
 from relevanceai.operations_new.transform_base import TransformBase
 from relevanceai.utils.helpers.helpers import getsizeof
@@ -62,7 +62,7 @@ class PullTransformPush:
         func_kwargs: Optional[Dict[str, Any]] = None,
         pull_chunksize: Optional[int] = None,
         push_chunksize: Optional[int] = None,
-        transform_chunksize: Optional[int] = 128,
+        transform_chunksize: Optional[int] = 16,
         warmup_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
@@ -234,7 +234,10 @@ class PullTransformPush:
         document_sizes = [
             getsizeof(sample_document) for sample_document in sample_documents
         ]
-        return max(1, sum(document_sizes) / len(sample_documents))
+        if sample_documents:
+            return sum(document_sizes) / len(sample_documents)
+        else:
+            return ONE_MB
 
     def _get_optimal_chunksize(
         self, sample_documents: List[Dict[str, Any]], method: str
@@ -243,7 +246,7 @@ class PullTransformPush:
         Calculates the optimal batch size given a list of sampled documents and constraints in config
         """
         document_size = self._get_average_document_size(sample_documents)
-        document_size = document_size / 2**20
+        document_size = document_size / ONE_MB
         target_chunk_mb = int(self.config.get_option("upload.target_chunk_mb"))
         max_chunk_size = int(self.config.get_option("upload.max_chunk_size"))
         chunksize = int(target_chunk_mb / document_size)
