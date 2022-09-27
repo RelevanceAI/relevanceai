@@ -62,7 +62,7 @@ class PullTransformPush:
         func_kwargs: Optional[Dict[str, Any]] = None,
         pull_chunksize: Optional[int] = None,
         push_chunksize: Optional[int] = None,
-        transform_chunksize: Optional[int] = 16,
+        transform_chunksize: Optional[int] = 8,
         warmup_chunksize: Optional[int] = None,
         filters: Optional[list] = None,
         select_fields: Optional[list] = None,
