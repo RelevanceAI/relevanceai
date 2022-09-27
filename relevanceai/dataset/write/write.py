@@ -494,7 +494,6 @@ class Write(Read):
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         transform_chunksize: int = 32,
-        multithreaded_update: bool = True,
         ingest_in_background: bool = True,
         **kwargs,
     ):
@@ -535,27 +534,46 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        from relevanceai.operations_new.ops_run import PullTransformPush
+        engine = kwargs.get("engine", "joseph")
 
-        ptp = PullTransformPush(
-            dataset=self,
-            func=bulk_func,
-            func_args=bulk_func_args,
-            func_kwargs=bulk_func_kwargs,
-            pull_chunksize=chunksize,
-            transform_chunksize=transform_chunksize,
-            push_chunksize=chunksize,
-            filters=filters,
-            select_fields=select_fields,
-            transform_workers=transform_workers,
-            push_workers=push_workers,
-            buffer_size=buffer_size,
-            show_progress_bar=show_progress_bar,
-            timeout=timeout,
-            ingest_in_background=ingest_in_background,
-            **kwargs,
-        )
-        ptp.run()
+        if engine == "joseph":
+            from relevanceai.operations_new.ops_run import PullTransformPush
+
+            ptp = PullTransformPush(
+                dataset=self,
+                func=bulk_func,
+                func_args=bulk_func_args,
+                func_kwargs=bulk_func_kwargs,
+                pull_chunksize=chunksize,
+                transform_chunksize=transform_chunksize,
+                push_chunksize=chunksize,
+                filters=filters,
+                select_fields=select_fields,
+                transform_workers=transform_workers,
+                push_workers=push_workers,
+                buffer_size=buffer_size,
+                show_progress_bar=show_progress_bar,
+                timeout=timeout,
+                ingest_in_background=ingest_in_background,
+                **kwargs,
+            )
+            ptp.run()
+        elif engine == "jacky":
+            args = () if bulk_func_args is None else bulk_func_args
+            kwargs = {} if bulk_func_kwargs is None else bulk_func_kwargs
+            for chunk in self.chunk_dataset(
+                select_fields=select_fields,
+                chunksize=chunksize,
+                filters=filters,
+                after_id=kwargs.pop("after_id"),
+            ):
+                new_chunk = bulk_func(chunk, *args, **kwargs)
+                self.upsert_documents(documents=new_chunk, max_workers=push_workers)
+
+        else:
+            raise ValueError(
+                "Invalid engine selection, please select one of `joseph` or `jacky`"
+            )
 
     @track
     def cat(self, vector_name: Union[str, None] = None, fields: Optional[List] = None):
