@@ -534,7 +534,7 @@ class Write(Read):
 
             df.apply(update_documents)
         """
-        engine = kwargs.get("engine", "joseph")
+        engine = kwargs.pop("engine", "joseph")
 
         if engine == "joseph":
             from relevanceai.operations_new.ops_run import PullTransformPush
