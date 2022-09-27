@@ -369,7 +369,7 @@ class PullTransformPush:
         chunksize = self.push_chunksize
         while len(batch) < chunksize:
             try:
-                document = queue.get_nowait()
+                document = queue.get(timeout=1)
                 batch.append(document)
             except:
                 break

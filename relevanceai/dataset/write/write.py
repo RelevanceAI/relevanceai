@@ -494,7 +494,6 @@ class Write(Read):
         buffer_size: int = 0,
         show_progress_bar: bool = True,
         transform_chunksize: int = 8,
-        multithreaded_update: bool = True,
         ingest_in_background: bool = True,
         **kwargs,
     ):
