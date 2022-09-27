@@ -768,7 +768,7 @@ class OperationRun(TransformBase):
                 }
             ]
 
-        engine = kwargs.pop("engine", "joseph")
+        engine = kwargs.pop("engine", "jacky")
 
         # needs to be here due to circular imports
         from relevanceai.operations_new.ops_manager import OperationManager
