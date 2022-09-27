@@ -76,7 +76,7 @@ class PullTransformPush:
         ingest_in_background: bool = True,
         run_in_background: bool = False,
         ram_ratio: float = 0.8,
-        batched: bool = False,
+        batched: bool = True,
         retry_count: int = 3,
         after_id: Optional[List[str]] = None,
         pull_limit: Optional[int] = None,
