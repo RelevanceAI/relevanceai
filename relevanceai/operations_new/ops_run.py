@@ -845,12 +845,11 @@ class OperationRun(TransformBase):
         chunksize: int = None,
         **kwargs,
     ):
-        after_id = kwargs.pop("after_id")
         for chunk in dataset.chunk_dataset(
             select_fields=select_fields,
             chunksize=chunksize,
             filters=filters,
-            after_id=after_id,
+            after_id=kwargs.pop("after_id"),
         ):
             new_chunk = self.transform(chunk)
             dataset.upsert_documents(documents=new_chunk)
