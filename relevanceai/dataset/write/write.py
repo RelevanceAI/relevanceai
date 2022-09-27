@@ -561,11 +561,14 @@ class Write(Read):
         elif engine == "jacky":
             args = () if bulk_func_args is None else bulk_func_args
             kwargs = {} if bulk_func_kwargs is None else bulk_func_kwargs
-            for chunk in self.chunk_dataset(
-                select_fields=select_fields,
-                chunksize=chunksize,
-                filters=filters,
-                after_id=kwargs.pop("after_id"),
+            for chunk in tqdm(
+                self.chunk_dataset(
+                    select_fields=select_fields,
+                    chunksize=chunksize,
+                    filters=filters,
+                    after_id=kwargs.pop("after_id", None),
+                ),
+                disable=(not kwargs.pop("show_progress_bar", True)),
             ):
                 new_chunk = bulk_func(chunk, *args, **kwargs)
                 self.upsert_documents(documents=new_chunk, max_workers=push_workers)
