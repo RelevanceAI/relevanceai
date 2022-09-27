@@ -338,7 +338,9 @@ class PullTransformPush:
                 if self.batched:
                     document = queue.get_nowait()
                 else:
-                    document = queue.get()
+                    document = (
+                        queue.get()
+                    )  # no timeout here cos we want docs as soon as they are available
             except:
                 break
             else:
@@ -371,7 +373,7 @@ class PullTransformPush:
         chunksize = self.push_chunksize
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=1)
+                document = queue.get(timeout=1)  # timeout here to reduce no. API calls
             except:
                 break
             else:
