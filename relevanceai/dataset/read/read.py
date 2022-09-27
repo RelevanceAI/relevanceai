@@ -711,7 +711,7 @@ class Read(ClusterRead):
     def chunk_dataset(
         self,
         select_fields: List = None,
-        chunksize: int = 100,
+        chunksize: Optional[int] = 100,
         filters: list = None,
         after_id: list = None,
     ):
@@ -739,6 +739,7 @@ class Read(ClusterRead):
                 ds.upsert_documents(docs)
 
         """
+        chunksize = 100 if chunksize is None else chunksize
         docs = self.get_documents(
             number_of_documents=chunksize,
             filters=filters,
