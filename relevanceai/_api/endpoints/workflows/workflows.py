@@ -17,7 +17,12 @@ class WorkflowsClient(_Base):
         super().__init__(credentials)
 
     def trigger(
-        self, params: dict, notebook_path: str, instance_type: str, dataset_id: str
+        self,
+        params: dict,
+        notebook_path: str,
+        instance_type: str,
+        dataset_id: str,
+        send_email: bool = True,
     ):
         """
         Trigger a workflow
@@ -30,6 +35,7 @@ class WorkflowsClient(_Base):
                 "notebook_path": notebook_path,
                 "instance_type": instance_type,
                 "dataset_id": dataset_id,
+                "send_email": send_email,
             },
         )
 
