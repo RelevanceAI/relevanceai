@@ -351,7 +351,10 @@ class PullTransformPush:
                         queue.get()
                     )  # no timeout here cos we want docs as soon as they are available
             except Empty:
-                logger.info(f"Thread: {thread_name}\t- transform queue empty")
+                logger.info(
+                    f"Thread: {thread_name}\t- Transform Queue Empty, breaking... (bs: [{len(batch)} / {chunksize}])"
+                )
+                break
             else:
                 batch.append(document)
 
@@ -390,7 +393,7 @@ class PullTransformPush:
                 )  # timeout here to reduce no. API calls
             except Empty:
                 logger.info(
-                    f"Thread: {thread_name}\t- Push queue Empty, breaking... (bs: [{len(batch)} / {chunksize}])"
+                    f"Thread: {thread_name}\t- Push Queue Empty, breaking... (bs: [{len(batch)} / {chunksize}])"
                 )
                 break
             else:
