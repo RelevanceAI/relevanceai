@@ -556,6 +556,11 @@ class Operations(Write):
             **kwargs,
         )
 
+        run_kwargs = {}
+        for key in get_ptp_args():
+            if key in kwargs:
+                run_kwargs[key] = kwargs.pop(key)
+
         if filters is not None:
             filters = ops._get_filters(filters, vector_fields)
 
@@ -565,6 +570,7 @@ class Operations(Write):
             batched=batched,
             chunksize=chunksize,
             filters=filters,
+            **run_kwargs,
         )
         print()
         print(

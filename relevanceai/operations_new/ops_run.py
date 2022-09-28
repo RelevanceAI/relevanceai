@@ -659,15 +659,15 @@ class PullTransformPush:
 
         # Try to join if not running in background
         self.pull_thread.join(timeout=timeout)
-        logger.info("joined pull thread")
+        logger.info(f"Thread: Pull_Worker\t- joined thread")
 
         for thread in self.transform_threads:
             thread.join(timeout=timeout)
-            logger.info("joined transform thread")
+            logger.info(f"Thread: {thread.name}\t- joined thread")
 
         for thread in self.push_threads:
             thread.join(timeout=timeout)
-            logger.info("joined push thread")
+            logger.info(f"Thread: {thread.name}\t- joined thread")
 
     def _threads_are_alive(self) -> True:
         """
