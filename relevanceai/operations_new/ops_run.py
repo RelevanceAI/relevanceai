@@ -267,7 +267,6 @@ class PullTransformPush:
         after_id: Union[List[str], None] = self.after_id
 
         while not self.timeout_event.is_set():
-            logger.info("pull")
 
             current_count = self.pull_bar.n
 
@@ -293,6 +292,7 @@ class PullTransformPush:
             #         = min(~512,          (3333 - 3000 = 333))     = 333
             page_size = min(pull_chunksize, pull_limit)
 
+            logger.info(f"Thread: Pull_Worker\t- pulling {page_size} documents")
             res = self.pull_dataset.datasets.documents.get_where(
                 dataset_id=self.pull_dataset_id,
                 page_size=page_size,
@@ -323,7 +323,8 @@ class PullTransformPush:
             self.pull_count += len(documents)
             percentage = self.pull_count * 100 / self.ndocs
             logger.info(
-                f"Thread:{None} - pull progress {percentage:.2f}% [{self.pull_count}/{self.ndocs}]"
+                f"Thread: Pull_Worker\t- Successfully pulled {len(documents)} documents \
+                    {percentage:.2f}% [{self.pull_count}/{self.ndocs}]"
             )
 
     def _get_transform_batch(self) -> List[Dict[str, Any]]:
@@ -338,7 +339,7 @@ class PullTransformPush:
 
         if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
-            logger.info(f"Thread: {thread_name} - processing warmup batch")
+            logger.info(f"Thread: {thread_name}\t- processing warmup batch")
         else:
             chunksize = self.transform_chunksize
 
@@ -351,7 +352,7 @@ class PullTransformPush:
                         queue.get()
                     )  # no timeout here cos we want docs as soon as they are available
             except Empty:
-                logger.info(f"Thread: {thread_name} - transform queue empty")
+                logger.info(f"Thread: {thread_name}\t- transform queue empty")
             else:
                 batch.append(document)
 
@@ -386,7 +387,7 @@ class PullTransformPush:
             try:
                 document = queue.get(timeout=1)  # timeout here to reduce no. API calls
             except Empty:
-                logger.info(f"Thread: {thread_name} - push queue empty")
+                logger.info(f"Thread: {thread_name}\t- push queue empty")
             else:
                 batch.append(document)
 
@@ -406,29 +407,28 @@ class PullTransformPush:
             if not batch:
                 continue
             logger.info(
-                f"Thread:{thread_name} - got transform batch (bs: {len(batch)})"
+                f"Thread: {thread_name}\t- got transform batch (bs: {len(batch)})"
             )
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
 
             try:
-                logger.info(f"Thread:{thread_name} - started transforming...")
+                logger.info(f"Thread: {thread_name}\t- started transforming...")
                 new_batch = self.func(
                     batch,
                     *self.func_args,
                     **self.func_kwargs,
                 )
-                logger.info(f"Thread:{thread_name} - finished transforming")
+                logger.info(f"Thread: {thread_name}\t- finished transforming")
 
-            except Exception as e:
-                logger.error(e)
-                logger.error(*sys.exc_info())
+            except Exception:
+                logger.error(f"Thread: {thread_name}\t- {traceback.format_exc()}")
 
             else:
-                logger.info(f"Thread:{thread_name} - started postprocessing...")
+                logger.info(f"Thread: {thread_name}\t- started postprocessing...")
                 batch = PullTransformPush._postprocess(new_batch, old_batch)
-                logger.info(f"Thread:{thread_name} - finished postprocessing")
+                logger.info(f"Thread: {thread_name}\t- finished postprocessing")
 
             finally:
                 for document in batch:
@@ -438,7 +438,7 @@ class PullTransformPush:
                 self.transform_count += len(batch)
                 percentage = self.transform_count * 100 / self.ndocs
                 logger.info(
-                    f"Thread:{thread_name} - transform progress {percentage:.2f}% [{self.transform_count}/{self.ndocs}]"
+                    f"Thread: {thread_name}\t- transform progress {percentage:.2f}% [{self.transform_count}/{self.ndocs}]"
                 )
 
     def _handle_failed_documents(
@@ -541,9 +541,8 @@ class PullTransformPush:
                         ingest_in_background=self.ingest_in_background,
                     )
 
-            except Exception as e:
-                logger.error(e)
-                logger.error(*sys.exc_info())
+            except Exception:
+                logger.error(f"Thread: {thread_name}\t- {traceback.format_exc()}")
 
             else:
                 res = {
@@ -560,7 +559,7 @@ class PullTransformPush:
                 self.push_count += n_pushed
                 percentage = self.push_count * 100 / self.ndocs
                 logger.info(
-                    f"Thread:{thread_name} - push progress {percentage:.2f}% [{self.push_count}/{self.ndocs}]"
+                    f"Thread: {thread_name}\t- push progress {percentage:.2f}% [{self.push_count}/{self.ndocs}]"
                 )
 
     def _init_progress_bars(self) -> None:
@@ -628,7 +627,7 @@ class PullTransformPush:
             if not self.tq.empty():
                 for thread in self.transform_threads:
                     thread.start()
-                    logger.info("started transform thread")
+                    logger.info(f"Thread: {thread.name}\t- Starting...")
 
                 break
             time.sleep(1)
@@ -637,7 +636,7 @@ class PullTransformPush:
             if not self.pq.empty():
                 for thread in self.push_threads:
                     thread.start()
-                    logger.info("started push thread")
+                    logger.info(f"Thread: {thread.name}\t- Starting...")
 
                 break
             time.sleep(1)
