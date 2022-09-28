@@ -130,7 +130,7 @@ class PullTransformPush:
             self.transform_chunksize = self.ndocs
 
         if func is None:
-            tqdm.write(f"Transform Chunksize: {self.transform_chunksize:,}")
+            logger.debug(f"Transform Chunksize: {self.transform_chunksize:,}")
 
         self.ingest_in_background = ingest_in_background
 
@@ -150,16 +150,12 @@ class PullTransformPush:
         else:
             self.transform_workers = 1
 
-        msg = f"Using {self.transform_workers} transform worker(s)"
-        tqdm.write(f"Using {self.transform_workers} transform worker(s)")
-        logger.info(msg)
+        logger.debug(f"Using {self.transform_workers} transform worker(s)")
 
         self.push_workers = (
             math.ceil(cpu_count / 4) if push_workers is None else push_workers
         )
-        msg = f"Using {self.push_workers} push worker(s)"
-        tqdm.write(f"Using {self.push_workers} push worker(s)")
-        logger.info(msg)
+        logger.debug(f"Using {self.push_workers} push worker(s)")
 
         self.func_args = () if func_args is None else func_args
         self.func_kwargs = {} if func_kwargs is None else func_kwargs
@@ -181,7 +177,7 @@ class PullTransformPush:
 
             self.single_queue_size = int(total_queue_size / 2)
 
-        tqdm.write(f"Max number of documents in queue: {self.single_queue_size:,}")
+        logger.debug(f"Max number of documents in queue: {self.single_queue_size:,}")
 
         # mp queues are thread-safe while being able to be used across processes
         self.tq: Queue = Queue(maxsize=self.single_queue_size)
@@ -321,6 +317,10 @@ class PullTransformPush:
 
             self.pull_bar.update(len(documents))
             self.pull_count += len(documents)
+            percentage = self.pull_count * 100 / self.ndocs
+            logger.info(
+                f"Thread:{None} - pull progress {percentage:.2f}% [{self.pull_count}/{self.ndocs}]"
+            )
 
     def _get_transform_batch(self) -> List[Dict[str, Any]]:
         """
@@ -394,33 +394,35 @@ class PullTransformPush:
         Then, repeatedly put each document from the processed batch in the push queue
         """
 
-        thread_id = threading.get_ident()
+        thread_name = threading.current_thread().name
         while self.transform_count < self.ndocs and not self.timeout_event.is_set():
             batch = self._get_transform_batch()
             if not batch:
                 continue
-            logger.info(f"Thread:{thread_id} - got transform batch (bs: {len(batch)}")
+            logger.info(
+                f"Thread:{thread_name} - got transform batch (bs: {len(batch)})"
+            )
 
             if self.func is not None:
                 old_batch = deepcopy(batch)
 
             try:
-                logger.info(f"Thread:{thread_id} - started transforming...")
+                logger.info(f"Thread:{thread_name} - started transforming...")
                 new_batch = self.func(
                     batch,
                     *self.func_args,
                     **self.func_kwargs,
                 )
-                logger.info(f"Thread:{thread_id} - finished transforming")
+                logger.info(f"Thread:{thread_name} - finished transforming")
 
             except Exception as e:
                 traceback.print_exc()
                 print(e)
 
             else:
-                logger.info(f"Thread:{thread_id} - started postprocessing...")
+                logger.info(f"Thread:{thread_name} - started postprocessing...")
                 batch = PullTransformPush._postprocess(new_batch, old_batch)
-                logger.info(f"Thread:{thread_id} - finished postprocessing")
+                logger.info(f"Thread:{thread_name} - finished postprocessing")
 
             finally:
                 for document in batch:
@@ -428,6 +430,10 @@ class PullTransformPush:
 
                 self.transform_bar.update(len(batch))
                 self.transform_count += len(batch)
+                percentage = self.transform_count * 100 / self.ndocs
+                logger.info(
+                    f"Thread:{thread_name} - transform progress {percentage:.2f}% [{self.transform_count}/{self.ndocs}]"
+                )
 
     def _handle_failed_documents(
         self,
@@ -511,6 +517,7 @@ class PullTransformPush:
         """
         Iteratively gather a batch of processed documents and push these to cloud
         """
+        thread_name = threading.current_thread().name
         while self.push_count < self.ndocs and not self.timeout_event.is_set():
             batch = self._get_push_batch()
             if not batch:
@@ -527,23 +534,29 @@ class PullTransformPush:
                         return_documents=True,
                         ingest_in_background=self.ingest_in_background,
                     )
-                else:
-                    res = {
-                        "response_json": {},
-                        "documents": batch,
-                        "status_code": 200,
-                    }
-                    logger.info("pushed batch")
 
             except Exception as e:
                 traceback.print_exc()
                 print(e)
 
+            else:
+                res = {
+                    "response_json": {},
+                    "documents": batch,
+                    "status_code": 200,
+                }
+                logger.info("pushed batch")
+
             finally:
                 failed_documents = self._handle_failed_documents(res, batch)
 
-                self.push_bar.update(len(batch) - len(failed_documents))
-                self.push_count += len(batch) - len(failed_documents)
+                n_pushed = len(batch) - len(failed_documents)
+                self.push_bar.update(n_pushed)
+                self.push_count += n_pushed
+                percentage = self.push_count * 100 / self.ndocs
+                logger.info(
+                    f"Thread:{thread_name} - push progress {percentage:.2f}% [{self.push_count}/{self.ndocs}]"
+                )
 
     def _init_progress_bars(self) -> None:
         """
