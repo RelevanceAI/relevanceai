@@ -18,7 +18,7 @@ import threading
 import traceback
 import logging
 
-from queue import Queue
+from queue import Empty, Queue
 from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Type, Union, Optional, Callable
@@ -30,7 +30,11 @@ from relevanceai.utils.helpers.helpers import getsizeof
 
 from tqdm.auto import tqdm
 
-logging.basicConfig()
+logging.basicConfig(
+    format=(
+        "[%(levelname)s:%(process)d %(module)s:%(lineno)d %(asctime)s] " "%(message)s"
+    ),
+)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 # If you need to use logging, it is recommended that you set `show_progress_bar=False`
@@ -251,9 +255,7 @@ class PullTransformPush:
         chunksize = min(chunksize, max_chunk_size)
 
         thread_name = threading.current_thread().name
-        msg = f"{thread_name}\tchunksize: {chunksize}".expandtabs(5)
-        logger.info(msg)
-        tqdm.write(msg)
+        logger.debug(f"{thread_name}\tchunksize: {chunksize}".expandtabs(5))
 
         return chunksize
 
@@ -332,11 +334,11 @@ class PullTransformPush:
 
         queue = self.tq
 
+        thread_name = threading.current_thread().name
+
         if self.transform_count == 0 and self.warmup_chunksize is not None:
             chunksize = self.warmup_chunksize
-            msg = "Processing Warmup Batch"
-            tqdm.write(msg)
-            logger.info(msg)
+            logger.info(f"Thread: {thread_name} - processing warmup batch")
         else:
             chunksize = self.transform_chunksize
 
@@ -348,8 +350,8 @@ class PullTransformPush:
                     document = (
                         queue.get()
                     )  # no timeout here cos we want docs as soon as they are available
-            except:
-                break
+            except Empty:
+                logger.info(f"Thread: {thread_name} - transform queue empty")
             else:
                 batch.append(document)
 
@@ -362,6 +364,8 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
+
+        thread_name = threading.current_thread().name
 
         # Calculate optimal batch size
         if self.push_chunksize is None:
@@ -381,8 +385,8 @@ class PullTransformPush:
         while len(batch) < chunksize:
             try:
                 document = queue.get(timeout=1)  # timeout here to reduce no. API calls
-            except:
-                break
+            except Empty:
+                logger.info(f"Thread: {thread_name} - push queue empty")
             else:
                 batch.append(document)
 
@@ -418,8 +422,8 @@ class PullTransformPush:
                 logger.info(f"Thread:{thread_name} - finished transforming")
 
             except Exception as e:
-                traceback.print_exc()
-                print(e)
+                logger.error(e)
+                logger.error(*sys.exc_info())
 
             else:
                 logger.info(f"Thread:{thread_name} - started postprocessing...")
@@ -538,8 +542,8 @@ class PullTransformPush:
                     )
 
             except Exception as e:
-                traceback.print_exc()
-                print(e)
+                logger.error(e)
+                logger.error(*sys.exc_info())
 
             else:
                 res = {
@@ -547,7 +551,6 @@ class PullTransformPush:
                     "documents": batch,
                     "status_code": 200,
                 }
-                logger.info("pushed batch")
 
             finally:
                 failed_documents = self._handle_failed_documents(res, batch)
