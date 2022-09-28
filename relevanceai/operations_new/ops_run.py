@@ -36,7 +36,7 @@ logging.basicConfig(
     ),
 )
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.CRITICAL)
 # If you need to use logging, it is recommended that you set `show_progress_bar=False`
 # otherwise it can be hard to keep track in between the tqdm progress bar
 
