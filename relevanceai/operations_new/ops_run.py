@@ -323,8 +323,7 @@ class PullTransformPush:
             self.pull_count += len(documents)
             percentage = self.pull_count * 100 / self.ndocs
             logger.info(
-                f"Thread: Pull_Worker\t- Successfully pulled {len(documents)} documents \
-                    {percentage:.2f}% [{self.pull_count}/{self.ndocs}]"
+                f"Thread: Pull_Worker\t- Successfully pulled {len(documents)} documents {percentage:.2f}% [{self.pull_count}/{self.ndocs}]"
             )
 
     def _get_transform_batch(self) -> List[Dict[str, Any]]:
@@ -365,6 +364,7 @@ class PullTransformPush:
         batch: List[Dict[str, Any]] = []
 
         queue = self.pq
+        timeout = 1
 
         thread_name = threading.current_thread().name
 
@@ -385,9 +385,14 @@ class PullTransformPush:
         chunksize = self.push_chunksize
         while len(batch) < chunksize:
             try:
-                document = queue.get(timeout=1)  # timeout here to reduce no. API calls
+                document = queue.get(
+                    timeout=timeout
+                )  # timeout here to reduce no. API calls
             except Empty:
-                logger.info(f"Thread: {thread_name}\t- push queue empty")
+                logger.info(
+                    f"Thread: {thread_name}\t- Push queue Empty, breaking... (bs: [{len(batch)} / {chunksize}])"
+                )
+                break
             else:
                 batch.append(document)
 
@@ -539,6 +544,9 @@ class PullTransformPush:
                         batch,
                         return_documents=True,
                         ingest_in_background=self.ingest_in_background,
+                    )
+                    logger.info(
+                        f"Thread: {thread_name}\t- Successfully pushed {len(batch)} documents"
                     )
 
             except Exception:
