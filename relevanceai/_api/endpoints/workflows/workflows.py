@@ -78,6 +78,7 @@ class WorkflowsClient(_Base):
         workflow_name: str,
         additional_information: str = "",
         status: Union[WorkflowStatus, str] = WorkflowStatus.IN_PROGRESS,
+        send_email: bool = True,
     ):
         """
         If status is complete, it triggers an email.
@@ -93,5 +94,6 @@ class WorkflowsClient(_Base):
                 "workflow_name": workflow_name,
                 "additional_information": additional_information,
                 "metadata": metadata,
+                "send_email": send_email,
             },
         )
