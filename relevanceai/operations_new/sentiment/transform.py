@@ -142,8 +142,8 @@ class SentimentTransform(TransformBase):
 
             updates = [
                 {
-                    "sentiment": scores[index],
-                    "overall_sentiment_score": labels[index],
+                    "sentiment": labels[index],
+                    "overall_sentiment_score": scores[index],
                 }
                 for index in range(len(texts))
             ]
