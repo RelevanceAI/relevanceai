@@ -22,3 +22,10 @@ def decode_workflow_token(token):
     # Set workflow ID for tracking
     os.environ["WORKFLOW_ID"] = config.get("job_id", "")
     return config
+
+
+def encode_workflow_config(config: dict):
+    """
+    Encode workflow token
+    """
+    return base64.b64encode(json.dumps(config).encode())
