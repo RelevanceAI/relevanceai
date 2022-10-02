@@ -8,7 +8,7 @@ def read_token_from_script():
     dictionary object.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("token", description="The token used for the workflow config.")
+    parser.add_argument("token", help="The token used for the workflow config.")
     args = parser.parse_args()
     token = args.token
     config = decode_workflow_token(token)
