@@ -19,3 +19,4 @@ from relevanceai.utils.filter_helper import *
 from relevanceai.utils.distances import *
 from relevanceai.utils.doc_utils import DocUtils
 from relevanceai.utils.base64_decode import *
+from relevanceai.utils.parse_workflow_token import *
