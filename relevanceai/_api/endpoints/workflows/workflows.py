@@ -89,7 +89,6 @@ class WorkflowsClient(_Base):
             f"/workflows/{workflow_id}/status",
             method="POST",
             parameters={
-                "metadata": {},
                 "status": status,
                 "workflow_name": workflow_name,
                 "additional_information": additional_information,
