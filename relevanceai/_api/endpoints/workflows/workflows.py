@@ -74,8 +74,8 @@ class WorkflowsClient(_Base):
     def status(
         self,
         workflow_id: str,
-        metadata: dict,
         workflow_name: str,
+        metadata: dict=None,
         additional_information: str = "",
         status: Union[WorkflowStatus, str] = WorkflowStatus.IN_PROGRESS,
         send_email: bool = True,
@@ -85,11 +85,12 @@ class WorkflowsClient(_Base):
         """
         if isinstance(status, WorkflowStatus):
             status = status.value
+        if metadata is None:
+            metadata = {}
         return self.make_http_request(
             f"/workflows/{workflow_id}/status",
             method="POST",
             parameters={
-                "metadata": {},
                 "status": status,
                 "workflow_name": workflow_name,
                 "additional_information": additional_information,
