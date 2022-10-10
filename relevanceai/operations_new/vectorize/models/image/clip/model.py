@@ -28,7 +28,7 @@ class ClipImage2Vec(VectorizeModelBase):
     def __init__(self, url, vector_length, context_length=77):
 
         self.context_length = context_length
-        self.device = "cuda" if torch.cuda.is_available else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model, self.preprocess = clip.load(url, device=self.device)
         self.vector_length = vector_length
         self.url = url
