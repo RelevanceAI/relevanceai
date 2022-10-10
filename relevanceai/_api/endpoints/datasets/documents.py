@@ -132,6 +132,7 @@ class DocumentsClient(_Base):
         random_state: int = 0,
         is_random: bool = False,
         after_id: Optional[List] = None,
+        worker_number: int = 0,
     ):
         """
         Retrieve documents with filters. Cursor is provided to retrieve even more documents. Loop through it to retrieve all documents in the database. Filter is used to retrieve documents that match the conditions set in a filter query. This is used in advance search to filter the documents that are searched. \n
@@ -230,6 +231,7 @@ class DocumentsClient(_Base):
                     "filters": filters,
                     "random_state": random_state,
                     "is_random": is_random,
+                    "worker_number": worker_number
                 },
             )
         return self.make_http_request(
@@ -245,6 +247,7 @@ class DocumentsClient(_Base):
                 "random_state": random_state,
                 "is_random": is_random,
                 "after_id": [] if after_id is None else after_id,
+                "worker_number": worker_number
             },
         )
 
