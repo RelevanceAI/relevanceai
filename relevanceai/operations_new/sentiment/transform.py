@@ -288,7 +288,7 @@ class SentimentTransform(TransformBase):
         for i, t in enumerate(self.text_fields):
             sentiments = self.analyze_sentiment(
                 [
-                    self.get_field(t, doc, missing_treatment="return_empty_string")
+                    str(self.get_field(t, doc, missing_treatment="return_empty_string"))
                     for doc in documents
                 ],
                 max_number_of_shap_documents=self.max_number_of_shap_documents,
