@@ -347,8 +347,8 @@ class Transport(JSONEncoderUtils, ConfigMixin):
 
             except JSONDecodeError as error:
                 self._log_no_json(base_url, endpoint, response.status_code, response)
-                return response
-
+                time.sleep(seconds_between_retries + 2)
+                continue
         return response
 
     async def make_async_http_request(
