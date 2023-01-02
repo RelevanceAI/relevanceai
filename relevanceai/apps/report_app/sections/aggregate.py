@@ -95,7 +95,9 @@ class AggregateSections(ReportAdvancedBlocks):
                                 sort=[{m["name"]: order}],
                                 filters=filters,
                             )["results"]
-                            group_metric_name = [group_metric[0][g["name"]] for g in group]
+                            group_metric_name = [
+                                group_metric[0][g["name"]] for g in group
+                            ]
                             group_metric_name_str = " & ".join(group_metric_name)
                             prefix = "Lowest" if order == "asc" else "Highest"
                             group_str = f"{prefix} {m['name']} for {group_name_str}: {round(group_metric[0][m['name']], decimals)} for {group_metric_name_str}"

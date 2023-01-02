@@ -14,7 +14,7 @@ Plotting Cluster Distributions
     from relevanceai import Client
 
     """
-    You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+    You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()

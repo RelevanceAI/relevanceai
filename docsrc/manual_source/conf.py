@@ -83,11 +83,11 @@ html_favicon = "favicon.png"
 html_logo = "logo.svg"
 
 html_theme_options = {
-    # "logo_link": "https://relevance.ai/wp-content/uploads/2021/11/logo.79f303e-1.svg",
+    # "logo_link": "https://tryrelevance.com/wp-content/uploads/2021/11/logo.79f303e-1.svg",
     "github_url": "https://github.com/relevanceai/relevanceai",
     "twitter_url": "https://mobile.twitter.com/relevanceai_",
     "collapse_navigation": False,
-    "external_links": [{"name": "Dashboard", "url": "https://cloud.relevance.ai"}],
+    "external_links": [{"name": "Dashboard", "url": "https://cloud.tryrelevance.com"}],
     "display_version": True,
     "switcher": {
         "json_url": "switcher.json",

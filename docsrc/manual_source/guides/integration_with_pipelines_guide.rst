@@ -128,7 +128,7 @@ We can see how they are stored below!
 
 .. parsed-literal::
 
-    https://cloud.relevance.ai/dataset/ecommerce-example/dashboard/data?page=1
+    https://cloud.tryrelevance.com/dataset/ecommerce-example/dashboard/data?page=1
 
 
 

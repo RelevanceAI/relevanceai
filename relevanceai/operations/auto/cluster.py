@@ -577,7 +577,7 @@ from relevanceai.constants.warning import Warning
 
 #         print(
 #             "Build your clustering app here: "
-#             f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+#             f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
 #         )
 
 #     def launch_cluster_app(self, configuration: dict = None):
@@ -600,10 +600,10 @@ from relevanceai.constants.warning import Warning
 
 #         """
 #         if configuration is None:
-#             url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+#             url = f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
 #             print(
 #                 "Build your clustering app here: "
-#                 f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+#                 f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
 #             )
 #             return url
 #         if "configuration" in configuration:
@@ -613,6 +613,6 @@ from relevanceai.constants.warning import Warning
 #         )
 
 #         # After you have created an app
-#         url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
+#         url = f"https://cloud.tryrelevance.com/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
 #         print(f"You can now access your deployable at {url}.")
 #         return url

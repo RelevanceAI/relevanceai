@@ -7,7 +7,7 @@ class ReportBase:
         self.dataset = dataset
         self.dataset_id = dataset.dataset_id
         self.deployable_id = deployable_id
-        self.base_url = "https://cloud.relevance.ai"
+        self.base_url = "https://cloud.tryrelevance.com"
         app_config = None
         self.reloaded = False
         if deployable_id:

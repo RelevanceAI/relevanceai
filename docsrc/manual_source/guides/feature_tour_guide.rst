@@ -23,7 +23,7 @@ encoding.
 
 Follow the signup flow and get your credentials below otherwise, you can
 sign up/login and find your credentials in the settings
-`here <https://auth.relevance.ai/signup/?callback=https%3A%2F%2Fcloud.relevance.ai%2Flogin%3Fredirect%3Dcli-api>`__
+`here <https://auth.tryrelevance.com/signup/?callback=https%3A%2F%2Fcloud.tryrelevance.com%2Flogin%3Fredirect%3Dcli-api>`__
 
 |image0|
 
@@ -34,7 +34,7 @@ sign up/login and find your credentials in the settings
     from relevanceai import Client
 
     """
-    You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+    You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
     Once you have signed up, click on the value under `Activation token` and paste it here
     """
     client = Client()
@@ -143,10 +143,10 @@ out of the box support for features such as multi-vector, filters,
 facets and traditional keyword matching to combine with your vector
 search. You can read more about how to construct a multivector query
 with those features
-`here <https://docs.relevance.ai/docs/vector-search-prerequisites>`__.
+`here <https://docs.tryrelevance.com/docs/vector-search-prerequisites>`__.
 
 See your search results on the dashboard here
-https://cloud.relevance.ai/sdk/search.
+https://cloud.tryrelevance.com/sdk/search.
 
 .. code:: python
 
@@ -163,8 +163,8 @@ See your multi-vector search results in the dashboard
 
 Want to quickly create some example applications with Relevance AI?
 Check out some other guides below! - `Text-to-image search with OpenAI’s
-CLIP <https://docs.relevance.ai/docs/quickstart-text-to-image-search>`__
+CLIP <https://docs.tryrelevance.com/docs/quickstart-text-to-image-search>`__
 - `Hybrid Text search with Universal Sentence Encoder using
-Vectorhub <https://docs.relevance.ai/docs/quickstart-text-search>`__ -
+Vectorhub <https://docs.tryrelevance.com/docs/quickstart-text-search>`__ -
 `Text search with Universal Sentence Encoder Question Answer from
-Google <https://docs.relevance.ai/docs/quickstart-question-answering>`__
+Google <https://docs.tryrelevance.com/docs/quickstart-question-answering>`__

@@ -62,7 +62,7 @@ Supported filter types at Relevance AI are listed below.
 * support for mixing together multiple filters such as in OR situations
 
 We will explain each filter type followed by a sample code snippet in the next pages. There is also a 
-:ref:`guide <https://docs.relevance.ai/docs/combining-filters-and-vector-search>` on how to combine filters and vector search.
+:ref:`guide <https://docs.tryrelevance.com/docs/combining-filters-and-vector-search>` on how to combine filters and vector search.
 
 .. image:: https://github.com/RelevanceAI/RelevanceAI-readme-docs/blob/v1.4.3/docs_template/GENERAL_FEATURES/_assets/exists.png?raw=true
   :width: 400
@@ -73,7 +73,7 @@ Exists
 
 This filter returns entries in a database if a certain field (as opposed to the field values in previously mentioned filter types) exists or doesn't exist in them. For instance, filtering out documents in which there is no field 'purchase-info'. *Note that this filter is case-sensitive.*
 
-You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
 Once you have signed up, click on the value under `Activation token` and paste it here
 
 .. code-block:: python
@@ -159,7 +159,7 @@ Contains
 This filter returns a document only if it contains a string value. Note that substrings are covered in this category. For instance, if a product name is composed of a name and a number (e.g. ABC-123), one might remember the name but not the number. This filter can easily return all products including the ABC string.
 *Note that this filter is case-sensitive.*
 
-You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
 Once you have signed up, click on the value under `Activation token` and paste it here
 
 .. code-block::
@@ -294,7 +294,7 @@ Numeric
 
 This filter is to perform the filtering operators on a numeric value. For instance, returning the documents with a price larger than 1000 dollars.
 
-You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
 Once you have signed up, click on the value under `Activation token` and paste it here
 
 .. code-block::
@@ -482,7 +482,7 @@ It is possible to combine multiple filters. For instance, the sample code below 
 A screenshot of the results can be seen on top.  
 
 
-You can sign up/login and find your credentials here: https://cloud.relevance.ai/sdk/api
+You can sign up/login and find your credentials here: https://cloud.tryrelevance.com/sdk/api
 Once you have signed up, click on the value under `Activation token` and paste it here
 
 

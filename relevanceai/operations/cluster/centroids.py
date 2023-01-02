@@ -213,7 +213,7 @@ class Centroids(APIClient):
         cluster_centers: List[Dict[str, List[float]]],
     ):
         """
-        API reference link: https://api.us-east-1.relevance.ai/latest/core/documentation#operation/UpdateClusterCentroids
+        API reference link: https://api.us-east-1.tryrelevance.com/latest/core/documentation#operation/UpdateClusterCentroids
 
         Update the centroids contained within your dataset
 
@@ -248,7 +248,7 @@ class Centroids(APIClient):
         self, centroid_id: str, dataset_id: str, vector_field: str, alias: str
     ):
         """
-        OLD API reference link: https://api.us-east-1.relevance.ai/latest/documentation#operation/delete_centroids_api_services_cluster_centroids__centroid_id__delete_post
+        OLD API reference link: https://api.us-east-1.tryrelevance.com/latest/documentation#operation/delete_centroids_api_services_cluster_centroids__centroid_id__delete_post
 
         Delete a centroid by ID
 

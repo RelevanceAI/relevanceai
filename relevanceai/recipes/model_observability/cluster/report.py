@@ -42,9 +42,9 @@ class ClusterReport(ReportApp):
         self.evaluator.internal_overview_report()
 
     def start_cluster_evaluator_from_dataset(
-        self, 
-        vector_fields:list, 
-        alias:str,
+        self,
+        vector_fields: list,
+        alias: str,
         feature_names: Union[list, dict] = None,
         metric: str = "euclidean",
         verbose: bool = False,
@@ -58,17 +58,20 @@ class ClusterReport(ReportApp):
                     "filter_type": "exists",
                     "condition": ">=",
                     "condition_value": " ",
-                } for field in [cluster_field] + vector_fields
+                }
+                for field in [cluster_field] + vector_fields
             ],
             select_fields=[cluster_field] + vector_fields,
             show_progress_bar=show_progress_bar,
         )
         self.X = self.dataset.get_field_across_documents(vector_fields[0], documents)
-        self.cluster_labels = self.dataset.get_field_across_documents(cluster_field, documents)
+        self.cluster_labels = self.dataset.get_field_across_documents(
+            cluster_field, documents
+        )
         self.centroids = {
-            d["_id"] : self.dataset.get_field(vector_fields[0], d)
+            d["_id"]: self.dataset.get_field(vector_fields[0], d)
             for d in self.dataset.datasets.cluster.centroids.documents(
-                dataset_id= self.dataset.dataset_id,
+                dataset_id=self.dataset.dataset_id,
                 vector_fields=vector_fields,
                 alias=alias,
                 page_size=9999,
@@ -76,8 +79,8 @@ class ClusterReport(ReportApp):
             )["results"]
         }
         self.start_cluster_evaluator(
-            self.X, 
-            self.cluster_labels, 
+            self.X,
+            self.cluster_labels,
             self.centroids,
             # cluster_names=cluster_names,
             feature_names=feature_names,
@@ -118,20 +121,28 @@ class ClusterReport(ReportApp):
             ]
         )
         for metric, explanation in {
-            "davies_bouldin_score" : "      [Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
-            "calinski_harabasz_score" : "      [Compactness, Separation] (-infinity to infinity, higher is better) Similar to Davies Bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to the Variance Ratio Criterion",
-            "silhouette_score" : "      [Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other clusters. This silhouette score is the average of every point’s silhouette score.",
-            "total_squared_error_score" : "      [Compactness] (0 to infinity, lower is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
+            "davies_bouldin_score": "      [Compactness, Separation] (0 to infinity, lower is better) This calculates the ratio between each cluster's squared error to the distance between cluster centroids.",
+            "calinski_harabasz_score": "      [Compactness, Separation] (-infinity to infinity, higher is better) Similar to Davies Bouldin score, but also considers the 'group dispersion matrix' that considers the cluster size. Its equivalent to the Variance Ratio Criterion",
+            "silhouette_score": "      [Compactness, Separation] (-1 to 1, higher is better) This is the distance between a sample and all other points in the same cluster, and the same sample to the closest other clusters. This silhouette score is the average of every point’s silhouette score.",
+            "total_squared_error_score": "      [Compactness] (0 to infinity, lower is better) The average squared error between each point of a cluster to its centroid. Its equivalent to inertia.",
         }.items():
             metric_name = " ".join(metric.split("_")).title()
             self.paragraph(
                 [self.bold(f"{metric_name}: "), self.evaluator.report[metric]], add=add
             )
             self.paragraph([self.italic(explanation)])
-        plot, plotted_method = self.evaluator.plot_boxplot(self.evaluator.report["silhouette_score_summary"], name="Silhouette Score")
-        self.plot_by_method(plot, title="Silhouette Score Box Plot", plot_method=plotted_method, add=add)
-        plot, plotted_method = self.evaluator.plot_boxplot(self.evaluator.report["squared_error_summary"], name="Squared Error")
-        self.plot_by_method(plot, title="Squared Error Box Plot", plot_method=plotted_method, add=add)
+        plot, plotted_method = self.evaluator.plot_boxplot(
+            self.evaluator.report["silhouette_score_summary"], name="Silhouette Score"
+        )
+        self.plot_by_method(
+            plot, title="Silhouette Score Box Plot", plot_method=plotted_method, add=add
+        )
+        plot, plotted_method = self.evaluator.plot_boxplot(
+            self.evaluator.report["squared_error_summary"], name="Squared Error"
+        )
+        self.plot_by_method(
+            plot, title="Squared Error Box Plot", plot_method=plotted_method, add=add
+        )
 
     def section_cluster_dendrogram(
         self,
@@ -146,7 +157,7 @@ class ClusterReport(ReportApp):
             "A dendrogram shows the hierarchical relationship between cluster. This can be especially useful to determine which clusters to combined with hierarchical linkage."
         )
         for method in hierarchy_methods:
-            height = max(15*self.evaluator.num_clusters, 300)
+            height = max(15 * self.evaluator.num_clusters, 300)
             plot, plotted_method = self.evaluator.plot_dendrogram(
                 hierarchy_method=method,
                 plot_method=plot_method,
@@ -154,23 +165,29 @@ class ClusterReport(ReportApp):
                 orientation=orientation,
             )
             self.plot_by_method(
-                plot, 
-                title=f"{method.title()} linkage dendrogram", 
+                plot,
+                title=f"{method.title()} linkage dendrogram",
                 plot_method=plotted_method,
                 height=height,
-                add=add
+                add=add,
             )
 
-    def section_cluster_distance_matrix(self, metrics=["cosine", "euclidean"], decimals: int = 4, add=True):
+    def section_cluster_distance_matrix(
+        self, metrics=["cosine", "euclidean"], decimals: int = 4, add=True
+    ):
         self.h2("Overview of cluster similarity matrix")
         self.paragraph(
             "Shows a heatmap of the similarity scores between different clusters. This can be especially useful to determine which clusters to combined."
         )
         for metric in metrics:
-            plot, plotted_method = self.evaluator.plot_distance_matrix(metric=metric, decimals=decimals)
+            plot, plotted_method = self.evaluator.plot_distance_matrix(
+                metric=metric, decimals=decimals
+            )
             chart_title = f"{metric.title()} similarity matrix"
             if metric in ["cosine"]:
                 chart_title += " (higher is more similar)"
             else:
                 chart_title += " (lower is more similar)"
-            self.plot_by_method(plot, title=chart_title, plot_method=plotted_method, add=add)
+            self.plot_by_method(
+                plot, title=chart_title, plot_method=plotted_method, add=add
+            )

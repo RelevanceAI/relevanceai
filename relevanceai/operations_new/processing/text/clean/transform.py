@@ -92,4 +92,4 @@ class CleanTextTransform(TransformBase):
         return new_documents
 
     def name(self):
-        return 'clean_text'
+        return "clean_text"

@@ -49,7 +49,7 @@ your search!
     !pip install git+https://github.com/openai/CLIP.git
 
 You can sign up/login and find your credentials here:
-https://cloud.relevance.ai/sdk/api Once you have signed up, click on the
+https://cloud.tryrelevance.com/sdk/api Once you have signed up, click on the
 value under ``Authorization token`` and paste it here
 
 .. code:: ipython3

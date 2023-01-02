@@ -79,7 +79,7 @@ class SearchClient(_Base):
 
             - For more information about the positive and negative document ids to personalize check out services.recommend.vector
 
-        For more even more advanced configuration and customisation of vector search, reach out to us at dev@relevance.ai and learn about our new advanced_vector_search.
+        For more even more advanced configuration and customisation of vector search, reach out to us at dev@tryrelevance.com and learn about our new advanced_vector_search.
 
         Parameters
         ----------
@@ -1061,18 +1061,18 @@ class SearchClient(_Base):
 
         self.categories = categories
         self.traditional_search_doc = (
-            "https://docs.relevance.ai/docs/better-text-search-with-hybrid"
+            "https://docs.tryrelevance.com/docs/better-text-search-with-hybrid"
         )
-        self.vector_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both"
-        self.diversity_search_doc = "https://docs.relevance.ai/docs/better-text-search-diversified-search-results"
-        self.hybrid_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-1"
-        self.semantic_search_doc = "https://docs.relevance.ai/docs/pure-word-matching-pure-vector-search-or-combination-of-both-2"
+        self.vector_search_doc = "https://docs.tryrelevance.com/docs/pure-word-matching-pure-vector-search-or-combination-of-both"
+        self.diversity_search_doc = "https://docs.tryrelevance.com/docs/better-text-search-diversified-search-results"
+        self.hybrid_search_doc = "https://docs.tryrelevance.com/docs/pure-word-matching-pure-vector-search-or-combination-of-both-1"
+        self.semantic_search_doc = "https://docs.tryrelevance.com/docs/pure-word-matching-pure-vector-search-or-combination-of-both-2"
         self.chunk_search_doc = (
-            "https://docs.relevance.ai/docs/better-text-search-chunk-search"
+            "https://docs.tryrelevance.com/docs/better-text-search-chunk-search"
         )
-        self.multistep_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data"
-        self.advanced_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-1"
-        self.advanced_multistep_chunk_doc = "https://docs.relevance.ai/docs/fine-grained-search-search-on-chunks-of-text-data-2"
+        self.multistep_chunk_doc = "https://docs.tryrelevance.com/docs/fine-grained-search-search-on-chunks-of-text-data"
+        self.advanced_chunk_doc = "https://docs.tryrelevance.com/docs/fine-grained-search-search-on-chunks-of-text-data-1"
+        self.advanced_multistep_chunk_doc = "https://docs.tryrelevance.com/docs/fine-grained-search-search-on-chunks-of-text-data-2"
 
         self.initiative_messages = "What else to experiment with :)\n"
         self.category_initiative_messages = {

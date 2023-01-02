@@ -59,7 +59,7 @@ class BatchInsertClient(BatchRetrieveClient):
         - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
         - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
 
-        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        Documentation can be found here: https://ingest-api-dev-aueast.tryrelevance.com/latest/documentation#operation/InsertEncode
 
         Parameters
         ----------
@@ -91,7 +91,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if verbose:
             self.logger.info(f"You are currently inserting into {dataset_id}")
-            tracking_message = f"while inserting, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            tracking_message = f"while inserting, you can visit monitor the dataset at https://cloud.tryrelevance.com/dataset/{dataset_id}/dashboard/monitor/"
             self.logger.info(tracking_message)
             tqdm.write(tracking_message)
 
@@ -127,7 +127,7 @@ class BatchInsertClient(BatchRetrieveClient):
         ----------
 
         >>> from relevanceai import Client
-        >>> url = "https://api-aueast.relevance.ai/v1/"
+        >>> url = "https://api-aueast.tryrelevance.com/v1/"
         >>> collection = ""
         >>> project = ""
         >>> api_key = ""
@@ -159,7 +159,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
         if verbose:
             self.logger.info(f"You are currently updating {dataset_id}")
-            tracking_message = f"while updating, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            tracking_message = f"while updating, you can visit monitor the dataset at https://cloud.tryrelevance.com/dataset/{dataset_id}/dashboard/monitor/"
             self.logger.info(tracking_message)
             tqdm.write(tracking_message)
 
@@ -699,7 +699,7 @@ class BatchInsertClient(BatchRetrieveClient):
         chunk_json = chunk.to_dict(orient="records")
 
         print(
-            f"while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+            f"while inserting, you can visit your dashboard at https://cloud.tryrelevance.com/dataset/{dataset_id}/dashboard/monitor/"
         )
         response = self._insert_documents(
             dataset_id=dataset_id,
@@ -711,7 +711,7 @@ class BatchInsertClient(BatchRetrieveClient):
 
     def print_search_dashboard_url(self, dataset_id):
         search_url = (
-            f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/recent/search"
+            f"https://cloud.tryrelevance.com/dataset/{dataset_id}/deploy/recent/search"
         )
         self._dataset_id = dataset_id
         print(f"🍡 You can now explore your search app at {search_url}")

@@ -17,9 +17,9 @@ class ManageApps(Write):
         self, dataset_id: str, project_id: str, deployable_id: str, app_type=None
     ):
         if app_type:
-            return f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/{app_type}/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
+            return f"https://cloud.tryrelevance.com/dataset/{dataset_id}/deploy/{app_type}/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
         else:
-            return f"https://cloud.relevance.ai/dataset/{dataset_id}/deploy/explore/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
+            return f"https://cloud.tryrelevance.com/dataset/{dataset_id}/deploy/explore/{project_id}/{self.api_key}/{deployable_id}/{self.region}"
 
     def list_apps(self, return_config: bool = False):
         # print(

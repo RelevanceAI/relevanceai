@@ -212,7 +212,7 @@ class DeployableClient(_Base):
         application: str
             The type of deployable application
         """
-        url = "https://cloud.relevance.ai/dataset/{}/deploy/{}/{}/{}/{}"
+        url = "https://cloud.tryrelevance.com/dataset/{}/deploy/{}/{}/{}/{}"
         return url.format(
             dataset_id, self.project, application, self.api_key, deployable_id
         )

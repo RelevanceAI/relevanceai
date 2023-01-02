@@ -30,7 +30,7 @@ For more details, please refer to the
     !pip install -q RelevanceAI[notebook]
 
 You can sign up/login and find your credentials here:
-https://cloud.relevance.ai/sdk/api Once you have signed up, click on the
+https://cloud.tryrelevance.com/sdk/api Once you have signed up, click on the
 value under ``Authorization token`` and paste it here
 
 .. code:: ipython3
@@ -145,7 +145,7 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
 
 .. parsed-literal::
 
-    Build your clustering app here: https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/
+    Build your clustering app here: https://cloud.tryrelevance.com/dataset/basic_subclustering/deploy/recent/cluster/
 
 
 
@@ -162,7 +162,7 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
 
 .. parsed-literal::
 
-    Build your clustering app here: https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/
+    Build your clustering app here: https://cloud.tryrelevance.com/dataset/basic_subclustering/deploy/recent/cluster/
 
 
 
@@ -193,7 +193,7 @@ for ``n_clusters``. Let’s vectorize over all available vector fields.
 
 If we have a look at the resulting clusters in the `clustering dashboard
 link
-above <https://cloud.relevance.ai/dataset/basic_subclustering/deploy/recent/cluster/>`__,
+above <https://cloud.tryrelevance.com/dataset/basic_subclustering/deploy/recent/cluster/>`__,
 we will see that there is potential for further break down of the
 clusters. At a high-level, we can see electronics and shoes, but we
 could further break down these clusters using subclustering.
@@ -549,7 +549,7 @@ You can also view your subcluster results using
 
 .. parsed-literal::
 
-    You can view your dashboard at: https://cloud.relevance.ai/dataset/basic_subclustering/dashboard/monitor/schema
+    You can view your dashboard at: https://cloud.tryrelevance.com/dataset/basic_subclustering/dashboard/monitor/schema
 
 
 
