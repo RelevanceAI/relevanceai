@@ -103,7 +103,7 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"Make sure to set the highlight field `{text_field}` with substring `{highlight_output_field + '.' + text_field}` at: "
         )
         print(
-            f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
+            f"https://cloud.tryrelevance.com/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         return closest
 
@@ -217,7 +217,7 @@ class TextClusterExplainerOps(BaseExplainer, OperationAPIBase):  # type: ignore
             f"Make sure to set the highlight field `{text_field}` with substring `{highlight_output_field + '.' + text_field}` at: "
         )
         print(
-            f"https://cloud.relevance.ai/dataset/{cluster_ops.dataset_id}/dashboard/settings"
+            f"https://cloud.tryrelevance.com/dataset/{cluster_ops.dataset_id}/dashboard/settings"
         )
         self.datasets.post_settings(
             dataset_id=cluster_ops.dataset_id,

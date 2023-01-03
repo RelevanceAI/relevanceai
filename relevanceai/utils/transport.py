@@ -202,12 +202,12 @@ class Transport(JSONEncoderUtils, ConfigMixin):
         if suburl is None:
             print(
                 MESSAGE
-                + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/monitor/"
+                + f"https://cloud.tryrelevance.com/dataset/{dataset_id}/dashboard/monitor/"
             )
         else:
             print(
                 MESSAGE
-                + f"https://cloud.relevance.ai/dataset/{dataset_id}/dashboard/{suburl}"
+                + f"https://cloud.tryrelevance.com/dataset/{dataset_id}/dashboard/{suburl}"
             )
 
     def print_dashboard_message(self, message: str):
@@ -250,7 +250,7 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             if hasattr(self, "base_url"):
                 base_url = self.base_url  # type: ignore
             else:
-                base_url = "https://api.us-east-1.relevance.ai/latest"
+                base_url = "https://api.us-east-1.tryrelevance.com/latest"
 
         if output_format is None:
             output_format = self.config.get_option("api.output_format")
@@ -346,7 +346,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
                 continue
 
             except JSONDecodeError as error:
+                # This is usually due to a gateway error so we want to just re-try
                 self._log_no_json(base_url, endpoint, response.status_code, response)
+
                 time.sleep(seconds_between_retries + 2)
                 continue
         return response

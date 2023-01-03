@@ -25,7 +25,7 @@
 #           export NOTEBOOKS=$(find readme-docs/docs -type f -name "*.ipynb")
 #           export NOTEBOOK_FPATHS=$(for n in  ${NOTEBOOKS[@]}; do echo $n; done | grep -wv "$NOTEBOOK_IGNORE"  | jq -Rsc '. / "\n" - [""]')
 #           echo $NOTEBOOK_FPATHS
-#           echo "::set-output name=notebook-fpaths::$NOTEBOOK_FPATHS"
+#           echo "notebook-fpaths=$NOTEBOOK_FPATHS" >> $GITHUB_OUTPUT
 
 
 #   test-notebooks:

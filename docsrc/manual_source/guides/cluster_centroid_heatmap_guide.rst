@@ -83,7 +83,7 @@ and inspect those clusters:
 
 .. parsed-literal::
 
-    You can now visit the dashboard at https://cloud.relevance.ai/sdk/cluster/centroids/closest
+    You can now visit the dashboard at https://cloud.tryrelevance.com/sdk/cluster/centroids/closest
 
 
 Below, we can now see if 2 separate clusters. One for boots and one for
@@ -98,7 +98,7 @@ shoes and if we need that granularity.
 
 .. parsed-literal::
 
-    You can now visit the dashboard at https://cloud.relevance.ai/sdk/cluster/centroids/closest
+    You can now visit the dashboard at https://cloud.tryrelevance.com/sdk/cluster/centroids/closest
 
 
 

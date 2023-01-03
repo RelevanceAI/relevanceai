@@ -145,7 +145,7 @@ class ClusterUtils(APIClient, DocUtils):
         raise TypeError("Model should be inherited from ClusterBase.")
 
     def _token_to_auth(self, token=None):
-        SIGNUP_URL = "https://cloud.relevance.ai/sdk/api"
+        SIGNUP_URL = "https://cloud.tryrelevance.com/sdk/api"
 
         if os.path.exists(self._cred_fn):
             credentials = self._read_credentials()

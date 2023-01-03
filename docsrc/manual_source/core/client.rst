@@ -15,7 +15,7 @@ If you have a token already, you can run this:
     from relevanceai import Client
     client = Client(token="...")
 
-If you are missing a token, you can get your token [here](https://cloud.relevance.ai/sdk/api).
+If you are missing a token, you can get your token [here](https://cloud.tryrelevance.com/sdk/api).
 
 .. automodule:: relevanceai.client.client
     :members:

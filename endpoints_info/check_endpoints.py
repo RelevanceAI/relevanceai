@@ -9,7 +9,7 @@ MODULES = os.listdir(API_PATH)
 MODULES.remove("__pycache__")
 
 ENDPOINTS = list(
-    requests.get("https://gateway-api-aueast.relevance.ai/latest/openapi.json")
+    requests.get("https://gateway-api-aueast.tryrelevance.com/latest/openapi.json")
     .json()["paths"]
     .keys()
 )

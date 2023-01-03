@@ -89,7 +89,7 @@ class SearchOps(APIClient):
 
             - For more information about the positive and negative document ids to personalize check out services.recommend.vector
 
-        For more even more advanced configuration and customisation of vector search, reach out to us at dev@relevance.ai and learn about our new advanced_vector_search.
+        For more even more advanced configuration and customisation of vector search, reach out to us at dev@tryrelevance.com and learn about our new advanced_vector_search.
 
         Parameters
         ----------

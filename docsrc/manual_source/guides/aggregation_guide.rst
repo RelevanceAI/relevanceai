@@ -18,7 +18,7 @@ Setup
 =====
 
 You can sign up/login and find your credentials here:
-https://cloud.relevance.ai/sdk/api Once you have signed up, click on the
+https://cloud.tryrelevance.com/sdk/api Once you have signed up, click on the
 value under ``Activation token`` and paste it here
 
 .. code:: python
@@ -30,11 +30,11 @@ value under ``Activation token`` and paste it here
 
 .. parsed-literal::
 
-    Activation token (you can find it here: https://cloud.relevance.ai/sdk/api )
+    Activation token (you can find it here: https://cloud.tryrelevance.com/sdk/api )
     
     Activation Token: ··········
     Connecting to us-east-1...
-    You can view all your datasets at https://cloud.relevance.ai/datasets/
+    You can view all your datasets at https://cloud.tryrelevance.com/datasets/
     Welcome to RelevanceAI. Logged in as 334fe5fb667b3a64dada.
 
 
@@ -318,7 +318,7 @@ Data
 
 .. parsed-literal::
 
-    while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/quickstart_aggregation/dashboard/monitor/
+    while inserting, you can visit your dashboard at https://cloud.tryrelevance.com/dataset/quickstart_aggregation/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
 
 

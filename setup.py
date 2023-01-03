@@ -100,9 +100,9 @@ if os.getenv("_IS_DEV"):
 setup(
     name=name,
     version=version,
-    url="https://relevance.ai/",
+    url="https://tryrelevance.com/",
     author="Relevance AI",
-    author_email="dev@relevance.ai",
+    author_email="dev@tryrelevance.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
