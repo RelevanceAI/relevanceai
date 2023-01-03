@@ -348,9 +348,9 @@ class Transport(JSONEncoderUtils, ConfigMixin):
             except JSONDecodeError as error:
                 # This is usually due to a gateway error so we want to just re-try
                 self._log_no_json(base_url, endpoint, response.status_code, response)
-                time.sleep(seconds_between_retries)
-                continue
 
+                time.sleep(seconds_between_retries + 2)
+                continue
         return response
 
     async def make_async_http_request(
