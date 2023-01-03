@@ -382,7 +382,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         if verbose:
             print(
                 "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                + f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
         # Store subcluster in the metadata
@@ -482,7 +482,7 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         if verbose:
             print(
                 "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                + f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
 
     def list_unique(
@@ -643,5 +643,5 @@ class SubClusterOps(_SubClusterOps, ClusterUtils):  # type: ignore
         if verbose:
             print(
                 "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                + f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             )

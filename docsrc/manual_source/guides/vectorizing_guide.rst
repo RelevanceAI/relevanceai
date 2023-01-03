@@ -44,7 +44,7 @@ with the label
 
 .. parsed-literal::
 
-    while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/iris/dashboard/monitor/
+    while inserting, you can visit your dashboard at https://cloud.tryrelevance.com/dataset/iris/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
 
 
@@ -183,7 +183,7 @@ and another text column called “Comments”
 
 .. parsed-literal::
 
-    while inserting, you can visit your dashboard at https://cloud.relevance.ai/dataset/iris/dashboard/monitor/
+    while inserting, you can visit your dashboard at https://cloud.tryrelevance.com/dataset/iris/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
 
 

@@ -51,7 +51,7 @@ class Write(Read):
         - When inserting or specifying chunks in a document the suffix (ends with) "_chunk_" for the field name. e.g. "products_chunk_".
         - When inserting or specifying chunk vectors in a document's chunks use the suffix (ends with) "_chunkvector_" for the field name. e.g. "products_chunk_.product_description_chunkvector_".
 
-        Documentation can be found here: https://ingest-api-dev-aueast.relevance.ai/latest/documentation#operation/InsertEncode
+        Documentation can be found here: https://ingest-api-dev-aueast.tryrelevance.com/latest/documentation#operation/InsertEncode
 
         Parameters
         ----------
@@ -670,7 +670,7 @@ class Write(Read):
             - "_id" is reserved as the key and id of a document.
             - Once a schema is set for a dataset it cannot be altered. If it has to be altered, utlise the copy dataset endpoint.
 
-        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://relevance.ai/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
+        For more information about vectors check out the 'Vectorizing' section, services.search.vector or out blog at https://tryrelevance.com/blog. For more information about chunks and chunk vectors check out datasets.search.chunk.
 
         Parameters
         ----------

@@ -176,5 +176,5 @@ class PartialClusterOps(ClusterUtils):
         if verbose:
             print(
                 "Build your clustering app here: "
-                + f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                + f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             )

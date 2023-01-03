@@ -136,7 +136,7 @@ class DimensionalityReduction(Write):
         results = self.update_documents(self.dataset_id, dr_documents)
 
         if n_components == 3:
-            projector_url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/projector"
+            projector_url = f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/projector"
             print(f"You can now view your projector at {projector_url}")
 
         return results

@@ -603,7 +603,7 @@ class ClusterWriteOps(ClusterUtils, BaseOps, DocUtils):
 
                 if verbose:
                     print(
-                        f"📊 You can now access your report at https://cloud.relevance.ai/report/cluster/{self.region}/{response['_id']}"
+                        f"📊 You can now access your report at https://cloud.tryrelevance.com/report/cluster/{self.region}/{response['_id']}"
                     )
             except Exception as e:
                 print("Error creating cluster report! " + str(e))

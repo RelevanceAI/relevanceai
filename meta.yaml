@@ -22,7 +22,7 @@ requirements:
     {% endfor %}
 
 about:
-  home: https://relevance.ai
+  home: https://tryrelevance.com
   license: Apache2.0
   license_family: Apache
   summary: Experimentation first vector database

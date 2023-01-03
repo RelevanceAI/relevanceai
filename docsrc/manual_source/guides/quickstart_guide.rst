@@ -1,7 +1,7 @@
 🏃‍♀️ Relevance AI for analyzing unstructured data
 ===============================================
 
-Use `Relevance AI <https://cloud.relevance.ai/>`__ for clustering and
+Use `Relevance AI <https://cloud.tryrelevance.com/>`__ for clustering and
 gaining meaning from your unstructured data.
 
 ✨ Example
@@ -21,7 +21,7 @@ interactive, shareable dashboards
 
 We take security very seriously, and our cloud-hosted dashboard uses
 industry standard best practices for encryption. Our team adhere to our
-`strict privacy policy <https://relevance.ai/data-security-policy/>`__.
+`strict privacy policy <https://tryrelevance.com/data-security-policy/>`__.
 
 --------------
 
@@ -76,7 +76,7 @@ Start by installing the library and logging in to your account.
 
 .. parsed-literal::
 
-    while inserting, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/retail_reviews/dashboard/monitor/
+    while inserting, you can visit monitor the dataset at https://cloud.tryrelevance.com/dataset/retail_reviews/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
 
 
@@ -136,7 +136,7 @@ This search application can be built by using
 
 .. parsed-literal::
 
-    https://cloud.relevance.ai/dataset/retail_reviews/deploy/recent/search
+    https://cloud.tryrelevance.com/dataset/retail_reviews/deploy/recent/search
 
 
 You can view an example of our text search below.
@@ -210,7 +210,7 @@ another.
 
 .. parsed-literal::
 
-    while inserting, you can visit monitor the dataset at https://cloud.relevance.ai/dataset/retail-label/dashboard/monitor/
+    while inserting, you can visit monitor the dataset at https://cloud.tryrelevance.com/dataset/retail-label/dashboard/monitor/
     ✅ All documents inserted/edited successfully.
 
 
@@ -248,8 +248,8 @@ one of ``neutral``, ``positive``, ``negative``.
 
 Want to quickly create some example applications with Relevance AI?
 Check out some other guides below! - `Text-to-image search with OpenAI’s
-CLIP <https://docs.relevance.ai/docs/quickstart-text-to-image-search>`__
+CLIP <https://docs.tryrelevance.com/docs/quickstart-text-to-image-search>`__
 - `Hybrid Text search with Universal Sentence Encoder using
-Vectorhub <https://docs.relevance.ai/docs/quickstart-text-search>`__ -
+Vectorhub <https://docs.tryrelevance.com/docs/quickstart-text-search>`__ -
 `Text search with Universal Sentence Encoder Question Answer from
-Google <https://docs.relevance.ai/docs/quickstart-question-answering>`__
+Google <https://docs.tryrelevance.com/docs/quickstart-question-answering>`__

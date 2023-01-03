@@ -199,7 +199,7 @@ class Client(APIClient, ConfigMixin, CacheMixin, Operators):
         """
         if verbose:
             self.print_dashboard_message(
-                "You can view all your datasets at https://cloud.relevance.ai/datasets/"
+                "You can view all your datasets at https://cloud.tryrelevance.com/datasets/"
             )
         datasets = self.datasets.list()
         datasets["datasets"] = sorted(datasets["datasets"])

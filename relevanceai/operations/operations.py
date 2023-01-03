@@ -293,7 +293,7 @@ class Operations(Write, IO):
 
             - For more information about the positive and negative document ids to personalize check out services.recommend.vector
 
-        For more even more advanced configuration and customisation of vector search, reach out to us at dev@relevance.ai and learn about our new advanced_vector_search.
+        For more even more advanced configuration and customisation of vector search, reach out to us at dev@tryrelevance.com and learn about our new advanced_vector_search.
 
         Parameters
         ----------
@@ -625,10 +625,10 @@ class Operations(Write, IO):
 
         """
         if configuration is None:
-            url = f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+            url = f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             print(
                 "Build your clustering app here: "
-                f"https://cloud.relevance.ai/dataset/{self.dataset_id}/deploy/recent/cluster"
+                f"https://cloud.tryrelevance.com/dataset/{self.dataset_id}/deploy/recent/cluster"
             )
             return
         if "configuration" in configuration:
@@ -638,7 +638,7 @@ class Operations(Write, IO):
         )
 
         # After you have created an app
-        url = f"https://cloud.relevance.ai/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
+        url = f"https://cloud.tryrelevance.com/dataset/{results['dataset_id']}/deploy/cluster/{self.project}/{self.api_key}/{results['deployable_id']}/{self.region}"
         print(f"You can now access your deployable at {url}")
         return url
 

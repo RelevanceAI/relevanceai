@@ -76,7 +76,7 @@ class ClusterEvaluator:
             except:
                 centroids = self._calculate_centroids(self.X, self.cluster_labels)
         if isinstance(centroids, (list, np.ndarray)):
-            centroids = {i:c for i, c in enumerate(centroids)}
+            centroids = {i: c for i, c in enumerate(centroids)}
         if not isinstance(centroids, (list, dict, np.ndarray)):
             raise TypeError("centroid_vectors should be of type List or Numpy array")
 
@@ -240,10 +240,8 @@ class ClusterEvaluator:
                         list(self.centroids.values()), metric=metric
                     )
                 else:
-                    distance_matrix = pairwise_distances(
-                        self.centroids, metric=metric
-                    )
-            
+                    distance_matrix = pairwise_distances(self.centroids, metric=metric)
+
             if self.cluster_names:
                 return (
                     px.imshow(
@@ -274,17 +272,18 @@ class ClusterEvaluator:
     def plot_boxplot(self, summary_stats, name=""):
         try:
             import plotly.graph_objects as go
+
             fig = go.Figure()
             fig.add_trace(
                 go.Box(
                     y=[
-                        summary_stats['min'], 
-                        summary_stats['25%'], 
-                        summary_stats['50%'], 
-                        summary_stats['75%'], 
-                        summary_stats['max']
-                    ], 
-                    name=name
+                        summary_stats["min"],
+                        summary_stats["25%"],
+                        summary_stats["50%"],
+                        summary_stats["75%"],
+                        summary_stats["max"],
+                    ],
+                    name=name,
                 )
             )
             return fig, "plotly"

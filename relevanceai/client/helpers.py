@@ -41,7 +41,7 @@ def region_to_url(region: str) -> str:
             url = WIDER_URL.format(region)
         return url
     else:
-        return f"https://api-{region}.stack.relevance.ai/latest"
+        return f"https://api-{region}.stack.tryrelevance.com/latest"
 
 
 @dataclass

@@ -24,9 +24,9 @@ Relevance AI also acts as a platform for:
 
 | Type      | Link |
 | ------------- | ----------- |
-| Python API | [Documentation](https://sdk.relevance.ai/) |
+| Python API | [Documentation](https://sdk.tryrelevance.com/) |
 | Python Reference | [Documentation](https://relevanceai.readthedocs.io/en/latest/)        |
-| Cloud Dashboard | [Documentation](https://docs.relevance.ai/) |
+| Cloud Dashboard | [Documentation](https://docs.tryrelevance.com/) |
 
 ## 🛠️ Installation
 
@@ -87,7 +87,7 @@ results = ds.search(
     page_size=3,
 )
 ```
-[Learn more about how to flexibly configure your vector search ->](https://sdk.relevance.ai/docs/search)
+[Learn more about how to flexibly configure your vector search ->](https://sdk.tryrelevance.com/docs/search)
 
 ### Perform clustering
 
@@ -105,7 +105,7 @@ cluster_model = AgglomerativeClustering()
 clusterop = ds.cluster(vector_fields=["example_vector_"], model=cluster_model, alias="agglomerative")
 clusterop.list_closest()
 ```
-[Learn more about how to flexibly configure your clustering ->](https://sdk.relevance.ai/docs/search)
+[Learn more about how to flexibly configure your clustering ->](https://sdk.tryrelevance.com/docs/search)
 
 ## 🧰 Config
 
