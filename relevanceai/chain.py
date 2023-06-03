@@ -17,26 +17,36 @@ def load(id, auth=None):
     if auth is None:
         auth = config.auth
     response = requests.get(
-        f"https://api-{auth.region}.stack.tryrelevance.com/latest/studios/{auth.project}/{id}",
-        json={
-            "filters": [
-                {
-                    "field": "studio_id",
-                    "condition": "==",
-                    "condition_value": id,
-                    "filter_type": "exact_match",
-                },
-                {
-                    "field": "project",
-                    "condition": "==",
-                    "condition_value": auth.project,
-                    "filter_type": "exact_match",
-                },
-            ]
-        },
+        f"https://api-{auth.region}.stack.tryrelevance.com/latest/studios/list",
+        headers=auth.headers,
+        params=str(
+            {
+                "filters": [
+                    {
+                        "field": "studio_id",
+                        "condition": "==",
+                        "condition_value": id,
+                        "filter_type": "exact_match",
+                    },
+                    {
+                        "field": "project",
+                        "condition": "==",
+                        "condition_value": auth.project,
+                        "filter_type": "exact_match",
+                    },
+                ]
+            }
+        ),
     )
-    res = handle_response(response)
-    chain = Chain(name="", description="", parameters={}, id=id, auth=auth)
+    res = handle_response(response)["results"][0]
+    chain = Chain(
+        name=res["title"],
+        description=res["description"],
+        parameters=res["params_schema"]["properties"],
+        id=id,
+        auth=auth,
+    )
+    chain.add(res["transformations"]["steps"])
     return chain
 
 
@@ -92,7 +102,12 @@ class Chain:
             self.steps.append(steps)
 
     def _transform_steps(self, steps):
-        chain_steps = [step.steps[0] for step in steps]
+        chain_steps = []
+        for st in steps:
+            if isinstance(st, dict):
+                chain_steps.append(st)
+            else:
+                chain_steps.append(st.steps[0])
         unique_ids = []
         for step in chain_steps:
             if step["name"] in unique_ids:
@@ -139,7 +154,7 @@ class Chain:
             "description": self.description,
             "version": "latest",
             "project": self.auth.project,
-            "public": False,
+            "public": True,
             "params_schema": {"properties": self.parameters.to_json()},
             "transformations": {"steps": self._transform_steps(self.steps)},
         }
@@ -168,7 +183,7 @@ class Chain:
         print(
             f"""
 import requests
-requests.post(https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios/{self.id}/trigger_limited", json={{
+requests.post("https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios/{self.id}/trigger_limited", json={{
     "project": "{self.auth.project}",
     "params": {{
         YOUR PARAMS HERE
