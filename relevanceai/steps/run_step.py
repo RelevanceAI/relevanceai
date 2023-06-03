@@ -50,7 +50,9 @@ class RunStep(StepBase):
         self.inputted = []
         for r in self._required:
             if r not in kwargs:
-                raise ValueError(f"Required parameter {r} not provided")
+                raise ValueError(
+                    f"Required parameter {r} not provided, full list of required parameters: {self._required}"
+                )
             if r in self._inputs:
                 setattr(self, r, kwargs[r])
                 self.inputted.append(r)
