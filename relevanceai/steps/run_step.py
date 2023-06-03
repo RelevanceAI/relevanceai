@@ -4,7 +4,7 @@ from relevanceai.auth import config, Auth
 from relevanceai.steps._base import StepBase
 
 
-def list_all_steps(auth: Auth = None, raw=True):
+def list_all_steps(auth: Auth = None, raw=False):
     if auth is None:
         auth = config.auth
     response = requests.get(
@@ -32,7 +32,7 @@ def list_all_steps(auth: Auth = None, raw=True):
 
 class RunStep(StepBase):
     def __init__(self, step_id: str, step_name: str = None, *args, **kwargs):
-        self.list_of_steps = list_all_steps(raw=True)
+        self.list_of_steps = list_all_steps(raw=True)["results"]
         self.step_id = step_id
         for step in self.list_of_steps:
             if step["transformation_id"] == self.step_id:
@@ -72,7 +72,7 @@ class RunStep(StepBase):
             params[i] = getattr(self, i)
         return [
             {
-                "transformation": "run_chain",
+                "transformation": self.step_id,
                 "name": self.step_name,
                 "foreach": "",
                 "output": {output: f"{{{{ {output} }}}}" for output in self._outputs},

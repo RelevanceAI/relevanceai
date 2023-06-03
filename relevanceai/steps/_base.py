@@ -7,7 +7,14 @@ from relevanceai.params import Parameters, ParamBase
 
 class StepBase:
     def __init__(
-        self, name="step", description="a step", parameters={}, id="new", auth=None
+        self,
+        name="step",
+        description="a step",
+        parameters={},
+        id="new",
+        auth=None,
+        *args,
+        **kwargs,
     ):
         self.name = name
         self.description = description
