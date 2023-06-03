@@ -47,9 +47,13 @@ class RunStep(StepBase):
             else []
         )
 
+        self.inputted = []
         for r in self._required:
             if r not in kwargs:
                 raise ValueError(f"Required parameter {r} not provided")
+            if r in self._inputs:
+                setattr(self, r, kwargs[r])
+                self.inputted.append(r)
 
         self._outputs = [
             t for t in self.step_definition["output_schema"]["properties"].keys()
@@ -59,12 +63,15 @@ class RunStep(StepBase):
 
     @property
     def steps(self):
+        params = {}
+        for i in self.inputted:
+            params[i] = getattr(self, i)
         return [
             {
                 "transformation": "run_chain",
                 "name": self.step_name,
                 "foreach": "",
                 "output": {output: f"{{{{ {output} }}}}" for output in self._outputs},
-                "params": {},
+                "params": params,
             }
         ]
