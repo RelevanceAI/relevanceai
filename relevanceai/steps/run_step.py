@@ -33,7 +33,7 @@ class RunStep(StepBase):
         self.list_of_steps = list_all_steps()
         self.step_id = step_id
         for step in self.list_of_steps:
-            if step["transformation_id"] == self.step_id:
+            if step["id"] == self.step_id:
                 self.step_definition = step
         self.step_name = (
             self.step_definition["name"] if step_name is None else step_name
