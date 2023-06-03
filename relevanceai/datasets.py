@@ -27,7 +27,6 @@ class Dataset:
                 "vecdb is not installed. Please install vecdb with `pip install vecdb`"
             )
         self.db = Dataset(api=self.vecdb_client.api, dataset_id=self.id)
-    
 
     def insert(
         self,
@@ -63,7 +62,6 @@ class Dataset:
                 **kwargs,
             )
 
-
     def search(
         self,
         text: str,
@@ -80,7 +78,7 @@ class Dataset:
                 query=text,
                 vector_field=field,
                 model=model,
-                page_size=page_size
+                page_size=page_size,
             )
         else:
             return VectorSimilaritySearch(
@@ -88,13 +86,11 @@ class Dataset:
                 query=text,
                 vector_field=field,
                 model=model,
-                page_size=page_size
+                page_size=page_size,
             ).run()
 
-
     def delete(self):
-        return self.db.delete()
-
+        return self.db.api._delete_dataset(self.id)
 
     def all(self):
         return self.db.get_all()
