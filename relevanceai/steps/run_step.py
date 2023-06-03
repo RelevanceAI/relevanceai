@@ -46,6 +46,11 @@ class RunStep(StepBase):
             if "required" in self.step_definition["input_schema"]
             else []
         )
+
+        for r in self._required:
+            if r not in kwargs:
+                raise ValueError(f"Required parameter {r} not provided")
+
         self._outputs = [
             t for t in self.step_definition["output_schema"]["properties"].keys()
         ]
