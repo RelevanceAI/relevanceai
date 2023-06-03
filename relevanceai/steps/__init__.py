@@ -8,6 +8,7 @@ from relevanceai.steps.execute_javascript import ExecuteJavascriptCode
 from relevanceai.steps.generate_vector_embedding import GenerateVectorEmbedding
 from relevanceai.steps.get_webpage import GetWebpage
 from relevanceai.steps.pdf_to_text import PDFToText
+from relevanceai.steps.split_text import SplitText
 from relevanceai.steps.api_call import MakeAPIRequest
 from relevanceai.steps.run_chain import RunChain
 from relevanceai.steps.run_step import RunStep, list_all_steps

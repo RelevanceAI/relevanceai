@@ -4,7 +4,7 @@ from relevanceai.auth import config, Auth
 from relevanceai.steps._base import StepBase
 
 
-def list_all_steps(auth: Auth = None, raw=False, custom_only=True):
+def list_all_steps(auth: Auth = None, raw=False, custom_only=False):
     if auth is None:
         auth = config.auth
     response = requests.get(
