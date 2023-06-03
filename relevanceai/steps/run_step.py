@@ -4,13 +4,15 @@ from relevanceai.auth import config, Auth
 from relevanceai.steps._base import StepBase
 
 
-def list_all_steps(auth: Auth = None):
+def list_all_steps(auth: Auth = None, raw=True):
     if auth is None:
         auth = config.auth
     response = requests.get(
         f"https://api-{auth.region}.stack.tryrelevance.com/latest/studios/transformations/list",
     )
     res = handle_response(response)
+    if raw:
+        return res
     results_list = []
     for s in res["results"]:
         results_list.append(
@@ -30,10 +32,10 @@ def list_all_steps(auth: Auth = None):
 
 class RunStep(StepBase):
     def __init__(self, step_id: str, step_name: str = None, *args, **kwargs):
-        self.list_of_steps = list_all_steps()
+        self.list_of_steps = list_all_steps(raw=True)
         self.step_id = step_id
         for step in self.list_of_steps:
-            if step["id"] == self.step_id:
+            if step["transformation_id"] == self.step_id:
                 self.step_definition = step
         self.step_name = (
             self.step_definition["name"] if step_name is None else step_name
