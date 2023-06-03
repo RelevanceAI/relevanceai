@@ -1,4 +1,4 @@
-## Relevance AI - The platform building and deploying AI chains and Agents
+## Relevance AI - The platform for building and deploying AI chains and Agents
 [![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
 🔥 Use Relevance to unlock the value of LLMs:
