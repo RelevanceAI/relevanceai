@@ -1,4 +1,5 @@
 import json
+import warnings
 import requests
 from relevanceai._request import handle_response
 from relevanceai import config
@@ -171,7 +172,7 @@ class Chain:
         res = handle_response(response)
         print("Studio deployed successfully to id ", self.id)
         if self.random_id:
-            print(
+            warnings.warn(
                 "Your studio id is randomly generated, to ensure you are updating the same chain you should specify the id on rai.create(id=id) ",
             )
         print("\n=============Low Code Notebook================")
