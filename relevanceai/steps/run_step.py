@@ -18,8 +18,8 @@ def list_all_steps(auth: Auth = None):
                 "id": s["transformation_id"],
                 "name": s["name"],
                 "description": s["description"],
-                "input_schema": s["input_schema"]["properties"].keys(),
-                "output_schema": s["output_schema"]["properties"].keys(),
+                "input_schema": list(s["input_schema"]["properties"].keys()),
+                "output_schema": list(s["output_schema"]["properties"].keys()),
                 "required": s["input_schema"]["required"]
                 if "required" in s["input_schema"]
                 else [],
