@@ -30,7 +30,9 @@ class RunStep(StepBase):
         for step in self.list_of_steps:
             if step["transformation_id"] == self.step_id:
                 self.step_definition = step
-        self.step_name = step["name"]
+        self.step_name = (
+            self.step_definition["name"] if step_name is None else step_name
+        )
         self._inputs = [
             t for t in self.step_definition["input_schema"]["properties"].keys()
         ]
@@ -53,6 +55,6 @@ class RunStep(StepBase):
                 "name": self.step_name,
                 "foreach": "",
                 "output": {output: f"{{{{ {output} }}}}" for output in self._outputs},
-                "params": {"chain_id": self.chain_id, "params": self.params},
+                "params": {},
             }
         ]
