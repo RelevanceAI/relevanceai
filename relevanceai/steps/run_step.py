@@ -4,17 +4,27 @@ from relevanceai.auth import config, Auth
 from relevanceai.steps._base import StepBase
 
 
-def list_all_steps(auth: Auth = None, raw=False):
+def list_all_steps(auth: Auth = None, raw=False, custom_only=True):
     if auth is None:
         auth = config.auth
     response = requests.get(
         f"https://api-{auth.region}.stack.tryrelevance.com/latest/studios/transformations/list",
+        headers=auth.headers,
     )
     res = handle_response(response)
     if raw:
+        if custom_only:
+            return [
+                s
+                for s in res["results"]
+                if "execution_type" in s and s["execution_type"] == "studio-api"
+            ]
         return res
     results_list = []
     for s in res["results"]:
+        if custom_only:
+            if "execution_type" not in s or s["execution_type"] != "studio-api":
+                continue
         results_list.append(
             {
                 "id": s["transformation_id"],
