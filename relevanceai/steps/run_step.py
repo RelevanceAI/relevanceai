@@ -12,7 +12,7 @@ def list_all_steps(auth: Auth = None):
     )
     res = handle_response(response)
     results_list = []
-    for s in res["transformations"]:
+    for s in res["results"]:
         results_list.append(
             {
                 "id": s["transformation_id"],
