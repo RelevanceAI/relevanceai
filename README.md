@@ -1,5 +1,3 @@
-![Github Banner](assets/github_banner.png)
-
 ## Relevance AI - The platform building and deploying AI chains and Agents
 [![License](https://img.shields.io/pypi/l/relevanceai)](https://img.shields.io/pypi/l/relevanceai)
 
