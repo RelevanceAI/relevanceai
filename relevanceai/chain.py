@@ -118,13 +118,11 @@ class Chain:
             unique_ids.append(step["name"])
         return chain_steps
 
-    def _trigger_json(
-        self, values: dict = {}, return_state: bool = True, public: bool = False
-    ):
+    def _trigger_json(self, values: dict = {}, return_state: bool = True):
         data = {
             "return_state": return_state,
             "studio_override": {
-                "public": public,
+                "public": False,
                 "transformations": {"steps": self._transform_steps(self.steps)},
                 "params_schema": {"properties": self.parameters.to_json()},
             },
@@ -155,7 +153,7 @@ class Chain:
             "description": self.description,
             "version": "latest",
             "project": self.auth.project,
-            "public": True,
+            "public": False,
             "params_schema": {"properties": self.parameters.to_json()},
             "transformations": {"steps": self._transform_steps(self.steps)},
         }
