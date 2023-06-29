@@ -1,4 +1,9 @@
-def handle_response(response):
+import requests
+
+from relevanceai.types import JSONObject
+
+
+def _handle_response(response: requests.Request) -> JSONObject:
     try:
         return response.json()
     except:
