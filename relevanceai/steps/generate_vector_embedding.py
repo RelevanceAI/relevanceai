@@ -1,40 +1,27 @@
-from relevanceai.steps._base import StepBase
+from pydantic import Field
 
-class GenerateVectorEmbedding(StepBase):
-    """Generate vector embedding
-    Generate a vector embedding from a given input with a choice of models.
-    Args:
-        input (str): The input to generate a vector embedding with.
-        model (str): The model name to use.
-    Returns:
-        vector (list): The vector embedding.
-    """
-    def __init__(
-        self,
-        input: str,
-        model: str,
-        step_name: str = "generate_vector_embedding",
-        *args,
-        **kwargs
-    ) -> None:
-        self.input = input
-        self.model = model
-        self.step_name = step_name
-        self._outputs = ["vector"]
-        self.outputs = [f"steps.{self.step_name}.output.{a}" for a in self._outputs]
-        super().__init__(*args, **kwargs)
+from typing import Literal, List, Any
+from relevanceai.steps.base import Step
+
+
+class GenerateVectorEmbedding(Step):
+    transformation: str = "generate_vector_embedding"
+    input: str = Field(...)
+    model: Literal[
+        "image_text",
+        "text_image",
+        "all-mpnet-base-v2",
+        "clip-vit-b-32-image",
+        "clip-vit-b-32-text",
+        "clip-vit-l-14-image",
+        "clip-vit-l-14-text",
+        "sentence-transformers",
+        "text-embedding-ada-002",
+        "cohere-small",
+        "cohere-large",
+        "cohere-multilingual-22-12",
+    ] = Field(...)
 
     @property
-    def steps(self):
-        return [
-            {
-                "transformation": "generate_vector_embedding",
-                "name": self.step_name,
-                "foreach": "",
-                "output": {output: f"{{{{ {output} }}}}" for output in self._outputs},
-                "params": {
-                    "input": self.input,
-                    "model": self.model
-                }
-            }
-        ]
+    def output_spec(self):
+        return ["vector"]

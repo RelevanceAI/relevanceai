@@ -1,8 +1,9 @@
 import requests
-from relevanceai._request import handle_response
+from relevanceai.helpers import _handle_response
 from relevanceai import config
 
-def set_key(key:str, value:str):
+
+def set_key(key: str, value: str):
     url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
     response = requests.post(
         f"{url}/projects/keys/set",
@@ -10,10 +11,10 @@ def set_key(key:str, value:str):
         json={
             "key": key,
             "value": value,
-        }
+        },
     )
-    res = handle_response(response)
-    return res
+    return _handle_response(response)
+
 
 def list_keys():
     url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
@@ -21,17 +22,16 @@ def list_keys():
         f"{url}/projects/keys/list",
         headers=config.auth.headers,
     )
-    res = handle_response(response)
-    return res
+    return _handle_response(response)
 
-def delete_key(key:str):
+
+def delete_key(key: str):
     url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
     response = requests.post(
         f"{url}/projects/keys/delete",
         headers=config.auth.headers,
         json={
             "key": key,
-        }
+        },
     )
-    res = handle_response(response)
-    return res
+    return _handle_response(response)
