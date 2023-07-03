@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 
 from relevanceai.helpers import _handle_response
 from relevanceai.constants import _BASE_URL
-from relevanceai.steps.base import Step
 from relevanceai.auth import config
 from relevanceai.types import JSONDict, JSONObject
 
@@ -88,7 +87,7 @@ class Step(BaseModel):
 
     def run(self, return_state: bool = True, name: str = None):
         base_url = (
-            f"{_BASE_URL.format(region=config.auth.region)}/{config.auth.project}/"
+            f"{_BASE_URL.format(region=config.auth.region)}{config.auth.project}/"
         )
         response = requests.post(
             url=base_url + "trigger",

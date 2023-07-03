@@ -14,13 +14,13 @@ from relevanceai.constants import (
     _RANDOM_ID_WARNING,
     _SCHEMA_KEYS,
 )
-from relevanceai.steps.base import Step
+from relevanceai.steps import base
 from relevanceai.auth import Auth, config
 from relevanceai.types import JSONDict
 
 
 class Chain(UserList):
-    data: List[Step]
+    data: List[base.Step]
 
     def __init__(
         self,
@@ -30,7 +30,7 @@ class Chain(UserList):
         description: str = None,
         studio_id: str = None,
         public: bool = False,
-        steps: List[Step] = None,
+        steps: List[base.Step] = None,
         auth: Auth = None,
     ):
         self.params = input

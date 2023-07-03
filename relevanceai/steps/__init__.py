@@ -4,3 +4,6 @@ from relevanceai.steps.execute_js_code import ExecuteJavascriptCode
 from relevanceai.steps.generate_vector_embedding import GenerateVectorEmbedding
 from relevanceai.steps.make_api_request import MakeAPIRequest
 from relevanceai.steps.run_chain import RunChain
+from relevanceai.steps.split_text import SplitText
+from relevanceai.steps.to_json import ToJson
+from relevanceai.steps.browserless_scrape import BrowserlessScrape
