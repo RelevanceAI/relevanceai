@@ -46,7 +46,7 @@ def login(
             cred_json = {"api_key": api_key, "region": region, "project": project}
     else:
         print(
-            "You can create and find your API key in your browser here: https://chain.relevanceai.com/login/sdk"
+            "You can create and find your API key in your browser here: https://app.relevanceai.com/login/sdk"
         )
         if not api_key:
             api_key = os.getenv("RELEVANCE_API_KEY") or getpass.getpass(
