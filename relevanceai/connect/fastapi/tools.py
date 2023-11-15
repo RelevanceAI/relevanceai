@@ -7,7 +7,7 @@ from fastapi.routing import APIRoute
 from relevanceai.auth import config
 
 
-def routes_to_chains(api_routes, url, id_suffix=""):
+def routes_to_tools(api_routes, url, id_suffix=""):
     chains_list = []
     id_list = []
     for route in api_routes:
@@ -46,7 +46,7 @@ def routes_to_chains(api_routes, url, id_suffix=""):
                     "project": config.auth.project,
                     "title": route.summary if route.summary else route.name,
                     "description": route.description,
-                    "tags": {"type": "transformation"},
+                    "tags": {"source": "sdk"},
                     "transformations": {
                         "steps": [
                             {
@@ -75,7 +75,7 @@ def routes_to_chains(api_routes, url, id_suffix=""):
     return chains_list, id_list
 
 
-def upload_chains(chains):
+def upload_tools(chains):
     url = f"https://api-{config.auth.region}.stack.tryrelevance.com"
     results = requests.post(
         f"{url}/latest/studios/bulk_update",
@@ -86,7 +86,7 @@ def upload_chains(chains):
     print("Trace-id ", results.headers.get("x-trace-id"))
 
 
-def cleanup_chains(chain_id_list):
+def cleanup_tools(chain_id_list):
     results = requests.post(
         f"https://api-{config.auth.region}.stack.tryrelevance.com/latest/studios/bulk_delete",
         headers=config.auth.headers,
@@ -96,15 +96,15 @@ def cleanup_chains(chain_id_list):
     print("Trace-id ", results.headers.get("x-trace-id"))
 
 
-def connect_chains(api_routes, url, id_suffix="", cleanup=True, export_json=False):
-    chains, chain_id_list = routes_to_chains(api_routes, url, id_suffix=id_suffix)
+def connect_tools(api_routes, url, id_suffix="", cleanup=True, export_json=False):
+    chains, chain_id_list = routes_to_tools(api_routes, url, id_suffix=id_suffix)
     if export_json:
         import json
 
         with open("chain_export.json", "w") as outfile:
             json.dump({"export": chains}, outfile)
     else:
-        upload_chains(chains)
+        upload_tools(chains)
     if cleanup:
-        atexit.register(cleanup_chains, chain_id_list)
+        atexit.register(cleanup_tools, chain_id_list)
     return chain_id_list
