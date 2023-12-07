@@ -1,9 +1,17 @@
+from __future__ import annotations
+
+import uuid
 import json
 import requests
-from relevanceai._request import handle_response
-from relevanceai import config
-from relevanceai.auth import Auth
-from relevanceai.params import Parameters
+
+from collections import UserList
+from pydantic import BaseModel
+from typing import List
+
+from relevanceai.auth import Auth, config
+from relevanceai.types import JSONObject
+from relevanceai._request import _handle_response
+from relevanceai.steps._base import Step
 
 
 def create(name, description="", parameters={}, id=None, auth=None):
@@ -35,165 +43,127 @@ def load(id, auth=None):
             ]
         },
     )
-    res = handle_response(response)
+    res = _handle_response(response)
     chain = Chain(name="", description="", parameters={}, id=id, auth=auth)
     return chain
 
 
-def load_from_json(filepath_or_json):
-    if isinstance(filepath_or_json, str):
-        with open(filepath_or_json, "r") as f:
-            chain_json = json.load(f)
-    else:
-        chain_json = filepath_or_json
-    chain = Chain(
-        name=chain_json["title"],
-        description=chain_json["description"],
-        parameters=chain_json["params_schema"]["properties"],
-        id=chain_json["studio_id"],
-    )
-    chain.add(chain_json["transformations"]["steps"])
-    return chain
+_SCHEMA_KEYS = {"title", "type", "description"}
+_BASE_URL = "https://api-{region}.stack.tryrelevance.com/latest/studios/"
+_RANDOM_ID_WARNING = "Your studio id is randomly generated, to ensure you are updating the same chain you should specify the id on rai.create(id=id) "
+_LOW_CODE_NOTEBOOK_BLURB = """
+=============Low Code Notebook================
+You can share/visualize your chain as an app in our low code notebook here: https://chain.relevanceai.com/notebook/{region}/{project}/{id}/app
 
-
-class Chain:
-    def __init__(
-        self,
-        name: str,
-        description: str = "",
-        parameters={},
-        id: str = None,
-        auth: Auth = None,
-    ):
-        self.name = name
-        self.description = description
-        self._parameters = parameters
-        self.steps = []
-        # generate random id if none
-        self.random_id = False
-        if id is None:
-            import uuid
-
-            id = str(uuid.uuid4())
-            self.random_id = True
-        self.id = id
-        self.auth: Auth = config.auth if auth is None else auth
-
-    @property
-    def parameters(self):
-        return Parameters(self._parameters)
-
-    params = parameters
-
-    def add(self, steps):
-        if isinstance(steps, list):
-            self.steps.extend(steps)
-        else:
-            self.steps.append(steps)
-
-    def _transform_steps(self, steps):
-        chain_steps = [step.steps[0] for step in steps]
-        unique_ids = []
-        for step in chain_steps:
-            if step["name"] in unique_ids:
-                raise ValueError(
-                    f"Duplicate step name {step['name']}, please rename the step name with Step(step_name=step_name)."
-                )
-            unique_ids.append(step["name"])
-        return chain_steps
-
-    def _trigger_json(
-        self, values: dict = {}, return_state: bool = True, public: bool = False
-    ):
-        data = {
-            "return_state": return_state,
-            "studio_override": {
-                "public": public,
-                "transformations": {"steps": self._transform_steps(self.steps)},
-                "params_schema": {"properties": self.parameters.to_json()},
-            },
-            "params": values,
-        }
-        data["studio_id"] = self.id
-        data["studio_override"]["studio_id"] = self.id
-        return data
-
-    def run(self, parameters={}, full_response: bool = False):
-        url = f"https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios/{self.auth.project}"
-        response = requests.post(
-            f"{url}/trigger",
-            json=self._trigger_json(parameters),
-            headers=self.auth.headers,
-        )
-        res = handle_response(response)
-        if isinstance(res, dict):
-            if ("errors" in res and res["errors"]) or full_response:
-                return res
-            elif "output" in res:
-                return res["output"]
-        return res
-
-    def _json(self):
-        data = {
-            "title": self.name,
-            "description": self.description,
-            "version": "latest",
-            "project": self.auth.project,
-            "public": False,
-            "params_schema": {"properties": self.parameters.to_json()},
-            "transformations": {"steps": self._transform_steps(self.steps)},
-        }
-        data["studio_id"] = self.id
-        return data
-
-    def deploy(self):
-        url = f"https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios"
-        response = requests.post(
-            f"{url}/bulk_update",
-            json={"updates": [self._json()]},
-            headers=self.auth.headers,
-        )
-        res = handle_response(response)
-        print("Studio deployed successfully to id ", self.id)
-        if self.random_id:
-            print(
-                "Your studio id is randomly generated, to ensure you are updating the same chain you should specify the id on rai.create(id=id) ",
-            )
-        print("\n=============Low Code Notebook================")
-        print(
-            f"You can share/visualize your chain as an app in our low code notebook here: https://chain.relevanceai.com/notebook/{self.auth.region}/{self.auth.project}/{self.id}/app"
-        )
-        print("\n=============with Requests================")
-        print("Here is an example of how to run the chain with API: ")
-        print(
-            f"""
+===============With Requests==================
+Here is an example of how to run the chain with API: 
 import requests
-requests.post(https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios/{self.id}/trigger_limited", json={{
-    "project": "{self.auth.project}",
+requests.post(https://api-{region}.stack.tryrelevance.com/latest/studios/{id}/trigger_limited", json={{
+    "project": "{project}",
     "params": {{
         YOUR PARAMS HERE
     }}
 }})
-            """
-        )
-        print("\n=============with Python SDK================")
-        print("Here is an example of how to run the chain with Python: ")
-        print(
-            f"""
-import relevanceai as rai
-chain = rai.load("{self.id}")
-chain.run({{YOUR PARAMS HERE}})
-            """
-        )
-        return self.id
 
-    def to_json(self, filepath, return_json=False):
-        if return_json:
-            with open(filepath, "w") as f:
-                json.dump(self._json(), f)
-                print("Chain saved to ", filepath)
+===============With Python SDK================      
+Here is an example of how to run the chain with Python: 
+import relevanceai as rai
+chain = rai.load("{id}")
+chain.run({{YOUR PARAMS HERE}})
+            
+"""
+
+
+class Chain(UserList):
+    data: List[Step]
+
+    def __init__(
+        self,
+        input: BaseModel,
+        output: BaseModel,
+        studio_id: str = None,
+        public: bool = False,
+        steps: List[Step] = None,
+        auth: Auth = None,
+    ):
+        self.params = input
+        self.output = output
+
+        if steps:
+            self.data = steps
         else:
-            return self._json()
+            self.data = []
+
+        if not studio_id:
+            studio_id = str(uuid.uuid4())
+            self.random_id = True
+        else:
+            self.random_id = False
+        self.studio_id = studio_id
+
+        self.public = public
+
+        self.auth: Auth = config.auth if auth is None else auth
+        self.base_url = _BASE_URL.format(region=self.auth.region)
+
+    @property
+    def params_schema(self) -> JSONObject:
+        return json.loads(self.params.schema_json())
+
+    def to_json(self):
+        schema_props = self.params_schema["properties"]
+        json_obj = {
+            "studio_id": self.studio_id,
+            "public": self.public,
+            "transformations": {
+                "steps": [
+                    step.to_json(f"step{idx+1}") for idx, step in enumerate(self.data)
+                ],
+                "output": {
+                    k: f"{{{ v }}}" for k, v in json.loads(self.output.json()).items()
+                },
+            },
+            "params_schema": {
+                "properties": {
+                    k: {sk: sv for sk, sv in v.items() if sk in _SCHEMA_KEYS}
+                    for k, v in schema_props.items()
+                },
+            },
+        }
+        return json_obj
+
+    def run(self, return_state: bool = True):
+        schema_props = self.params_schema["properties"]
+        response = requests.post(
+            url=self.base_url + "trigger",
+            json={
+                "return_state": return_state,
+                "studio_override": self.to_json(),
+                "params": {k: v["default"] for k, v in schema_props.items()},
+            },
+            headers=self.auth.headers,
+        )
+        return _handle_response(response)
 
     def reset(self):
-        self.steps = []
+        self.data = []
+
+    def deploy(self):
+        response = requests.post(
+            url=self.base_url + "bulk_update",
+            json={"updates": [self.to_json()]},
+            headers=self.auth.headers,
+        )
+        if not response.ok:
+            raise ValueError(_handle_response(response))
+        print(f"Studio deployed successfully with id: `{self.studio_id}`")
+        if self.random_id:
+            print(_RANDOM_ID_WARNING)
+        print(
+            _LOW_CODE_NOTEBOOK_BLURB.format(
+                region=self.auth.region,
+                project=self.auth.project,
+                id=self.studio_id,
+            )
+        )
+        return self.studio_id
