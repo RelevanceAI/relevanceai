@@ -16,14 +16,14 @@
 
 ## Getting Started
 
-1. Installation:
+### 1. Installation:
 `pip install relevanceai`
 
 This example uses fastapi and uvicorn so lets install that too:
 `pip install fastapi`
 `pip install uvicorn[standard]`
 
-2. Create your FastAPI app - *skip if you already have one*
+### 2. Create your FastAPI app - *skip if you already have one*
 Here is a quick example of a FastAPI app:
 ```python
 from fastapi import FastAPI
@@ -43,7 +43,7 @@ def hello_world_api(commons: HelloWorldParams):
     return hello_world(commons.message)
 ```
 
-3. Describe for your tools
+### 3. Describe for your tools
 Make sure to give your FastAPI endpoints as much descrition as possible. These provided descriptions are utilized in the agent prompt so that the Agent can better understand your tools.
 
 For example:
@@ -59,7 +59,7 @@ Add a `name` and `description` about the tool explaining when to use it and what
 Relevance AI will automatically take these values from your fastapi app and use it to create a prompt for the agent.
 
 
-4. Lets connect it live to Relevance AI
+### 4. Lets connect it live to Relevance AI
 In short all it takes to connect is to add the following lines to your app:
 ```python
 from relevanceai.connect.fastapi import connect_fastapi_to_rai
