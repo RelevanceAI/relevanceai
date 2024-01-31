@@ -40,7 +40,7 @@ class StepBase:
         }
 
     def run(self, parameters={}, full_response: bool = False):
-        url = f"https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios/{self.auth.project}"
+        url = f"{self.auth.url}/latest/studios/{self.auth.project}"
         response = requests.post(
             f"{url}/trigger",
             json=self._trigger_json(parameters),
@@ -67,7 +67,7 @@ class StepBase:
         }
 
     def deploy(self):
-        url = f"https://api-{self.auth.region}.stack.tryrelevance.com/latest/studios"
+        url = f"{self.auth.url}/latest/studios"
         response = requests.post(
             f"{url}/bulk_update",
             json={"updates": [self._json()]},

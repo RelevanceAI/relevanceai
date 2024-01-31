@@ -3,7 +3,7 @@ from relevanceai._request import handle_response
 from relevanceai import config
 
 def set_key(key:str, value:str):
-    url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
+    url = f"{config.auth.url}/latest"
     response = requests.post(
         f"{url}/projects/keys/set",
         headers=config.auth.headers,
@@ -16,7 +16,7 @@ def set_key(key:str, value:str):
     return res
 
 def list_keys():
-    url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
+    url = f"{config.auth.url}/latest"
     response = requests.get(
         f"{url}/projects/keys/list",
         headers=config.auth.headers,
@@ -25,7 +25,7 @@ def list_keys():
     return res
 
 def delete_key(key:str):
-    url = f"https://api-{config.auth.region}.stack.tryrelevance.com/latest"
+    url = f"{config.auth.url}/latest"
     response = requests.post(
         f"{url}/projects/keys/delete",
         headers=config.auth.headers,

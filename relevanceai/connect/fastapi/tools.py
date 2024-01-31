@@ -8,7 +8,7 @@ from relevanceai.auth import config
 
 
 def routes_to_tools(api_routes, url, id_suffix=""):
-    chains_list = []
+    tools_list = []
     id_list = []
     for route in api_routes:
         if isinstance(route, APIRoute):
@@ -19,11 +19,11 @@ def routes_to_tools(api_routes, url, id_suffix=""):
                 input_schema = json.loads(route.body_field.type_.schema_json())
                 for k, v in input_schema["properties"].items():
                     if v["type"] == "string":
-                        request_body += f'"{k}" : "{{{{ params.{k} }}}}",'
+                        request_body += f'"{k}" : "{{{{{k}}}}}",'
                     else:
-                        request_body += f'"{k}" : {{{{ params.{k} }}}},'
+                        request_body += f'"{k}" : {{{{{k}}}}},'
+                    params_state_mapping = {k : f"params.{k}"}
                 request_body = "{ " + request_body[:-1] + " }"
-
             output_schema = {}
             if route.response_field:
                 output_raw_schema = json.loads(route.response_field.type_.schema_json())
@@ -37,7 +37,7 @@ def routes_to_tools(api_routes, url, id_suffix=""):
             else:
                 full_path = url + route.path
 
-            chains_list.append(
+            tools_list.append(
                 {
                     "public": False,
                     "studio_id": route.unique_id + id_suffix,
@@ -46,6 +46,7 @@ def routes_to_tools(api_routes, url, id_suffix=""):
                     "project": config.auth.project,
                     "title": route.summary if route.summary else route.name,
                     "description": route.description,
+                    "state_mapping" : params_state_mapping, 
                     "tags": {"source": "sdk"},
                     "transformations": {
                         "steps": [
@@ -72,27 +73,26 @@ def routes_to_tools(api_routes, url, id_suffix=""):
                     },
                 }
             )
-    return chains_list, id_list
+    return tools_list, id_list
 
 
 def upload_tools(chains):
-    url = f"https://api-{config.auth.region}.stack.tryrelevance.com"
     results = requests.post(
-        f"{url}/latest/studios/bulk_update",
+        f"{config.auth.url}/latest/studios/bulk_update",
         headers=config.auth.headers,
         json={"updates": chains},
     )
-    print("Uploaded chains: ", results.json())
+    print("Connected your FastAPI to Relevance AI: ", results.json())
     print("Trace-id ", results.headers.get("x-trace-id"))
 
 
-def cleanup_tools(chain_id_list):
+def disconnect_tools(chain_id_list):
     results = requests.post(
-        f"https://api-{config.auth.region}.stack.tryrelevance.com/latest/studios/bulk_delete",
+        f"{config.auth.url}/latest/studios/bulk_delete",
         headers=config.auth.headers,
         json={"ids": chain_id_list},
     )
-    print("Successfully deleted chains from cloud: ", results.json())
+    print("Successfully disconnected your FastAPI: ", results.json())
     print("Trace-id ", results.headers.get("x-trace-id"))
 
 
@@ -106,5 +106,5 @@ def connect_tools(api_routes, url, id_suffix="", cleanup=True, export_json=False
     else:
         upload_tools(chains)
     if cleanup:
-        atexit.register(cleanup_tools, chain_id_list)
+        atexit.register(disconnect_tools, chain_id_list)
     return chain_id_list

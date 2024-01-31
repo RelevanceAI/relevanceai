@@ -10,15 +10,15 @@ class InputComponent:
     """
     advanced:bool = False
 
+@dataclass
+class LongText(InputComponent):
+    content_type: str = "long_text"
 
 @dataclass
 class FileUpload(InputComponent):
     content_type: str = "file_url"
     accepted_file_type: list = field(default_factory=lambda: [])
 
-@dataclass
-class LongText(InputComponent):
-    content_type: str = "long_text"
 
 @dataclass
 class Code(InputComponent):

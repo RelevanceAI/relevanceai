@@ -27,6 +27,7 @@ class Auth:
         self.region = region
         self.project = project
         self.headers = {"Authorization": f"{project}:{api_key}"}
+        self.url = f"https://api-{self.region}.stack.tryrelevance.com"
 
 
 def login(

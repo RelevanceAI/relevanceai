@@ -24,7 +24,7 @@ def _get_content_bytes(content):
 
 def _get_file_upload_urls(dataset_id: str, files: List[str]):
     response = requests.post(
-        url=f"https://api-{config.auth.region}.stack.tryrelevance.com/latest/datasets/{dataset_id}/get_file_upload_urls",
+        url=f"{config.auth.url}/latest/datasets/{dataset_id}/get_file_upload_urls",
         headers=config.auth.headers,
         json={"files": files},
     )
