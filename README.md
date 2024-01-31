@@ -70,7 +70,6 @@ Where `PUBLIC_URL` is the public url of your app. For example `https://myapp.com
 
 If you are working locally and dont have a public url you can use [ngrok](https://ngrok.com/) to create a public url for your app.
 
-5. All together
 ```python
 from pyngrok import ngrok
 PUBLIC_URL = ngrok.connect(8000).public_url
