@@ -75,7 +75,7 @@ from pyngrok import ngrok
 PUBLIC_URL = ngrok.connect(8000).public_url
 ```
 
-5. Putting this all together
+## Full code to copy and paste
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
