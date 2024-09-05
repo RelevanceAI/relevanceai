@@ -1,8 +1,6 @@
 ## Relevance AI - The home of your AI Workforce
 
-🔥 Use Relevance to build AI agents for your AI workforce:
-- ⚡ Connect your python api's to tools for Agents or custom actions for GPTs.
-- 🚀 Share your tools as AI web apps with your team to use.
+🔥 Use Relevance to build AI agents for your AI workforce
 
 [Sign up for a free account ->](https://app.relevanceai.com)
 
@@ -14,109 +12,85 @@
 | Platform | [Platform](https://app.relevanceai.com/) |
 | Developer Documentation | [Documentation](https://sdk.relevanceai.com/) |
 
+## Installation
+
+Install the Relevance AI SDK using pip:
+
+```bash
+pip install relevanceai
+```
+
 ## Getting Started
 
-### 1. Installation:
-`pip install relevanceai`
+### 1. Instantiate the Client
 
-This example uses fastapi and uvicorn so lets install that too:
-`pip install fastapi`
-`pip install uvicorn[standard]`
+To get started, you'll need to instantiate the Relevance AI client using your API key, region, and project ID. Ensure you load your environment variables securely.
 
-### 2. Create your FastAPI app - *skip if you already have one*
-Here is a quick example of a FastAPI app:
 ```python
-from fastapi import FastAPI
-app = FastAPI()
+from relevanceai import RelevanceAI
 
-class HelloWorldParams(BaseModel):
-    message : str = Query(..., title="Message", description="message from user")
-
-class HelloWorldResponse(BaseModel):
-    reply : str
-
-def hello_world(prompt):
-    return {"reply" : "hello world"}
-
-@app.post("/hello_world", name="Hello World", description="Reply always with hello world", response_model=HelloWorldResponse)
-def hello_world_api(commons: HelloWorldParams):
-    return hello_world(commons.message)
+client = RelevanceAI()
 ```
 
-### 3. Describe for your tools
-Make sure to give your FastAPI endpoints as much descrition as possible. These provided descriptions are utilized in the agent prompt so that the Agent can better understand your tools.
+### 2. Working with Agents
 
-For example:
-Add a `title` and `description` for the inputs of your tool, explaining what they are and what kind of value to provide:
-```python
-class HelloWorldParams(BaseModel):
-    message : str = Query(..., description="message from user")
-```
-Add a `name` and `description` about the tool explaining when to use it and what it does:
-```python
-@app.post("/hello_world", name="Hello World", description="Reply always with hello world", response_model=HelloWorldResponse)
-```
-Relevance AI will automatically take these values from your fastapi app and use it to create a prompt for the agent.
+The SDK allows you to manage agents, retrieve agent details, and interact with agent tools.
 
-
-### 4. Lets connect it live to Relevance AI
-In short all it takes to connect is to add the following lines to your app:
-```python
-from relevanceai.connect.fastapi import connect_fastapi_to_rai
-
-connect_fastapi_to_rai(app.routes, PUBLIC_URL)
-```
-Where `PUBLIC_URL` is the public url of your app. For example `https://myapp.com`.
-
-If you are working locally and dont have a public url you can use [ngrok](https://ngrok.com/) to create a public url for your app.
+#### List Agents
 
 ```python
-from pyngrok import ngrok
-PUBLIC_URL = ngrok.connect(8000).public_url
+client.beta.agents.list()
 ```
 
-## Full code to copy and paste
-```python
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter, Query
-from pydantic import BaseModel
-from typing import List
+#### Retrieve Agent Details
 
-#create FastAPI app
-app = FastAPI()
-#add cors middleware to allow all origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
+```python
+client.beta.agents.retrieve("agent_id")
+```
+
+#### List Agent Tools
+
+```python
+client.beta.agents.list_tools("agent_id")
+```
+
+### 3. Task Management
+
+Tasks are central to automating workflows with your AI agents. You can trigger tasks, manage conversations, and more.
+
+#### Working with Tasks
+
+```python
+client.beta.tasks.trigger(
+    agent_id="your_agent_id",
+    message={
+        "role": "user",
+        "content": "Write me a blog post"
+    },
 )
-
-class HelloWorldParams(BaseModel):
-    message : str = Query(..., description="message from user")
-
-class HelloWorldResponse(BaseModel):
-    reply : str
-
-def hello_world(prompt):
-    return {"reply" : "hello world"}
-
-@app.post(
-        "/hello_world", name="Hello World", description="Reply always with hello world", response_model=HelloWorldResponse
-    )
-def hello_world_api(commons: HelloWorldParams):
-    return hello_world(commons.message)
-
-#If you are deploying the api from a local computer use ngrok to expose a public url.
-from pyngrok import ngrok
-PUBLIC_URL = ngrok.connect(8000).public_url
-
-#This will create a Tool in Relevance AI that will call your API endpoint
-from relevanceai.connect.fastapi import connect_fastapi_to_rai
-connect_fastapi_to_rai(app.routes, PUBLIC_URL)
 ```
 
-## Roadmap & Contribution
-More examples and api connectors coming soon. Feel free to contribute to this repo.
+#### List Conversations
+
+```python
+client.beta.tasks.list_conversation(
+    agent_id="your_agent_id",
+    conversation_id="your_conversation_id",
+)
+```
+
+## Documentation
+
+For more detailed documentation, please visit:
+
+- [Home Page](https://relevanceai.com/)
+- [Platform](https://app.relevanceai.com/)
+- [Developer Documentation](https://sdk.relevanceai.com/)
+
+## Contributing
+
+We welcome contributions! Feel free to submit pull requests and report issues. More examples and connectors will be added soon.
+
+## License
+
+This project is licensed under the terms of the MIT license.
