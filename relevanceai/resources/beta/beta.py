@@ -1,4 +1,4 @@
-from rai import _client
+from relevanceai import _client
 from functools import cached_property
 
 from ..._client import RelevanceAI

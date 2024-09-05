@@ -47,13 +47,29 @@ class Tasks(SyncAPIResource):
     
     def schedule_trigger(
         self,
+        agent_id: str,
         message: str, 
         conversation_id: str,
         minutes_until_schedule: int = 0,
     ) -> Trigger: 
         
-        pass
+        path = f"agents/{agent_id}/scheduled_triggers_item/create"
+        body = {
+            "message": message,
+            "conversation_id": conversation_id,
+            "minutes_until_schedule": minutes_until_schedule
+        }
+        response = self._post(path, body=body)
+        return Trigger(**response.json())
 
+    def list(
+        self,
+    ):
+        path = "chat/list" 
+        body = None
+        params = None
+        response = self._post(path=path, body=body, params=params)
+        return response.json().get('results', [])
         
         
         

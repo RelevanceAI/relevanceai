@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 .DS_Store
 
+# my tests
+my_tests/
+
 # C extensions
 *.so
 
