@@ -5,7 +5,7 @@ __pycache__/
 .DS_Store
 
 # my tests
-my_tests/
+dev/
 
 # C extensions
 *.so

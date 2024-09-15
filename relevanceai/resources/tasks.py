@@ -1,32 +1,23 @@
 
-
-from ....types.beta.tasks.trigger import Trigger
-from ....types.beta.task import Task
-from ...._resource import SyncAPIResource
-from .runs import Runs
-from .messages import Messages
-from functools import cached_property
-
+from ..types.task import Task
+from .._resource import SyncAPIResource
 
 class Tasks(SyncAPIResource): 
-    
-    @cached_property
-    def runs(self) -> Runs: 
-        return Runs(self._client)
-    @cached_property
-    def messages(self) -> Messages:
-        return Messages(self._client)
+
+    # todo: set template settings for task runs 
     
     def trigger(
         self,
         message: str, 
         agent_id,
     ) -> Task: 
-        
         path = "agents/trigger"
         body = {
             "agent_id": agent_id,
-            "message": message,
+            "message": {
+                "role": "user",
+                "content": message,
+            }
         }
         response = self._post(path, body=body)
         return Task(**response.json())
@@ -51,25 +42,18 @@ class Tasks(SyncAPIResource):
         message: str, 
         conversation_id: str,
         minutes_until_schedule: int = 0,
-    ) -> Trigger: 
-        
-        path = f"agents/{agent_id}/scheduled_triggers_item/create"
-        body = {
-            "message": message,
+    ): 
+        path = f"agents/{agent_id}/scheduled_triggers_item/create" 
+        body = { 
             "conversation_id": conversation_id,
+            "message": message,
             "minutes_until_schedule": minutes_until_schedule
         }
-        response = self._post(path, body=body)
-        return Trigger(**response.json())
-
-    def list(
-        self,
-    ):
-        path = "chat/list" 
-        body = None
         params = None
-        response = self._post(path=path, body=body, params=params)
-        return response.json().get('results', [])
+        response = self._post(path, body=body, params=params)
+        return response.json()
+
+
         
         
         

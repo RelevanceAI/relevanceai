@@ -1,13 +1,12 @@
-from ..._client import RelevanceAI
-from ..._resource import SyncAPIResource
-from ...types.beta.agent import Agent, AgentDeleted
+from .._client import RelevanceAI
+from .._resource import SyncAPIResource
+from ..types.agent import Agent, AgentDeleted
 
 from typing import List
 
 class Agents(SyncAPIResource): 
     
     _client: RelevanceAI
-    
     def retrieve(
         self,
         agent_id: str,
@@ -21,6 +20,7 @@ class Agents(SyncAPIResource):
     def list(
         self
     ) -> List[Agent]:
+        
         path = "agents/list"
         body = {}
         params = None
@@ -31,8 +31,8 @@ class Agents(SyncAPIResource):
         self,
     ) -> Agent:
         path = "agents/upsert"
-        body = {}
-        params = {}
+        body = None
+        params = None
         response = self._post(path=path, body=body, params=params)
         return self.retrieve(response.json().get("agent_id"))
     
@@ -47,7 +47,7 @@ class Agents(SyncAPIResource):
         if response.status_code != 200:
             return True
         else:
-            return False #! raise error
+            return False
         
     def cancel(
         self,
@@ -57,7 +57,7 @@ class Agents(SyncAPIResource):
         body = None
         params = None
         response = self._post(path=path, body=body, params=params)
-        return
+        return True
     
     def clone(
         self,
@@ -70,7 +70,7 @@ class Agents(SyncAPIResource):
         }
         params = None
         response = self._post(path=path, body=body, params=params)
-        return
+        return response
     
     def list_tools(
         self,
@@ -81,12 +81,4 @@ class Agents(SyncAPIResource):
         params = None
         response = self._post(path=path, body=body, params=params)
         return response.json().get('chains', [])
-    
-    
-    
-        
-    
-    
-        
-    
     
