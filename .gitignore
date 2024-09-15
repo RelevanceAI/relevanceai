@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 .DS_Store
 
+deploy.sh
+
 # my tests
 dev/
 
