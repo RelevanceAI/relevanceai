@@ -9,6 +9,7 @@ class Tools(SyncAPIResource):
 
     _client: RelevanceAI
 
+
     def retrieve(
         self, 
         tool_id: str
