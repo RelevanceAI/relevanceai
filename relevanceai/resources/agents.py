@@ -7,7 +7,8 @@ from typing import List
 class Agents(SyncAPIResource): 
     
     _client: RelevanceAI
-    def retrieve(
+
+    def retrieve_agent(
         self,
         agent_id: str,
     ) -> Agent:
@@ -26,7 +27,7 @@ class Agents(SyncAPIResource):
         response = self._post(path=path, body=body, params=params)
         return [Agent(**item) for item in response.json().get('results', [])]  
     
-    def delete(
+    def delete_agent(
         self,
         agent_id: str
     ) -> bool:
@@ -34,10 +35,10 @@ class Agents(SyncAPIResource):
         body = None
         params = None
         response = self._post(path=path, body=body, params=params)
-        if response.status_code != 200:
+        if response.status_code == 200:
             return True
-        else:
-            return False
+        return False
+    
     def list_agent_tools(
         self,
         agent_id: str,
@@ -48,3 +49,7 @@ class Agents(SyncAPIResource):
         response = self._post(path=path, body=body, params=params)
         return response.json().get('chains', [])
     
+    def list_subagents(
+        self,
+    ): 
+        pass

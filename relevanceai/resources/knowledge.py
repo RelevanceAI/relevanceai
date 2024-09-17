@@ -1,9 +1,6 @@
 from .._resource import SyncAPIResource
+from .._client import RelevanceAI
 
 class Knowledge(SyncAPIResource):
-    # todo: create, read, update, delete knowledge tables
-    pass
 
-
-    # set, upload/trigger
-    # download data
+    _client: RelevanceAI

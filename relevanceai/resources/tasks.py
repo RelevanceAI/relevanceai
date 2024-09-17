@@ -7,7 +7,7 @@ class Tasks(SyncAPIResource):
 
     _client: RelevanceAI
     
-    def trigger(
+    def trigger_task(
         self,
         message: str, 
         agent_id,
@@ -23,7 +23,7 @@ class Tasks(SyncAPIResource):
         response = self._post(path, body=body)
         return Task(**response.json())
     
-    def schedule_trigger(
+    def schedule_task(
         self,
         agent_id: str,
         message: str, 
@@ -39,31 +39,18 @@ class Tasks(SyncAPIResource):
         params = None
         response = self._post(path, body=body, params=params)
         return response.json()
-    
-    def trigger_rerun(
+
+    def list_conversations(
         self,
-        agent_id: str,
-        message: str, 
-        conversation_id: str,
+        agent_id: str
     ):
-        pass
+        path = "agents/conversations/list"
+        params = {}
+        response = self._get(path=path, params=params)
+        filtered_conversations = [item for item in response.json()['results'] if item['metadata']['conversation']['agent_id'] == agent_id]
+        return filtered_conversations
 
-    def bulk_trigger(
-        self,
-    ): 
-        pass 
-
-    def bulk_rerun(
-        self,
-    ): 
-        pass
-    
-    def find_and_replace_bulk_rerun(
-        self
-    ):
-        pass
-
-    def list_conversation(
+    def list_conversation_steps(
         self, 
         agent_id: str,
         conversation_id: str,
@@ -76,6 +63,16 @@ class Tasks(SyncAPIResource):
         }
         response = self._get(path=path, body=body, params=params)
         return response.json().get('results', [])
+    
+    def delete_conversation(
+        self,
+        conversation_id: str
+    ): 
+        path = "knowledge/sets/delete"
+        body = {"knowledge_set": [conversation_id]}
+        response = self._post(path=path, body=body)
+        return response.json()
+
     
     
 

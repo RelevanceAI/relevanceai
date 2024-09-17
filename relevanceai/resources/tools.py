@@ -28,10 +28,9 @@ class Tools(SyncAPIResource):
         body = {"ids": [tool_id]}
         params = None
         response = self._post(path=path, body=body, params=params)
-        if response.status_code != 200:
+        if response.status_code == 200:
             return True
-        else:
-            return False
+        return False
         
     def list_tools(
         self,
