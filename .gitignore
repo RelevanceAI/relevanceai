@@ -7,7 +7,7 @@ __pycache__/
 deploy.sh
 
 # my tests
-dev/
+mydev/
 
 # C extensions
 *.so

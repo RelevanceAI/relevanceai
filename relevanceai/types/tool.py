@@ -36,16 +36,19 @@ class Tool(BaseModel):
     params_schema: ParamSchema
     project: str
     public: bool
-    state_mapping: Dict[str, str]
+    state_mapping: Dict[str, str] = None
     studio_id: str
     title: str
     transformations: Transformations
     update_date_: str
     version: str
-    machine_user_id: str
+    machine_user_id: Optional[str] = None 
 
     class Config:
         extra = 'ignore'
+
+    def __repr__(self):
+        return f"<Tool \"{self.title}\" - {self.studio_id}>"
 
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any

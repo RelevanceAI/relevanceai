@@ -17,7 +17,7 @@ class Agents(SyncAPIResource):
         response = self._get(path=path, body=body, params=params)
         return Agent(**response.json().get('agent', []))
     
-    def list(
+    def list_agents(
         self
     ) -> List[Agent]:
         path = "agents/list"
@@ -25,15 +25,6 @@ class Agents(SyncAPIResource):
         params = None
         response = self._post(path=path, body=body, params=params)
         return [Agent(**item) for item in response.json().get('results', [])]  
-    
-    def upsert(
-        self,
-    ) -> Agent:
-        path = "agents/upsert"
-        body = None
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        return self.retrieve(response.json().get("agent_id"))
     
     def delete(
         self,
@@ -47,31 +38,7 @@ class Agents(SyncAPIResource):
             return True
         else:
             return False
-        
-    def cancel(
-        self,
-        agent_id: str
-    ) -> None: 
-        path = f"agents/{agent_id}/cancel"
-        body = None
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        return True
-    
-    def clone(
-        self,
-        template: dict,
-    ) -> None:
-        
-        path = "agents/clone"
-        body = {
-            "template": template
-        }
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        return response
-    
-    def list_tools(
+    def list_agent_tools(
         self,
         agent_id: str,
     ) -> List[dict]:

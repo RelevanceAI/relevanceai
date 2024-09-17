@@ -30,3 +30,6 @@ class Agent(BaseModel):
 
     class Config:
         extra = 'ignore'
+
+    def __repr__(self):
+        return f"<Agent \"{self.name}\" - {self.agent_id}>"

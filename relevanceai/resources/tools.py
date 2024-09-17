@@ -1,16 +1,13 @@
-
+from .._client import RelevanceAI
 from ..types.params import *
 from ..types.tool import Tool, ToolOutput
 from .._resource import SyncAPIResource
-from functools import cached_property
 import json 
+from typing import List
 
 class Tools(SyncAPIResource):
 
-    def create(
-        self,
-    ) -> Tool: 
-        pass
+    _client: RelevanceAI
 
     def retrieve(
         self, 
@@ -26,27 +23,27 @@ class Tools(SyncAPIResource):
         self,
         tool_id: str
     ) -> bool:
-        pass
-
-    def update_params(
+        
+        path = "studios/bulk_delete"
+        body = {"ids": [tool_id]}
+        params = None
+        response = self._post(path=path, body=body, params=params)
+        if response.status_code != 200:
+            return True
+        else:
+            return False
+        
+    def list_tools(
         self,
-        tool_id: str
-    ):  
-        # todo: add, delete, reorder params
-        pass
-
-    def update_steps(
-        self,
-        tool_id: str
-    ):
-        # todo: add, delete, reorder params
-        pass
+    ) -> List[Tool]: 
+        path = "studios/list"
+        response = self._get(path=path)
+        return [Tool(**item) for item in response.json().get("results", [])]
 
     def _list_params_as_string(
         self, 
         tool_id: str
     ) -> str:
-        """Returns a parameters template"""
         path = f"studios/{tool_id}/get"
         body = None 
         params = None
@@ -57,7 +54,6 @@ class Tools(SyncAPIResource):
         self,
         tool_id: str
     ) -> str:
-        """Returns a transformations template"""
         path = f"studios/{tool_id}/get"
         body = None 
         params = None

@@ -1,10 +1,11 @@
 
+from .._client import RelevanceAI
 from ..types.task import Task
 from .._resource import SyncAPIResource
 
 class Tasks(SyncAPIResource): 
 
-    # todo: set template settings for task runs 
+    _client: RelevanceAI
     
     def trigger(
         self,
@@ -22,20 +23,6 @@ class Tasks(SyncAPIResource):
         response = self._post(path, body=body)
         return Task(**response.json())
     
-    def list_conversation(
-        self, 
-        agent_id: str,
-        conversation_id: str,
-    ): 
-        path = f"agents/conversations/studios/list"
-        body = None
-        params = {
-            "agent_id": agent_id,
-            "conversation_id": conversation_id
-        }
-        response = self._get(path=path, body=body, params=params)
-        return response.json().get('results', [])
-    
     def schedule_trigger(
         self,
         agent_id: str,
@@ -52,6 +39,45 @@ class Tasks(SyncAPIResource):
         params = None
         response = self._post(path, body=body, params=params)
         return response.json()
+    
+    def trigger_rerun(
+        self,
+        agent_id: str,
+        message: str, 
+        conversation_id: str,
+    ):
+        pass
+
+    def bulk_trigger(
+        self,
+    ): 
+        pass 
+
+    def bulk_rerun(
+        self,
+    ): 
+        pass
+    
+    def find_and_replace_bulk_rerun(
+        self
+    ):
+        pass
+
+    def list_conversation(
+        self, 
+        agent_id: str,
+        conversation_id: str,
+    ): 
+        path = f"agents/conversations/studios/list"
+        body = None
+        params = {
+            "agent_id": agent_id,
+            "conversation_id": conversation_id
+        }
+        response = self._get(path=path, body=body, params=params)
+        return response.json().get('results', [])
+    
+    
 
 
         
