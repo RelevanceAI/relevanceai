@@ -1,5 +1,5 @@
 from .._client import RelevanceAI
-from ..types.params import *
+from ..types._params import *
 from ..types.tool import Tool, ToolOutput
 from .._resource import SyncAPIResource
 import json 
@@ -8,7 +8,6 @@ from typing import List
 class Tools(SyncAPIResource):
 
     _client: RelevanceAI
-
 
     def retrieve(
         self, 
@@ -41,7 +40,7 @@ class Tools(SyncAPIResource):
         response = self._get(path=path)
         return [Tool(**item) for item in response.json().get("results", [])]
 
-    def _list_params_as_string(
+    def _list_params_as_json_string(
         self, 
         tool_id: str
     ) -> str:
@@ -51,7 +50,7 @@ class Tools(SyncAPIResource):
         response = self._get(path=path, body=body, params=params)
         return json.dumps(response.json()["studio"]["params_schema"]["properties"], indent=4)
         
-    def _list_steps_as_string(
+    def _list_steps_as_json_string(
         self,
         tool_id: str
     ) -> str:

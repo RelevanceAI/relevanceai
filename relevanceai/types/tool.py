@@ -79,7 +79,6 @@ class Output(BaseModel):
     duration: float
     credits_cost: float
 
-
 class ToolOutput(BaseModel):
     status: str
     errors: List[str]

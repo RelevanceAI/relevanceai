@@ -1,6 +1,3 @@
-
-
-
 from .._resource import SyncAPIResource
 
 class Knowledge(SyncAPIResource):
