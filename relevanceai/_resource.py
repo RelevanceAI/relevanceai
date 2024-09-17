@@ -31,8 +31,6 @@ class SyncAPIResource:
         params: Optional[Dict[str, Any]] = None, 
         options: Optional[Dict[str, Any]] = None
     ) -> ResponseT:
-<<<<<<<<<<<<<<  ✨ Codeium Command ⭐  >>>>>>>>>>>>>>>>
-<<<<<<<  ec7d0f3e-df69-45dd-8366-edf6862767be  >>>>>>>
         options = options or {}
         response = self._client.post(path, json=body, params=params, **options)
         return self._cast_response(response, cast_to)

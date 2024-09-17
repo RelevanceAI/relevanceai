@@ -30,6 +30,3 @@ class Agent(BaseModel):
 
     class Config:
         extra = 'ignore'
-
-class AgentDeleted(BaseModel):
-    pass

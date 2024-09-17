@@ -1,6 +1,6 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
-from ..types.agent import Agent, AgentDeleted
+from ..types.agent import Agent
 
 from typing import List
 
@@ -20,7 +20,6 @@ class Agents(SyncAPIResource):
     def list(
         self
     ) -> List[Agent]:
-        
         path = "agents/list"
         body = {}
         params = None
@@ -39,7 +38,7 @@ class Agents(SyncAPIResource):
     def delete(
         self,
         agent_id: str
-    ) -> AgentDeleted:
+    ) -> bool:
         path = f"agents/{agent_id}/delete"
         body = None
         params = None

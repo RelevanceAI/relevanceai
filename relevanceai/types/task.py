@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
-task = {
-  "id": "task_abc123",
-  "object": "task",
-  "created_at": 1698107661,
-  "metadata": {}
-}
+# task = {
+#   "id": "task_abc123",
+#   "object": "task",
+#   "created_at": 1698107661,
+#   "metadata": {}
+# }
 
 class JobInfo(BaseModel):
     studio_id: str
