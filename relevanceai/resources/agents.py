@@ -1,7 +1,6 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.agent import Agent
-
 from typing import List
 
 class Agents(SyncAPIResource): 
@@ -13,31 +12,22 @@ class Agents(SyncAPIResource):
         agent_id: str,
     ) -> Agent:
         path = f"agents/{agent_id}/get"
-        body = None
-        params = None
-        response = self._get(path=path, body=body, params=params)
-        return Agent(**response.json().get('agent', []))
+        response = self._get(path)
+        return Agent(**response.json()["agent"])
     
     def list_agents(
         self
     ) -> List[Agent]:
-        path = "agents/list"
-        body = {}
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        return [Agent(**item) for item in response.json().get('results', [])]  
+        response = self._post("agents/list")
+        return [Agent(**item) for item in response.json().get("results", [])]
     
     def delete_agent(
-        self,
+        self, 
         agent_id: str
     ) -> bool:
         path = f"agents/{agent_id}/delete"
-        body = None
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        if response.status_code == 200:
-            return True
-        return False
+        response = self._post(path)
+        return response.status_code == 200
     
     def list_agent_tools(
         self,

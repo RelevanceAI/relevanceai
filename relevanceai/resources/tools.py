@@ -9,67 +9,45 @@ class Tools(SyncAPIResource):
 
     _client: RelevanceAI
 
-    def retrieve(
-        self, 
-        tool_id: str
-    ) -> Tool:
+    def retrieve_tool(self, tool_id: str) -> Tool:
         path = f"studios/{tool_id}/get"
-        body = None 
-        params = None
-        response = self._get(path=path, body=body, params=params)
+        response = self._get(path)
         return Tool(**response.json()["studio"])
     
-    def delete(
-        self,
-        tool_id: str
-    ) -> bool:
-        
+    def delete_tool(self, tool_id: str) -> bool:
         path = "studios/bulk_delete"
         body = {"ids": [tool_id]}
-        params = None
-        response = self._post(path=path, body=body, params=params)
-        if response.status_code == 200:
-            return True
-        return False
+        response = self._post(path, body=body)
+        return response.status_code == 200
         
-    def list_tools(
-        self,
-    ) -> List[Tool]: 
-        path = "studios/list"
-        response = self._get(path=path)
+    def list_tools(self) -> List[Tool]:
+        response = self._get("studios/list")
         return [Tool(**item) for item in response.json().get("results", [])]
 
-    def _list_params_as_json_string(
-        self, 
-        tool_id: str
-    ) -> str:
-        path = f"studios/{tool_id}/get"
-        body = None 
-        params = None
-        response = self._get(path=path, body=body, params=params)
-        return json.dumps(response.json()["studio"]["params_schema"]["properties"], indent=4)
-        
-    def _list_steps_as_json_string(
+    def trigger_tool(
         self,
-        tool_id: str
-    ) -> str:
-        path = f"studios/{tool_id}/get"
-        body = None 
-        params = None
-        response = self._get(path=path, body=body, params=params)
-        return json.dumps(response.json()["studio"]["transformations"]["steps"], indent=4)
-    
-    def trigger(
-        self, 
-        tool_id: str, 
-        params: dict = None, 
-    ) -> ToolOutput: 
-        path = f"studios/{tool_id}/trigger" 
-        body = {"params": params}
+        tool_id: str,
+        params: dict | None = None,
+    ) -> ToolOutput:
+        """Trigger a tool with the given parameters."""
+        path = f"studios/{tool_id}/trigger"
+        body = {"params": params or {}}
         response = self._post(path=path, body=body)
         return ToolOutput(**response.json())
-        
-    def bulk_trigger(
+    
+    def _get_params_as_json_string(
         self,
-    ):
-        pass
+        tool_id: str,
+    ) -> str:
+        response = self._get(f"studios/{tool_id}/get")
+        params_schema = response.json()["studio"]["params_schema"]["properties"]
+        return json.dumps(params_schema, indent=4)
+        
+    def _get_steps_as_json_string(
+        self,
+        tool_id: str
+    ) -> str:
+        response = self._get(f"studios/{tool_id}/get")
+        transformations = response.json()["studio"]["transformations"]
+        steps = transformations["steps"]
+        return json.dumps(steps, indent=4)
