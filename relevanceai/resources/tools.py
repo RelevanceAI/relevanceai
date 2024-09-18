@@ -8,9 +8,16 @@ class Tools(SyncAPIResource):
 
     _client: RelevanceAI
 
+    # todo: some tools are helper tools
     def list_tools(self) -> List[Tool]:
-        response = self._get("studios/list")
-        return [Tool(**item) for item in response.json().get("results", [])]
+        response = self._client.get("studios/list")
+        tools = [Tool(**item) for item in response.json().get("results", [])]
+        for tool in tools:
+            try:
+                tool.studio_id = tool.metadata["source_studio_id"]
+            except KeyError:
+                pass
+        return tools
 
     def retrieve_tool(self, tool_id: str) -> Tool:
         path = f"studios/{tool_id}/get"
@@ -22,7 +29,6 @@ class Tools(SyncAPIResource):
         tool_id: str,
         params: dict | None = None,
     ) -> ToolOutput:
-        """Trigger a tool with the given parameters."""
         path = f"studios/{tool_id}/trigger"
         body = {"params": params or {}}
         response = self._post(path=path, body=body)
