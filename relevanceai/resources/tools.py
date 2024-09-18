@@ -1,28 +1,21 @@
 from .._client import RelevanceAI
-from ..types._params import *
-from ..types.tool import Tool, ToolOutput
 from .._resource import SyncAPIResource
-import json 
+from ..types.tool import Tool, ToolOutput
 from typing import List
+import json 
 
 class Tools(SyncAPIResource):
 
     _client: RelevanceAI
 
+    def list_tools(self) -> List[Tool]:
+        response = self._get("studios/list")
+        return [Tool(**item) for item in response.json().get("results", [])]
+
     def retrieve_tool(self, tool_id: str) -> Tool:
         path = f"studios/{tool_id}/get"
         response = self._get(path)
         return Tool(**response.json()["studio"])
-    
-    def delete_tool(self, tool_id: str) -> bool:
-        path = "studios/bulk_delete"
-        body = {"ids": [tool_id]}
-        response = self._post(path, body=body)
-        return response.status_code == 200
-        
-    def list_tools(self) -> List[Tool]:
-        response = self._get("studios/list")
-        return [Tool(**item) for item in response.json().get("results", [])]
 
     def trigger_tool(
         self,
@@ -51,3 +44,9 @@ class Tools(SyncAPIResource):
         transformations = response.json()["studio"]["transformations"]
         steps = transformations["steps"]
         return json.dumps(steps, indent=4)
+
+    def delete_tool(self, tool_id: str) -> bool:
+        path = "studios/bulk_delete"
+        body = {"ids": [tool_id]}
+        response = self._post(path, body=body)
+        return response.status_code == 200
