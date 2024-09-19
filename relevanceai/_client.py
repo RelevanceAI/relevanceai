@@ -16,6 +16,7 @@ class RelevanceAI(SyncAPIClient):
     agents: resources.Agents
     tasks: resources.Tasks
     tools: resources.Tools
+    knowledge: resources.Knowledge
     
     api_key: str
     region: str | None
@@ -58,6 +59,7 @@ class RelevanceAI(SyncAPIClient):
         self.agents = resources.Agents(self)
         self.tasks = resources.Tasks(self)
         self.tools = resources.Tools(self)
+        self.knowledge = resources.Knowledge(self)
 
     
 if __name__=="__main__": 

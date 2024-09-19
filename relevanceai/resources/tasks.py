@@ -7,10 +7,11 @@ class Tasks(SyncAPIResource):
 
     _client: RelevanceAI
     
-    def list_all_tasks(
+    def list_tasks(
         self,
         agent_id: str,
-        max_results: Optional[int] = 50
+        max_results: Optional[int] = 50,
+        state: Optional[str] = None,
     ) -> List[TaskItem]:
         path = "agents/conversations/list"
         params = {
@@ -23,7 +24,10 @@ class Tasks(SyncAPIResource):
             "page_size": max_results
         }
         response = self._get(path, params=params)
-        return [TaskItem(**item) for item in response.json()['results']]
+        tasks = [TaskItem(**item) for item in response.json()['results']]
+        if state:
+            tasks = [task for task in tasks if task.metadata.conversation.state == state]
+        return tasks
 
     def retrieve_task(
         self,

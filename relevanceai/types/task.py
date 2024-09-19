@@ -70,6 +70,9 @@ class TaskItem(BaseModel):
 
     def __repr__(self):
         return f"<TaskItem \"{self.metadata.conversation.title}\" - {self.knowledge_set}>"
+    
+    def get_id(self):
+        return self.knowledge_set
 
 ### Task Conversation Summary
 
