@@ -30,10 +30,7 @@ class Knowledge(SyncAPIResource):
         }
         response = self._post(path, body=body)
         return [KnowledgeRow(**item) for item in response.json().get("results", [])]
-
-    def upload_knowledge(self):
-        pass
-
+        
     def delete_knowledge(
         self,
         knowledge_set: str, 

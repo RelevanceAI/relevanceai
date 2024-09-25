@@ -7,8 +7,7 @@ import json
 class Tools(SyncAPIResource):
 
     _client: RelevanceAI
-
-    # todo: some tools are helper tools
+    
     def list_tools(self) -> List[Tool]:
         response = self._client.get("studios/list")
         tools = [Tool(**item) for item in response.json().get("results", [])]

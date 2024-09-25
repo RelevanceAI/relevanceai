@@ -28,18 +28,3 @@ class Agents(SyncAPIResource):
         path = f"agents/{agent_id}/delete"
         response = self._post(path)
         return response.status_code == 200
-
-    # def list_agent_tools(
-    #     self,
-    #     agent_id: str,
-    # ) -> List[dict]:
-    #     path = f"agents/{agent_id}/tools/list"
-    #     body = None
-    #     params = None
-    #     response = self._post(path=path, body=body, params=params)
-    #     return response.json().get('chains', [])
-
-    # def list_subagents(
-    #     self,
-    # ): 
-    #     pass
