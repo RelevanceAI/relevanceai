@@ -10,7 +10,8 @@ class Agents(SyncAPIResource):
     def list_agents(
         self
     ) -> List[Agent]:
-        response = self._post("agents/list")
+        path = "agents/list"
+        response = self._post(path)
         return [Agent(**item) for item in response.json().get("results", [])]
     
     def retrieve_agent(
