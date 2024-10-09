@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.agent import Agent

@@ -43,23 +43,6 @@ class Tasks(SyncAPIResource):
                 return task_item
         return task_item
 
-    # def list_task_steps(
-    #     self,
-    #     agent_id: str,
-    #     conversation_id: str,
-    # ) -> TaskConversation:
-    #     path = "agents/conversations/studios/list"
-    #     params = {
-    #         "agent_id": agent_id,
-    #         "conversation_id": conversation_id,
-    #     }
-    #     response = self._get(path=path, params=params)
-    #     task_conversation = TaskConversation(**response.json()["results"][0])
-    #     task_conversation.title = self.retrieve_task(
-    #         agent_id, conversation_id
-    #     ).metadata.conversation.title
-    #     return task_conversation
-
     def trigger_task(
         self,
         agent_id: str,
