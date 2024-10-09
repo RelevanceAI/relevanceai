@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, confloat, constr
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Region(Enum):
@@ -40,14 +40,12 @@ class MaxJobDuration(Enum):
     synchronous_seconds = 'synchronous_seconds'
     background_seconds = 'background_seconds'
 
-
 class KnowledgeItem(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
         protected_namespaces=() 
     )
     knowledge_set: str
-
 
 class Metadata(BaseModel):
     field_order: Optional[List[str]] = None
@@ -122,7 +120,6 @@ class BulkRunInputSource(Enum):
     field_ = ''
     field_DOCUMENT = '$DOCUMENT'
     field_FIELD_PARAM_MAPPING = '$FIELD_PARAM_MAPPING'
-
 
 class AgentInputSource(Enum):
     conversation_id = 'conversation_id'

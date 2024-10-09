@@ -2,7 +2,7 @@ from __future__ import annotations
 import httpx 
 from httpx import Timeout, URL, Headers, Response
 from httpx._types import ProxiesTypes
-from typing import TypeVar, Type, Dict, Any
+
 class SyncAPIClient:
     
     _client: httpx.Client

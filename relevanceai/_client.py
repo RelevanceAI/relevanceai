@@ -12,7 +12,6 @@ from ._base_client import SyncAPIClient
 
 class RelevanceAI(SyncAPIClient): 
     
-    # beta: resources.Beta
     agents: resources.Agents
     tasks: resources.Tasks
     tools: resources.Tools
@@ -55,7 +54,6 @@ class RelevanceAI(SyncAPIClient):
         super().__init__(base_url=base_url, headers=headers)
         
         from . import resources
-        # self.beta = resources.Beta(self)
         self.agents = resources.Agents(self)
         self.tasks = resources.Tasks(self)
         self.tools = resources.Tools(self)
