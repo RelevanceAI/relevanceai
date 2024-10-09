@@ -54,6 +54,8 @@ with open(path, "r") as f:
             message=message,
         )
 
+        print("Triggered task: ", task.conversation_id)
+
         time.sleep(1)
 
 print("Done!")

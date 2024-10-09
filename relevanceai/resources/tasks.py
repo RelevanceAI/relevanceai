@@ -29,7 +29,7 @@ class Tasks(SyncAPIResource):
         response = self._get(path, params=params)
         tasks = [Task(**item) for item in response.json()['results']]
         if state:
-            tasks = [task for task in tasks if task.metadata.conversation.state == state]
+            tasks = [task for task in tasks if task.metadata.conversation.state.value == state]
         return tasks
 
     def retrieve_task(

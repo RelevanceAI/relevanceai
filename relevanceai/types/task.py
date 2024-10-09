@@ -163,7 +163,7 @@ class VectorizingInfo(BaseModel):
     status: Optional[Status] = None
 
 
-class Metadata(BaseModel):
+class TaskMetadata(BaseModel):
     field_id: str = Field(..., alias='_id')
     project: str
     knowledge_set: str
@@ -195,10 +195,13 @@ class Task(BaseModel):
     knowledge_count: Optional[float] = None
     knowledge_chunked_count: Optional[float] = None
     knowledge_vectorized_count: Optional[float] = None
-    metadata: Optional[Metadata] = None
+    metadata: Optional[TaskMetadata] = None
 
     def __repr__(self): 
         return f"Task(knowledge_set=\"{self.knowledge_set}\")"
+    
+    def get_id(self): 
+        return self.knowledge_set
 
 
 class Region(Enum):
