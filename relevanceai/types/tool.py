@@ -399,7 +399,7 @@ class Metadata1(BaseModel):
     headers: Optional[List[str]] = None
     rows: Optional[float] = None
     can_add_or_remove_columns: Optional[bool] = None
-    placeholders: Optional[Dict[constr(pattern=r'.*'), str]] = None
+    placeholders: Optional[Dict[str, str]] = None
     language: Optional[Language] = None
     key_value_input_opts: Optional[KeyValueInputOpts] = Field(
         None, description='Props to pass to the KeyValueInput component.'
