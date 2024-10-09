@@ -1,7 +1,8 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
-from ..types.task import TriggerTask, ScheduledActionTrigger, TaskItem, TaskConversation
+from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskConversation
 from typing import Optional, List
+import json 
 
 class Tasks(SyncAPIResource): 
 
@@ -12,19 +13,21 @@ class Tasks(SyncAPIResource):
         agent_id: str,
         max_results: Optional[int] = 50,
         state: Optional[str] = None,
-    ) -> List[TaskItem]:
+    ) -> List[Task]:
         path = "agents/conversations/list"
         params = {
             "include_agent_details": "true",
             "include_debug_info": "false",
-            "filters": '[{"field":"conversation.is_debug_mode_task","filter_type":"exact_match","condition":"!=","condition_value":true},'
-                       '{"filter_type":"exact_match","field":"conversation.state","condition_value":["running","starting-up"],"condition":"!="},'
-                       '{"filter_type":"exact_match","field":"conversation.agent_id","condition_value":["%s"],"condition":"=="}]' % agent_id,
-            "sort": '[{"update_datetime":"desc"}]',
+            "filters": json.dumps([
+                {"field": "conversation.is_debug_mode_task", "filter_type": "exact_match", "condition": "!=", "condition_value": True},
+                {"filter_type": "exact_match", "field": "conversation.state", "condition_value": ["running", "starting-up"], "condition": "!="},
+                {"filter_type": "exact_match", "field": "conversation.agent_id", "condition_value": [agent_id], "condition": "=="}
+            ]),
+            "sort": json.dumps([{"update_datetime": "desc"}]),
             "page_size": max_results
         }
         response = self._get(path, params=params)
-        tasks = [TaskItem(**item) for item in response.json()['results']]
+        tasks = [Task(**item) for item in response.json()['results']]
         if state:
             tasks = [task for task in tasks if task.metadata.conversation.state == state]
         return tasks
@@ -33,35 +36,35 @@ class Tasks(SyncAPIResource):
         self,
         agent_id: str,
         conversation_id: str
-    ) -> TaskItem:
-        task_items = self.list_all_tasks(agent_id)
+    ) -> Task:
+        task_items = self.list_tasks(agent_id)
         for task_item in task_items:
             if task_item.knowledge_set == conversation_id:
                 return task_item
         return task_item
 
-    def list_task_steps(
-        self,
-        agent_id: str,
-        conversation_id: str,
-    ) -> TaskConversation:
-        path = "agents/conversations/studios/list"
-        params = {
-            "agent_id": agent_id,
-            "conversation_id": conversation_id,
-        }
-        response = self._get(path=path, params=params)
-        task_conversation = TaskConversation(**response.json()["results"][0])
-        task_conversation.title = self.retrieve_task(
-            agent_id, conversation_id
-        ).metadata.conversation.title
-        return task_conversation
+    # def list_task_steps(
+    #     self,
+    #     agent_id: str,
+    #     conversation_id: str,
+    # ) -> TaskConversation:
+    #     path = "agents/conversations/studios/list"
+    #     params = {
+    #         "agent_id": agent_id,
+    #         "conversation_id": conversation_id,
+    #     }
+    #     response = self._get(path=path, params=params)
+    #     task_conversation = TaskConversation(**response.json()["results"][0])
+    #     task_conversation.title = self.retrieve_task(
+    #         agent_id, conversation_id
+    #     ).metadata.conversation.title
+    #     return task_conversation
 
     def trigger_task(
         self,
         agent_id: str,
         message: str, 
-    ) -> TriggerTask:
+    ) -> TriggeredTask:
         path = "agents/trigger"
         body = {
             "agent_id": agent_id,
@@ -71,13 +74,13 @@ class Tasks(SyncAPIResource):
             },
         }
         response = self._client.post(path, json=body)
-        return TriggerTask(**response.json())
+        return TriggeredTask(**response.json())
 
     def rerun_task(
         self,
         agent_id: str,
         conversation_id: str,
-    ) -> Optional[TriggerTask]:
+    ) -> Optional[TriggeredTask]:
         trigger_message_data = self._get_trigger_message(agent_id, conversation_id)
 
         if not trigger_message_data:
@@ -95,7 +98,7 @@ class Tasks(SyncAPIResource):
 
         response = self._post(path, body=body)
 
-        return TriggerTask(**response.json())
+        return TriggeredTask(**response.json())
 
     def _get_trigger_message(
         self,
@@ -131,6 +134,7 @@ class Tasks(SyncAPIResource):
 
     def delete_task(
         self,
+        agent_id: str,
         conversation_id: str
     ) -> bool: 
         path = "knowledge/sets/delete"

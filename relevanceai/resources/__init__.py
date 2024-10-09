@@ -1,6 +1,3 @@
-from .beta import (
-    Beta,
-)
 
 from .agents import Agents
 from .tasks import Tasks

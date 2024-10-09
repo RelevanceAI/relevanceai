@@ -1,35 +1,46 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.tool import Tool, ToolOutput
-from typing import List
+from typing import List, Optional
 import json 
 
 class Tools(SyncAPIResource):
 
     _client: RelevanceAI
     
-    def list_tools(self) -> List[Tool]:
-        response = self._client.get("studios/list")
+    def list_tools(
+        self,
+        max_results: Optional[int] = 100,
+    ) -> List[Tool]:
+        path = "studios/list"
+        params = {
+            "filters": json.dumps([{
+                "filter_type": "exact_match",
+                "field": "project",
+                "condition_value": self._client.project,
+                "condition": "=="
+            }]),
+            "page_size": max_results
+        }
+        response = self._client.get(path, params=params)
         tools = [Tool(**item) for item in response.json().get("results", [])]
-        for tool in tools:
-            try:
-                tool.studio_id = tool.metadata["source_studio_id"]
-            except KeyError:
-                pass
         return tools
 
     def retrieve_tool(self, tool_id: str) -> Tool:
         path = f"studios/{tool_id}/get"
         response = self._get(path)
         return Tool(**response.json()["studio"])
-
+    
     def trigger_tool(
         self,
         tool_id: str,
         params: dict | None = None,
-    ) -> ToolOutput:
-        path = f"studios/{tool_id}/trigger"
-        body = {"params": params or {}}
+    ): 
+        path = f"studios/{tool_id}/trigger_limited"
+        body = {
+            "params": params,
+            "project": self._client.project
+        }
         response = self._post(path=path, body=body)
         return ToolOutput(**response.json())
     

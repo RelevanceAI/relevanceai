@@ -2,7 +2,9 @@ from setuptools import find_packages, setup
 from relevanceai import __version__
 
 core_reqs = [
-    "requests",
+    "pydantic==2.8.2",
+    "requests==2.32.3",
+    "httpx==0.27.2",
 ]
 
 setup(

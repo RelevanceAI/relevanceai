@@ -17,6 +17,7 @@ class Region(Enum):
 class Template(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     agent_id: str
     region: Optional[Region] = None
@@ -26,6 +27,7 @@ class Template(BaseModel):
 class Origin(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     root_agent_id: str
     region: Optional[str] = None
@@ -42,6 +44,7 @@ class MaxJobDuration(Enum):
 class KnowledgeItem(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     knowledge_set: str
 
@@ -108,6 +111,7 @@ class ValueSuggestionChain(BaseModel):
 class EnumItem(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     description: str
     value: str
@@ -251,6 +255,7 @@ class Type(Enum):
 class OauthPermission(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     provider: Provider
     types: List[Type]
@@ -297,6 +302,7 @@ class Type1(Enum):
 class Scratchpad(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     type: Type1
 
@@ -304,6 +310,7 @@ class Scratchpad(BaseModel):
 class Metadata1(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     content_type: Optional[ContentType] = None
     allow_one_of_variable_mode: Optional[bool] = None
@@ -390,6 +397,7 @@ class AfterRetriesBehaviour(Enum):
 class ActionRetryConfig(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     max_retries: Optional[float] = None
     force_retry: Optional[bool] = None
@@ -399,6 +407,7 @@ class ActionRetryConfig(BaseModel):
 class ConditionalApprovalRules(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     max_auto_approvals: Optional[float] = None
     max_approvals_asked: Optional[float] = None
@@ -418,6 +427,7 @@ class DefaultValues(BaseModel):
 class Action(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     chain_id: Optional[str] = None
     agent_id: Optional[str] = None
@@ -466,6 +476,7 @@ class Action(BaseModel):
 class ActionRetryConfig1(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     max_retries: Optional[float] = None
     force_retry: Optional[bool] = None
@@ -480,6 +491,7 @@ class ImportanceLevel(Enum):
 class Message(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     role: Literal['user']
     content: str
@@ -489,6 +501,7 @@ class Message(BaseModel):
 class Message1(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     role: Literal['agent']
     content: str
@@ -503,6 +516,7 @@ class Metadata2(BaseModel):
 class StartingMessage(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     message: Union[Message, Message1]
     metadata: Optional[Metadata2] = Field(
@@ -514,6 +528,7 @@ class StartingMessage(BaseModel):
 class Studio(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     studio_id: str
     label: Optional[str] = None
@@ -529,6 +544,7 @@ class Trigger(BaseModel):
 class Runner(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     type: Literal['default']
 
@@ -549,6 +565,7 @@ class Multiagent(BaseModel):
 class Runner1(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     type: Literal['multiagent']
     multiagent: Optional[Multiagent] = None
@@ -579,18 +596,6 @@ class KeyValueInputOpts1(BaseModel):
         description="The text displayed in the 'Add' button that inserts a new pair.",
     )
 
-
-class Filter1(BaseModel):
-    strict: Optional[Strict] = None
-    condition: Optional[str] = None
-    case_insensitive: Optional[bool] = None
-    field: Optional[str] = None
-    filter_type: Optional[FilterType] = None
-    condition_value: Optional[Any] = None
-    fuzzy: Optional[float] = None
-    join: Optional[bool] = None
-
-
 class Type2(Enum):
     email_read_write = 'email-read-write'
     calendar_read_write = 'calendar-read-write'
@@ -608,30 +613,14 @@ class Type2(Enum):
     zoom_api_v1 = 'zoom-api-v1'
     zoho_crm = 'zoho-crm'
 
-
-class OauthPermission1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    provider: Provider
-    types: List[Type2]
-
-
 class Type3(Enum):
     dynamic = 'dynamic'
     static = 'static'
 
-
-class Scratchpad1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    type: Type3
-
-
 class Metadata4(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     content_type: Optional[ContentType] = None
     allow_one_of_variable_mode: Optional[bool] = None
@@ -666,10 +655,10 @@ class Metadata4(BaseModel):
         None,
         description="[KnowledgeEditor] The name of the field in the transformation's param schema containing the knowledge set ID.",
     )
-    filters: Optional[List[Filter1]] = Field(
+    filters: Optional[List[Filter]] = Field(
         None, description='General filters for the content_type'
     )
-    oauth_permissions: Optional[List[OauthPermission1]] = Field(
+    oauth_permissions: Optional[List[OauthPermission]] = Field(
         None,
         description='(Optional) OAuth permissions required for a step. Only applicable for content_type `oauth_token`',
     )
@@ -688,7 +677,7 @@ class Metadata4(BaseModel):
         None,
         description='Filters the OAuth account selector based on the selected permission type',
     )
-    scratchpad: Optional[Scratchpad1] = None
+    scratchpad: Optional[Scratchpad] = None
 
 
 class Properties1(BaseModel):
@@ -697,14 +686,10 @@ class Properties1(BaseModel):
     items: Optional[Items] = None
 
 
-class ParamsSchema1(BaseModel):
-    metadata: Optional[Metadata3] = None
-    properties: Optional[Dict[str, Properties1]] = None
-
-
 class Email(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     emails: Optional[Any] = None
 
@@ -712,6 +697,7 @@ class Email(BaseModel):
 class Channel(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     oauth_account_id: Optional[Any] = None
 
@@ -719,6 +705,7 @@ class Channel(BaseModel):
 class Slack(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     channels: Optional[List[Channel]] = None
 
@@ -726,6 +713,7 @@ class Slack(BaseModel):
 class Escalations(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     email: Optional[Email] = None
     slack: Optional[Slack] = None
@@ -751,6 +739,7 @@ class ModelOptions(BaseModel):
 class Runtime(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     code: Optional[str] = None
     enabled: Optional[bool] = False
@@ -768,6 +757,7 @@ class Metadata5(BaseModel):
 class Agent(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
+        protected_namespaces=() 
     )
     field_id: str = Field(..., alias='_id')
     agent_id: str
@@ -838,7 +828,7 @@ class Agent(BaseModel):
     runner: Optional[Union[Runner, Runner1]] = None
     tags: Optional[Dict[str, Union[bool, Tags]]] = None
     internal_tags: Optional[InternalTags] = None
-    params_schema: Optional[ParamsSchema1] = Field(
+    params_schema: Optional[ParamsSchema] = Field(
         None,
         description='A jsonschema superset object that users parameters will be validated against upon execution.',
     )

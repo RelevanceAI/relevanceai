@@ -1,4 +1,0 @@
-from .beta import (
-    Beta,
-)
-
