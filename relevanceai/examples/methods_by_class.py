@@ -1,4 +1,8 @@
 
+"""
+Methods by class. 
+"""
+
 ###* Getting started
 
 from relevanceai import RelevanceAI

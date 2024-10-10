@@ -1,4 +1,8 @@
 
+"""
+Rerun pending tasks. 
+"""
+
 import time 
 import json
 from relevanceai import RelevanceAI
@@ -28,7 +32,7 @@ for t_id in task_ids:
             conversation_id=t_id,
         )
 
-        time.sleep(2) #! to avoid rate limits 
+        time.sleep(2) 
     except: 
         print("Failed at task_id: " + t_id)
         continue
