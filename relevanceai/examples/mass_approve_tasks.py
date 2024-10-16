@@ -1,6 +1,6 @@
 
 """
-Methods by class. 
+Mass approve tasks. 
 """
 
 import time
