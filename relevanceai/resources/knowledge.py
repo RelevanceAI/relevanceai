@@ -42,6 +42,3 @@ class Knowledge(SyncAPIResource):
         response = self._post(path, body=body)
         return response.status_code == 200
 
-
-
-

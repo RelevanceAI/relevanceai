@@ -1,6 +1,6 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
-from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskConversation
+from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskConversation, TaskView
 from typing import Optional, List
 import json 
 
@@ -31,6 +31,33 @@ class Tasks(SyncAPIResource):
         if state:
             tasks = [task for task in tasks if task.metadata.conversation.state.value == state]
         return tasks
+    
+    def view_task_steps(
+        self, 
+        agent_id: str, 
+        conversation_id: str
+    ) : 
+        path = f"agents/{agent_id}/tasks/{conversation_id}/view"
+        response = self._post(path)
+        return TaskView(**response.json())
+    
+    def approve_task(
+        self, 
+        agent_id: str, 
+        conversation_id: str, 
+        tool_id: str = None, 
+    ): 
+        task_view: TaskView = self.view_task_steps(agent_id, conversation_id)
+        for t in task_view.results:
+            if hasattr(t, 'content') and hasattr(t.content, 'requires_confirmation'):
+                requires_confirmation = t.content.requires_confirmation
+                
+                if requires_confirmation and (tool_id is None or t.content.tool_config.id == tool_id):
+                    action = t.content.action_details.action
+                    action_request_id = t.content.action_details.action_request_id
+                    
+                    triggered_task = self.trigger_task_from_action(agent_id, conversation_id, action, action_request_id)
+                    return triggered_task
 
     def retrieve_task(
         self,
@@ -56,7 +83,30 @@ class Tasks(SyncAPIResource):
                 "content": message,
             },
         }
-        response = self._client.post(path, json=body)
+        response = self._post(path, body=body)
+        return TriggeredTask(**response.json())
+    
+    def trigger_task_from_action(
+        self,
+        agent_id: str, 
+        conversation_id: str, 
+        action: str, 
+        action_request_id: str
+    ): 
+        path = f"agents/trigger"
+        body = { 
+            "agent_id": agent_id,
+            "conversation_id": conversation_id,
+            "message": {
+                "action": action,
+                "action_request_id": action_request_id,
+                "action_params_override": {},
+                "role": "action-confirm"
+            },
+            "debug": True,
+            "is_debug_mode_task": False
+        }
+        response = self._post(path, body=body)
         return TriggeredTask(**response.json())
 
     def rerun_task(
