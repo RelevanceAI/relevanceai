@@ -469,17 +469,6 @@ class Action(BaseModel):
     )
     prompt_description: Optional[str] = None
 
-
-class ActionRetryConfig1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    max_retries: Optional[float] = None
-    force_retry: Optional[bool] = None
-    after_retries_behaviour: Optional[AfterRetriesBehaviour] = None
-
-
 class ImportanceLevel(Enum):
     normal = 'normal'
     short_term_memory = 'short-term-memory'
@@ -579,41 +568,6 @@ class InternalTags(BaseModel):
 class Metadata3(BaseModel):
     field_order: Optional[List[str]] = None
 
-
-class KeyValueInputOpts1(BaseModel):
-    header: Optional[Header] = Field(
-        None, description='Set headers to display above the key and/or value columns.'
-    )
-    placeholder: Optional[Placeholder] = Field(
-        None,
-        description='Set placeholder values to display in the key and/or value columns.',
-    )
-    addButtonText: Optional[str] = Field(
-        None,
-        description="The text displayed in the 'Add' button that inserts a new pair.",
-    )
-
-class Type2(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-class Type3(Enum):
-    dynamic = 'dynamic'
-    static = 'static'
-
 class Metadata4(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
@@ -645,7 +599,7 @@ class Metadata4(BaseModel):
     can_add_or_remove_columns: Optional[bool] = None
     placeholders: Optional[Dict[str, str]] = None
     language: Optional[Language] = None
-    key_value_input_opts: Optional[KeyValueInputOpts1] = Field(
+    key_value_input_opts: Optional[KeyValueInputOpts] = Field(
         None, description='Props to pass to the KeyValueInput component.'
     )
     knowledge_set_field_name: Optional[str] = Field(
@@ -803,7 +757,7 @@ class Agent(BaseModel):
     knowledge: Optional[List[KnowledgeItem]] = None
     actions: Optional[List[Action]] = None
     action_behaviour: Optional[str] = 'always-ask'
-    action_retry_config: Optional[ActionRetryConfig1] = None
+    action_retry_config: Optional[ActionRetryConfig] = None
     agent_decide_prompt: Optional[str] = Field(
         None,
         description="This prompt guides the agent's decision on whether or not approval is required to execute the tool.",

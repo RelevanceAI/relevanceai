@@ -416,22 +416,6 @@ class Filter(BaseModel):
     fuzzy: Optional[float] = None
     join: Optional[bool] = None
 
-
-class Provider(Enum):
-    google = 'google'
-    microsoft = 'microsoft'
-    salesforce = 'salesforce'
-    slack = 'slack'
-    zendesk = 'zendesk'
-    hubspot = 'hubspot'
-    linear = 'linear'
-    outreach = 'outreach'
-    zoom = 'zoom'
-    unipile_linkedin = 'unipile_linkedin'
-    unipile_whatsapp = 'unipile_whatsapp'
-    zoho_crm = 'zoho_crm'
-
-
 class Type2(Enum):
     email_read_write = 'email-read-write'
     calendar_read_write = 'calendar-read-write'
@@ -806,46 +790,6 @@ class Filter1(BaseModel):
     join: Optional[bool] = None
 
 
-class Type4(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-
-class OauthPermission1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    provider: Provider
-    types: List[Type4]
-
-
-class Type5(Enum):
-    dynamic = 'dynamic'
-    static = 'static'
-
-
-class Scratchpad1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    type: Type5
-
-
 class Metadata5(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
@@ -887,7 +831,7 @@ class Metadata5(BaseModel):
     filters: Optional[List[Filter1]] = Field(
         None, description='General filters for the content_type'
     )
-    oauth_permissions: Optional[List[OauthPermission1]] = Field(
+    oauth_permissions: Optional[List[OauthPermission]] = Field(
         None,
         description='(Optional) OAuth permissions required for a step. Only applicable for content_type `oauth_token`',
     )
@@ -906,7 +850,7 @@ class Metadata5(BaseModel):
         None,
         description='Filters the OAuth account selector based on the selected permission type',
     )
-    scratchpad: Optional[Scratchpad1] = None
+    scratchpad: Optional[Scratchpad] = None
 
 
 class Properties1(BaseModel):
@@ -1345,17 +1289,6 @@ class ValueSuggestionChain(BaseModel):
     project_id: str
     output_key: Optional[str] = 'value'
 
-
-class EnumItem(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    description: str
-    value: str
-    group_name: Optional[str] = None
-
-
 class BulkRunInputSource(Enum):
     field_ = ''
     field_DOCUMENT = '$DOCUMENT'
@@ -1471,25 +1404,6 @@ class Provider(Enum):
     unipile_whatsapp = 'unipile_whatsapp'
     zoho_crm = 'zoho_crm'
 
-
-class Type2(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-
 class OauthPermission(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
@@ -1497,52 +1411,6 @@ class OauthPermission(BaseModel):
     )
     provider: Provider
     types: List[Type2]
-
-
-class OauthAccountProvider(Enum):
-    google = 'google'
-    microsoft = 'microsoft'
-    salesforce = 'salesforce'
-    slack = 'slack'
-    zendesk = 'zendesk'
-    hubspot = 'hubspot'
-    linear = 'linear'
-    outreach = 'outreach'
-    zoom = 'zoom'
-    unipile_linkedin = 'unipile_linkedin'
-    unipile_whatsapp = 'unipile_whatsapp'
-    zoho_crm = 'zoho_crm'
-
-
-class OauthAccountPermissionType(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-
-class Type3(Enum):
-    dynamic = 'dynamic'
-    static = 'static'
-
-
-class Scratchpad(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    type: Type3
 
 
 class Metadata1(BaseModel):
@@ -1860,46 +1728,6 @@ class Filter1(BaseModel):
     join: Optional[bool] = None
 
 
-class Type4(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-
-class OauthPermission1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    provider: Provider
-    types: List[Type4]
-
-
-class Type5(Enum):
-    dynamic = 'dynamic'
-    static = 'static'
-
-
-class Scratchpad1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    type: Type5
-
-
 class Metadata6(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
@@ -1941,7 +1769,7 @@ class Metadata6(BaseModel):
     filters: Optional[List[Filter1]] = Field(
         None, description='General filters for the content_type'
     )
-    oauth_permissions: Optional[List[OauthPermission1]] = Field(
+    oauth_permissions: Optional[List[OauthPermission]] = Field(
         None,
         description='(Optional) OAuth permissions required for a step. Only applicable for content_type `oauth_token`',
     )
@@ -1960,7 +1788,7 @@ class Metadata6(BaseModel):
         None,
         description='Filters the OAuth account selector based on the selected permission type',
     )
-    scratchpad: Optional[Scratchpad1] = None
+    scratchpad: Optional[Scratchpad] = None
 
 
 class Properties3(BaseModel):
@@ -2140,10 +1968,6 @@ class Runner1(BaseModel):
     multiagent: Optional[Multiagent] = None
 
 
-class Tags1(BaseModel):
-    description: Optional[str] = None
-
-
 class InternalTags(BaseModel):
     priority: Optional[bool] = None
 
@@ -2165,7 +1989,6 @@ class KeyValueInputOpts2(BaseModel):
         description="The text displayed in the 'Add' button that inserts a new pair.",
     )
 
-
 class Filter2(BaseModel):
     strict: Optional[Strict] = None
     condition: Optional[str] = None
@@ -2175,46 +1998,6 @@ class Filter2(BaseModel):
     condition_value: Optional[Any] = None
     fuzzy: Optional[float] = None
     join: Optional[bool] = None
-
-
-class Type6(Enum):
-    email_read_write = 'email-read-write'
-    calendar_read_write = 'calendar-read-write'
-    microsoft_teams = 'microsoft-teams'
-    meeting_read_write = 'meeting-read-write'
-    salesforce_api = 'salesforce-api'
-    slack_channel_post = 'slack-channel-post'
-    slack_channel_post_read = 'slack-channel-post-read'
-    zendesk_create_ticket = 'zendesk-create-ticket'
-    hubspot_connect_app = 'hubspot-connect-app'
-    linear_ticket_create = 'linear-ticket-create'
-    unipile_linkedin = 'unipile-linkedin'
-    unipile_whatsapp = 'unipile-whatsapp'
-    outreach_api = 'outreach-api'
-    zoom_api_v1 = 'zoom-api-v1'
-    zoho_crm = 'zoho-crm'
-
-
-class OauthPermission2(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    provider: Provider
-    types: List[Type6]
-
-
-class Type7(Enum):
-    dynamic = 'dynamic'
-    static = 'static'
-
-
-class Scratchpad2(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    type: Type7
 
 
 class Metadata9(BaseModel):
@@ -2258,7 +2041,7 @@ class Metadata9(BaseModel):
     filters: Optional[List[Filter2]] = Field(
         None, description='General filters for the content_type'
     )
-    oauth_permissions: Optional[List[OauthPermission2]] = Field(
+    oauth_permissions: Optional[List[OauthPermission1]] = Field(
         None,
         description='(Optional) OAuth permissions required for a step. Only applicable for content_type `oauth_token`',
     )
@@ -2277,7 +2060,7 @@ class Metadata9(BaseModel):
         None,
         description='Filters the OAuth account selector based on the selected permission type',
     )
-    scratchpad: Optional[Scratchpad2] = None
+    scratchpad: Optional[Scratchpad] = None
 
 
 class Properties4(BaseModel):
@@ -2431,7 +2214,7 @@ class AgentDetails(BaseModel):
         description='Triggers are used to start / continue a conversation with an agent via an external service (e.g. email).',
     )
     runner: Optional[Union[Runner, Runner1]] = None
-    tags: Optional[Dict[str, Union[bool, Tags1]]] = None
+    tags: Optional[Dict[str, Union[bool, Tags]]] = None
     internal_tags: Optional[InternalTags] = None
     params_schema: Optional[ParamsSchema2] = Field(
         None,
@@ -2689,7 +2472,7 @@ class OutputSource(Enum):
     action_confirm_mock_tool_output = 'action-confirm-mock-tool-output'
 
 
-class Provider(Enum):
+class Provider1(Enum):
     gmail = 'gmail'
     outlook = 'outlook'
     sendgrid = 'sendgrid'
@@ -2705,7 +2488,7 @@ class Options(BaseModel):
     from_email: Optional[str] = None
     email_subject: Optional[str] = None
     email_body: Optional[str] = None
-    provider: Optional[Provider] = None
+    provider: Optional[Provider1] = None
 
 
 class Component(BaseModel):

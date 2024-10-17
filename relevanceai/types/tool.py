@@ -1,5 +1,3 @@
-
-
 from __future__ import annotations
 
 from enum import Enum
@@ -64,35 +62,12 @@ class Properties(BaseModel):
     version: Optional[str] = None
 
 
-class Transformations1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-        protected_namespaces=() 
-    )
-    properties: Properties
-    depends_on: Optional[List[str]] = None
-    repeat: Optional[str] = Field(
-        None,
-        description='This should evaluate to a number. For example, it would be ${{ params.cluster_job_count }} or ${{ params.cluster_sizes.length }}. it will run a duplicate version of the workflow with a variable ${{ repeat_index }} that marks what index it belongs to.',
-    )
-    repeat_index: Optional[float] = None
-    if_: Optional[str] = Field(None, alias='if')
-    output_key: Optional[str] = Field(
-        None,
-        description="If this step outputs to status, its output will be accessible at output[output_key] in the parent job's status.",
-    )
-    passthrough_email: Optional[bool] = Field(
-        None,
-        description='whether the email config of the step should be applied to the parent',
-    )
-
-
 class Template(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
         protected_namespaces=() 
     )
-    transformations: Dict[str, Transformations1]
+    transformations: Dict[str, Transformations]
 
 
 class Type(Enum):
