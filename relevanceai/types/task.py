@@ -2041,7 +2041,7 @@ class Metadata9(BaseModel):
     filters: Optional[List[Filter2]] = Field(
         None, description='General filters for the content_type'
     )
-    oauth_permissions: Optional[List[OauthPermission1]] = Field(
+    oauth_permissions: Optional[List[OauthPermission]] = Field(
         None,
         description='(Optional) OAuth permissions required for a step. Only applicable for content_type `oauth_token`',
     )

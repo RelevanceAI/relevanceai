@@ -3,7 +3,7 @@
 Methods by class. 
 """
 
-###* Getting started
+### Getting started
 
 from relevanceai import RelevanceAI
 from dotenv import load_dotenv
@@ -11,7 +11,7 @@ load_dotenv()
 
 client = RelevanceAI()
 
-###* Agents 
+### Agents 
 
 client.agents.list_agents()
 
@@ -19,13 +19,24 @@ client.agents.retrieve_agent(agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
 
 client.agents.delete_agent(agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
 
-###* Tasks 
+### Tasks 
 
 client.tasks.list_tasks(agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
 
 client.tasks.retrieve_task(
     agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
     conversation_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+)
+
+client.tasks.view_task_steps(
+    agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    conversation_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+)
+
+client.tasks.approve_task(
+    agent_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    conversation_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    tool_id="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 )
 
 client.tasks.delete_task(
@@ -52,7 +63,7 @@ client.tasks.schedule_action_in_task(
     minutes_until_schedule=86400 # 1 day 
 )
 
-###* Tools
+### Tools
 
 client.tools.list_tools() 
 
@@ -72,10 +83,10 @@ client.tools.trigger_tool(
     params=params
 )
 
-###* Knowledge 
+### Knowledge 
 
 client.knowledge.list_knowledge()
 
-client.knowledge.retrieve_knowledge(knowledge_set="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+client.knowledge.retrieve_knowledge(knowledge_set="xxxxxx") # put the table name here
 
-client.knowledge.delete_knowledge(knowledge_set="xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+client.knowledge.delete_knowledge(knowledge_set="xxxxxx")
