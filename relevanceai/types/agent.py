@@ -16,7 +16,7 @@ class Region(Enum):
 
 class Template(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     agent_id: str
@@ -26,7 +26,7 @@ class Template(BaseModel):
 
 class Origin(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     root_agent_id: str
@@ -42,7 +42,7 @@ class MaxJobDuration(Enum):
 
 class KnowledgeItem(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     knowledge_set: str
@@ -108,7 +108,7 @@ class ValueSuggestionChain(BaseModel):
 
 class EnumItem(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     description: str
@@ -251,7 +251,7 @@ class Type(Enum):
 
 class OauthPermission(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     provider: Provider
@@ -298,7 +298,7 @@ class Type1(Enum):
 
 class Scratchpad(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     type: Type1
@@ -306,7 +306,7 @@ class Scratchpad(BaseModel):
 
 class Metadata1(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     content_type: Optional[ContentType] = None
@@ -393,7 +393,7 @@ class AfterRetriesBehaviour(Enum):
 
 class ActionRetryConfig(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     max_retries: Optional[float] = None
@@ -403,7 +403,7 @@ class ActionRetryConfig(BaseModel):
 
 class ConditionalApprovalRules(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     max_auto_approvals: Optional[float] = None
@@ -423,7 +423,7 @@ class DefaultValues(BaseModel):
 
 class Action(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     chain_id: Optional[str] = None
@@ -476,7 +476,7 @@ class ImportanceLevel(Enum):
 
 class Message(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     role: Literal['user']
@@ -486,7 +486,7 @@ class Message(BaseModel):
 
 class Message1(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     role: Literal['agent']
@@ -501,7 +501,7 @@ class Metadata2(BaseModel):
 
 class StartingMessage(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     message: Union[Message, Message1]
@@ -513,7 +513,7 @@ class StartingMessage(BaseModel):
 
 class Studio(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     studio_id: str
@@ -529,7 +529,7 @@ class Trigger(BaseModel):
 
 class Runner(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     type: Literal['default']
@@ -550,7 +550,7 @@ class Multiagent(BaseModel):
 
 class Runner1(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     type: Literal['multiagent']
@@ -570,7 +570,7 @@ class Metadata3(BaseModel):
 
 class Metadata4(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     content_type: Optional[ContentType] = None
@@ -639,7 +639,7 @@ class Properties1(BaseModel):
 
 class Email(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     emails: Optional[Any] = None
@@ -647,7 +647,7 @@ class Email(BaseModel):
 
 class Channel(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     oauth_account_id: Optional[Any] = None
@@ -655,7 +655,7 @@ class Channel(BaseModel):
 
 class Slack(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     channels: Optional[List[Channel]] = None
@@ -663,7 +663,7 @@ class Slack(BaseModel):
 
 class Escalations(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     email: Optional[Email] = None
@@ -689,7 +689,7 @@ class ModelOptions(BaseModel):
 
 class Runtime(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     code: Optional[str] = None
@@ -707,7 +707,7 @@ class Metadata5(BaseModel):
 
 class Agent(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     field_id: str = Field(..., alias='_id')
