@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
+
+deploy.sh
+
+# my tests
+mydev/
 
 # C extensions
 *.so
