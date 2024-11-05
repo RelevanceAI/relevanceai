@@ -68,3 +68,13 @@ class Tools(SyncAPIResource):
         body = {"ids": [tool_id]}
         response = self._post(path, body=body)
         return response.status_code == 200
+
+    def list_agent_tools(
+        self,
+        agent_id: str,
+    ) -> List[Tool]:
+        path = "agents/tools/list"
+        body = {"agent_ids": [agent_id]}
+        response = self._client.post(path, body=body)
+        tools = [Tool(**item) for item in response.json().get("results", [])]
+        return tools

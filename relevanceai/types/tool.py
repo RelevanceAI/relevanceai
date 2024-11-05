@@ -554,6 +554,10 @@ class Tool(BaseModel):
         None, description='Override the starting state of the studio'
     )
     title: Optional[str] = None
+    type: Optional[str] = None
+    action_id: Optional[str] = None
+    region: Optional[str] = None
+    project: Optional[str] = None
     description: Optional[str] = None
     prompt_description: Optional[str] = None
     state_mapping: Optional[Dict[str, str]] = Field(
