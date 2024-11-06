@@ -14,7 +14,8 @@ class Agents(SyncAPIResource):
     ) -> List[Agent]:
         path = "agents/list"
         response = self._post(path)
-        return [Agent(**item) for item in response.json().get("results", [])]
+        agents = [Agent(**item) for item in response.json().get("results", [])]
+        return sorted(agents, key=lambda x: (x.name is None, x.name or ""))
     
     def retrieve_agent(
         self,
