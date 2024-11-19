@@ -75,6 +75,7 @@ class Tasks(SyncAPIResource):
         self,
         agent_id: str,
         message: str, 
+        additional_details: dict | None = None, # template_override: {enable_custom_params: True, params: {'my_var': "3"}},
     ) -> TriggeredTask:
         path = "agents/trigger"
         body = {
@@ -83,6 +84,7 @@ class Tasks(SyncAPIResource):
                 "role": "user",
                 "content": message,
             },
+            **additional_details,
         }
         response = self._post(path, body=body)
         return TriggeredTask(**response.json())
