@@ -22,12 +22,13 @@ class Knowledge(SyncAPIResource):
     
     def retrieve_knowledge(
         self, 
-        knowledge_set: str
+        knowledge_set: str, 
+        max_results: int = 5
     ) -> List[KnowledgeRow]:
         path = "knowledge/list"
         body = {
             "knowledge_set": knowledge_set,
-            "page_size": 5,
+            "page_size": max_results,
             "sort": [{"insert_date_": "asc"}]
         }
         response = self._post(path, body=body)

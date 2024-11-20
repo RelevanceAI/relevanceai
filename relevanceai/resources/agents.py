@@ -3,6 +3,7 @@ from __future__ import annotations
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.agent import Agent
+from ..types.tool import Tool
 from typing import List
 
 class Agents(SyncAPIResource): 
@@ -14,7 +15,8 @@ class Agents(SyncAPIResource):
     ) -> List[Agent]:
         path = "agents/list"
         response = self._post(path)
-        return [Agent(**item) for item in response.json().get("results", [])]
+        agents = [Agent(**item) for item in response.json().get("results", [])]
+        return sorted(agents, key=lambda x: (x.name is None, x.name or ""))
     
     def retrieve_agent(
         self,
@@ -31,3 +33,25 @@ class Agents(SyncAPIResource):
         path = f"agents/{agent_id}/delete"
         response = self._post(path)
         return response.status_code == 200
+
+    def list_agent_tools(
+        self,
+        agent_id: str,
+    ) -> List[Tool]:
+        path = "agents/tools/list"
+        body = {"agent_ids": [agent_id]}
+        response = self._client.post(path, body=body)
+        tools = [Tool(**item) for item in response.json().get("results", [])]
+        tools = [tool for tool in tools if tool.type!='agent']
+        return sorted(tools, key=lambda x: x.title or "")
+    
+    def list_subagents(
+        self,
+        agent_id: str,
+    ) -> List[Tool]:
+        path = "agents/tools/list"
+        body = {"agent_ids": [agent_id]}
+        response = self._client.post(path, body=body)
+        tools = [Tool(**item) for item in response.json().get("results", [])]
+        tools = [tool for tool in tools if tool.type=='agent']
+        return sorted(tools, key=lambda x: x.title or "")

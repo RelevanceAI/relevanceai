@@ -1,7 +1,8 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskConversation, TaskView
-from typing import Optional, List
+from ..types.knowledge import Metadata
+from typing import Optional, List, Union
 import json 
 
 class Tasks(SyncAPIResource): 
@@ -74,6 +75,7 @@ class Tasks(SyncAPIResource):
         self,
         agent_id: str,
         message: str, 
+        additional_details: dict | None = None, # template_override: {enable_custom_params: True, params: {'my_var': "3"}},
     ) -> TriggeredTask:
         path = "agents/trigger"
         body = {
@@ -82,6 +84,7 @@ class Tasks(SyncAPIResource):
                 "role": "user",
                 "content": message,
             },
+            **additional_details,
         }
         response = self._post(path, body=body)
         return TriggeredTask(**response.json())
@@ -174,3 +177,11 @@ class Tasks(SyncAPIResource):
         body = {"knowledge_set": [conversation_id]}
         response = self._post(path=path, body=body)
         return response.status_code == 200
+
+    def get_metadata(
+            self, 
+            conversation_id: str
+    ) -> Union[Metadata, dict]:
+        path = f"knowledge/sets/{conversation_id}/get_metadata"
+        response = self._get(path).json()
+        return Metadata(**response['metadata']) if response.get('metadata') else {}
