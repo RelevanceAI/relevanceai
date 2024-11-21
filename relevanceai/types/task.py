@@ -2348,6 +2348,7 @@ class Content(BaseModel):
     display: Optional[Display] = None
     caller_agent: Optional[CallerAgent] = None
     is_trigger_message: Optional[bool] = None
+    sync_type: Optional[str] = None
     original_message_ids: OriginalMessageIds
 
 
