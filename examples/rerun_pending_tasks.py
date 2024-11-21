@@ -19,9 +19,11 @@ tasks = client.tasks.list_tasks(
 
 task_ids = [t.get_id() for t in tasks]
 
+# write task_ids to a json file
 with open("task_ids.json", "w") as f:
     json.dump(task_ids, f, indent=4)
 
+# read task_ids to a json file
 with open("task_ids.json", "r") as f:
     task_ids = json.load(f)
 

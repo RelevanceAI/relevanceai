@@ -40,7 +40,7 @@ class Agents(SyncAPIResource):
     ) -> List[Tool]:
         path = "agents/tools/list"
         body = {"agent_ids": [agent_id]}
-        response = self._client.post(path, body=body)
+        response = self._post(path, body=body)
         tools = [Tool(**item) for item in response.json().get("results", [])]
         tools = [tool for tool in tools if tool.type!='agent']
         return sorted(tools, key=lambda x: x.title or "")
@@ -51,7 +51,7 @@ class Agents(SyncAPIResource):
     ) -> List[Tool]:
         path = "agents/tools/list"
         body = {"agent_ids": [agent_id]}
-        response = self._client.post(path, body=body)
+        response = self._post(path, body=body)
         tools = [Tool(**item) for item in response.json().get("results", [])]
         tools = [tool for tool in tools if tool.type=='agent']
         return sorted(tools, key=lambda x: x.title or "")
