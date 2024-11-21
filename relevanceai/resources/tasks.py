@@ -74,8 +74,7 @@ class Tasks(SyncAPIResource):
         self,
         agent_id: str,
         message: str, 
-        override: bool = False,
-        debug_mode_config_id: dict | str = "default", 
+        **kwargs
     ) -> TriggeredTask:
         path = "agents/trigger"
         body = {
@@ -83,14 +82,9 @@ class Tasks(SyncAPIResource):
             "message": {
                 "role": "user",
                 "content": message,
-            }
+            },
+            **kwargs
         }
-        if override:
-            body.update({
-                "debug": True,
-                "is_debug_mode_task": True,
-                "debug_mode_config_id": debug_mode_config_id
-            })
         response = self._post(path, body=body)
         return TriggeredTask(**response.json())
     
