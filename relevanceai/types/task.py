@@ -2338,35 +2338,11 @@ class OriginalMessageIds(BaseModel):
     user: str
 
 
-class Content(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    type: Literal['user-message']
-    text: str
-    user_id: Optional[str] = None
-    display: Optional[Display] = None
-    caller_agent: Optional[CallerAgent] = None
-    is_trigger_message: Optional[bool] = None
-    sync_type: Optional[str] = None
-    original_message_ids: OriginalMessageIds
-
-
 class OriginalMessageIds1(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
     agent: str
-
-
-class Content1(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    type: Literal['agent-message']
-    text: str
-    generating: Optional[bool] = None
-    original_message_ids: OriginalMessageIds1
 
 
 class ToolRunState(Enum):
@@ -2561,42 +2537,11 @@ class OriginalMessageIds2(BaseModel):
     action_error: Optional[str] = Field(None, alias='action-error')
 
 
-class Content2(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    type: Literal['tool-run']
-    thoughts: Optional[str] = None
-    generating: Optional[bool] = None
-    tool_run_state: ToolRunState
-    tool_config: ToolConfig
-    action_details: ActionDetails
-    display: Optional[Display1] = None
-    requires_confirmation: bool
-    confirmation: Optional[Confirmation] = None
-    params: Union[Params, Params1]
-    errors: Optional[List[Error]] = None
-    output: Optional[Dict[str, Any]] = None
-    output_source: Optional[OutputSource] = None
-    optimistic_output: Optional[Dict[str, Any]] = None
-    component: Optional[Union[Component, Component1]] = None
-    original_message_ids: OriginalMessageIds2
-
-
 class OriginalMessageIds3(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
     agent_error: str = Field(..., alias='agent-error')
-
-
-class Content3(BaseModel):
-    model_config = ConfigDict(
-        extra='forbid',
-    )
-    type: Literal['agent-error']
-    errors: List[Error]
-    original_message_ids: OriginalMessageIds3
 
 
 class TaskStep(BaseModel):
@@ -2612,7 +2557,7 @@ class TaskStep(BaseModel):
     is_in_hidden_group: bool
     debug: Optional[Debug] = None
     feedback: Optional[Feedback] = None
-    content: Union[Content, Content1, Content2, Content3]
+    content: Dict[str, Any]
 
 class TaskView(BaseModel):
     model_config = ConfigDict(
