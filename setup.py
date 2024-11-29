@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="relevanceai",
-    version="10.0.4",
+    version="10.0.5",
     url="https://relevanceai.com/",
     author="Relevance AI",
     author_email="jacky@relevanceai.com",
