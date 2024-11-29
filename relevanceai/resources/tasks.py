@@ -189,7 +189,7 @@ class Tasks(SyncAPIResource):
         self,
         agent_id: str,
         conversation_id: str,
-    ) -> Task | bool: 
+    ) -> Union[Task, bool]: 
         path = f"agents/conversations/studios/list"
         params = {
             "conversation_id": conversation_id,
