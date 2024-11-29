@@ -13,7 +13,7 @@ class Feedback(Enum):
 
 class MessageFeedbackItem(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
     )
     feedback: Feedback
     message_id: str
@@ -139,7 +139,7 @@ class TableMetadata(BaseModel):
 
 class LastJobInfo(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
     )
     job_id: str
     studio_id: str
@@ -154,7 +154,7 @@ class Status(Enum):
 
 class VectorizingInfo(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
     )
     last_job_info: Optional[LastJobInfo] = None
     status: Optional[Status] = None
@@ -185,7 +185,7 @@ class Metadata(BaseModel):
 
 class KnowledgeSet(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
     )
     knowledge_set: str
     knowledge_count: Optional[float] = None
@@ -198,7 +198,7 @@ class KnowledgeSet(BaseModel):
 
 class KnowledgeRow(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
     )
     field_id: str = Field(..., alias='_id')
     project: str

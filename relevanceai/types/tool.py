@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, constr
 
 class DefaultOutputValue(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     original_key: str
@@ -18,7 +18,7 @@ class DefaultOutputValue(BaseModel):
 
 class Step(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     name: str
@@ -36,7 +36,7 @@ class Step(BaseModel):
 
 class Transformations(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     steps: List[Step]
@@ -52,7 +52,7 @@ class HostType(Enum):
 
 class Properties(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     params: Dict[str, Any]
@@ -64,7 +64,7 @@ class Properties(BaseModel):
 
 class Template(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     transformations: Dict[str, Transformations]
@@ -148,7 +148,7 @@ class ValueSuggestionChain(BaseModel):
 
 class EnumItem(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     description: str
@@ -292,7 +292,7 @@ class Type1(Enum):
 
 class OauthPermission(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     provider: Provider
@@ -339,7 +339,7 @@ class Type2(Enum):
 
 class Scratchpad(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     type: Type2
@@ -347,7 +347,7 @@ class Scratchpad(BaseModel):
 
 class Metadata1(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     content_type: Optional[ContentType] = None
@@ -438,7 +438,7 @@ class ContentType1(Enum):
 
 class Metadata3(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     content_type: Optional[ContentType1] = None
@@ -589,7 +589,7 @@ class Error(BaseModel):
 
 class CreditsUsedItem(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     credits: float
@@ -603,7 +603,7 @@ class CreditsUsedItem(BaseModel):
 
 class ToolOutput(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
+        extra='allow',
         protected_namespaces=() 
     )
     output: Dict[str, Any]
