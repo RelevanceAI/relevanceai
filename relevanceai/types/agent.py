@@ -755,7 +755,7 @@ class AgentType(BaseModel):
         description='Temperature of the selected model. Typically, higher temperature means more random output.',
     )
     knowledge: Optional[List[KnowledgeItem]] = None
-    actions: Optional[List[Action]] = None
+    actions: Optional[List[dict]] = None
     action_behaviour: Optional[str] = 'always-ask'
     action_retry_config: Optional[ActionRetryConfig] = None
     agent_decide_prompt: Optional[str] = Field(
