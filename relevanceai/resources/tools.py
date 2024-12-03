@@ -4,25 +4,30 @@ from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.tool import Tool, ToolOutput
 from typing import List, Optional
-import json 
+import json
+
 
 class Tools(SyncAPIResource):
 
     _client: RelevanceAI
-    
+
     def list_tools(
         self,
         max_results: Optional[int] = 100,
     ) -> List[Tool]:
         path = "studios/list"
         params = {
-            "filters": json.dumps([{
-                "filter_type": "exact_match",
-                "field": "project",
-                "condition_value": self._client.project,
-                "condition": "=="
-            }]),
-            "page_size": max_results
+            "filters": json.dumps(
+                [
+                    {
+                        "filter_type": "exact_match",
+                        "field": "project",
+                        "condition_value": self._client.project,
+                        "condition": "==",
+                    }
+                ]
+            ),
+            "page_size": max_results,
         }
         response = self._client.get(path, params=params)
         tools = [Tool(**item) for item in response.json().get("results", [])]
@@ -32,20 +37,17 @@ class Tools(SyncAPIResource):
         path = f"studios/{tool_id}/get"
         response = self._get(path)
         return Tool(**response.json()["studio"])
-    
+
     def trigger_tool(
         self,
         tool_id: str,
         params: dict | None = None,
-    ): 
+    ):
         path = f"studios/{tool_id}/trigger_limited"
-        body = {
-            "params": params,
-            "project": self._client.project
-        }
+        body = {"params": params, "project": self._client.project}
         response = self._post(path=path, body=body)
         return ToolOutput(**response.json())
-    
+
     def _get_params_as_json_string(
         self,
         tool_id: str,
@@ -53,11 +55,8 @@ class Tools(SyncAPIResource):
         response = self._get(f"studios/{tool_id}/get")
         params_schema = response.json()["studio"]["params_schema"]["properties"]
         return json.dumps(params_schema, indent=4)
-        
-    def _get_steps_as_json_string(
-        self,
-        tool_id: str
-    ) -> str:
+
+    def _get_steps_as_json_string(self, tool_id: str) -> str:
         response = self._get(f"studios/{tool_id}/get")
         transformations = response.json()["studio"]["transformations"]
         steps = transformations["steps"]
@@ -78,3 +77,17 @@ class Tools(SyncAPIResource):
         response = self._client.post(path, body=body)
         tools = [Tool(**item) for item in response.json().get("results", [])]
         return tools
+
+    def update_tool(
+        self,
+        tool_id: str,
+        updates: dict,
+        partial_update: Optional[bool] = True,
+    ) -> List[Tool]:
+        path = "studios/bulk_update"
+        body = {
+            "partial_update": partial_update,
+            "updates": [updates | {"studio_id": tool_id}],
+        }
+        response = self._client.post(path, body=body)
+        return response.json()
