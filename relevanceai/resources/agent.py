@@ -218,5 +218,15 @@ class Agent(SyncAPIResource):
             return response.json()["results"][0]["output_preview"]
         return False
 
+    def remove_all_tools(self, partial_update: Optional[bool] = True) -> None:
+        path = "agents/upsert"
+        body = {
+            "agent_id": self.agent_id,
+            "actions": [],
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+
     def __repr__(self):
         return f'Agent(agent_id="{self.agent_id}", name="{self.metadata.name}")'
