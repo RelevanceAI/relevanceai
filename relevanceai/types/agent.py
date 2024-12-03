@@ -705,7 +705,7 @@ class Metadata5(BaseModel):
     clone_count: Optional[float] = None
 
 
-class Agent(BaseModel):
+class AgentType(BaseModel):
     model_config = ConfigDict(
         extra='allow',
         protected_namespaces=() 
@@ -803,5 +803,5 @@ class Agent(BaseModel):
     metadata: Optional[Metadata5] = None
 
     def __repr__(self):
-        return f"Agent(agent_id=\"{self.agent_id}\", name=\"{self.name}\")"
+        return f"AgentType(agent_id=\"{self.agent_id}\", name=\"{self.name}\")"
 
