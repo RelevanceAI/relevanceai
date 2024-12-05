@@ -229,9 +229,10 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def add_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
+    def add_tools(self, tool_ids: List[str], partial_update: Optional[bool] = True) -> None:
         path = "agents/upsert"
-        self.metadata.actions.append({"chain_id": tool_id})
+        for tool_id in tool_ids:
+            self.metadata.actions.append({"chain_id": tool_id})
         body = {
             "agent_id": self.agent_id,
             "actions": self.metadata.actions,
