@@ -1,0 +1,703 @@
+{
+    "type": "object",
+    "properties": {
+        "results": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "item_id": {
+                        "type": "string"
+                    },
+                    "insert_date_": {
+                        "type": "string"
+                    },
+                    "is_expanded_by_default": {
+                        "type": "boolean",
+                        "description": "Whether the UI item in the frontend is expanded (vs collapsed) by default"
+                    },
+                    "is_in_hidden_group": {
+                        "type": "boolean"
+                    },
+                    "debug": {
+                        "type": "object",
+                        "properties": {
+                            "original_documents": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "task_details": {
+                                "type": "string"
+                            },
+                            "original_task": {
+                                "type": "string"
+                            },
+                            "task_id": {
+                                "type": "string"
+                            },
+                            "message_id": {
+                                "type": "string"
+                            },
+                            "task_tags": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "notes": {
+                                "type": "string"
+                            },
+                            "is_full_conversation_feedback": {
+                                "type": "boolean"
+                            },
+                            "is_feedback_positive": {
+                                "type": "boolean"
+                            },
+                            "user_name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "message_id"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "content": {
+                        "oneOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "user-message"
+                                    },
+                                    "text": {
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "type": "string"
+                                    },
+                                    "display": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "content": {
+                                                "type": "string"
+                                            },
+                                            "content_html": {
+                                                "type": "string"
+                                            },
+                                            "message_attachments": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "url": {
+                                                            "type": "string"
+                                                        },
+                                                        "contentType": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "name",
+                                                        "url"
+                                                    ],
+                                                    "additionalProperties": false
+                                                }
+                                            },
+                                            "icon": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "caller_agent": {
+                                        "type": "object",
+                                        "properties": {
+                                            "agent_id": {
+                                                "type": "string"
+                                            },
+                                            "project": {
+                                                "type": "string"
+                                            },
+                                            "region": {
+                                                "type": "string"
+                                            },
+                                            "conversation_id": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "is_trigger_message": {
+                                        "type": "boolean"
+                                    },
+                                    "sync_type": {
+                                        "type": "string"
+                                    },
+                                    "original_message_ids": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "user"
+                                        ],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "text",
+                                    "original_message_ids"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "agent-message"
+                                    },
+                                    "text": {
+                                        "type": "string"
+                                    },
+                                    "generating": {
+                                        "type": "boolean"
+                                    },
+                                    "original_message_ids": {
+                                        "type": "object",
+                                        "properties": {
+                                            "agent": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "agent"
+                                        ],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "text",
+                                    "original_message_ids"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "tool-run"
+                                    },
+                                    "thoughts": {
+                                        "type": "string"
+                                    },
+                                    "generating": {
+                                        "type": "boolean"
+                                    },
+                                    "tool_run_state": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "running",
+                                            "finished",
+                                            "error",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "tool_config": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "agent",
+                                                    "tool"
+                                                ]
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "region": {
+                                                "type": "string"
+                                            },
+                                            "project": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "type": "string"
+                                            },
+                                            "emoji": {
+                                                "type": "string"
+                                            },
+                                            "params_schema": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "required": [
+                                            "type",
+                                            "id",
+                                            "version",
+                                            "title",
+                                            "description",
+                                            "params_schema"
+                                        ],
+                                        "additionalProperties": false
+                                    },
+                                    "action_details": {
+                                        "type": "object",
+                                        "properties": {
+                                            "action_request_id": {
+                                                "type": "string"
+                                            },
+                                            "action": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "action_request_id",
+                                            "action"
+                                        ],
+                                        "additionalProperties": false
+                                    },
+                                    "display": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "icon": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "requires_confirmation": {
+                                        "type": "boolean"
+                                    },
+                                    "confirmation": {
+                                        "type": "object",
+                                        "properties": {
+                                            "confirmed": {
+                                                "type": "boolean"
+                                            },
+                                            "by": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "user",
+                                                    "agent"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "confirmed",
+                                            "by"
+                                        ],
+                                        "additionalProperties": false
+                                    },
+                                    "params": {
+                                        "type": "object",
+                                        "oneOf": [
+                                            {
+                                                "properties": {
+                                                    "valid": {
+                                                        "type": "boolean",
+                                                        "const": true
+                                                    },
+                                                    "json": {
+                                                        "type": "object"
+                                                    },
+                                                    "overrides": {
+                                                        "type": "object"
+                                                    },
+                                                    "resolved": {
+                                                        "type": "object",
+                                                        "description": "The params with which the tool was actually run"
+                                                    },
+                                                    "metadata": {
+                                                        "type": "object",
+                                                        "additionalProperties": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "param_source": {
+                                                                    "type": "string",
+                                                                    "enum": [
+                                                                        "llm",
+                                                                        "external-field",
+                                                                        "action-confirm-params-override",
+                                                                        "debug-mode-input-override",
+                                                                        "agent-action-config-default-value",
+                                                                        "scratchpad"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "additionalProperties": false
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "valid",
+                                                    "json"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "properties": {
+                                                    "valid": {
+                                                        "type": "boolean",
+                                                        "const": false
+                                                    },
+                                                    "json": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "valid",
+                                                    "json"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    },
+                                    "errors": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "body": {
+                                                    "type": "string",
+                                                    "step_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "raw": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "output": {
+                                        "type": "object"
+                                    },
+                                    "output_source": {
+                                        "type": "string",
+                                        "enum": [
+                                            "tool-run",
+                                            "debug-mode-output-override",
+                                            "action-confirm-mock-tool-output"
+                                        ]
+                                    },
+                                    "optimistic_output": {
+                                        "type": "object"
+                                    },
+                                    "component": {
+                                        "type": "object",
+                                        "oneOf": [
+                                            {
+                                                "properties": {
+                                                    "content_type": {
+                                                        "type": "string",
+                                                        "const": "email"
+                                                    },
+                                                    "options": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "to_email": {
+                                                                "oneOf": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "cc_emails": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "bcc_emails": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "from_email": {
+                                                                "type": "string"
+                                                            },
+                                                            "email_subject": {
+                                                                "type": "string"
+                                                            },
+                                                            "email_body": {
+                                                                "type": "string"
+                                                            },
+                                                            "provider": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "gmail",
+                                                                    "outlook",
+                                                                    "sendgrid"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                "required": [
+                                                    "content_type",
+                                                    "options"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            {
+                                                "properties": {
+                                                    "content_type": {
+                                                        "type": "string",
+                                                        "const": "escalation"
+                                                    },
+                                                    "options": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "context": {
+                                                                "type": "string"
+                                                            },
+                                                            "response": {
+                                                                "type": "object",
+                                                                "oneOf": [
+                                                                    {
+                                                                        "properties": {
+                                                                            "state": {
+                                                                                "type": "string",
+                                                                                "const": "awaiting-response"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "state"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "properties": {
+                                                                            "state": {
+                                                                                "type": "string",
+                                                                                "const": "responded"
+                                                                            },
+                                                                            "text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "user_id": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "display": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "content": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "content_html": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "message_attachments": {
+                                                                                        "type": "array",
+                                                                                        "items": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "name": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "url": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "contentType": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "name",
+                                                                                                "url"
+                                                                                            ],
+                                                                                            "additionalProperties": false
+                                                                                        }
+                                                                                    },
+                                                                                    "icon": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "additionalProperties": false
+                                                                            },
+                                                                            "insert_date_": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "state",
+                                                                            "text",
+                                                                            "insert_date_"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "properties": {
+                                                                            "state": {
+                                                                                "type": "string",
+                                                                                "const": "skipped"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "state"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "context",
+                                                            "response"
+                                                        ],
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                "required": [
+                                                    "content_type",
+                                                    "options"
+                                                ],
+                                                "additionalProperties": false
+                                            }
+                                        ]
+                                    },
+                                    "original_message_ids": {
+                                        "type": "object",
+                                        "properties": {
+                                            "action-request": {
+                                                "type": "string"
+                                            },
+                                            "action-confirm": {
+                                                "type": "string"
+                                            },
+                                            "action-reject": {
+                                                "type": "string"
+                                            },
+                                            "action-response": {
+                                                "type": "string"
+                                            },
+                                            "action-error": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "action-request"
+                                        ],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "tool_config",
+                                    "requires_confirmation",
+                                    "action_details",
+                                    "tool_run_state",
+                                    "params",
+                                    "original_message_ids"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "agent-error"
+                                    },
+                                    "errors": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "body": {
+                                                    "type": "string",
+                                                    "step_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "raw": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "original_message_ids": {
+                                        "type": "object",
+                                        "properties": {
+                                            "agent-error": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "agent-error"
+                                        ],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "errors",
+                                    "original_message_ids"
+                                ],
+                                "additionalProperties": false
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "content",
+                    "item_id",
+                    "insert_date_",
+                    "is_in_hidden_group",
+                    "is_expanded_by_default"
+                ],
+                "additionalProperties": false
+            },
+            "description": "The task view items for the frontend to render."
+        },
+        "next_cursor": {
+            "type": "string",
+            "description": "The \"after\" cursor to use in the next request to get the next page of results. If one is not returned, there are no more results to fetch."
+        }
+    },
+    "required": [
+        "results"
+    ],
+    "additionalProperties": false
+}
