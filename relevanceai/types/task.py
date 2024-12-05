@@ -49,7 +49,6 @@ class State(Enum):
     completed = 'completed'
     errored_pending_approval = 'errored-pending-approval'
 
-
 class Conversation(BaseModel):
     tags: Optional[Dict[str, Any]] = None
     user_id: Optional[str] = None
