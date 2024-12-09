@@ -33,3 +33,8 @@ class ToolsManager(SyncAPIResource):
         response = self._client.get(path, params=params)
         tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
         return tools
+    
+    def retrieve_tool(self, tool_id: str) -> Tool:
+        path = f"studios/{tool_id}/get"
+        response = self._get(path)
+        return Tool(client=self._client, **response.json()["studio"])
