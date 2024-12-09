@@ -1,10 +1,7 @@
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
-from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView, TaskStep
 from ..types.knowledge import Metadata
 from typing import Optional, List, Union
-import json
-
 
 class Tasks(SyncAPIResource):
 

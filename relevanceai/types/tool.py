@@ -510,7 +510,7 @@ class Metrics(BaseModel):
     executions: Optional[float] = None
 
 
-class Tool(BaseModel):
+class ToolType(BaseModel):
     version: Optional[str] = None
     project: Optional[str] = None
     field_id: Optional[str] = Field(None, alias='_id')

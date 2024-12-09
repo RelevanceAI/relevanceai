@@ -7,7 +7,7 @@ from ..resources.agent import Agent
 from typing import List
 
 
-class Agents(SyncAPIResource):
+class AgentsManager(SyncAPIResource):
 
     _client: RelevanceAI
 
