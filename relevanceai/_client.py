@@ -12,9 +12,9 @@ from ._base_client import SyncAPIClient
 
 class RelevanceAI(SyncAPIClient): 
     
-    agents: resources.Agents
+    agents: resources.AgentsManager
     tasks: resources.Tasks
-    tools: resources.Tools
+    tools: resources.ToolsManager
     knowledge: resources.Knowledge
     
     api_key: str
@@ -54,9 +54,9 @@ class RelevanceAI(SyncAPIClient):
         super().__init__(base_url=base_url, headers=headers)
         
         from . import resources
-        self.agents = resources.Agents(self)
+        self.agents = resources.AgentsManager(self)
         self.tasks = resources.Tasks(self)
-        self.tools = resources.Tools(self)
+        self.tools = resources.ToolsManager(self)
         self.knowledge = resources.Knowledge(self)
 
     
