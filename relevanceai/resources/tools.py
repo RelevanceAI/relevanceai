@@ -38,3 +38,12 @@ class ToolsManager(SyncAPIResource):
         path = f"studios/{tool_id}/get"
         response = self._get(path)
         return Tool(client=self._client, **response.json()["studio"])
+    
+    def create_tool(self) -> Tool:
+        pass
+
+    def delete_tool(self, tool_id: str) -> bool:
+        path = "studios/bulk_delete"
+        body = {"ids": [tool_id]}
+        response = self._post(path, body=body)
+        return response.status_code == 200

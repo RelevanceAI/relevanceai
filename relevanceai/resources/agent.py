@@ -17,13 +17,6 @@ class Agent(SyncAPIResource):
         self.metadata = AgentType(**metadata)
         self.agent_id = self.metadata.agent_id
 
-    def delete_agent(
-        self,
-    ) -> bool:
-        path = f"agents/{self.agent_id}/delete"
-        response = self._post(path)
-        return response.status_code == 200
-
     def list_tools(
         self,
     ) -> List[Tool]:
@@ -252,6 +245,47 @@ class Agent(SyncAPIResource):
         }
         response = self._post(path, body=body)
         return response.json()
+    
+    # todo: approval modes for agents and tools 
+
+    def add_subagent(self):
+        # set agent settings variables 
+        pass
+
+    def remove_subagent(self): 
+        pass
+
+    #* core instructions 
+    def get_core_instructions(self):
+        pass
+
+    def update_core_instructions(self):
+        pass
+
+    #* template settings    
+    def get_template_settings(self):
+        pass
+
+    def create_template_variable(self):
+        pass
+
+    def remove_template_variable(self):
+        pass
+
+    def update_template_settings(self):
+        # partial update
+        pass
+
+    #* advanced settings 
+    def get_advanced_settings(self): 
+        pass 
+
+    def update_template_settings(self):
+        pass
+
+    def get_link(self): 
+        return f"https://app.relevanceai.com/agents/{self._client.region}/"
+
 
     def __repr__(self):
         return f'Agent(agent_id="{self.agent_id}", name="{self.metadata.name}")'

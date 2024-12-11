@@ -29,3 +29,14 @@ class AgentsManager(SyncAPIResource):
         path = f"agents/{agent_id}/get"
         response = self._get(path)
         return Agent(client=self._client, **response.json()["agent"])
+    
+    def create_agent(self) -> Agent:
+        pass
+
+    def delete_agent(
+        self,
+        agent_id: str,
+    ) -> bool:
+        path = f"agents/{agent_id}/delete"
+        response = self._post(path)
+        return response.status_code == 200

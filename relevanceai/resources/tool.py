@@ -15,12 +15,6 @@ class Tool(SyncAPIResource):
         self.metadata = ToolType(**metadata)
         self.tool_id = self.metadata.studio_id
 
-    def delete(self) -> bool:
-        path = "studios/bulk_delete"
-        body = {"ids": [self.tool_id]}
-        response = self._post(path, body=body)
-        return response.status_code == 200
-
     def update(
         self,
         updates: dict,
@@ -53,6 +47,30 @@ class Tool(SyncAPIResource):
         transformations = response.json()["studio"]["transformations"]
         steps = transformations["steps"]
         return json.dumps(steps, indent=4)
+    
+    # steps 
+    def add_python_step(self):
+        pass
+
+    def remove_python_step(self):
+        pass
+    
+    def update_python_step(self): 
+        pass
+
+    # inputs / params 
+
+    def add_param(self): 
+        # agent setting, default value
+        pass
+
+    def remove_param(self): 
+        pass
+
+    # output 
+    def configure_output(self): 
+        # last output / manual / write to agent metadata 
+        pass
 
     def __repr__(self):
         return f'Tool(tool_id="{self.tool_id}", title="{self.metadata.title}")'
