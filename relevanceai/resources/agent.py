@@ -255,6 +255,13 @@ class Agent(SyncAPIResource):
     def remove_subagent(self): 
         pass
 
+    #* triggers
+    def add_trigger(self): 
+        pass
+
+    def remove_trigger(self):
+        pass
+
     #* core instructions 
     def get_core_instructions(self):
         pass
