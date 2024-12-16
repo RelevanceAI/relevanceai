@@ -151,7 +151,7 @@ class Agent(SyncAPIResource):
         self,
         conversation_id: str,
     ) -> Optional[TriggeredTask]:
-        trigger_message_data = self._get_trigger_message(conversation_id)
+        trigger_message_data = self._get_trigger_message(agent_id, conversation_id)
 
         if not trigger_message_data:
             return None
