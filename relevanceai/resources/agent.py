@@ -248,12 +248,46 @@ class Agent(SyncAPIResource):
     
     # todo: approval modes for agents and tools 
 
-    def add_subagent(self):
-        # set agent settings variables 
-        pass
+    def add_subagent(
+        self, 
+        agent_id: str,
+        partial_update: Optional[bool] = True
+    ):
+        path = "agents/upsert"
+        subagent = self._client.agents.retrieve_agent(agent_id=agent_id)
+        self.metadata.actions.append(
+            {
+                "action_behaviour": subagent.metadata.action_behaviour,
+                "agent_id": subagent.metadata.agent_id,
+                "default_values": {},
+                "title": subagent.metadata.name
+            }
+        )
+        body = {
+            "agent_id": self.agent_id,
+            "actions": self.metadata.actions,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
 
-    def remove_subagent(self): 
-        pass
+    def remove_subagent(
+        self,
+        agent_id: str,
+        partial_update: Optional[bool] = True
+    ): 
+        path = "agents/upsert"
+        self.metadata.actions = [
+            action for action in self.metadata.actions 
+            if action.get("agent_id") != agent_id
+        ]
+        body = {
+            "agent_id": self.agent_id,
+            "actions": self.metadata.actions,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
 
     #* triggers
     def add_trigger(self): 
