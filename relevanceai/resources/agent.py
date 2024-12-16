@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
+from ..resources.tool import Tool
 from ..types.agent import *
-from ..types.tool import Tool
 from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView
 from typing import List
 import json
@@ -151,7 +151,7 @@ class Agent(SyncAPIResource):
         self,
         conversation_id: str,
     ) -> Optional[TriggeredTask]:
-        trigger_message_data = self._get_trigger_message(agent_id, conversation_id)
+        trigger_message_data = self._get_trigger_message(conversation_id)
 
         if not trigger_message_data:
             return None
