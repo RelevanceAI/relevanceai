@@ -30,7 +30,7 @@ class Agent(SyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = self._post(path, body=body)
-        tools = [Tool(**item) for item in response.json().get("results", [])]
+        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
         tools = [tool for tool in tools if tool.type != "agent"]
         return sorted(tools, key=lambda x: x.title or "")
 
