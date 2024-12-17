@@ -49,6 +49,7 @@ class ToolsManager(SyncAPIResource):
         output_schema = None,
         transformations = None
     ) -> Tool:
+        tool_id = uuid.uuid4()
         path = "studios/bulk_update"
         body = {
             "updates": [
@@ -67,13 +68,14 @@ class ToolsManager(SyncAPIResource):
                     "transformations": {
                         "steps": []
                     },
-                    "studio_id": uuid.uuid4()
+                    "studio_id": tool_id
                 }
             ],
             "partial_update": True
         }
         response = self._post(path, body=body)
-        return response.json()
+        tool_response = self.retrieve_tool(tool_id)
+        return tool_response
 
     def delete_tool(self, tool_id: str) -> bool:
         path = "studios/bulk_delete"
