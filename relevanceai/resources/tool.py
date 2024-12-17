@@ -48,24 +48,97 @@ class Tool(SyncAPIResource):
         steps = transformations["steps"]
         return json.dumps(steps, indent=4)
     
-    # steps 
-    def add_python_step(self):
-        pass
-
-    def remove_python_step(self):
-        pass
-
-    def update_python_step(self): 
+    def update_settings(self):
+        # title description
         pass
 
     # inputs / params 
-
     def update_params(self): 
-        # agent setting, default value
+        # {"updates":[{"version":"latest","_id":"587fc94b-50fa-4653-947f-a3c5d1a5e787_-_a56bc4da-591f-4925-89de-904a74d8003e_-_latest","creator_user_id":"3964a48d-ba44-4ff0-b9cd-0f17dd3c6f1a","description":"Description","output_schema":{},"params_schema":{"properties":{"text":{"type":"string","order":1,"title":"hello","metadata":{}}},"required":["text"],"type":"object"},"project":"587fc94b-50fa-4653-947f-a3c5d1a5e787","public":false,"studio_id":"a56bc4da-591f-4925-89de-904a74d8003e","title":"Blank","transformations":{"steps":[]},"update_date_":"2024-12-17T05:25:47.320Z","creator_first_name":"Ethan","creator_last_name":"Trang","params":{},"state_mapping":{"text":"params.text"}}],"partial_update":true}
+        body_2 = {
+            "updates": [
+                {
+                    "version": "latest",
+                    "_id": "587fc94b-50fa-4653-947f-a3c5d1a5e787_-_a56bc4da-591f-4925-89de-904a74d8003e_-_latest",
+                    "creator_user_id": "3964a48d-ba44-4ff0-b9cd-0f17dd3c6f1a",
+                    "description": "Description",
+                    "output_schema": {},
+                    "params_schema": {
+                        "properties": {
+                            "text": {
+                                "type": "string",
+                                "order": 1,
+                                "title": "hello",
+                                "metadata": {}
+                            },
+                            "long_text": {
+                                "type": "string",
+                                "metadata": {
+                                    "content_type": "long_text"
+                                },
+                                "order": 2,
+                                "title": "long text",
+                                "description": "more description"
+                            }
+                        },
+                        "required": ["text", "long_text"],
+                        "type": "object"
+                    },
+                    "project": "587fc94b-50fa-4653-947f-a3c5d1a5e787",
+                    "public": False,
+                    "studio_id": "a56bc4da-591f-4925-89de-904a74d8003e",
+                    "title": "Blank",
+                    "transformations": {
+                        "steps": []
+                    },
+                    "update_date_": "2024-12-17T05:25:47.320Z",
+                    "creator_first_name": "Ethan",
+                    "creator_last_name": "Trang",
+                    "params": {},
+                    "state_mapping": {
+                        "text": "params.text",
+                        "long_text": "params.long_text"
+                    }
+                }
+            ],
+            "partial_update": True
+        }
+        body = {
+            "updates": [
+                {
+
+                    "params": {},
+                    "params_schema": {
+                        "properties": {
+                            "text": {
+                                "type": "string",
+                                "order": 1,
+                                "title": "hello",
+                                "metadata": {}
+                            }
+                        },
+                        "required": ["text"],
+                        "type": "object"
+                    },
+                    "state_mapping": {
+                        "text": "params.text"
+                    },
+                    
+                    "transformations": {
+                        "steps": []
+                    },
+                    "output_schema": {},
+                }
+            ],
+            "partial_update": True
+        }
+
+    # steps 
+    def update_transformations(self):
         pass
 
     # output 
-    def configure_output(self): 
+    def update_output_schema(self): 
         # last output / manual / write to agent metadata 
         pass
 
