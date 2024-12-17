@@ -6,6 +6,7 @@ from ..types.tool import ToolType, ToolOutput
 from ..resources.tool import Tool
 from typing import List, Optional
 import json
+import uuid
 
 
 class ToolsManager(SyncAPIResource):
@@ -39,8 +40,40 @@ class ToolsManager(SyncAPIResource):
         response = self._get(path)
         return Tool(client=self._client, **response.json()["studio"])
     
-    def create_tool(self) -> Tool:
-        pass
+    def create_tool(
+        self, 
+        title: str, 
+        description: str, 
+        public: bool = False,
+        params_schema = None,
+        output_schema = None,
+        transformations = None
+    ) -> Tool:
+        path = "studios/bulk_update"
+        body = {
+            "updates": [
+                {
+                    "title": title,
+                    "public": public,
+                    "project": self._client.project,
+                    "description": description,
+                    "version": "latest",
+                    "params_schema": {
+                        "properties": {},
+                        "required": [],
+                        "type": "object"
+                    },
+                    "output_schema": {},
+                    "transformations": {
+                        "steps": []
+                    },
+                    "studio_id": uuid.uuid4()
+                }
+            ],
+            "partial_update": True
+        }
+        response = self._post(path, body=body)
+        return response.json()
 
     def delete_tool(self, tool_id: str) -> bool:
         path = "studios/bulk_delete"

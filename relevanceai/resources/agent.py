@@ -105,7 +105,7 @@ class Agent(SyncAPIResource):
         conversation_id: str,
         tool_id: str = None,
     ):
-        task_view: TaskView = self.view_task_steps(self.agent_id, conversation_id)
+        task_view: TaskView = self.view_task_steps(conversation_id)
         for t in task_view.results:
             if hasattr(t, "content") and hasattr(t.content, "requires_confirmation"):
                 requires_confirmation = t.content.requires_confirmation
@@ -117,7 +117,7 @@ class Agent(SyncAPIResource):
                     action_request_id = t.content.action_details.action_request_id
 
                     triggered_task = self.trigger_task_from_action(
-                        self.agent_id, conversation_id, action, action_request_id
+                        conversation_id, action, action_request_id
                     )
                     return triggered_task
 
@@ -144,7 +144,7 @@ class Agent(SyncAPIResource):
         self,
         conversation_id: str,
     ) -> Optional[TriggeredTask]:
-        trigger_message_data = self._get_trigger_message(self.agent_id, conversation_id)
+        trigger_message_data = self._get_trigger_message(conversation_id)
 
         if not trigger_message_data:
             return None
