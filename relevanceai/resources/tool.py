@@ -60,11 +60,8 @@ class Tool(SyncAPIResource):
 
     # inputs / params 
 
-    def add_param(self): 
+    def update_params(self): 
         # agent setting, default value
-        pass
-
-    def remove_param(self): 
         pass
 
     # output 

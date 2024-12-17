@@ -77,6 +77,24 @@ class ToolsManager(SyncAPIResource):
         tool_response = self.retrieve_tool(tool_id)
         return tool_response
 
+    def clone_tool(
+        self,
+        tool_id,
+    ) -> Optional[Tool]: 
+        path = "/studios/clone"
+        body = {
+            "studio_id": tool_id,
+            "project": self._client.project,
+            "region": self._client.region
+        }
+        response = self._post(path, body=body)
+        cloned_tool_id = response.json().get("studio_id", None)
+        if cloned_tool_id: 
+            tool_response = self.retrieve_tool(cloned_tool_id)
+            return tool_response
+        else:
+            return False
+
     def delete_tool(self, tool_id: str) -> bool:
         path = "studios/bulk_delete"
         body = {"ids": [tool_id]}
