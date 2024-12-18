@@ -3,7 +3,9 @@ from __future__ import annotations
 from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..types.tool import *
-from typing import List, Optional
+from typing import List, Optional, Dict
+from ..types.params import *
+from ..types.transformations import * 
 import json
 
 
@@ -42,105 +44,109 @@ class Tool(SyncAPIResource):
         params_schema = response.json()["studio"]["params_schema"]["properties"]
         return json.dumps(params_schema, indent=4)
 
-    def get_steps(self) -> str:
+    def get_transformations(self) -> str:
         response = self._get(f"studios/{self.tool_id}/get")
         transformations = response.json()["studio"]["transformations"]
         steps = transformations["steps"]
         return json.dumps(steps, indent=4)
     
-    def update_settings(self):
-        # title description
-        pass
-
-    # inputs / params 
-    def update_params(self): 
-        # {"updates":[{"version":"latest","_id":"587fc94b-50fa-4653-947f-a3c5d1a5e787_-_a56bc4da-591f-4925-89de-904a74d8003e_-_latest","creator_user_id":"3964a48d-ba44-4ff0-b9cd-0f17dd3c6f1a","description":"Description","output_schema":{},"params_schema":{"properties":{"text":{"type":"string","order":1,"title":"hello","metadata":{}}},"required":["text"],"type":"object"},"project":"587fc94b-50fa-4653-947f-a3c5d1a5e787","public":false,"studio_id":"a56bc4da-591f-4925-89de-904a74d8003e","title":"Blank","transformations":{"steps":[]},"update_date_":"2024-12-17T05:25:47.320Z","creator_first_name":"Ethan","creator_last_name":"Trang","params":{},"state_mapping":{"text":"params.text"}}],"partial_update":true}
-        body_2 = {
-            "updates": [
-                {
-                    "version": "latest",
-                    "_id": "587fc94b-50fa-4653-947f-a3c5d1a5e787_-_a56bc4da-591f-4925-89de-904a74d8003e_-_latest",
-                    "creator_user_id": "3964a48d-ba44-4ff0-b9cd-0f17dd3c6f1a",
-                    "description": "Description",
-                    "output_schema": {},
-                    "params_schema": {
-                        "properties": {
-                            "text": {
-                                "type": "string",
-                                "order": 1,
-                                "title": "hello",
-                                "metadata": {}
-                            },
-                            "long_text": {
-                                "type": "string",
-                                "metadata": {
-                                    "content_type": "long_text"
-                                },
-                                "order": 2,
-                                "title": "long text",
-                                "description": "more description"
-                            }
-                        },
-                        "required": ["text", "long_text"],
-                        "type": "object"
-                    },
-                    "project": "587fc94b-50fa-4653-947f-a3c5d1a5e787",
-                    "public": False,
-                    "studio_id": "a56bc4da-591f-4925-89de-904a74d8003e",
-                    "title": "Blank",
-                    "transformations": {
-                        "steps": []
-                    },
-                    "update_date_": "2024-12-17T05:25:47.320Z",
-                    "creator_first_name": "Ethan",
-                    "creator_last_name": "Trang",
-                    "params": {},
-                    "state_mapping": {
-                        "text": "params.text",
-                        "long_text": "params.long_text"
-                    }
-                }
-            ],
-            "partial_update": True
-        }
+    def update_metadata(
+        self,
+        title: str,
+        description: str, 
+        public: bool = False, 
+    ):
+        path = "studios/bulk_update"
         body = {
             "updates": [
                 {
-
-                    "params": {},
-                    "params_schema": {
-                        "properties": {
-                            "text": {
-                                "type": "string",
-                                "order": 1,
-                                "title": "hello",
-                                "metadata": {}
-                            }
-                        },
-                        "required": ["text"],
-                        "type": "object"
-                    },
-                    "state_mapping": {
-                        "text": "params.text"
-                    },
-                    
-                    "transformations": {
-                        "steps": []
-                    },
-                    "output_schema": {},
+                    "studio_id": self.tool_id,
+                    "title": title,
+                    "public": public,
+                    "description": description,
                 }
             ],
             "partial_update": True
         }
+        response = self._post(path, body=body)
+        return response.json()
 
-    # steps 
-    def update_transformations(self):
-        pass
+    def update_params(
+        self,
+        params: Dict[str, ParamsBase],
+    ) -> Tool:
+        
+        params_schema = {
+            "properties": {},
+            "required": [],
+            "type": "object"
+        }
+        
+        param_values = {
+            field_name: param.value
+            for field_name, param in params.items()
+            if param.value is not None
+        }
 
-    # output 
-    def update_output_schema(self): 
-        # last output / manual / write to agent metadata 
-        pass
+        for field_name, param in params.items():
+            param_dict = param.model_dump(exclude_none=True)
+            params_schema["properties"][field_name] = param_dict
+            params_schema["required"].append(field_name)
+
+        state_mapping = {
+            field_name: f"params.{field_name}" 
+            for field_name in params.keys()
+        }
+
+        path = "studios/bulk_update"
+        body = {
+            "updates": [{
+                "studio_id": self.tool_id,
+                "params": param_values,
+                "params_schema": params_schema,
+                "state_mapping": state_mapping
+            }],
+            "partial_update": True
+        }
+        
+        response = self._post(path, body=body)
+        return response.json()
+        
+    def update_transformations(
+        self,
+        transformations: List[TransformationBase],
+    ) -> dict:
+        
+        response = self._get(f"studios/{self.tool_id}/get")
+        current_state = response.json()["studio"].get("state_mapping", {})
+
+        state_mapping = {
+            **current_state, 
+            **{
+                step.name: f"steps.{step.name}.output"
+                for step in transformations
+            }
+        }
+        
+        transformation_config = {
+            "steps": [
+                transform.model_dump(exclude_none=True)
+                for transform in transformations
+            ]
+        }
+        
+        path = "studios/bulk_update"
+        body = {
+            "updates": [{
+                "studio_id": self.tool_id,
+                "transformations": transformation_config,
+                "state_mapping": state_mapping
+            }],
+            "partial_update": True
+        }
+        
+        response = self._post(path, body=body)
+        return response.json()
 
     def __repr__(self):
         return f'Tool(tool_id="{self.tool_id}", title="{self.metadata.title}")'
