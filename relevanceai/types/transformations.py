@@ -11,16 +11,18 @@ class TransformationBase(BaseModel):
 
 class PromptCompletionTransformation(TransformationBase):
     transformation: str = "prompt_completion"
+    name: str = "llm"
     params: Dict[str, Any] = Field(
         ..., 
         example={
             "prompt": "Tell me about AI Agents",
-            "model": "openai-gpt4"
+            "model": "openai-gpt4o"
         }
     )
 
 class PythonCodeTransformation(TransformationBase):
     transformation: str = "python_code_transformation"
+    name: str = "python"
     params: Dict[str, Any] = Field(
         ...,
         example={
@@ -30,6 +32,7 @@ class PythonCodeTransformation(TransformationBase):
 
 class SerperGoogleSearchTransformation(TransformationBase):
     transformation: str = "serper_google_search"
+    name: str = "google"
     params: Dict[str, Any] = Field(
         ...,
         example={
