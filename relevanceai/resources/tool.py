@@ -62,8 +62,8 @@ class Tool(SyncAPIResource):
                 {
                     "studio_id": self.tool_id,
                     "title": title,
-                    "public": public,
                     "description": description,
+                    "public": public,
                 }
             ],
             "partial_update": True
@@ -145,6 +145,37 @@ class Tool(SyncAPIResource):
             "partial_update": True
         }
         
+        response = self._post(path, body=body)
+        return response.json()
+    
+    def update_outputs(
+        self, 
+        last_step: bool = True,
+        output_mapping: Optional[dict] = None,
+        output_schema_properties: Optional[dict] = None,
+    ) -> dict: 
+        response = self._get(f"studios/{self.tool_id}/get")
+        current_steps = response.json()["studio"].get("transformations", {}).get("steps", [])
+        
+        transformations = {"steps": current_steps}
+        transformations["output"] = output_mapping if not last_step else None
+
+        updates = {
+            "studio_id": self.tool_id,
+            "transformations": transformations,
+        }
+
+        if output_schema_properties:
+            updates["output_schema"] = {
+                "properties": output_schema_properties
+            }
+
+        path = "studios/bulk_update"
+        body = {
+            "updates": [updates],
+            "partial_update": True
+        }
+
         response = self._post(path, body=body)
         return response.json()
 

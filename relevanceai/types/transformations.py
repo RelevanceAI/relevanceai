@@ -14,7 +14,7 @@ class PromptCompletionTransformation(TransformationBase):
     params: Dict[str, Any] = Field(
         ..., 
         example={
-            "prompt": "hello",
+            "prompt": "Tell me about AI Agents",
             "model": "openai-gpt4"
         }
     )
@@ -24,7 +24,7 @@ class PythonCodeTransformation(TransformationBase):
     params: Dict[str, Any] = Field(
         ...,
         example={
-            "code": "\nreturn \"hello\""
+            "code": "\nreturn \"Hello World!\""
         }
     )
 
@@ -33,7 +33,7 @@ class SerperGoogleSearchTransformation(TransformationBase):
     params: Dict[str, Any] = Field(
         ...,
         example={
-            "search_query": "{{name}}"
+            "search_query": "Relevance AI"
         }
     )
 
