@@ -222,7 +222,11 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def add_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
+    def add_tool(
+        self, 
+        tool_id: str, 
+        partial_update: Optional[bool] = True
+    ) -> None:
         path = "agents/upsert"
         self.metadata.actions.append({"chain_id": tool_id})
         body = {
@@ -245,19 +249,19 @@ class Agent(SyncAPIResource):
         }
         response = self._post(path, body=body)
         return response.json()
-    
-    # todo: approval modes for agents and tools 
+
 
     def add_subagent(
         self, 
         agent_id: str,
-        partial_update: Optional[bool] = True
+        partial_update: Optional[bool] = True,
+        action_behaviour: str = 'always-ask' # 'never-ask' | 'agent-decide' 
     ):
         path = "agents/upsert"
         subagent = self._client.agents.retrieve_agent(agent_id=agent_id)
         self.metadata.actions.append(
             {
-                "action_behaviour": subagent.metadata.action_behaviour,
+                "action_behaviour": action_behaviour,
                 "agent_id": subagent.metadata.agent_id,
                 "default_values": {},
                 "title": subagent.metadata.name
@@ -289,44 +293,46 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    #* triggers
-    def add_trigger(self): 
+    def get_triggers(self): 
+        return self.metadata.triggers
+
+    #todo
+    def update_triggers(self):
         pass
 
-    def remove_trigger(self):
-        pass
-
-    #* core instructions 
     def get_core_instructions(self):
-        pass
+        return self.metadata.system_prompt
 
-    def update_core_instructions(self):
-        pass
+    def update_core_instructions(
+        self, 
+        system_prompt: str,
+        partial_update: Optional[bool] = True
+    ):
+        path = "agents/upsert"
+        body = {
+            "agent_id": self.agent_id,
+            "system_prompt": system_prompt,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
 
     #* template settings    
     def get_template_settings(self):
         pass
 
-    def create_template_variable(self):
-        pass
-
-    def remove_template_variable(self):
-        pass
-
     def update_template_settings(self):
-        # partial update
         pass
 
     #* advanced settings 
     def get_advanced_settings(self): 
         pass 
 
-    def update_template_settings(self):
+    def update_advanced_settings(self):
         pass
 
     def get_link(self): 
-        return f"https://app.relevanceai.com/agents/{self._client.region}/"
-
+        return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.agent_id}"
 
     def __repr__(self):
         return f'Agent(agent_id="{self.agent_id}", name="{self.metadata.name}")'

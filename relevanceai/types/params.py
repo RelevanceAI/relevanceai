@@ -128,7 +128,7 @@ class ParamsSchema(BaseModel):
     number: NumberParam
     checkbox: CheckboxParam
     list: ListParam
-    json: JsonParam
+    json_object: JsonParam
     json_list: JsonListParam
     file_text: FileTextParam
     file_url: FileUrlParam

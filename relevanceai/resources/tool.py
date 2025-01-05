@@ -44,28 +44,34 @@ class Tool(SyncAPIResource):
         params_schema = response.json()["studio"]["params_schema"]["properties"]
         return json.dumps(params_schema, indent=4)
 
-    def get_transformations(self) -> str:
+    def get_transformations_schema(self) -> str:
         response = self._get(f"studios/{self.tool_id}/get")
-        transformations = response.json()["studio"]["transformations"]
-        steps = transformations["steps"]
-        return json.dumps(steps, indent=4)
+        steps_schema = response.json()["studio"]["transformations"]["steps"]
+        return json.dumps(steps_schema, indent=4)
     
     def update_metadata(
         self,
-        title: str,
-        description: str, 
-        public: bool = False, 
+        title: str = None,
+        description: str = None, 
+        public: bool = None, 
     ):
+        response = self._get(f"studios/{self.tool_id}/get")
+        current_metadata = {
+            "title": response.json()["studio"].get("title"),
+            "description": response.json()["studio"].get("description"),
+            "public": response.json()["studio"].get("public"),
+        }
+
+        updates = {
+            "studio_id": self.tool_id,
+            "title": title if title is not None else current_metadata["title"],
+            "description": description if description is not None else current_metadata["description"],
+            "public": public if public is not None else current_metadata["public"],
+        }
+
         path = "studios/bulk_update"
         body = {
-            "updates": [
-                {
-                    "studio_id": self.tool_id,
-                    "title": title,
-                    "description": description,
-                    "public": public,
-                }
-            ],
+            "updates": [updates],
             "partial_update": True
         }
         response = self._post(path, body=body)
