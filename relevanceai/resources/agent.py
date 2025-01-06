@@ -4,6 +4,7 @@ from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..resources.tool import Tool
 from ..types.agent import *
+from ..types.params import *
 from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView
 from typing import List
 import json
@@ -250,7 +251,6 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-
     def add_subagent(
         self, 
         agent_id: str,
@@ -293,16 +293,6 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def get_triggers(self): 
-        return self.metadata.triggers
-
-    #todo
-    def update_triggers(self):
-        pass
-
-    def get_core_instructions(self):
-        return self.metadata.system_prompt
-
     def update_core_instructions(
         self, 
         system_prompt: str,
@@ -317,19 +307,39 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    #* template settings    
-    def get_template_settings(self):
-        pass
+    def update_template_settings(
+        self,
+        params: Dict[str, ParamsBase],
+        partial_update: Optional[bool] = True
+    ):
+        params_schema = {
+            "properties": {},
+            "required": [],
+        }
+        
+        param_values = {
+            field_name: param.value
+            for field_name, param in params.items()
+            if param.value is not None
+        }
 
-    def update_template_settings(self):
-        pass
-
-    #* advanced settings 
-    def get_advanced_settings(self): 
-        pass 
-
-    def update_advanced_settings(self):
-        pass
+        for field_name, param in params.items():
+            param_dict = param.model_dump(exclude_none=True)
+            params_schema["properties"][field_name] = param_dict
+            if param.required:
+                params_schema["required"].append(field_name)
+        
+        path = "agents/upsert"
+        body = {
+            "agent_id": self.agent_id,
+            "params": param_values,
+            "params_schema": params_schema,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+    
+    # todo: triggers, abilities, and advanced settings
 
     def get_link(self): 
         return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.agent_id}"

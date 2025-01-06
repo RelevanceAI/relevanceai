@@ -10,6 +10,7 @@ class ParamsBase(BaseModel):
     value: Optional[Any] = None
     metadata: Optional[Dict[str, Any]] = None
     default: Optional[Any] = None
+    required: Optional[bool] = True
 
 class TextParam(ParamsBase):
     type: str = "string"

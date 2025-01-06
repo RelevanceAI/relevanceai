@@ -97,7 +97,8 @@ class Tool(SyncAPIResource):
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
             params_schema["properties"][field_name] = param_dict
-            params_schema["required"].append(field_name)
+            if param.required:
+                params_schema["required"].append(field_name)
 
         state_mapping = {
             field_name: f"params.{field_name}" 
@@ -184,6 +185,9 @@ class Tool(SyncAPIResource):
 
         response = self._post(path, body=body)
         return response.json()
+    
+    def get_link(self):
+        return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.tool_id}"
 
     def __repr__(self):
         return f'Tool(tool_id="{self.tool_id}", title="{self.metadata.title}")'
