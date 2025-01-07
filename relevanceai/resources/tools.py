@@ -6,6 +6,7 @@ from ..types.tool import ToolType, ToolOutput
 from ..resources.tool import Tool
 from typing import List, Optional
 import json
+import uuid
 
 
 class ToolsManager(SyncAPIResource):
@@ -38,3 +39,64 @@ class ToolsManager(SyncAPIResource):
         path = f"studios/{tool_id}/get"
         response = self._get(path)
         return Tool(client=self._client, **response.json()["studio"])
+    
+    def create_tool(
+        self, 
+        title: str, 
+        description: str, 
+        public: bool = False,
+        params_schema = None,
+        output_schema = None,
+        transformations = None
+    ) -> Tool:
+        tool_id = uuid.uuid4()
+        path = "studios/bulk_update"
+        body = {
+            "updates": [
+                {
+                    "title": title,
+                    "public": public,
+                    "project": self._client.project,
+                    "description": description,
+                    "version": "latest",
+                    "params_schema": {
+                        "properties": {},
+                        "required": [],
+                        "type": "object"
+                    },
+                    "output_schema": {},
+                    "transformations": {
+                        "steps": []
+                    },
+                    "studio_id": tool_id
+                }
+            ],
+            "partial_update": True
+        }
+        response = self._post(path, body=body)
+        tool_response = self.retrieve_tool(tool_id)
+        return tool_response
+
+    def clone_tool(
+        self,
+        tool_id,
+    ) -> Optional[Tool]: 
+        path = "/studios/clone"
+        body = {
+            "studio_id": tool_id,
+            "project": self._client.project,
+            "region": self._client.region
+        }
+        response = self._post(path, body=body)
+        cloned_tool_id = response.json().get("studio_id", None)
+        if cloned_tool_id: 
+            tool_response = self.retrieve_tool(cloned_tool_id)
+            return tool_response
+        else:
+            return False
+
+    def delete_tool(self, tool_id: str) -> bool:
+        path = "studios/bulk_delete"
+        body = {"ids": [tool_id]}
+        response = self._post(path, body=body)
+        return response.status_code == 200

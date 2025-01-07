@@ -4,6 +4,7 @@ from .._client import RelevanceAI
 from .._resource import SyncAPIResource
 from ..resources.tool import Tool
 from ..types.agent import *
+from ..types.params import *
 from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView
 from typing import List
 import json
@@ -16,13 +17,6 @@ class Agent(SyncAPIResource):
         super().__init__(client=client)
         self.metadata = AgentType(**metadata)
         self.agent_id = self.metadata.agent_id
-
-    def delete_agent(
-        self,
-    ) -> bool:
-        path = f"agents/{self.agent_id}/delete"
-        response = self._post(path)
-        return response.status_code == 200
 
     def list_tools(
         self,
@@ -112,7 +106,7 @@ class Agent(SyncAPIResource):
         conversation_id: str,
         tool_id: str = None,
     ):
-        task_view: TaskView = self.view_task_steps(self.agent_id, conversation_id)
+        task_view: TaskView = self.view_task_steps(conversation_id)
         for t in task_view.results:
             if hasattr(t, "content") and hasattr(t.content, "requires_confirmation"):
                 requires_confirmation = t.content.requires_confirmation
@@ -124,7 +118,7 @@ class Agent(SyncAPIResource):
                     action_request_id = t.content.action_details.action_request_id
 
                     triggered_task = self.trigger_task_from_action(
-                        self.agent_id, conversation_id, action, action_request_id
+                        conversation_id, action, action_request_id
                     )
                     return triggered_task
 
@@ -229,7 +223,11 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def add_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
+    def add_tool(
+        self, 
+        tool_id: str, 
+        partial_update: Optional[bool] = True
+    ) -> None:
         path = "agents/upsert"
         self.metadata.actions.append({"chain_id": tool_id})
         body = {
@@ -252,6 +250,99 @@ class Agent(SyncAPIResource):
         }
         response = self._post(path, body=body)
         return response.json()
+
+    def add_subagent(
+        self, 
+        agent_id: str,
+        partial_update: Optional[bool] = True,
+        action_behaviour: str = 'always-ask' # 'never-ask' | 'agent-decide' 
+    ):
+        path = "agents/upsert"
+        subagent = self._client.agents.retrieve_agent(agent_id=agent_id)
+        self.metadata.actions.append(
+            {
+                "action_behaviour": action_behaviour,
+                "agent_id": subagent.metadata.agent_id,
+                "default_values": {},
+                "title": subagent.metadata.name
+            }
+        )
+        body = {
+            "agent_id": self.agent_id,
+            "actions": self.metadata.actions,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+
+    def remove_subagent(
+        self,
+        agent_id: str,
+        partial_update: Optional[bool] = True
+    ): 
+        path = "agents/upsert"
+        self.metadata.actions = [
+            action for action in self.metadata.actions 
+            if action.get("agent_id") != agent_id
+        ]
+        body = {
+            "agent_id": self.agent_id,
+            "actions": self.metadata.actions,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+
+    def update_core_instructions(
+        self, 
+        system_prompt: str,
+        partial_update: Optional[bool] = True
+    ):
+        path = "agents/upsert"
+        body = {
+            "agent_id": self.agent_id,
+            "system_prompt": system_prompt,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+
+    def update_template_settings(
+        self,
+        params: Dict[str, ParamsBase],
+        partial_update: Optional[bool] = True
+    ):
+        params_schema = {
+            "properties": {},
+            "required": [],
+        }
+        
+        param_values = {
+            field_name: param.value
+            for field_name, param in params.items()
+            if param.value is not None
+        }
+
+        for field_name, param in params.items():
+            param_dict = param.model_dump(exclude_none=True)
+            params_schema["properties"][field_name] = param_dict
+            if param.required:
+                params_schema["required"].append(field_name)
+        
+        path = "agents/upsert"
+        body = {
+            "agent_id": self.agent_id,
+            "params": param_values,
+            "params_schema": params_schema,
+            "partial_update": partial_update,
+        }
+        response = self._post(path, body=body)
+        return response.json()
+    
+    # todo: triggers, abilities, and advanced settings
+
+    def get_link(self): 
+        return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.agent_id}"
 
     def __repr__(self):
         return f'Agent(agent_id="{self.agent_id}", name="{self.metadata.name}")'
