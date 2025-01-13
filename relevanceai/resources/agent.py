@@ -9,7 +9,6 @@ from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView
 from typing import List
 import json
 
-
 class Agent(SyncAPIResource):
     _client: RelevanceAI
 
@@ -24,9 +23,9 @@ class Agent(SyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = self._post(path, body=body)
-        tools = [Tool(**item) for item in response.json().get("results", [])]
-        tools = [tool for tool in tools if tool.type != "agent"]
-        return sorted(tools, key=lambda x: x.title or "")
+        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [tool for tool in tools if tool.metadata.type != "agent"]
+        return sorted(tools, key=lambda x: x.metadata.title or "")
 
     def list_subagents(
         self,
@@ -34,9 +33,9 @@ class Agent(SyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = self._post(path, body=body)
-        tools = [Tool(**item) for item in response.json().get("results", [])]
-        tools = [tool for tool in tools if tool.type == "agent"]
-        return sorted(tools, key=lambda x: x.title or "")
+        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [tool for tool in tools if tool.metadata.type == "agent"]
+        return sorted(tools, key=lambda x: x.metadata.title or "")
 
     def retrieve_task(self, conversation_id: str) -> Task:
         task_items = self.list_tasks(self.agent_id)
@@ -157,7 +156,7 @@ class Agent(SyncAPIResource):
             "agent_id": self.agent_id,
             "conversation_id": conversation_id,
             "message": {"role": "user", "content": message_content},
-            "edit_message_id": edit_message_id,
+            "edit_message_id": edit_message_id
         }
 
         response = self._post(path, body=body)
@@ -295,13 +294,13 @@ class Agent(SyncAPIResource):
 
     def update_core_instructions(
         self, 
-        system_prompt: str,
+        core_instructions: str,
         partial_update: Optional[bool] = True
     ):
         path = "agents/upsert"
         body = {
             "agent_id": self.agent_id,
-            "system_prompt": system_prompt,
+            "system_prompt": core_instructions,
             "partial_update": partial_update,
         }
         response = self._post(path, body=body)
@@ -325,6 +324,7 @@ class Agent(SyncAPIResource):
 
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
+            param_dict.pop('required', None)
             params_schema["properties"][field_name] = param_dict
             if param.required:
                 params_schema["required"].append(field_name)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+
 
 class TransformationBase(BaseModel):
     transformation: str
@@ -43,5 +44,7 @@ class SerperGoogleSearchTransformation(TransformationBase):
 class TransformationStep(BaseModel):
     steps: List[TransformationBase]
 
-    class Config:
-        smart_union = True
+    model_config = ConfigDict(
+        extra='allow',
+        protected_namespaces=()
+    )
