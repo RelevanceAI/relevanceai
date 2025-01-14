@@ -32,7 +32,6 @@ class TestAgentsManager:
         agents_manager._post.assert_called_once_with("agents/list")
         assert len(result) == 3
         assert all(isinstance(agent, Agent) for agent in result)
-        # Verify sorting (None names should come last)
         assert [agent.metadata.name for agent in result] == ["Agent 1", "Agent 3", None]
 
     def test_retrieve_agent(self, agents_manager):
@@ -57,12 +56,10 @@ class TestAgentsManager:
 
     def test_upsert_agent(self, agents_manager):
         """Test upserting an agent with various parameters."""
-        # Mock the POST response for upsert
         mock_upsert_response = MagicMock()
         mock_upsert_response.json.return_value = {"agent_id": "new-agent"}
         agents_manager._post = MagicMock(return_value=mock_upsert_response)
 
-        # Mock the retrieve_agent response
         mock_agent = Agent(
             client=agents_manager._client,
             agent_id="new-agent",
@@ -75,7 +72,6 @@ class TestAgentsManager:
         )
         agents_manager.retrieve_agent = MagicMock(return_value=mock_agent)
 
-        # Test with all parameters
         result = agents_manager.upsert_agent(
             agent_id="new-agent",
             name="New Agent",
