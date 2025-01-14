@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="relevanceai",
-    version="10.1.0",
+    version="10.1.2",
     url="https://relevanceai.com/",
     author="Relevance AI",
     author_email="jacky@relevanceai.com",
@@ -14,6 +14,7 @@ setup(
         "pydantic==2.8.2",
         "requests==2.32.3",
         "httpx==0.27.2",
+        "pytest==8.3.4"
     ],
     package_data={"": ["*.ini"]},
     extras_require=dict(),

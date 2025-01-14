@@ -81,8 +81,9 @@ List all the agents in your project:
 from relevanceai import RelevanceAI
 client = RelevanceAI()
 
-my_agents = client.agents.list_agents()
-print(my_agents)
+agents = client.agents.list_agents()
+print(agents)
+# Example output: [Agent(agent_id="xxxxxxxx", name="Sales Qualifier"), ...]
 ```
 
 Retrieve and interact with a specific agent:
@@ -92,11 +93,12 @@ my_agent = client.agents.retrieve_agent(agent_id="xxxxxxxx")
 
 message = "Let's qualify this lead:\n\nName: Ethan Trang\n\nCompany: Relevance AI\n\nEmail: ethan@relevanceai.com"
 
-triggered_task = client.tasks.trigger_task(
-    agent_id="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", 
-    message=message
-)
-print(triggered_task)
+# Trigger a task with the agent
+task = my_agent.trigger_task(message=message)
+print(f"Task started with ID: {task.conversation_id}")
+
+# View task progress
+steps = my_agent.view_task_steps(conversation_id=task.conversation_id)
 ```
 
 ### Using Tools
@@ -104,8 +106,9 @@ print(triggered_task)
 List all the tools in your project:
 
 ```python
-my_tools = client.tools.list_tools()
-print(my_tools)
+tools = client.tools.list_tools()
+print(tools)
+# Example output: [Tool(tool_id="xxxxxxxx", title="Search Website"), ...]
 ```
 
 Retrieve and interact with a specific tool:
@@ -113,13 +116,35 @@ Retrieve and interact with a specific tool:
 ```python
 my_tool = client.tools.retrieve_tool(tool_id="xxxxxxxx")
 
-params = {"text": "This is text", "number": 245}
+# Check tool parameters schema
+params_schema = my_tool.get_params_schema()
 
-tool_response = client.tools.trigger_tool(
-    tool_id="xxxxxxxx",
-    params=params
-)
-print(tool_response)
+# Trigger the tool
+result = my_tool.trigger(params={"search_query": "AI automation"})
+```
+
+### Managing Knowledge Sets
+
+Work with knowledge sets to store and retrieve data:
+
+```python
+# List knowledge sets
+knowledge_sets = client.knowledge.list_knowledge()
+
+# Retrieve data from a knowledge set
+data = client.knowledge.retrieve_knowledge(knowledge_set="my_dataset")
+```
+
+### Managing Tasks
+
+Track and manage ongoing tasks:
+
+```python
+# Get task metadata
+metadata = client.tasks.get_metadata(conversation_id="xxxxxxxx")
+
+# Delete a completed task
+client.tasks.delete_task(conversation_id="xxxxxxxx")
 ```
 
 ## Explore More
