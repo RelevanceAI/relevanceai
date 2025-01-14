@@ -2,4 +2,4 @@
 from __future__ import annotations
 from ._client import RelevanceAI
 
-__version__ = "10.1.2"
+__version__ = "10.2.0"
