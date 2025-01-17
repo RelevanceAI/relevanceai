@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .._resource import SyncAPIResource
-from .._client import RelevanceAI
+from .._client import RelevanceAI, AsyncRelevanceAI
+from .._resource import SyncAPIResource, AsyncAPIResource
 from typing import List
 from ..types.knowledge import KnowledgeSet, KnowledgeRow
 
@@ -41,5 +41,43 @@ class Knowledge(SyncAPIResource):
         path = "knowledge/sets/delete"
         body = {"knowledge_set": knowledge_set}
         response = self._post(path, body=body)
+        return response.status_code == 200
+
+class AsyncKnowledge(AsyncAPIResource):
+
+    _client: AsyncRelevanceAI
+
+    async def list_knowledge(
+        self, 
+    ) -> List[KnowledgeSet]:
+        path = "knowledge/sets/list"
+        body = {
+            "filters": [],
+            "sort": [{"update_date":"desc"}]
+        }
+        response = await self._post(path, body=body)
+        return [KnowledgeSet(**item) for item in response.json().get("results", [])]
+    
+    async def retrieve_knowledge(
+        self, 
+        knowledge_set: str, 
+        max_results: int = 5
+    ) -> List[KnowledgeRow]:
+        path = "knowledge/list"
+        body = {
+            "knowledge_set": knowledge_set,
+            "page_size": max_results,
+            "sort": [{"insert_date_": "asc"}]
+        }
+        response = await self._post(path, body=body)
+        return [KnowledgeRow(**item) for item in response.json().get("results", [])]
+        
+    async def delete_knowledge(
+        self,
+        knowledge_set: str, 
+    ) -> bool:
+        path = "knowledge/sets/delete"
+        body = {"knowledge_set": knowledge_set}
+        response = await self._post(path, body=body)
         return response.status_code == 200
 

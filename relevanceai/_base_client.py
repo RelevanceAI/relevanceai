@@ -43,3 +43,48 @@ class SyncAPIClient:
 
     def close(self) -> None:
         self._client.close()
+
+class AsyncAPIClient:
+    _client: httpx.AsyncClient
+
+    def __init__(
+        self,
+        *,
+        base_url: str | URL,
+        headers: Headers | None = None,
+        timeout: float | Timeout | None = None,
+        proxies: ProxiesTypes | None = None,
+    ) -> None:
+        self._client = httpx.AsyncClient(
+            base_url=base_url, 
+            headers=headers, 
+            timeout=timeout, 
+            proxies=proxies
+        )
+
+    async def request(self, method: str, url: str, **kwargs) -> httpx.Response:
+        return await self._client.request(method, url, **kwargs)
+    
+    async def get(self, path: str, **kwargs) -> Response:
+        return await self.request("GET", path, **kwargs)
+
+    async def post(self, path: str, body: dict = None, **kwargs) -> Response:
+        if body is not None:
+            kwargs['json'] = body
+        return await self.request("POST", path, **kwargs)
+
+    async def patch(self, path: str, body: dict = None, **kwargs) -> Response:
+        if body is not None:
+            kwargs['json'] = body
+        return await self.request("PATCH", path, **kwargs)
+
+    async def put(self, path: str, body: dict = None, **kwargs) -> Response:
+        if body is not None:
+            kwargs['json'] = body
+        return await self.request("PUT", path, **kwargs)
+
+    async def delete(self, path: str, **kwargs) -> Response:
+        return await self.request("DELETE", path, **kwargs)
+
+    async def close(self) -> None:
+        await self._client.aclose()

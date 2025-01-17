@@ -1,5 +1,5 @@
 
-from .agents import AgentsManager
-from .tasks import Tasks
-from .tools import ToolsManager
-from .knowledge import Knowledge
+from .agents import AgentsManager, AsyncAgentsManager
+from .tasks import Tasks, AsyncTasks
+from .tools import ToolsManager, AsyncToolsManager
+from .knowledge import Knowledge, AsyncKnowledge
