@@ -63,7 +63,7 @@ class AsyncRelevanceAI(AsyncAPIClient):
     agents: resources.AsyncAgentsManager
     tasks: resources.AsyncTasks
     tools: resources.AsyncToolsManager
-    knowledge: resources.Knowledge
+    knowledge: resources.AsyncKnowledge
     
     api_key: str
     region: str | None
@@ -105,7 +105,7 @@ class AsyncRelevanceAI(AsyncAPIClient):
         self.agents = resources.AsyncAgentsManager(self)
         self.tasks = resources.AsyncTasks(self)
         self.tools = resources.AsyncToolsManager(self)
-        self.knowledge = resources.Knowledge(self)
+        self.knowledge = resources.AsyncKnowledge(self)
 
     async def __aenter__(self):
         return self
