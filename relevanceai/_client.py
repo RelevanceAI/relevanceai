@@ -61,8 +61,8 @@ class RelevanceAI(SyncAPIClient):
 
 class AsyncRelevanceAI(AsyncAPIClient):
     agents: resources.AsyncAgentsManager
-    tasks: resources.Tasks
-    tools: resources.ToolsManager
+    tasks: resources.AsyncTasks
+    tools: resources.AsyncToolsManager
     knowledge: resources.Knowledge
     
     api_key: str
@@ -103,8 +103,8 @@ class AsyncRelevanceAI(AsyncAPIClient):
         
         from . import resources
         self.agents = resources.AsyncAgentsManager(self)
-        self.tasks = resources.Tasks(self)
-        self.tools = resources.ToolsManager(self)
+        self.tasks = resources.AsyncTasks(self)
+        self.tools = resources.AsyncToolsManager(self)
         self.knowledge = resources.Knowledge(self)
 
     async def __aenter__(self):
