@@ -3,7 +3,7 @@ from __future__ import annotations
 from .._client import RelevanceAI, AsyncRelevanceAI
 from .._resource import SyncAPIResource, AsyncAPIResource
 from ..types.tool import ToolType, ToolOutput
-from ..resources.tool import Tool
+from ..resources.tool import Tool, AsyncTool
 from typing import List, Optional
 import json
 import uuid
@@ -109,7 +109,7 @@ class AsyncToolsManager(AsyncAPIResource):
     async def list_tools(
         self,
         max_results: Optional[int] = 100,
-    ) -> List[Tool]:
+    ) -> List[AsyncTool]:
         path = "studios/list"
         params = {
             "filters": json.dumps(
@@ -125,13 +125,13 @@ class AsyncToolsManager(AsyncAPIResource):
             "page_size": max_results,
         }
         response = await self._client.get(path, params=params)
-        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [AsyncTool(client=self._client, **item) for item in response.json().get("results", [])]
         return tools
     
-    async def retrieve_tool(self, tool_id: str) -> Tool:
+    async def retrieve_tool(self, tool_id: str) -> AsyncTool:
         path = f"studios/{tool_id}/get"
         response = await self._get(path)
-        return Tool(client=self._client, **response.json()["studio"])
+        return AsyncTool(client=self._client, **response.json()["studio"])
     
     async def create_tool(
         self, 
@@ -141,7 +141,7 @@ class AsyncToolsManager(AsyncAPIResource):
         params_schema = None,
         output_schema = None,
         transformations = None
-    ) -> Tool:
+    ) -> AsyncTool:
         tool_id = str(uuid.uuid4())  # Convert UUID to string
         path = "studios/bulk_update"
         body = {
@@ -173,7 +173,7 @@ class AsyncToolsManager(AsyncAPIResource):
     async def clone_tool(
         self,
         tool_id: str,
-    ) -> Optional[Tool]:
+    ) -> Optional[AsyncTool]:
         path = "/studios/clone"
         body = {
             "studio_id": tool_id,
