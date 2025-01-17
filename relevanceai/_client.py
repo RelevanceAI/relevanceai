@@ -60,7 +60,7 @@ class RelevanceAI(SyncAPIClient):
         self.knowledge = resources.Knowledge(self)
 
 class AsyncRelevanceAI(AsyncAPIClient):
-    agents: resources.AgentsManager
+    agents: resources.AsyncAgentsManager
     tasks: resources.Tasks
     tools: resources.ToolsManager
     knowledge: resources.Knowledge
@@ -102,7 +102,7 @@ class AsyncRelevanceAI(AsyncAPIClient):
         super().__init__(base_url=base_url, headers=headers)
         
         from . import resources
-        self.agents = resources.AgentsManager(self)
+        self.agents = resources.AsyncAgentsManager(self)
         self.tasks = resources.Tasks(self)
         self.tools = resources.ToolsManager(self)
         self.knowledge = resources.Knowledge(self)

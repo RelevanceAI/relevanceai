@@ -2,6 +2,7 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Type, TypeVar, Dict, Any, Optional, Union
 import httpx
+import asyncio
 if TYPE_CHECKING:
     from ._client import RelevanceAI, AsyncRelevanceAI
 
