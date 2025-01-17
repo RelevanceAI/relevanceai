@@ -3,7 +3,7 @@ from __future__ import annotations
 from .._client import RelevanceAI, AsyncRelevanceAI
 from .._resource import SyncAPIResource, AsyncAPIResource
 
-from ..resources.agent import Agent
+from ..resources.agent import Agent, AsyncAgent
 from typing import List, Optional
 
 
@@ -63,11 +63,11 @@ class AgentsManager(SyncAPIResource):
 class AsyncAgentsManager(AsyncAPIResource):
     _client: AsyncRelevanceAI
 
-    async def list_agents(self) -> List[Agent]:
+    async def list_agents(self) -> List[AsyncAgent]:
         path = "agents/list"
         response = await self._post(path)
         agents = [
-            Agent(client=self._client, **item)
+            AsyncAgent(client=self._client, **item)
             for item in (response.json()).get("results", [])
         ]
         return sorted(
@@ -77,10 +77,10 @@ class AsyncAgentsManager(AsyncAPIResource):
     async def retrieve_agent(
         self,
         agent_id: str,
-    ) -> Agent:
+    ) -> AsyncAgent:
         path = f"agents/{agent_id}/get"
         response = await self._get(path)
-        return Agent(client=self._client, **response.json()["agent"])
+        return AsyncAgent(client=self._client, **response.json()["agent"])
     
     async def upsert_agent(
         self,
@@ -89,7 +89,7 @@ class AsyncAgentsManager(AsyncAPIResource):
         system_prompt: Optional[str] = None, 
         model: Optional[str] = None, 
         temperature: Optional[int] = None,
-    ) -> Agent:
+    ) -> AsyncAgent:
         path = f"/agents/upsert"
         body = {
             k: v for k, v in {
