@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import json
+import uuid
+from typing import List
+
 from .._client import RelevanceAI, AsyncRelevanceAI
 from .._resource import SyncAPIResource, AsyncAPIResource
 from ..resources.tool import Tool
 from ..types.agent import *
 from ..types.params import *
 from ..types.task import Task, TriggeredTask, ScheduledActionTrigger, TaskView
-from typing import List
-import json
+from ..types.oauth import ActiveIntegrations
+
 
 class Agent(SyncAPIResource):
     _client: RelevanceAI
@@ -23,7 +27,10 @@ class Agent(SyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = self._post(path, body=body)
-        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [
+            Tool(client=self._client, **item)
+            for item in response.json().get("results", [])
+        ]
         tools = [tool for tool in tools if tool.metadata.type != "agent"]
         return sorted(tools, key=lambda x: x.metadata.title or "")
 
@@ -33,7 +40,10 @@ class Agent(SyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = self._post(path, body=body)
-        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [
+            Tool(client=self._client, **item)
+            for item in response.json().get("results", [])
+        ]
         tools = [tool for tool in tools if tool.metadata.type == "agent"]
         return sorted(tools, key=lambda x: x.metadata.title or "")
 
@@ -156,7 +166,7 @@ class Agent(SyncAPIResource):
             "agent_id": self.agent_id,
             "conversation_id": conversation_id,
             "message": {"role": "user", "content": message_content},
-            "edit_message_id": edit_message_id
+            "edit_message_id": edit_message_id,
         }
 
         response = self._post(path, body=body)
@@ -222,11 +232,7 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def add_tool(
-        self, 
-        tool_id: str, 
-        partial_update: Optional[bool] = True
-    ) -> None:
+    def add_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
         path = "agents/upsert"
         self.metadata.actions.append({"chain_id": tool_id})
         body = {
@@ -251,10 +257,10 @@ class Agent(SyncAPIResource):
         return response.json()
 
     def add_subagent(
-        self, 
+        self,
         agent_id: str,
         partial_update: Optional[bool] = True,
-        action_behaviour: str = 'always-ask' # 'never-ask' | 'agent-decide' 
+        action_behaviour: str = "always-ask",  # 'never-ask' | 'agent-decide'
     ):
         path = "agents/upsert"
         subagent = self._client.agents.retrieve_agent(agent_id=agent_id)
@@ -265,7 +271,7 @@ class Agent(SyncAPIResource):
                 "action_behaviour": action_behaviour,
                 "agent_id": subagent.metadata.agent_id,
                 "default_values": {},
-                "title": subagent.metadata.name
+                "title": subagent.metadata.name,
             }
         )
         body = {
@@ -276,14 +282,11 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def remove_subagent(
-        self,
-        agent_id: str,
-        partial_update: Optional[bool] = True
-    ): 
+    def remove_subagent(self, agent_id: str, partial_update: Optional[bool] = True):
         path = "agents/upsert"
         self.metadata.actions = [
-            action for action in self.metadata.actions 
+            action
+            for action in self.metadata.actions
             if action.get("agent_id") != agent_id
         ]
         body = {
@@ -295,9 +298,7 @@ class Agent(SyncAPIResource):
         return response.json()
 
     def update_core_instructions(
-        self, 
-        core_instructions: str,
-        partial_update: Optional[bool] = True
+        self, core_instructions: str, partial_update: Optional[bool] = True
     ):
         path = "agents/upsert"
         body = {
@@ -309,15 +310,13 @@ class Agent(SyncAPIResource):
         return response.json()
 
     def update_template_settings(
-        self,
-        params: Dict[str, ParamsBase],
-        partial_update: Optional[bool] = True
+        self, params: Dict[str, ParamsBase], partial_update: Optional[bool] = True
     ):
         params_schema = {
             "properties": {},
             "required": [],
         }
-        
+
         param_values = {
             field_name: param.value
             for field_name, param in params.items()
@@ -326,11 +325,11 @@ class Agent(SyncAPIResource):
 
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
-            param_dict.pop('required', None)
+            param_dict.pop("required", None)
             params_schema["properties"][field_name] = param_dict
             if param.required:
                 params_schema["required"].append(field_name)
-        
+
         path = "agents/upsert"
         body = {
             "agent_id": self.agent_id,
@@ -340,14 +339,41 @@ class Agent(SyncAPIResource):
         }
         response = self._post(path, body=body)
         return response.json()
-    
+
+    def add_google_trigger(self, google_integration_object: ActiveIntegrations) -> None:
+        document_id = str(uuid.uuid4())
+        path = f"syncs/items/{document_id}/upsert"
+        oath_account_id = google_integration_object.account_id
+        oath_label = google_integration_object.label
+        body = {
+            "data": {
+                "destination": {"agent_id": self.agent_id},
+                "config": {
+                    "type": "gmail",
+                    "gmail": {
+                        "oauth_account_id": oath_account_id,
+                        "oauth_account_label": oath_label,
+                        "include_labels": [],
+                        "exclude_emails": [],
+                        "labels": [],
+                    },
+                },
+                "state": {"status": "in_progress"},
+                "contract": {},
+            }
+        }
+
+        response = self._post(path, body=body).json()
+        return {"result": "Success!"} if response == {} else response
+
     # todo: triggers, abilities, and advanced settings
 
-    def get_link(self): 
+    def get_link(self):
         return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.agent_id}"
 
     def __repr__(self):
         return f'Agent(agent_id="{self.agent_id}", name="{self.metadata.name}")'
+
 
 class AsyncAgent(AsyncAPIResource):
     _client: AsyncRelevanceAI
@@ -363,7 +389,10 @@ class AsyncAgent(AsyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = await self._post(path, body=body)
-        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [
+            Tool(client=self._client, **item)
+            for item in response.json().get("results", [])
+        ]
         tools = [tool for tool in tools if tool.metadata.type != "agent"]
         return sorted(tools, key=lambda x: x.metadata.title or "")
 
@@ -373,7 +402,10 @@ class AsyncAgent(AsyncAPIResource):
         path = "agents/tools/list"
         body = {"agent_ids": [self.agent_id]}
         response = await self._post(path, body=body)
-        tools = [Tool(client=self._client, **item) for item in response.json().get("results", [])]
+        tools = [
+            Tool(client=self._client, **item)
+            for item in response.json().get("results", [])
+        ]
         tools = [tool for tool in tools if tool.metadata.type == "agent"]
         return sorted(tools, key=lambda x: x.metadata.title or "")
 
@@ -479,7 +511,7 @@ class AsyncAgent(AsyncAPIResource):
         }
         response = await self._post(path, body=body)
         return TriggeredTask(**response.json())
-    
+
     async def rerun_task(
         self,
         conversation_id: str,
@@ -496,7 +528,7 @@ class AsyncAgent(AsyncAPIResource):
             "agent_id": self.agent_id,
             "conversation_id": conversation_id,
             "message": {"role": "user", "content": message_content},
-            "edit_message_id": edit_message_id
+            "edit_message_id": edit_message_id,
         }
 
         response = await self._post(path, body=body)
@@ -562,9 +594,7 @@ class AsyncAgent(AsyncAPIResource):
         return response.json()
 
     async def add_tool(
-        self, 
-        tool_id: str, 
-        partial_update: Optional[bool] = True
+        self, tool_id: str, partial_update: Optional[bool] = True
     ) -> None:
         path = "agents/upsert"
         self.metadata.actions.append({"chain_id": tool_id})
@@ -577,9 +607,7 @@ class AsyncAgent(AsyncAPIResource):
         return response.json()
 
     async def remove_tool(
-        self, 
-        tool_id: str, 
-        partial_update: Optional[bool] = True
+        self, tool_id: str, partial_update: Optional[bool] = True
     ) -> None:
         path = "agents/upsert"
         self.metadata.actions = [
@@ -592,12 +620,12 @@ class AsyncAgent(AsyncAPIResource):
         }
         response = await self._post(path, body=body)
         return response.json()
-    
+
     async def add_subagent(
-        self, 
+        self,
         agent_id: str,
         partial_update: Optional[bool] = True,
-        action_behaviour: str = 'always-ask' # 'never-ask' | 'agent-decide' 
+        action_behaviour: str = "always-ask",  # 'never-ask' | 'agent-decide'
     ):
         path = "agents/upsert"
         subagent = await self._client.agents.retrieve_agent(agent_id=agent_id)
@@ -608,7 +636,7 @@ class AsyncAgent(AsyncAPIResource):
                 "action_behaviour": action_behaviour,
                 "agent_id": subagent.metadata.agent_id,
                 "default_values": {},
-                "title": subagent.metadata.name
+                "title": subagent.metadata.name,
             }
         )
         body = {
@@ -620,13 +648,12 @@ class AsyncAgent(AsyncAPIResource):
         return response.json()
 
     async def remove_subagent(
-        self,
-        agent_id: str,
-        partial_update: Optional[bool] = True
-    ): 
+        self, agent_id: str, partial_update: Optional[bool] = True
+    ):
         path = "agents/upsert"
         self.metadata.actions = [
-            action for action in self.metadata.actions 
+            action
+            for action in self.metadata.actions
             if action.get("agent_id") != agent_id
         ]
         body = {
@@ -638,9 +665,7 @@ class AsyncAgent(AsyncAPIResource):
         return response.json()
 
     async def update_core_instructions(
-        self, 
-        core_instructions: str,
-        partial_update: Optional[bool] = True
+        self, core_instructions: str, partial_update: Optional[bool] = True
     ):
         path = "agents/upsert"
         body = {
@@ -652,15 +677,13 @@ class AsyncAgent(AsyncAPIResource):
         return response.json()
 
     async def update_template_settings(
-        self,
-        params: Dict[str, ParamsBase],
-        partial_update: Optional[bool] = True
+        self, params: Dict[str, ParamsBase], partial_update: Optional[bool] = True
     ):
         params_schema = {
             "properties": {},
             "required": [],
         }
-        
+
         param_values = {
             field_name: param.value
             for field_name, param in params.items()
@@ -669,11 +692,11 @@ class AsyncAgent(AsyncAPIResource):
 
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
-            param_dict.pop('required', None)
+            param_dict.pop("required", None)
             params_schema["properties"][field_name] = param_dict
             if param.required:
                 params_schema["required"].append(field_name)
-        
+
         path = "agents/upsert"
         body = {
             "agent_id": self.agent_id,
@@ -683,11 +706,9 @@ class AsyncAgent(AsyncAPIResource):
         }
         response = await self._post(path, body=body)
         return response.json()
-    
-    def get_link(self): 
+
+    def get_link(self):
         return f"https://app.relevanceai.com/agents/{self._client.region}/{self._client.project}/{self.agent_id}"
 
     def __repr__(self):
         return f'AsyncAgent(agent_id="{self.agent_id}", name="{self.metadata.name}")'
-    
-    
