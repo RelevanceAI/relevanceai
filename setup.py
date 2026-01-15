@@ -12,7 +12,7 @@ setup(
     setup_requires=["wheel"],
     install_requires=[
         "pydantic==2.8.2",
-        "requests==2.32.3",
+        "requests==2.32.4",
         "httpx==0.27.2",
         "pytest==8.3.4"
     ],
