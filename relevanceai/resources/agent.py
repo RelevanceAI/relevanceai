@@ -232,9 +232,19 @@ class Agent(SyncAPIResource):
         response = self._post(path, body=body)
         return response.json()
 
-    def add_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
+    def add_tool(
+        self,
+        tool_id: str,
+        action_behaviour: str = "always-ask",
+        partial_update: Optional[bool] = True,
+    ) -> None:
         path = "agents/upsert"
-        self.metadata.actions.append({"chain_id": tool_id})
+        if self.metadata.actions is None:
+            self.metadata.actions = []
+        self.metadata.actions.append({
+            "chain_id": tool_id,
+            "action_behaviour": action_behaviour,
+        })
         body = {
             "agent_id": self.agent_id,
             "actions": self.metadata.actions,
@@ -245,6 +255,8 @@ class Agent(SyncAPIResource):
 
     def remove_tool(self, tool_id: str, partial_update: Optional[bool] = True) -> None:
         path = "agents/upsert"
+        if self.metadata.actions is None:
+            self.metadata.actions = []
         self.metadata.actions = [
             action for action in self.metadata.actions if action["chain_id"] != tool_id
         ]

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 
 class TransformationBase(BaseModel):
@@ -30,6 +30,14 @@ class PythonCodeTransformation(TransformationBase):
             "code": "\nreturn \"Hello World!\""
         }
     )
+
+    @model_validator(mode='before')
+    @classmethod
+    def coerce_packages_to_list(cls, data: Any) -> Any:
+        params = data.get('params') if isinstance(data, dict) else None
+        if params and isinstance(params.get('packages'), str):
+            params['packages'] = [p.strip() for p in params['packages'].split(',')]
+        return data
 
 class SerperGoogleSearchTransformation(TransformationBase):
     transformation: str = "serper_google_search"

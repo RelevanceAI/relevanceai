@@ -2568,19 +2568,19 @@ class Content2(BaseModel):
     type: Literal['tool-run']
     thoughts: Optional[str] = None
     generating: Optional[bool] = None
-    tool_run_state: ToolRunState
-    tool_config: ToolConfig
-    action_details: ActionDetails
+    tool_run_state: Optional[ToolRunState] = None
+    tool_config: Optional[ToolConfig] = None
+    action_details: Optional[ActionDetails] = None
     display: Optional[Display1] = None
-    requires_confirmation: bool
+    requires_confirmation: Union[bool, str] = False
     confirmation: Optional[Confirmation] = None
-    params: Union[Params, Params1]
+    params: Optional[Union[Params, Params1]] = None
     errors: Optional[List[Error]] = None
     output: Optional[Dict[str, Any]] = None
     output_source: Optional[OutputSource] = None
     optimistic_output: Optional[Dict[str, Any]] = None
     component: Optional[Union[Component, Component1]] = None
-    original_message_ids: OriginalMessageIds2
+    original_message_ids: Optional[OriginalMessageIds2] = None
 
 
 class OriginalMessageIds3(BaseModel):

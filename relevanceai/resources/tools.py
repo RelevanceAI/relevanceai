@@ -49,7 +49,7 @@ class ToolsManager(SyncAPIResource):
         output_schema = None,
         transformations = None
     ) -> Tool:
-        tool_id = uuid.uuid4()
+        tool_id = str(uuid.uuid4())
         path = "studios/bulk_update"
         body = {
             "updates": [
