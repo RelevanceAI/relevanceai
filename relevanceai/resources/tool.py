@@ -96,12 +96,13 @@ class Tool(SyncAPIResource):
 
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
+            param_dict.pop("required", None)
             params_schema["properties"][field_name] = param_dict
             if param.required:
                 params_schema["required"].append(field_name)
 
         state_mapping = {
-            field_name: f"params.{field_name}" 
+            field_name: f"params.{field_name}"
             for field_name in params.keys()
         }
 
@@ -115,17 +116,19 @@ class Tool(SyncAPIResource):
             }],
             "partial_update": True
         }
-        
+
         response = self._post(path, body=body)
         return response.json()
-        
+
     def update_transformations(
         self,
         transformations: List[TransformationBase],
     ) -> dict:
-        
+
         response = self._get(f"studios/{self.tool_id}/get")
-        current_state = response.json()["studio"].get("state_mapping", {})
+        current_studio = response.json()["studio"]
+        current_state = current_studio.get("state_mapping", {})
+        current_params_schema = current_studio.get("params_schema", {})
 
         state_mapping = {
             **current_state, 
@@ -147,14 +150,15 @@ class Tool(SyncAPIResource):
             "updates": [{
                 "studio_id": self.tool_id,
                 "transformations": transformation_config,
-                "state_mapping": state_mapping
+                "state_mapping": state_mapping,
+                "params_schema": current_params_schema,
             }],
             "partial_update": True
         }
-        
+
         response = self._post(path, body=body)
         return response.json()
-    
+
     def update_outputs(
         self, 
         last_step: bool = True,
@@ -278,12 +282,13 @@ class AsyncTool(AsyncAPIResource):
 
         for field_name, param in params.items():
             param_dict = param.model_dump(exclude_none=True)
+            param_dict.pop("required", None)
             params_schema["properties"][field_name] = param_dict
             if param.required:
                 params_schema["required"].append(field_name)
 
         state_mapping = {
-            field_name: f"params.{field_name}" 
+            field_name: f"params.{field_name}"
             for field_name in params.keys()
         }
 
@@ -297,16 +302,18 @@ class AsyncTool(AsyncAPIResource):
             }],
             "partial_update": True
         }
-        
+
         response = await self._post(path, body=body)
         return response.json()
-        
+
     async def update_transformations(
         self,
         transformations: List[TransformationBase],
     ) -> dict:
         response = await self._get(f"studios/{self.tool_id}/get")
-        current_state = response.json()["studio"].get("state_mapping", {})
+        current_studio = response.json()["studio"]
+        current_state = current_studio.get("state_mapping", {})
+        current_params_schema = current_studio.get("params_schema", {})
 
         state_mapping = {
             **current_state, 
@@ -328,14 +335,15 @@ class AsyncTool(AsyncAPIResource):
             "updates": [{
                 "studio_id": self.tool_id,
                 "transformations": transformation_config,
-                "state_mapping": state_mapping
+                "state_mapping": state_mapping,
+                "params_schema": current_params_schema,
             }],
             "partial_update": True
         }
-        
+
         response = await self._post(path, body=body)
         return response.json()
-    
+
     async def update_outputs(
         self, 
         last_step: bool = True,

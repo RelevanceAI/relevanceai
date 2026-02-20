@@ -266,13 +266,14 @@ class TestAgent:
             "agents/upsert",
             body={
                 "agent_id": "test-agent",
-                "actions": [{"chain_id": "tool-123"}],
+                "actions": [{"chain_id": "tool-123", "action_behaviour": "always-ask"}],
                 "partial_update": True,
             }
         )
-        
+
         assert len(agent.metadata.actions) == 1
         assert agent.metadata.actions[0]["chain_id"] == "tool-123"
+        assert agent.metadata.actions[0]["action_behaviour"] == "always-ask"
         assert result == {"status": "success"}
 
     def test_remove_tool(self, agent):
