@@ -147,6 +147,58 @@ metadata = client.tasks.get_metadata(conversation_id="xxxxxxxx")
 client.tasks.delete_task(conversation_id="xxxxxxxx")
 ```
 
+## FAQ & Troubleshooting
+
+### Getting Started
+
+**Q: How do I get an API key?**
+Sign up at [dashboard.relevanceai.com](https://dashboard.relevanceai.com) and find your API key, project, and region under **Settings > Credentials**.
+
+**Q: What Python version is required?**
+Python 3.9 or later is recommended. Install with `pip install relevanceai`.
+
+**Q: What's the difference between `api_key`, `project`, and `region`?**
+- `api_key`: Your personal authentication token
+- `project`: The workspace/project you're working in
+- `region`: The server region (e.g., `us`, `eu`). Defaults to `us` if not specified.
+
+### Authentication
+
+**Q: Getting `401 Unauthorized` or `Invalid API key`**
+- Verify your credentials at [dashboard.relevanceai.com](https://dashboard.relevanceai.com)
+- Ensure all three values (`api_key`, `project`, `region`) are correct
+- Check that your account hasn't expired or hit usage limits
+- Try regenerating a new API key if the current one was revoked
+
+**Q: Can I use environment variables instead of passing credentials?**
+Yes. Set `RELEVANCE_API_KEY`, `RELEVANCE_PROJECT`, and `RELEVANCE_REGION` as environment variables, or use a `.env` file with `python-dotenv`.
+
+### Agents & Tasks
+
+**Q: How do I check if a task is still running?**
+Use `my_agent.view_task_steps(conversation_id=task.conversation_id)` to see the current progress and step results.
+
+**Q: Can I run multiple tasks in parallel?**
+Yes. Each `trigger_task()` call returns immediately with a `conversation_id`. You can trigger multiple tasks and check their progress independently.
+
+### Tools
+
+**Q: How do I see what parameters a tool expects?**
+Call `my_tool.get_params_schema()` to get the JSON schema for the tool's input parameters.
+
+**Q: Can I create custom tools?**
+Custom tools can be created through the [Relevance AI dashboard](https://dashboard.relevanceai.com) or via the API. See the [documentation](https://sdk.relevanceai.com/) for details.
+
+### Knowledge Sets
+
+**Q: What data formats are supported for knowledge sets?**
+The SDK supports text, PDF, HTML, and common document formats. For structured data, use DataOps workflows to process and insert documents.
+
+**Q: How do I update an existing knowledge set?**
+Use the SDK's insert/update methods to add or modify documents. See the [documentation](https://sdk.relevanceai.com/) for the full API reference.
+
+---
+
 ## Explore More
 
 Explore all the methods available for agents, tasks, tools, and knowledge with the [documentation](https://sdk.relevanceai.com/)
