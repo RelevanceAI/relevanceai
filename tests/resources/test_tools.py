@@ -131,6 +131,25 @@ class TestToolsManager:
         assert result.metadata.studio_id == "new-tool-id"
         assert result.metadata.title == "New Tool"
 
+    def test_create_tool_body_is_json_serializable(self, tools_manager):
+        """studio_id must be a str, not a uuid.UUID -- json.dumps can't encode a UUID."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+
+        captured = {}
+
+        def fake_post(path, body=None, **kwargs):
+            captured["body"] = body
+            json.dumps(body)  # raises TypeError if studio_id is a UUID object
+            return mock_response
+
+        tools_manager._post = fake_post
+        tools_manager.retrieve_tool = MagicMock(return_value=MagicMock(spec=Tool))
+
+        tools_manager.create_tool(title="New Tool", description="Test Description")
+
+        assert isinstance(captured["body"]["updates"][0]["studio_id"], str)
+
     def test_clone_tool_success(self, tools_manager):
         """Test successful tool cloning."""
         # Mock the clone response
